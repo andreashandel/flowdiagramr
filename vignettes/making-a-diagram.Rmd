@@ -1,0 +1,45 @@
+---
+title: "Making a Diagram from a **modelbuilder** object"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{making-a-diagram}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(modeldiagram)
+```
+
+The first step to making a diagram is to have a dynamic model encoded in an appropriate structure.
+The **modeldiagram** package was developed to work well with the **modelbuilder** package structure for dynamic models.
+We will use a **modelbuilder** object for demonstration here.
+The object is called `mbsir`, which is part of the **modeldiagram** package and is a **modelbuilder** list object representing a Susceptible, Infected, Recovered (SIR) disease transmission model.
+
+The `mbsir` object is a list of lists:
+
+```{r mbsir-look}
+str(mbsir, max.level = 1)
+```
+
+The most important aspects are the variables `mbsir[["var"]]` and the parameters `mbsir[["par"]]`.
+The variables list contains the flows into (with "+" sign) and out of (with "-" sign) the variable.
+For example, here is the `S` variable information:
+
+```{r svar}
+mbsir[["var"]][[1]]
+```
+
+From this information, we can see that there are no flows into the `S` variable, only out: ```r mbsir[["var"]][[1]]$flows```.
+
+
+```{r make-dfs}
+make_dataframes(input_list = mbsir)
+```
