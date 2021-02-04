@@ -185,14 +185,17 @@ make_dataframes <- function(input_list) {
   xys <- ndf[ , c("x", "y")]
   overlapids <- which(duplicated(xys) | duplicated(xys, fromLast = TRUE))
   numoverlap <- length(overlapids)
-  newxs <- seq(0.1, 1.9, by = 0.15)
-  newxids <- c(6,5,4,3,2,1,0,1,2,3,4,5,6) + 1
-  xmults <- newxs[which(newxids==numoverlap)]
-  for(i in 1:numoverlap) {
-    oldx <- ndf[overlapids[i], "x"]
-    newx <- oldx * xmults[i]
-    ndf[overlapids[i], "x"] <- newx
+  if(numoverlap > 0) {
+    newxs <- seq(0.1, 1.9, by = 0.15)
+    newxids <- c(6,5,4,3,2,1,0,1,2,3,4,5,6) + 1
+    xmults <- newxs[which(newxids==numoverlap)]
+    for(i in 1:numoverlap) {
+      oldx <- ndf[overlapids[i], "x"]
+      newx <- oldx * xmults[i]
+      ndf[overlapids[i], "x"] <- newx
+    }
   }
+
 
   # Create segment coordinates
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
@@ -226,10 +229,10 @@ make_dataframes <- function(input_list) {
 
   # rename data frames for exporting
   nodes <- ndf
-  horizontal_edges <- sdf
-  vertical_edges <- vdf
-  curved_edges <- cdf
-  feedback_edges <- fdf
+  horizontal_edges <- subset(sdf, select = -c(diff))
+  vertical_edges <- subset(vdf, select = -c(diff))
+  curved_edges <- subset(cdf, select = -c(diff))
+  feedback_edges <- subset(fdf, select = -c(diff))
 
   return(list(nodes = nodes,
               horizontal_edges = horizontal_edges,
