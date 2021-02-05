@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 library(modeldiagram)
 ```
 
+# Introduction
+
 ## Typical workflow
 We anticipate the typical workflow to look something like this:
 
@@ -151,4 +153,29 @@ ggplot() +
               aes(x = xmid, y = ymid, label = label)) +
     coord_equal(clip = "off") +
     theme_void()
+```
+
+# More examples
+
+## SIR with demography and waning immunity
+
+Here is an example using a more complicated model, an SIR model with waning immunity.
+This model includes demography (births and deaths) and cross-node connections (waning goes from the recovered class to the susceptible class).
+The model is stored as `mbseird` and comes with the package.
+
+```{r sird, fig.width=8}
+dfs <- make_dataframes(mbsird)
+fig <- make_diagram(dfs)
+fig
+```
+
+## SIR stratified by two hosts
+
+```{r twohost}
+dfs <- make_dataframes(mbsirtwohost)
+nodes <- dfs$nodes
+nodes[grep("2", nodes$label), "y"] <- 2
+dfs$nodes <- nodes
+fig <- make_diagram(dfs)
+fig
 ```

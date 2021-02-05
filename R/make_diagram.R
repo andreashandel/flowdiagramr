@@ -43,11 +43,22 @@ make_diagram <- function (df_list) {
                  linejoin = "mitre") +
     geom_text(data = vertical_edges,
               aes(x = xmid+0.25, y = ymid, label = label)) +
-    geom_curve(data = curved_edges,
-               aes(x = xstart, y = ystart+0.5, xend = xend, yend = yend+0.5),
-               arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-               arrow.fill = "black",
-               lineend = "round") +
+    lapply(split(curved_edges, 1:nrow(curved_edges)), function(dat) {
+      geom_curve(data = dat, aes(x = xstart,
+                                 y = ystart+0.5,
+                                 xend = xend,
+                                 yend = yend+0.5),
+                 curvature = dat["curvature"],
+                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+                 arrow.fill = "black",
+                 lineend = "round") }
+    ) +
+    # geom_curve(data = curved_edges,
+    #            aes(x = xstart, y = ystart+0.5, xend = xend, yend = yend+0.5,
+    #                curvature = direction),
+    #            arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+    #            arrow.fill = "black",
+    #            lineend = "round") +
     geom_text(data = curved_edges,
               aes(x = xmid, y = ymid + 2, label = label)) +
     geom_curve(data = feedback_edges,

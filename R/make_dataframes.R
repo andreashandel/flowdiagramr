@@ -26,9 +26,14 @@ make_dataframes <- function(input_list) {
 
   # Create a node data frame
   ndf <- data.frame(
-    id = 1:nvars,  #number of nodes
-    label = varnames  #labels of nodes
+    id = 1:nvars,  # number of nodes
+    label = varnames,  # labels of nodes
+    row = 1  # hard code for 1 row, can be updated below
   )
+
+  # Split variables by rows if stratification implied by numbers
+  strats <- gsub("[^0-9.]", "",  varnames)
+  ndf$row <- strats
 
 
   # Create the edge data frame by looping through the variables
@@ -151,7 +156,8 @@ make_dataframes <- function(input_list) {
   # Add dummy compartments to nodes dataframe
   if(is.numeric(outdummies) | is.numeric(indummies)) {
     exnodes <- data.frame(id = c(outdummies, indummies),
-                          label = "")
+                          label = "",
+                          row = 1)  # TODO
     ndf <- rbind(ndf, exnodes)
   }
 
@@ -160,8 +166,12 @@ make_dataframes <- function(input_list) {
 
   # Add x and y locations for the nodes
   ndf <- ndf[order(ndf$id), ]
-  ndf$x <- 1:nrow(ndf)*3
-  ndf$y <- 1
+  ndf$x <- NA
+  ndf$y <- NA
+  for(rid in unique(ndf$row)) {
+    ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
+    ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * 2
+  }
 
   # update inflow node positions from nowhere
   inflownodes <- subset(ndf, id < -9990)$id
@@ -217,6 +227,8 @@ make_dataframes <- function(input_list) {
   fdf <- subset(sdf, to == from)
   sdf <- subset(sdf, to != from)
 
+  cdf$curvature <- c(-0.25, 0.25)
+
   # test to make sure splits are unique and sum up to original data frame
   test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(edf)
   if(!test) {
@@ -233,6 +245,15 @@ make_dataframes <- function(input_list) {
   vertical_edges <- subset(vdf, select = -c(diff))
   curved_edges <- subset(cdf, select = -c(diff))
   feedback_edges <- subset(fdf, select = -c(diff))
+
+  dfs <- list(nodes = nodes,
+              horizontal_edges = horizontal_edges,
+              vertical_edges = vertical_edges,
+              curved_edges = curved_edges,
+              feedback_edges = feedback_edges)
+  f <- make_diagram(dfs)
+  f
+
 
   return(list(nodes = nodes,
               horizontal_edges = horizontal_edges,
