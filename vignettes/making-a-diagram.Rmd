@@ -171,11 +171,8 @@ fig
 
 ## SIR stratified by two hosts
 
-```{r twohost}
+```{r twohost, fig.height=5, fig.width=8}
 dfs <- make_dataframes(mbsirtwohost)
-nodes <- dfs$nodes
-nodes[grep("2", nodes$label), "y"] <- 2
-dfs$nodes <- nodes
 fig <- make_diagram(dfs)
 fig
 ```

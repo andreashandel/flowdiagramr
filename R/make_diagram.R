@@ -8,6 +8,7 @@
 
 make_diagram <- function (df_list) {
   # TODO error checking
+  # TODO ggrepel for labels?
 
   # unlist the data frames to objects
   nodes <- df_list$nodes
@@ -43,24 +44,6 @@ make_diagram <- function (df_list) {
                  linejoin = "mitre") +
     geom_text(data = vertical_edges,
               aes(x = xmid+0.25, y = ymid, label = label)) +
-    lapply(split(curved_edges, 1:nrow(curved_edges)), function(dat) {
-      geom_curve(data = dat, aes(x = xstart,
-                                 y = ystart+0.5,
-                                 xend = xend,
-                                 yend = yend+0.5),
-                 curvature = dat["curvature"],
-                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                 arrow.fill = "black",
-                 lineend = "round") }
-    ) +
-    # geom_curve(data = curved_edges,
-    #            aes(x = xstart, y = ystart+0.5, xend = xend, yend = yend+0.5,
-    #                curvature = direction),
-    #            arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-    #            arrow.fill = "black",
-    #            lineend = "round") +
-    geom_text(data = curved_edges,
-              aes(x = xmid, y = ymid + 2, label = label)) +
     geom_curve(data = feedback_edges,
                ncp = 100,
                curvature = -2,
@@ -72,4 +55,22 @@ make_diagram <- function (df_list) {
               aes(x = xmid, y = ymid+0.85, label = label)) +
     coord_equal(clip = "off") +
     theme_void()
+
+  if(nrow(curved_edges) > 0) {
+    outplot <- outplot +
+      lapply(split(curved_edges, 1:nrow(curved_edges)), function(dat) {
+        geom_curve(data = dat, aes(x = xstart,
+                                   y = ystart,
+                                   xend = xend,
+                                   yend = yend),
+                   curvature = dat["curvature"],
+                   arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+                   arrow.fill = "black",
+                   lineend = "round") }
+      ) +
+      geom_text(data = curved_edges,
+                aes(x = labelx, y = labely, label = label))
+  }
+
+  return(outplot)
 }

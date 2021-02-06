@@ -33,7 +33,8 @@ make_dataframes <- function(input_list) {
 
   # Split variables by rows if stratification implied by numbers
   strats <- gsub("[^0-9.]", "",  varnames)
-  ndf$row <- strats
+  strats <- ifelse(strats == "", 1, strats)
+  ndf$row <- as.numeric(strats)
 
 
   # Create the edge data frame by looping through the variables
@@ -170,7 +171,7 @@ make_dataframes <- function(input_list) {
   ndf$y <- NA
   for(rid in unique(ndf$row)) {
     ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
-    ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * 2
+    ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * -2
   }
 
   # update inflow node positions from nowhere
@@ -227,7 +228,54 @@ make_dataframes <- function(input_list) {
   fdf <- subset(sdf, to == from)
   sdf <- subset(sdf, to != from)
 
-  cdf$curvature <- c(-0.25, 0.25)
+  # Set default curvature if cdf has data
+  if(nrow(cdf) > 0) {
+    cdf$curvature <- 0.25
+
+    # add in row info
+    cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
+    cdf$row <- as.numeric(cdf$row)
+
+    # Update curvature based on row, if only 2 rows
+    if(max(as.numeric(ndf$row)) > 1 & max(as.numeric(ndf$row)) <= 2) {
+      cdf$curvature <- ifelse(cdf$row == 1, 0.25, -0.25)
+
+      # also update ystart and yend
+      cdf$ystart <- ifelse(cdf$row == 2, cdf$ystart-1, cdf$ystart)
+      cdf$yend <- cdf$ystart
+    }
+
+    # add curvature midpoint for accurate label placement
+    cdf$labelx <- NA
+    cdf$labely <- NA
+    for(i in 1:nrow(cdf)) {
+      tmp <- cdf[i, ]
+      mids <- calc_control_points(x1 = tmp$xstart,
+                                  y1 = tmp$ystart,
+                                  x2 = tmp$xend,
+                                  y2 = tmp$yend,
+                                  angle = 90,
+                                  curvature = tmp$curvature,
+                                  ncp = 1)
+      cdf[i, "labelx"] <- mids$x
+      cdf[i, "labely"] <- mids$y
+    }
+
+    # curves need to move up 0.5 units to connect with tops/bottoms
+    # of node rectangles
+    cdf$ystart <- cdf$ystart + 0.5
+    cdf$yend <- cdf$yend + 0.5
+    cdf$ymid <- cdf$ymid + 0.5
+    cdf$labely <- cdf$labely + 0.5
+
+    # add y offset to curve labels according to row
+    for(i in 1:nrow(cdf)) {
+      tmp <- cdf[i, ]
+      offset <- ifelse(cdf[i, "row"] == 2, -0.2, 0.2)
+      cdf[i, "labely"] <- cdf[i, "labely"] + offset
+    }
+  }
+
 
   # test to make sure splits are unique and sum up to original data frame
   test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(edf)
@@ -246,13 +294,13 @@ make_dataframes <- function(input_list) {
   curved_edges <- subset(cdf, select = -c(diff))
   feedback_edges <- subset(fdf, select = -c(diff))
 
-  dfs <- list(nodes = nodes,
-              horizontal_edges = horizontal_edges,
-              vertical_edges = vertical_edges,
-              curved_edges = curved_edges,
-              feedback_edges = feedback_edges)
-  f <- make_diagram(dfs)
-  f
+  # dfs <- list(nodes = nodes,
+  #             horizontal_edges = horizontal_edges,
+  #             vertical_edges = vertical_edges,
+  #             curved_edges = curved_edges,
+  #             feedback_edges = feedback_edges)
+  # f <- make_diagram(dfs)
+  # f
 
 
   return(list(nodes = nodes,
