@@ -57,7 +57,8 @@ make_dataframes <- function(input_list) {
 
       # Extract the variable names
       varspars <- unique(get_vars_pars(currentflowfull))
-      vars <- varspars[which(varspars %in% LETTERS)]
+      varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
+      vars <- varspars[which(varfirsts %in% LETTERS)]
 
       # If the flow does not show up in any other rows BUT starts with
       # a plus sign, then the donating node will be the state variable
@@ -103,7 +104,8 @@ make_dataframes <- function(input_list) {
 
         tmp <- data.frame(from = i,
                           to = cn,
-                          label = currentflow)
+                          label = currentflow,
+                          interaction = FALSE)
 
         edf <- rbind(edf, tmp)
       }
@@ -117,7 +119,8 @@ make_dataframes <- function(input_list) {
         if(connectvars == i) {
           tmp <- data.frame(from = NA,
                             to = i,
-                            label = currentflow)
+                            label = currentflow,
+                            interaction = FALSE)
           edf <- rbind(edf, tmp)
         }
       }
@@ -125,16 +128,51 @@ make_dataframes <- function(input_list) {
         if(length(unique(connectvars)) == 1) {
           tmp <- data.frame(from = i,
                             to = i,
-                            label = currentflow)
+                            label = currentflow,
+                            interaction = FALSE)
         } else {
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
-                            label = currentflow)
+                            label = currentflow,
+                            interaction = FALSE)
         }
         edf <- rbind(edf, tmp)
       }
+
+      # interaction flag if two variables are in the flow
+      if(length(vars) > 1) {
+        edf[nrow(edf), "interaction"] <- TRUE
+      }
     }  #end flow loop
   }  #end variable loop
+
+  # Keep only distinct rows
+  edf <- unique(edf)
+
+  # Break edges apart into:
+  #   direct flows
+  #   interactions to meet at edges
+  #   the flows resulting from interactions
+  ints <- subset(edf, interaction == TRUE)
+  edf <- subset(edf, interaction == FALSE)
+  intflows <- ints
+  intflows$label <- ""
+  intflows <- unique(intflows)
+  intflows$interaction <- FALSE
+
+  # Redefine the interaction from nodes
+  for(i in 1:nrow(ints)) {
+    tmp <- ints[i, ]
+    v <- get_vars_pars(tmp$label)
+    vf <- substr(v, start = 1, stop = 1)  #get first letters
+    v <- v[which(vf %in% LETTERS)]
+    ids <- subset(ndf, label %in% v)[ , "id"]
+    ints[i, "from"] <- ids[2]
+    ints[i, "to"] <- NA
+  }
+
+  # Recombine the edge data frame
+  edf <- rbind(edf, ints, intflows)
 
   # Make dummy compartment for all flows in and out of the system.
   # Out of the system first
@@ -161,9 +199,6 @@ make_dataframes <- function(input_list) {
                           row = 1)  # TODO
     ndf <- rbind(ndf, exnodes)
   }
-
-  # Keep only distinct rows
-  edf <- unique(edf)
 
   # Add x and y locations for the nodes
   ndf <- ndf[order(ndf$id), ]
@@ -294,13 +329,13 @@ make_dataframes <- function(input_list) {
   curved_edges <- subset(cdf, select = -c(diff))
   feedback_edges <- subset(fdf, select = -c(diff))
 
-  # dfs <- list(nodes = nodes,
-  #             horizontal_edges = horizontal_edges,
-  #             vertical_edges = vertical_edges,
-  #             curved_edges = curved_edges,
-  #             feedback_edges = feedback_edges)
-  # f <- make_diagram(dfs)
-  # f
+  dfs <- list(nodes = nodes,
+              horizontal_edges = horizontal_edges,
+              vertical_edges = vertical_edges,
+              curved_edges = curved_edges,
+              feedback_edges = feedback_edges)
+  f <- make_diagram(dfs)
+  f
 
 
   return(list(nodes = nodes,
