@@ -189,8 +189,6 @@ make_dataframes <- function(input_list) {
   numlinks <- length(edf[is.na(edf$to) & edf$interaction == TRUE, "to"])
   if(numlinks > 0) {
     linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
-    # linkdummies <- mean(c(edf[is.na(edf$to) & edf$interaction == TRUE, "from"],
-    #                       edf[is.na(edf$to) & edf$interaction == TRUE, "link"]))
     edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
   }
 
