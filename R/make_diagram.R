@@ -63,6 +63,7 @@ make_diagram <- function (df_list) {
                                    y = ystart,
                                    xend = xend,
                                    yend = yend),
+                   linetype = as.numeric(dat["interaction"]) + 1,
                    curvature = dat["curvature"],
                    arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
                    arrow.fill = "black",

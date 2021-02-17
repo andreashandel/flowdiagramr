@@ -57,7 +57,8 @@ make_dataframes <- function(input_list) {
 
       # Extract the variable names
       varspars <- unique(get_vars_pars(currentflowfull))
-      vars <- varspars[which(varspars %in% LETTERS)]
+      varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
+      vars <- varspars[which(varfirsts %in% LETTERS)]
 
       # If the flow does not show up in any other rows BUT starts with
       # a plus sign, then the donating node will be the state variable
@@ -79,17 +80,6 @@ make_dataframes <- function(input_list) {
         }
       }
 
-      # if(length(connectvars) == 1 & currentsign == "+") {
-      #   varspars <- get_vars_pars(currentflow)
-      #   var <- varspars[which(varspars %in% LETTERS)]
-      #   cnnew <- which(varnames == var)
-      #   if(length(cnnew) == 1) {
-      #     connectvars <- c(connectvars, cnnew)
-      #   } else {
-      #     connectvars <- c(i, i)
-      #   }
-      # }
-
       # If current sign is negative, it is an outflow and goes either the
       # connectvar that is not equal to the current variable id (indexed by i)
       # or it goes to NA (this happens when there is an unspecified death
@@ -103,7 +93,8 @@ make_dataframes <- function(input_list) {
 
         tmp <- data.frame(from = i,
                           to = cn,
-                          label = currentflow)
+                          label = currentflow,
+                          interaction = FALSE)
 
         edf <- rbind(edf, tmp)
       }
@@ -117,7 +108,8 @@ make_dataframes <- function(input_list) {
         if(connectvars == i) {
           tmp <- data.frame(from = NA,
                             to = i,
-                            label = currentflow)
+                            label = currentflow,
+                            interaction = FALSE)
           edf <- rbind(edf, tmp)
         }
       }
@@ -125,45 +117,91 @@ make_dataframes <- function(input_list) {
         if(length(unique(connectvars)) == 1) {
           tmp <- data.frame(from = i,
                             to = i,
-                            label = currentflow)
+                            label = currentflow,
+                            interaction = FALSE)
         } else {
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
-                            label = currentflow)
+                            label = currentflow,
+                            interaction = FALSE)
         }
         edf <- rbind(edf, tmp)
+      }
+
+      # interaction flag if two variables are in the flow
+      if(length(vars) > 1) {
+        edf[nrow(edf), "interaction"] <- TRUE
       }
     }  #end flow loop
   }  #end variable loop
 
+  # Keep only distinct rows
+  edf <- unique(edf)
+
+  # Break edges apart into:
+  #   direct flows
+  #   interactions to meet at edges
+  #   the flows resulting from interactions
+  edf$link <- NA  #empty column for interaction flows, but needed for binding
+  ints <- subset(edf, interaction == TRUE)
+  edf <- subset(edf, interaction == FALSE)
+  intflows <- ints
+  intflows$label <- ""
+  intflows <- unique(intflows)
+  intflows$interaction <- FALSE
+
+  # Redefine the interaction from nodes
+  for(i in 1:nrow(ints)) {
+    tmp <- ints[i, ]
+    v <- get_vars_pars(tmp$label)
+    vf <- substr(v, start = 1, stop = 1)  #get first letters
+    v <- v[which(vf %in% LETTERS)]
+    ids <- subset(ndf, label %in% v)[ , "id"]
+    ints[i, "from"] <- ids[2]
+    ints[i, "to"] <- NA
+    ints[i, "link"] <- ids[1]
+  }
+
+  # Recombine the edge data frame
+  edf <- rbind(edf, ints, intflows)
+
   # Make dummy compartment for all flows in and out of the system.
   # Out of the system first
   outdummies <- NULL
-  numnas <- length(edf[is.na(edf$to), "to"])
+  # numnas <- length(edf[is.na(edf$to), "to"])
+  numnas <- length(edf[is.na(edf$to) & edf$interaction == FALSE, "to"])
   if(numnas > 0) {
     outdummies <- as.numeric(paste0("999", c(1:numnas)))
-    edf[is.na(edf$to), "to"] <- outdummies
+    edf[is.na(edf$to) & edf$interaction == FALSE, "to"] <- outdummies
   }
 
   # In to the system second
   indummies <- NULL
-  numnas <- length(edf[is.na(edf$from), "from"])
+  # numnas <- length(edf[is.na(edf$from), "from"])
+  numnas <- length(edf[is.na(edf$from) & edf$interaction == FALSE, "from"])
   if(numnas > 0) {
     indummies <- as.numeric(paste0("-999", c(1:numnas)))
-    edf[is.na(edf$from), "from"] <- indummies
+    edf[is.na(edf$from) & edf$interaction == FALSE, "from"] <- indummies
+  }
+
+  # Make dummy compartment for "links" in interactions
+  linkdummies <- NULL
+  numlinks <- length(edf[is.na(edf$to) & edf$interaction == TRUE, "to"])
+  if(numlinks > 0) {
+    linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
+    # linkdummies <- mean(c(edf[is.na(edf$to) & edf$interaction == TRUE, "from"],
+    #                       edf[is.na(edf$to) & edf$interaction == TRUE, "link"]))
+    edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
   }
 
 
   # Add dummy compartments to nodes dataframe
-  if(is.numeric(outdummies) | is.numeric(indummies)) {
-    exnodes <- data.frame(id = c(outdummies, indummies),
+  if(is.numeric(outdummies) | is.numeric(indummies) | is.numeric(linkdummies)) {
+    exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),
                           label = "",
                           row = 1)  # TODO
     ndf <- rbind(ndf, exnodes)
   }
-
-  # Keep only distinct rows
-  edf <- unique(edf)
 
   # Add x and y locations for the nodes
   ndf <- ndf[order(ndf$id), ]
@@ -190,6 +228,17 @@ make_dataframes <- function(input_list) {
     newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
     newxy$y <- newxy$y - 2
     ndf[which(ndf$id == id), c("x", "y")] <- newxy
+  }
+
+  # update invisible interaction link nodes
+  linknodes <- subset(ndf, id > 5550 & id < 9990)$id
+  for(id in linknodes) {
+    start <- edf[which(edf$to == id), "link"]
+    end <- edf[which(edf$to == id), "from"]
+    newx1 <- ndf[which(ndf$id == start), "x"]
+    newx2 <- ndf[which(ndf$id == end), "x"]
+    newx <- (newx1+newx2)/2
+    ndf[which(ndf$id == id), "x"] <- newx
   }
 
   # update node positions that overlap
@@ -221,8 +270,8 @@ make_dataframes <- function(input_list) {
   # - straight (horizontal) segments
   # - vertical segments
   # - feedback segments (curved back onto same node)
-  cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from))
-  sdf <- subset(edf, diff <= 1 | diff >= 9000)
+  cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from) | interaction == TRUE)
+  sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
   vdf <- subset(sdf, abs(diff) >= 9990)
   sdf <- subset(sdf, abs(diff) < 9990)
   fdf <- subset(sdf, to == from)
@@ -231,6 +280,7 @@ make_dataframes <- function(input_list) {
   # Set default curvature if cdf has data
   if(nrow(cdf) > 0) {
     cdf$curvature <- 0.25
+    cdf[cdf$interaction==TRUE, "curvature"] <- 0.5
 
     # add in row info
     cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
@@ -244,6 +294,16 @@ make_dataframes <- function(input_list) {
       cdf$ystart <- ifelse(cdf$row == 2, cdf$ystart-1, cdf$ystart)
       cdf$yend <- cdf$ystart
     }
+
+    # curves need to move up 0.5 units to connect with tops/bottoms
+    # of node rectangles
+    cdf$ystart <- cdf$ystart + 0.5
+    cdf$yend <- cdf$yend + 0.5
+    cdf$ymid <- cdf$ymid + 0.5
+
+    # if curve is for an interaction term, then yend needs to be moved
+    # back down by 0.5 to meet up with the edge rather than the node
+    cdf[cdf$interaction == TRUE, "yend"] <- cdf[cdf$interaction == TRUE, "yend"] - 0.5
 
     # add curvature midpoint for accurate label placement
     cdf$labelx <- NA
@@ -261,12 +321,6 @@ make_dataframes <- function(input_list) {
       cdf[i, "labely"] <- mids$y
     }
 
-    # curves need to move up 0.5 units to connect with tops/bottoms
-    # of node rectangles
-    cdf$ystart <- cdf$ystart + 0.5
-    cdf$yend <- cdf$yend + 0.5
-    cdf$ymid <- cdf$ymid + 0.5
-    cdf$labely <- cdf$labely + 0.5
 
     # add y offset to curve labels according to row
     for(i in 1:nrow(cdf)) {
@@ -294,13 +348,13 @@ make_dataframes <- function(input_list) {
   curved_edges <- subset(cdf, select = -c(diff))
   feedback_edges <- subset(fdf, select = -c(diff))
 
-  # dfs <- list(nodes = nodes,
-  #             horizontal_edges = horizontal_edges,
-  #             vertical_edges = vertical_edges,
-  #             curved_edges = curved_edges,
-  #             feedback_edges = feedback_edges)
-  # f <- make_diagram(dfs)
-  # f
+  dfs <- list(nodes = nodes,
+              horizontal_edges = horizontal_edges,
+              vertical_edges = vertical_edges,
+              curved_edges = curved_edges,
+              feedback_edges = feedback_edges)
+  f <- make_diagram(dfs)
+  f
 
 
   return(list(nodes = nodes,
