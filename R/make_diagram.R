@@ -62,14 +62,17 @@ make_diagram <- function (df_list) {
         geom_curve(data = dat, aes(x = xstart,
                                    y = ystart,
                                    xend = xend,
-                                   yend = yend),
+                                   yend = yend,
+                                   linetype = interaction),
                    curvature = dat["curvature"],
                    arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
                    arrow.fill = "black",
                    lineend = "round") }
       ) +
+      scale_linetype_manual(values = c(2, 1)) +
       geom_text(data = curved_edges,
-                aes(x = labelx, y = labely, label = label))
+                aes(x = labelx, y = labely, label = label)) +
+      guides(linetype = FALSE)
   }
 
   return(outplot)

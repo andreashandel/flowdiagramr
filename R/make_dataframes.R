@@ -189,8 +189,8 @@ make_dataframes <- function(input_list) {
   numlinks <- length(edf[is.na(edf$to) & edf$interaction == TRUE, "to"])
   if(numlinks > 0) {
     linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
-    linkdummies <- mean(c(edf[is.na(edf$to) & edf$interaction == TRUE, "from"],
-                          edf[is.na(edf$to) & edf$interaction == TRUE, "link"]))
+    # linkdummies <- mean(c(edf[is.na(edf$to) & edf$interaction == TRUE, "from"],
+    #                       edf[is.na(edf$to) & edf$interaction == TRUE, "link"]))
     edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
   }
 
@@ -228,6 +228,17 @@ make_dataframes <- function(input_list) {
     newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
     newxy$y <- newxy$y - 2
     ndf[which(ndf$id == id), c("x", "y")] <- newxy
+  }
+
+  # update invisible interaction link nodes
+  linknodes <- subset(ndf, id > 5550 & id < 9990)$id
+  for(id in linknodes) {
+    start <- edf[which(edf$to == id), "link"]
+    end <- edf[which(edf$to == id), "from"]
+    newx1 <- ndf[which(ndf$id == start), "x"]
+    newx2 <- ndf[which(ndf$id == end), "x"]
+    newx <- (newx1+newx2)/2
+    ndf[which(ndf$id == id), "x"] <- newx
   }
 
   # update node positions that overlap
@@ -269,6 +280,7 @@ make_dataframes <- function(input_list) {
   # Set default curvature if cdf has data
   if(nrow(cdf) > 0) {
     cdf$curvature <- 0.25
+    cdf[cdf$interaction==TRUE, "curvature"] <- 0.5
 
     # add in row info
     cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
@@ -282,6 +294,16 @@ make_dataframes <- function(input_list) {
       cdf$ystart <- ifelse(cdf$row == 2, cdf$ystart-1, cdf$ystart)
       cdf$yend <- cdf$ystart
     }
+
+    # curves need to move up 0.5 units to connect with tops/bottoms
+    # of node rectangles
+    cdf$ystart <- cdf$ystart + 0.5
+    cdf$yend <- cdf$yend + 0.5
+    cdf$ymid <- cdf$ymid + 0.5
+
+    # if curve is for an interaction term, then yend needs to be moved
+    # back down by 0.5 to meet up with the edge rather than the node
+    cdf[cdf$interaction == TRUE, "yend"] <- cdf[cdf$interaction == TRUE, "yend"] - 0.5
 
     # add curvature midpoint for accurate label placement
     cdf$labelx <- NA
@@ -299,16 +321,6 @@ make_dataframes <- function(input_list) {
       cdf[i, "labely"] <- mids$y
     }
 
-    # curves need to move up 0.5 units to connect with tops/bottoms
-    # of node rectangles
-    cdf$ystart <- cdf$ystart + 0.5
-    cdf$yend <- cdf$yend + 0.5
-    cdf$ymid <- cdf$ymid + 0.5
-    cdf$labely <- cdf$labely + 0.5
-
-    # if curve is for an interaction term, then yend needs to be moved
-    # back down by 0.5 to meet up with the edge rather than the node
-    cdf[cdf$interaction == TRUE, "yend"] <- cdf[cdf$interaction == TRUE, "yend"] - 0.5
 
     # add y offset to curve labels according to row
     for(i in 1:nrow(cdf)) {
