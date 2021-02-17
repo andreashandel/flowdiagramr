@@ -80,17 +80,6 @@ make_dataframes <- function(input_list) {
         }
       }
 
-      # if(length(connectvars) == 1 & currentsign == "+") {
-      #   varspars <- get_vars_pars(currentflow)
-      #   var <- varspars[which(varspars %in% LETTERS)]
-      #   cnnew <- which(varnames == var)
-      #   if(length(cnnew) == 1) {
-      #     connectvars <- c(connectvars, cnnew)
-      #   } else {
-      #     connectvars <- c(i, i)
-      #   }
-      # }
-
       # If current sign is negative, it is an outflow and goes either the
       # connectvar that is not equal to the current variable id (indexed by i)
       # or it goes to NA (this happens when there is an unspecified death
