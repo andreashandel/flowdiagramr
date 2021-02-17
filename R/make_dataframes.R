@@ -142,6 +142,7 @@ make_dataframes <- function(input_list) {
   #   direct flows
   #   interactions to meet at edges
   #   the flows resulting from interactions
+  edf$link <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(edf, interaction == TRUE)
   edf <- subset(edf, interaction == FALSE)
   intflows <- ints
@@ -158,6 +159,7 @@ make_dataframes <- function(input_list) {
     ids <- subset(ndf, label %in% v)[ , "id"]
     ints[i, "from"] <- ids[2]
     ints[i, "to"] <- NA
+    ints[i, "link"] <- ids[1]
   }
 
   # Recombine the edge data frame
@@ -166,24 +168,36 @@ make_dataframes <- function(input_list) {
   # Make dummy compartment for all flows in and out of the system.
   # Out of the system first
   outdummies <- NULL
-  numnas <- length(edf[is.na(edf$to), "to"])
+  # numnas <- length(edf[is.na(edf$to), "to"])
+  numnas <- length(edf[is.na(edf$to) & edf$interaction == FALSE, "to"])
   if(numnas > 0) {
     outdummies <- as.numeric(paste0("999", c(1:numnas)))
-    edf[is.na(edf$to), "to"] <- outdummies
+    edf[is.na(edf$to) & edf$interaction == FALSE, "to"] <- outdummies
   }
 
   # In to the system second
   indummies <- NULL
-  numnas <- length(edf[is.na(edf$from), "from"])
+  # numnas <- length(edf[is.na(edf$from), "from"])
+  numnas <- length(edf[is.na(edf$from) & edf$interaction == FALSE, "from"])
   if(numnas > 0) {
     indummies <- as.numeric(paste0("-999", c(1:numnas)))
-    edf[is.na(edf$from), "from"] <- indummies
+    edf[is.na(edf$from) & edf$interaction == FALSE, "from"] <- indummies
+  }
+
+  # Make dummy compartment for "links" in interactions
+  linkdummies <- NULL
+  numlinks <- length(edf[is.na(edf$to) & edf$interaction == TRUE, "to"])
+  if(numlinks > 0) {
+    linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
+    linkdummies <- mean(c(edf[is.na(edf$to) & edf$interaction == TRUE, "from"],
+                          edf[is.na(edf$to) & edf$interaction == TRUE, "link"]))
+    edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
   }
 
 
   # Add dummy compartments to nodes dataframe
-  if(is.numeric(outdummies) | is.numeric(indummies)) {
-    exnodes <- data.frame(id = c(outdummies, indummies),
+  if(is.numeric(outdummies) | is.numeric(indummies) | is.numeric(linkdummies)) {
+    exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),
                           label = "",
                           row = 1)  # TODO
     ndf <- rbind(ndf, exnodes)
@@ -245,8 +259,8 @@ make_dataframes <- function(input_list) {
   # - straight (horizontal) segments
   # - vertical segments
   # - feedback segments (curved back onto same node)
-  cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from))
-  sdf <- subset(edf, diff <= 1 | diff >= 9000)
+  cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from) | interaction == TRUE)
+  sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
   vdf <- subset(sdf, abs(diff) >= 9990)
   sdf <- subset(sdf, abs(diff) < 9990)
   fdf <- subset(sdf, to == from)
@@ -291,6 +305,10 @@ make_dataframes <- function(input_list) {
     cdf$yend <- cdf$yend + 0.5
     cdf$ymid <- cdf$ymid + 0.5
     cdf$labely <- cdf$labely + 0.5
+
+    # if curve is for an interaction term, then yend needs to be moved
+    # back down by 0.5 to meet up with the edge rather than the node
+    cdf[cdf$interaction == TRUE, "yend"] <- cdf[cdf$interaction == TRUE, "yend"] - 0.5
 
     # add y offset to curve labels according to row
     for(i in 1:nrow(cdf)) {
