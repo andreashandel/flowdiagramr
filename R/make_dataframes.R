@@ -157,9 +157,9 @@ make_dataframes <- function(input_list) {
     vf <- substr(v, start = 1, stop = 1)  #get first letters
     v <- v[which(vf %in% LETTERS)]
     ids <- subset(ndf, label %in% v)[ , "id"]
-    ints[i, "from"] <- ids[2]
+    ints[i, "from"] <- ids[which(ids != tmp$from)]
     ints[i, "to"] <- NA
-    ints[i, "link"] <- ids[1]
+    ints[i, "link"] <- tmp$from
   }
 
   # Recombine the edge data frame
