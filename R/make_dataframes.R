@@ -236,24 +236,24 @@ make_dataframes <- function(input_list) {
     newx1 <- ndf[which(ndf$id == start), "x"]
     newx2 <- ndf[which(ndf$id == end), "x"]
     newx <- (newx1+newx2)/2
-    ndf[which(ndf$id == id), "x"] <- newx
+    newy <- ndf[which(ndf$id == start), "y"]
+    ndf[which(ndf$id == id), c("x", "y")] <- c(newx, newy)
   }
 
   # update node positions that overlap
-  xys <- ndf[ , c("x", "y")]
-  overlapids <- which(duplicated(xys) | duplicated(xys, fromLast = TRUE))
-  numoverlap <- length(overlapids)
-  if(numoverlap > 0) {
-    newxs <- seq(0.1, 1.9, by = 0.15)
-    newxids <- c(6,5,4,3,2,1,0,1,2,3,4,5,6) + 1
-    xmults <- newxs[which(newxids==numoverlap)]
-    for(i in 1:numoverlap) {
-      oldx <- ndf[overlapids[i], "x"]
-      newx <- oldx * xmults[i]
-      ndf[overlapids[i], "x"] <- newx
-    }
-  }
-
+  # xys <- ndf[ , c("x", "y")]
+  # overlapids <- which(duplicated(xys) | duplicated(xys, fromLast = TRUE))
+  # numoverlap <- length(overlapids)
+  # if(numoverlap > 0) {
+  #   newxs <- seq(0.1, 1.9, by = 0.15)
+  #   newxids <- c(6,5,4,3,2,1,0,1,2,3,4,5,6) + 1
+  #   xmults <- newxs[which(newxids==numoverlap)]
+  #   for(i in 1:numoverlap) {
+  #     oldx <- ndf[overlapids[i], "x"]
+  #     newx <- oldx * xmults[i]
+  #     ndf[overlapids[i], "x"] <- newx
+  #   }
+  # }
 
   # Create segment coordinates
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
@@ -278,7 +278,6 @@ make_dataframes <- function(input_list) {
   # Set default curvature if cdf has data
   if(nrow(cdf) > 0) {
     cdf$curvature <- 0.25
-    cdf[cdf$interaction==TRUE, "curvature"] <- 0.5
 
     # add in row info
     cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
@@ -290,8 +289,10 @@ make_dataframes <- function(input_list) {
 
       # also update ystart and yend
       cdf$ystart <- ifelse(cdf$row == 2, cdf$ystart-1, cdf$ystart)
-      cdf$yend <- cdf$ystart
+      cdf$yend <- ifelse(cdf$row == 2, cdf$ystart, cdf$yend)
     }
+
+    cdf[cdf$interaction==TRUE, "curvature"] <- 0.4
 
     # curves need to move up 0.5 units to connect with tops/bottoms
     # of node rectangles
