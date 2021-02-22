@@ -99,7 +99,7 @@ diagram_dfs
 
 ## Make the diagram
 
-```{r make-diag}
+```{r make-diag, fig.width=6}
 diagram_plot <- make_diagram(df_list = diagram_dfs)
 diagram_plot
 ```
@@ -120,7 +120,7 @@ The code can also be simplified by deleting `geoms` that refer to empty data fra
 In this case, we just need the chunks of code that refer to the `nodes` and `horizontal_edges` data frames.
 For example,
 
-```{r custom}
+```{r custom, fig.width=6}
 # load ggplot
 library(ggplot2)
 
@@ -132,7 +132,7 @@ curved_edges <- diagram_dfs$curved_edges
 feedback_edges <- diagram_dfs$feedback_edges
 
 # make blue boxes with white lettering
-ggplot() +
+outplot <- ggplot() +
     geom_tile(data = nodes,
               aes(x = x, y = y),
               color = "white",  # CHANGED HERE
@@ -151,8 +151,45 @@ ggplot() +
                  linejoin = "mitre") +
     geom_text(data = horizontal_edges,
               aes(x = xmid, y = ymid, label = label)) +
+    geom_segment(data = vertical_edges,
+                 aes(x = xstart, y = ystart-0.5, xend = xend, yend = yend+0.5),
+                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+                 arrow.fill = "black",
+                 lineend = "round",
+                 linejoin = "mitre") +
+    geom_text(data = vertical_edges,
+              aes(x = xmid+0.25, y = ymid, label = label)) +
+    geom_curve(data = feedback_edges,
+               ncp = 100,
+               curvature = -2,
+               aes(x = xstart-0.25, y = ystart+0.5, xend = xend+0.25, yend = yend+0.5),
+               arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+               arrow.fill = "black",
+               lineend = "round") +
+    geom_text(data = feedback_edges,
+              aes(x = xmid, y = ymid+0.85, label = label)) +
     coord_equal(clip = "off") +
     theme_void()
+
+  if(nrow(curved_edges) > 0) {
+    outplot <- outplot +
+      lapply(split(curved_edges, 1:nrow(curved_edges)), function(dat) {
+        geom_curve(data = dat, aes(x = xstart,
+                                   y = ystart,
+                                   xend = xend,
+                                   yend = yend),
+                   color = "red",  ## ADDED RED COLOR HERE  
+                   linetype = as.numeric(dat["interaction"]) + 1,
+                   curvature = dat["curvature"],
+                   arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+                   arrow.fill = "red",  ## MADE ARROW RED HERE
+                   lineend = "round") }
+      ) +
+      geom_text(data = curved_edges,
+                aes(x = labelx, y = labely, label = label))
+  }
+
+outplot
 ```
 
 # More examples
