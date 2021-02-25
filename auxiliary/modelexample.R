@@ -1,3 +1,13 @@
+# Idea: The input structure to the main diagram prep/generation file is a simple list
+
+# suggested list structure as below.
+# the easiest way is for a user to build this simple structure themselves.
+
+# alternatively, helper functions will take an mbmodel or potential other future inputs and convert to the structure that is fed into the main diagram generating function
+# e.g. something like this
+# diag_input_list <- make_diag_input(mbmodel)
+
+
 #Environmental transmission example
 varlabels = c("S","I","R","P")
 varnames = c('Susceptible',"Infected","Recovered","Pathogen in environment")
@@ -11,7 +21,8 @@ P_flows = c("+q*I", "-c*P")
 #varlabels and varnames need to be specified/names in this way
 
 #with full-text names for variables
-model = list(varlabels = varlabels, varnames = varnames, S_flows = S_flows, I_flows = I_flows, R_flows = R_flows, P_flows = P_flows)
+diag_input_list = list(varlabels = varlabels, varnames = varnames, S_flows = S_flows, I_flows = I_flows, R_flows = R_flows, P_flows = P_flows)
 
 #also ok
-model = list(varlabels = varlabels, S_flows = S_flows, I_flows = I_flows, R_flows = R_flows, P_flows = P_flows)
+diag_input_list = list(varlabels = varlabels, S_flows = S_flows, I_flows = I_flows, R_flows = R_flows, P_flows = P_flows)
+
