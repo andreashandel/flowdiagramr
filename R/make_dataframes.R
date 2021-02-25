@@ -358,8 +358,8 @@ make_dataframes <- function(input_list) {
               vertical_edges = vertical_edges,
               curved_edges = curved_edges,
               feedback_edges = feedback_edges)
-  # f <- make_diagram(dfs)
-  # f
+  f <- make_diagram(dfs)
+  f
 
 
   return(list(nodes = nodes,

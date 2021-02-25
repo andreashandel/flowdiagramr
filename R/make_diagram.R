@@ -2,11 +2,14 @@
 #'
 #' @param df_list A list of data frames returned from the
 #'     \code{make_dataframes} function.
+#' @param with_grid A logical indicating whether to return the ggplot
+#'     with a grid. Default is FALSE. The grid can be helpful if you
+#'     want/need to move items around.
 #' @return A ggplot2 object.
 #' @import ggplot2
 #' @export
 
-make_diagram <- function (df_list) {
+make_diagram <- function (df_list, with_grid = FALSE) {
   # TODO error checking
   # TODO ggrepel for labels?
 
@@ -53,8 +56,7 @@ make_diagram <- function (df_list) {
                lineend = "round") +
     geom_text(data = feedback_edges,
               aes(x = xmid, y = ymid+0.85, label = label)) +
-    coord_equal(clip = "off") +
-    theme_void()
+    coord_equal(clip = "off")
 
   if(nrow(curved_edges) > 0) {
     outplot <- outplot +
@@ -71,6 +73,14 @@ make_diagram <- function (df_list) {
       ) +
       geom_text(data = curved_edges,
                 aes(x = labelx, y = labely, label = label))
+  }
+
+  # if with_grid == FALSE (default) then void out the theme
+  # otherwise keep the grey background with grid
+  # the grid can be useful for updating positions of items
+  if(!with_grid) {
+    outplot <- outplot +
+      theme_void()
   }
 
   return(outplot)

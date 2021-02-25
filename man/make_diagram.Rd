@@ -4,11 +4,15 @@
 \alias{make_diagram}
 \title{Make a ggplot2 model diagram.}
 \usage{
-make_diagram(df_list)
+make_diagram(df_list, with_grid = FALSE)
 }
 \arguments{
 \item{df_list}{A list of data frames returned from the
 \code{make_dataframes} function.}
+
+\item{with_grid}{A logical indicating whether to return the ggplot
+with a grid. Default is FALSE. The grid can be helpful if you
+want/need to move items around.}
 }
 \value{
 A ggplot2 object.
