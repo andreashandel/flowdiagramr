@@ -343,6 +343,9 @@ make_dataframes <- function(input_list) {
   # now drop "hidden" nodes without labels
   ndf <- subset(ndf, label != "")
 
+  # update vertical edges to go in and out at angles
+  vdf <- make_vdf_angled(vdf)
+
   # rename data frames for exporting
   nodes <- ndf
   horizontal_edges <- subset(sdf, select = -c(diff))
@@ -355,8 +358,8 @@ make_dataframes <- function(input_list) {
               vertical_edges = vertical_edges,
               curved_edges = curved_edges,
               feedback_edges = feedback_edges)
-  f <- make_diagram(dfs)
-  f
+  # f <- make_diagram(dfs)
+  # f
 
 
   return(list(nodes = nodes,

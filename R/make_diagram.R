@@ -37,13 +37,13 @@ make_diagram <- function (df_list) {
     geom_text(data = horizontal_edges,
               aes(x = xmid, y = ymid, label = label)) +
     geom_segment(data = vertical_edges,
-                 aes(x = xstart, y = ystart-0.5, xend = xend, yend = yend+0.5),
+                 aes(x = xstart, y = ystart, xend = xend, yend = yend),
                  arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
                  arrow.fill = "black",
                  lineend = "round",
                  linejoin = "mitre") +
     geom_text(data = vertical_edges,
-              aes(x = xmid+0.25, y = ymid, label = label)) +
+              aes(x = xmid, y = ymid, label = label)) +
     geom_curve(data = feedback_edges,
                ncp = 100,
                curvature = -2,
