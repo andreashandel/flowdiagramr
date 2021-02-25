@@ -93,7 +93,8 @@ The data frames above are returned as a list.
 In some cases, many of the data frames will be empty, as is this case in this example with a relatively simple model.
 
 ```{r make-dfs}
-diagram_dfs <- make_dataframes(input_list = mbsir)
+inputs <- make_diagram_inputs(mbmodel = mbsir)
+diagram_dfs <- make_dataframes(input_list = inputs)
 diagram_dfs
 ```
 
@@ -201,7 +202,8 @@ This model includes demography (births and deaths) and cross-node connections (w
 The model is stored as `mbseird` and comes with the package.
 
 ```{r sird, fig.width=8}
-dfs <- make_dataframes(mbsird)
+inputs <- make_diagram_inputs(mbmodel = mbsird)
+dfs <- make_dataframes(inputs)
 fig <- make_diagram(dfs)
 fig
 ```
@@ -209,7 +211,8 @@ fig
 ## SIR stratified by two hosts
 
 ```{r twohost, fig.height=5, fig.width=8}
-dfs <- make_dataframes(mbsirtwohost)
+inputs <- make_diagram_inputs(mbmodel = mbsirtwohost)
+dfs <- make_dataframes(inputs)
 fig <- make_diagram(dfs)
 fig
 ```

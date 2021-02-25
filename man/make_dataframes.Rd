@@ -7,9 +7,8 @@
 make_dataframes(input_list)
 }
 \arguments{
-\item{input_list}{A list of model elements. Currently only accepts
-a modelbuilder list object. At a minimum, the list must contain
-two elements with names \code{vars} and \code{flows}.}
+\item{input_list}{A list of model elements. The list must contain at least
+two elements with names \code{varlabels} and \code{flows}.}
 }
 \value{
 A list of data frames.

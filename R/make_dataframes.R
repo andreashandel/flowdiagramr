@@ -1,8 +1,7 @@
 #' Create data frames for plotting from model elements.
 #'
-#' @param input_list A list of model elements. Currently only accepts
-#'     a modelbuilder list object. At a minimum, the list must contain
-#'     two elements with names \code{vars} and \code{flows}.
+#' @param input_list A list of model elements. The list must contain at least
+#'     two elements with names \code{varlabels} and \code{flows}.
 #' @return A list of data frames.
 #' @export
 
@@ -13,14 +12,18 @@ make_dataframes <- function(input_list) {
   # Extract relevant details from the input_list and make a matrix
   # of variables X flows for iterating and indexing the nodes and
   # connections.
-  nvars <- length(input_list$var)  #number of variables/compartments in model
-  varnames <- unlist(lapply(input_list$var, "[[", 1))
-  vartext <- unlist(sapply(input_list$var, '[', 2)) #extract variable text as vector
-  allflows <- sapply(input_list$var, '[', 4) #extract flows
+  nvars <- length(input_list$varlabels)  #number of variables/compartments in model
+  varnames <- input_list$varlabels
+
+  if(!is.null(input_list$varnames)) {
+    vartext <- input_list$varnames
+  }
+
+  flows <- input_list$flows
 
   #turns flow list into matrix, adding NA, found it online,
   #not sure how exactly it works
-  flowmat <- t(sapply(allflows, `length<-`, max(lengths(allflows))))
+  flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
   flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 

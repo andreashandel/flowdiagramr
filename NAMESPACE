@@ -2,5 +2,6 @@
 
 export(make_dataframes)
 export(make_diagram)
+export(make_diagram_inputs)
 export(write_diagram_code)
 import(ggplot2)
