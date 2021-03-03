@@ -4,7 +4,20 @@
 \alias{make_diagram}
 \title{Make a ggplot2 model diagram.}
 \usage{
-make_diagram(df_list, with_grid = FALSE)
+make_diagram(
+  df_list,
+  with_grid = FALSE,
+  node_outline_color = "black",
+  node_fill_color = "white",
+  node_text_color = "black",
+  node_text_size = 8,
+  flow_text_color = "black",
+  flow_text_size = 3,
+  main_arrow_color = "black",
+  main_arrow_linetype = 1,
+  inter_arrow_color = "black",
+  inter_arrow_linetype = 2
+)
 }
 \arguments{
 \item{df_list}{A list of data frames returned from the
@@ -13,6 +26,33 @@ make_diagram(df_list, with_grid = FALSE)
 \item{with_grid}{A logical indicating whether to return the ggplot
 with a grid. Default is FALSE. The grid can be helpful if you
 want/need to move items around.}
+
+\item{node_outline_color}{A character string or vector of character strings
+specifying the color of node outlines. If a vector, the colors will be
+recycled in the order of the variables in the supplied data frame.}
+
+\item{node_fill_color}{A character string or vector of character strings
+specifying the fill color of nodes. If a vector, the colors will be
+recycled in the order of the variables in the supplied data frame.}
+
+\item{node_text_color}{A character string or vector of character strings
+specifying the text color for node labels. If a vector, the colors will
+be recycled in the order of the variables in the supplied data frame.}
+
+\item{node_text_size}{A numeric scalar specifying the text size for node
+labels. Default value is 8.}
+
+\item{flow_text_color}{A character string or vector of character strings
+specifying the text color for flow labels. If a vector, the colors will
+be recycled in the order of the flows in the supplied data frame.}
+
+\item{flow_text_size}{A numeric scalar specifying the text size for flow
+labels. Default value is 3.}
+
+\item{main_arrow_color}{A character string or vector of character strings
+specifying the text color for non-interaction flow arrows.
+If a vector, the colors will be recycled in the order of the flows
+in the supplied data frame.}
 }
 \value{
 A ggplot2 object.

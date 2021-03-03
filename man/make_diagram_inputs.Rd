@@ -6,6 +6,9 @@
 \usage{
 make_diagram_inputs(mbmodel)
 }
+\arguments{
+\item{mbmodel}{A modelbuilder object.}
+}
 \value{
 A list.
 }

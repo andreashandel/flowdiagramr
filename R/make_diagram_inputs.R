@@ -1,6 +1,6 @@
 #' Convert modelbuilder list object to list for modeldiagram
 #'
-#' @param mbmodel
+#' @param mbmodel A modelbuilder object.
 #' @return A list.
 #' @export
 
