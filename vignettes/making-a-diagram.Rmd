@@ -101,7 +101,14 @@ diagram_dfs
 ## Make the diagram
 
 ```{r make-diag, fig.width=6}
-diagram_plot <- make_diagram(df_list = diagram_dfs)
+diagram_plot <- make_diagram(df_list = diagram_dfs, 
+                             node_outline_color = "red",
+                             node_fill_color = "blue",
+                             node_text_color = "orange",
+                             node_text_size = 5,
+                             flow_text_color = "green",
+                             flow_text_size = 20,
+                             main_arrow_color = "green")
 diagram_plot
 ```
 
