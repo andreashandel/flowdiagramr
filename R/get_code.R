@@ -29,7 +29,9 @@ get_code <- function() {
                  color = main_arrow_color,
                  arrow.fill = main_arrow_color,
                  lineend = "round",
-                 linejoin = "mitre") +
+                 linejoin = "mitre",
+                 linetype = main_arrow_linetype,
+                 size = main_arrow_size) +
     geom_text(data = horizontal_edges,
               aes(x = xmid, y = ymid, label = label),
               size = flow_text_size,
@@ -44,7 +46,9 @@ get_code <- function() {
                  color = main_arrow_color,
                  arrow.fill = main_arrow_color,
                  lineend = "round",
-                 linejoin = "mitre") +
+                 linejoin = "mitre",
+                 linetype = main_arrow_linetype,
+                 size = main_arrow_size) +
     geom_text(data = vertical_edges,
               aes(x = xmid, y = ymid, label = label),
               size = flow_text_size,
@@ -61,7 +65,9 @@ get_code <- function() {
                arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
                color = main_arrow_color,
                arrow.fill = main_arrow_color,
-               lineend = "round") +
+               lineend = "round",
+               linetype = main_arrow_linetype,
+               size = main_arrow_size) +
     geom_text(data = feedback_edges,
               aes(x = xmid, y = ymid+0.85, label = label),
               size = flow_text_size,
@@ -85,12 +91,21 @@ get_code <- function() {
                                    y = ystart,
                                    xend = xend,
                                    yend = yend),
-                   linetype = as.numeric(dat["interaction"]) + 1,
+                   linetype = ifelse(as.numeric(dat["interaction"]),
+                                     interaction_arrow_linetype,
+                                     main_arrow_linetype),
                    curvature = dat["curvature"],
                    arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                   color = main_arrow_color,
-                   arrow.fill = main_arrow_color,
-                   lineend = "round") }
+                   color = ifelse(as.numeric(dat["interaction"]),
+                                  interaction_arrow_color,
+                                  main_arrow_color),
+                   arrow.fill = ifelse(as.numeric(dat["interaction"]),
+                                  interaction_arrow_color,
+                                  main_arrow_color),
+                   lineend = "round",
+                   size = ifelse(as.numeric(dat["interaction"]),
+                                 interaction_arrow_size,
+                                 main_arrow_size)) }
       ) +
       geom_text(data = curved_edges,
                 aes(x = labelx, y = labely, label = label),

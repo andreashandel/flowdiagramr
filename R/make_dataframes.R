@@ -353,14 +353,6 @@ make_dataframes <- function(input_list) {
   curved_edges <- subset(cdf, select = -c(diff))
   feedback_edges <- subset(fdf, select = -c(diff))
 
-  # dfs <- list(nodes = nodes,
-  #             horizontal_edges = horizontal_edges,
-  #             vertical_edges = vertical_edges,
-  #             curved_edges = curved_edges,
-  #             feedback_edges = feedback_edges)
-  # f <- make_diagram(dfs)
-  # f
-
 
   return(list(nodes = nodes,
               horizontal_edges = horizontal_edges,

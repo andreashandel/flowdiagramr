@@ -12,6 +12,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r setup}
@@ -119,7 +122,31 @@ diagram_plot <- make_diagram(df_list = diagram_dfs,
                              node_text_size = 5,
                              flow_text_color = "green",
                              flow_text_size = 20,
-                             main_arrow_color = "green")
+                             main_arrow_color = "brown",
+                             main_arrow_linetype = 4,
+                             main_arrow_size = 2,
+                             interaction_arrow_color = "purple",
+                             interaction_arrow_linetype = 3,
+                             interaction_arrow_size = 1)
+diagram_plot
+```
+
+A better use of the aesthetics can result in pleasing diagrams.
+
+```{r make-diag-aes2, fig.width=6}
+diagram_plot <- make_diagram(df_list = diagram_dfs, 
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
 diagram_plot
 ```
 
@@ -129,87 +156,12 @@ In some cases, the user may want to work directly with the **ggplot2** code to m
 The `write_diagram_code` function does this.
 The function has no arguments because the **ggplot2** is generic given the data frames input list.
 
-```{r code}
-gg_code <- write_diagram_code()
-cat(gg_code)
+```{r code, eval = FALSE}
+my_dir <- "./diagrams/"
+my_file <- "diagram_ggplot2_code.R"
+write_ggplot2_code(directory = my_dir, filename = my_file)
 ```
 
-The user can then copy this code and make changes as desired.
-The code can also be simplified by deleting `geoms` that refer to empty data frames.
-In this case, we just need the chunks of code that refer to the `nodes` and `horizontal_edges` data frames.
-For example,
-
-```{r custom, fig.width=6}
-# load ggplot
-library(ggplot2)
-
-# unlist the data frames to individual objects
-nodes <- diagram_dfs$nodes
-horizontal_edges <- diagram_dfs$horizontal_edges
-vertical_edges <- diagram_dfs$vertical_edges
-curved_edges <- diagram_dfs$curved_edges
-feedback_edges <- diagram_dfs$feedback_edges
-
-# make blue boxes with white lettering
-outplot <- ggplot() +
-    geom_tile(data = nodes,
-              aes(x = x, y = y),
-              color = "white",  # CHANGED HERE
-              fill = "blue",  # CHANGED HERE
-              width = 1,
-              height = 1) +
-    geom_text(data = nodes,
-              aes(x = x, y = y, label = label),
-              size = 8,
-              color = "white") +  # ADDED TEXT COLOR
-    geom_segment(data = horizontal_edges,
-                 aes(x = xstart+0.5, y = ystart, xend = xend-0.5, yend = yend),
-                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                 arrow.fill = "black",
-                 lineend = "round",
-                 linejoin = "mitre") +
-    geom_text(data = horizontal_edges,
-              aes(x = xmid, y = ymid, label = label)) +
-    geom_segment(data = vertical_edges,
-                 aes(x = xstart, y = ystart-0.5, xend = xend, yend = yend+0.5),
-                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                 arrow.fill = "black",
-                 lineend = "round",
-                 linejoin = "mitre") +
-    geom_text(data = vertical_edges,
-              aes(x = xmid+0.25, y = ymid, label = label)) +
-    geom_curve(data = feedback_edges,
-               ncp = 100,
-               curvature = -2,
-               aes(x = xstart-0.25, y = ystart+0.5, xend = xend+0.25, yend = yend+0.5),
-               arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-               arrow.fill = "black",
-               lineend = "round") +
-    geom_text(data = feedback_edges,
-              aes(x = xmid, y = ymid+0.85, label = label)) +
-    coord_equal(clip = "off") +
-    theme_void()
-
-  if(nrow(curved_edges) > 0) {
-    outplot <- outplot +
-      lapply(split(curved_edges, 1:nrow(curved_edges)), function(dat) {
-        geom_curve(data = dat, aes(x = xstart,
-                                   y = ystart,
-                                   xend = xend,
-                                   yend = yend),
-                   color = "red",  ## ADDED RED COLOR HERE  
-                   linetype = as.numeric(dat["interaction"]) + 1,
-                   curvature = dat["curvature"],
-                   arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                   arrow.fill = "red",  ## MADE ARROW RED HERE
-                   lineend = "round") }
-      ) +
-      geom_text(data = curved_edges,
-                aes(x = labelx, y = labely, label = label))
-  }
-
-outplot
-```
 
 # More examples
 

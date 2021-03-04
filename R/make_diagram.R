@@ -25,6 +25,18 @@
 #'     specifying the text color for non-interaction flow arrows.
 #'     If a vector, the colors will be recycled in the order of the flows
 #'     in the supplied data frame.
+#' @param main_arrow_linetype A numeric scaler specifying the linetype for
+#'     main arrows (non-interaction arrows).
+#' @param main_arrow_size A numeric scaler specifying the line size for the
+#'     main arrows (non-interaction arrows).
+#' @param interaction_arrow_color A character string or vector of character
+#'     strings specifying the text color for interaction flow arrows.
+#'     If a vector, the colors will be recycled in the order of the flows
+#'     in the supplied data frame.
+#' @param interaction_arrow_linetype A numeric scaler specifying the linetype
+#'     for interaction arrows.
+#' @param interaction_arrow_size A numeric scaler specifying the line size for
+#'     the interaction arrows.
 #' @return A ggplot2 object.
 #' @import ggplot2
 #' @export
@@ -39,8 +51,10 @@ make_diagram <- function (df_list,
                           flow_text_size = 3,
                           main_arrow_color = "black",
                           main_arrow_linetype = 1,
-                          inter_arrow_color = "black",
-                          inter_arrow_linetype = 2) {
+                          main_arrow_size = 0.5,
+                          interaction_arrow_color = "black",
+                          interaction_arrow_linetype = 2,
+                          interaction_arrow_size = 0.5) {
   # TODO error checking
 
   # unlist the data frames to objects
@@ -49,6 +63,11 @@ make_diagram <- function (df_list,
   vertical_edges <- df_list$vertical_edges
   curved_edges <- df_list$curved_edges
   feedback_edges <- df_list$feedback_edges
+
+  # recycle colors as needed
+  node_outline_color <- recycle_values(node_outline_color, nrow(nodes))
+  node_fill_color <- recycle_values(node_fill_color, nrow(nodes))
+  node_text_color <- recycle_values(node_text_color, nrow(nodes))
 
   # get the ggplot2 code as text
   code <- get_code()

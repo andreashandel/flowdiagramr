@@ -15,8 +15,10 @@ make_diagram(
   flow_text_size = 3,
   main_arrow_color = "black",
   main_arrow_linetype = 1,
-  inter_arrow_color = "black",
-  inter_arrow_linetype = 2
+  main_arrow_size = 0.5,
+  interaction_arrow_color = "black",
+  interaction_arrow_linetype = 2,
+  interaction_arrow_size = 0.5
 )
 }
 \arguments{
@@ -53,6 +55,23 @@ labels. Default value is 3.}
 specifying the text color for non-interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
 in the supplied data frame.}
+
+\item{main_arrow_linetype}{A numeric scaler specifying the linetype for
+main arrows (non-interaction arrows).}
+
+\item{main_arrow_size}{A numeric scaler specifying the line size for the
+main arrows (non-interaction arrows).}
+
+\item{interaction_arrow_color}{A character string or vector of character
+strings specifying the text color for interaction flow arrows.
+If a vector, the colors will be recycled in the order of the flows
+in the supplied data frame.}
+
+\item{interaction_arrow_linetype}{A numeric scaler specifying the linetype
+for interaction arrows.}
+
+\item{interaction_arrow_size}{A numeric scaler specifying the line size for
+the interaction arrows.}
 }
 \value{
 A ggplot2 object.
