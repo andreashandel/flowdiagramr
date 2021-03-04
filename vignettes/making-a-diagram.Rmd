@@ -100,7 +100,18 @@ diagram_dfs
 
 ## Make the diagram
 
+You can make a simple diagram using the default settings.
+If accepting all the default aesthetics, you only need to provide the list of dataframes, `diagram_dfs`.
+
 ```{r make-diag, fig.width=6}
+diagram_plot <- make_diagram(df_list = diagram_dfs)
+diagram_plot
+```
+
+There are several aesthetic arguments that can be passed to the `make_diagram` function.
+All the options are demonstrated below, generating an unpleasing diagram.
+
+```{r make-diag-aes, fig.width=6}
 diagram_plot <- make_diagram(df_list = diagram_dfs, 
                              node_outline_color = "red",
                              node_fill_color = "blue",
