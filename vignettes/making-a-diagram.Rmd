@@ -117,9 +117,9 @@ All the options are demonstrated below, generating an unpleasing diagram.
 ```{r make-diag-aes, fig.width=6}
 diagram_plot <- make_diagram(df_list = diagram_dfs, 
                              node_outline_color = "red",
-                             node_fill_color = "blue",
-                             node_text_color = "orange",
-                             node_text_size = 5,
+                             node_fill_color = c("red","blue"),
+                             node_text_color = c("blue", "red"),
+                             node_text_size = 3,
                              flow_text_color = "green",
                              flow_text_size = 20,
                              main_arrow_color = "brown",
@@ -156,10 +156,14 @@ In some cases, the user may want to work directly with the **ggplot2** code to m
 The `write_diagram_code` function does this.
 The function has no arguments because the **ggplot2** is generic given the data frames input list.
 
-```{r code, eval = FALSE}
-my_dir <- "./diagrams/"
+```{r code}
+my_dir <- "."
 my_file <- "diagram_ggplot2_code.R"
 write_ggplot2_code(directory = my_dir, filename = my_file)
+```
+
+```{r del, echo = FALSE, message=FALSE, warning=FALSE, results = 'hide'}
+file.remove("./diagram_ggplot2_code.R")
 ```
 
 
@@ -180,9 +184,14 @@ fig
 
 ## SIR stratified by two hosts
 
+Here we can see how the `make_diagram` function recycles colors for nodes.
+We have six nodes but only supply three colors.
+
 ```{r twohost, fig.height=5, fig.width=8}
 inputs <- make_diagram_inputs(mbmodel = mbsirtwohost)
 dfs <- make_dataframes(inputs)
-fig <- make_diagram(dfs)
+fig <- make_diagram(dfs, 
+                    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                    node_text_color = "white")
 fig
 ```

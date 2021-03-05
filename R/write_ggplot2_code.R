@@ -32,6 +32,6 @@ write_ggplot2_code <- function(directory = NULL,
   cat(code, file = outfile)
 
   # report the file location on return
-  message <- paste("Your file was saved here:", outfile)
+  message <- paste("Your file was saved here:", normalizePath(outfile))
   return(message)
 }
