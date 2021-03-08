@@ -160,6 +160,27 @@ diagram_plot <- make_diagram(df_list = diagram_dfs,
 diagram_plot
 ```
 
+It is also possible to generate a simple diagram with no flow labels (`label_flows = FALSE`):
+
+```{r make-diag-aes3, fig.width=6}
+diagram_plot <- make_diagram(df_list = diagram_dfs, 
+                             interaction_label = FALSE,
+                             label_flows = FALSE,
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
+diagram_plot
+```
+
 ## Retrieve the ggplot2 code
 
 In some cases, the user may want to work directly with the **ggplot2** code to make custom changes.
