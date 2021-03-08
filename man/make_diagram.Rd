@@ -6,6 +6,9 @@
 \usage{
 make_diagram(
   df_list,
+  label_flows = TRUE,
+  external_flows = TRUE,
+  interaction_label = TRUE,
   with_grid = FALSE,
   node_outline_color = "black",
   node_fill_color = "white",
@@ -24,6 +27,17 @@ make_diagram(
 \arguments{
 \item{df_list}{A list of data frames returned from the
 \code{make_dataframes} function.}
+
+\item{label_flows}{A logical indicating whether to label the flows
+(TRUE, default) or not (FALSE).}
+
+\item{external_flows}{A logical indicating whether to include flows into
+and out of the system (external flows). Default is TRUE (include).}
+
+\item{interaction_label}{A logical indicating whether to make the diagram
+with interaction terms (typically curved arrows leading to the
+mid point of another arrow) or to simply label the main flow. See
+vignettes for examples.}
 
 \item{with_grid}{A logical indicating whether to return the ggplot
 with a grid. Default is FALSE. The grid can be helpful if you
@@ -67,10 +81,10 @@ strings specifying the text color for interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
 in the supplied data frame.}
 
-\item{interaction_arrow_linetype}{A numeric scaler specifying the linetype
+\item{interaction_arrow_linetype}{A numeric scalar specifying the linetype
 for interaction arrows.}
 
-\item{interaction_arrow_size}{A numeric scaler specifying the line size for
+\item{interaction_arrow_size}{A numeric scalar specifying the line size for
 the interaction arrows.}
 }
 \value{

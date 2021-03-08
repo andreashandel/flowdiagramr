@@ -32,27 +32,33 @@ get_code <- function() {
                  linejoin = "mitre",
                  linetype = main_arrow_linetype,
                  size = main_arrow_size) +
-    geom_text(data = horizontal_edges,
+    {if(label_flows) {
+      geom_text(data = horizontal_edges,
               aes(x = xmid, y = ymid, label = label),
               size = flow_text_size,
-              color = flow_text_color) +
+              color = flow_text_color)
+    }} +
 
     # LAYER 3: PHYSICAL FLOWS INTO AND OUT OF THE SYSTEM
     # these are the flows that enter or leave single state variables
     # as opposed to flows that connect state variables.
-    geom_segment(data = vertical_edges,
-                 aes(x = xstart, y = ystart, xend = xend, yend = yend),
-                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                 color = main_arrow_color,
-                 arrow.fill = main_arrow_color,
-                 lineend = "round",
-                 linejoin = "mitre",
-                 linetype = main_arrow_linetype,
-                 size = main_arrow_size) +
-    geom_text(data = vertical_edges,
+    {if(external_flows){
+      geom_segment(data = vertical_edges,
+                   aes(x = xstart, y = ystart, xend = xend, yend = yend),
+                   arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+                   color = main_arrow_color,
+                   arrow.fill = main_arrow_color,
+                   lineend = "round",
+                   linejoin = "mitre",
+                   linetype = main_arrow_linetype,
+                   size = main_arrow_size)
+    }} +
+    {if(label_flows & external_flows) {
+      geom_text(data = vertical_edges,
               aes(x = xmid, y = ymid, label = label),
               size = flow_text_size,
-              color = flow_text_color) +
+              color = flow_text_color)
+    }} +
 
     # LAYER 4: FEEDBACK FLOWS INTO AND OUT OF THE SAME STATE VARIABLE
     # these are flows that interact with single state variable and
@@ -68,10 +74,13 @@ get_code <- function() {
                lineend = "round",
                linetype = main_arrow_linetype,
                size = main_arrow_size) +
-    geom_text(data = feedback_edges,
+    {if(label_flows) {
+      geom_text(data = feedback_edges,
               aes(x = xmid, y = ymid+0.85, label = label),
               size = flow_text_size,
               color = flow_text_color)
+    }}
+
 
   # LAYER 5: FLOWS THAT BYPASS STATE VARIABLES OR THAT ARE INTERACTIONS
   # this layer adds physical flows from one state variable to another
@@ -107,10 +116,13 @@ get_code <- function() {
                                  interaction_arrow_size,
                                  main_arrow_size)) }
       ) +
-      geom_text(data = curved_edges,
+      {if(label_flows) {
+        geom_text(data = curved_edges,
                 aes(x = labelx, y = labely, label = label),
                 size = flow_text_size,
                 color = flow_text_color)
+      }}
+
   }
 
   # if with_grid == FALSE (default) then void out the theme

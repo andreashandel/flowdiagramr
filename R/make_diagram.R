@@ -2,6 +2,14 @@
 #'
 #' @param df_list A list of data frames returned from the
 #'     \code{make_dataframes} function.
+#' @param label_flows A logical indicating whether to label the flows
+#'     (TRUE, default) or not (FALSE).
+#' @param external_flows A logical indicating whether to include flows into
+#'     and out of the system (external flows). Default is TRUE (include).
+#' @param interaction_label A logical indicating whether to make the diagram
+#'     with interaction terms (typically curved arrows leading to the
+#'     mid point of another arrow) or to simply label the main flow. See
+#'     vignettes for examples.
 #' @param with_grid A logical indicating whether to return the ggplot
 #'     with a grid. Default is FALSE. The grid can be helpful if you
 #'     want/need to move items around.
@@ -33,15 +41,18 @@
 #'     strings specifying the text color for interaction flow arrows.
 #'     If a vector, the colors will be recycled in the order of the flows
 #'     in the supplied data frame.
-#' @param interaction_arrow_linetype A numeric scaler specifying the linetype
+#' @param interaction_arrow_linetype A numeric scalar specifying the linetype
 #'     for interaction arrows.
-#' @param interaction_arrow_size A numeric scaler specifying the line size for
+#' @param interaction_arrow_size A numeric scalar specifying the line size for
 #'     the interaction arrows.
 #' @return A ggplot2 object.
 #' @import ggplot2
 #' @export
 
 make_diagram <- function (df_list,
+                          label_flows = TRUE,
+                          external_flows = TRUE,
+                          interaction_label = TRUE,
                           with_grid = FALSE,
                           node_outline_color = "black",
                           node_fill_color = "white",
@@ -56,6 +67,10 @@ make_diagram <- function (df_list,
                           interaction_arrow_linetype = 2,
                           interaction_arrow_size = 0.5) {
   # TODO error checking
+
+  if(interaction_label == FALSE) {
+    df_list <- move_interaction_label(df_list)
+  }
 
   # unlist the data frames to objects
   nodes <- df_list$nodes

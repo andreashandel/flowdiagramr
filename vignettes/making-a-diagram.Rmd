@@ -111,6 +111,16 @@ diagram_plot <- make_diagram(df_list = diagram_dfs)
 diagram_plot
 ```
 
+The **modeldiagram** package displays interaction terms by default.
+In the model above, the $b*S*I$ term is an interaction between S and I that determines the physical flow from S to I.
+The dashed arrow shows the interaction, which connects with the main physical flow.
+Some users may prefer simpler diagrams that gloss over the interaction term.
+This can be done by setting the argument `interaction_label = FALSE` (default is `interaction_label = TRUE`.
+
+```{r nointer, fig.width=6}
+make_diagram(df_list = diagram_dfs, interaction_label = FALSE)
+```
+
 There are several aesthetic arguments that can be passed to the `make_diagram` function.
 All the options are demonstrated below, generating an unpleasing diagram.
 
@@ -182,7 +192,17 @@ fig <- make_diagram(dfs)
 fig
 ```
 
-## SIR stratified by two hosts
+The diagram above shows all of the demogaphic flows (e.g., $m*S$ and $n$), which the user may not want to focus on.
+The `external_flows` argument determines whether the flows into and out of the system are shown (`external_flows = TRUE`, default) or not (`external_flows = FALSE`).
+Below is the same diagram without the external flows.
+
+```{r notext, fig.width=8}
+inputs <- make_diagram_inputs(mbmodel = mbsird)
+dfs <- make_dataframes(inputs)
+make_diagram(dfs, external_flows = FALSE)
+```
+
+## SIR stratified by two hosts -- WORK IN PROGRESS
 
 Here we can see how the `make_diagram` function recycles colors for nodes.
 We have six nodes but only supply three colors.
@@ -190,7 +210,7 @@ We have six nodes but only supply three colors.
 ```{r twohost, fig.height=5, fig.width=8}
 inputs <- make_diagram_inputs(mbmodel = mbsirtwohost)
 dfs <- make_dataframes(inputs)
-fig <- make_diagram(dfs, 
+fig <- make_diagram(dfs,
                     node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
                     node_text_color = "white")
 fig
