@@ -1,8 +1,7 @@
 #' Create data frames for plotting from model elements.
 #'
-#' @param input_list A list of model elements. Currently only accepts
-#'     a modelbuilder list object. At a minimum, the list must contain
-#'     two elements with names \code{vars} and \code{flows}.
+#' @param input_list A list of model elements. The list must contain at least
+#'     two elements with names \code{varlabels} and \code{flows}.
 #' @return A list of data frames.
 #' @export
 
@@ -13,14 +12,18 @@ make_dataframes <- function(input_list) {
   # Extract relevant details from the input_list and make a matrix
   # of variables X flows for iterating and indexing the nodes and
   # connections.
-  nvars <- length(input_list$var)  #number of variables/compartments in model
-  varnames <- unlist(lapply(input_list$var, "[[", 1))
-  vartext <- unlist(sapply(input_list$var, '[', 2)) #extract variable text as vector
-  allflows <- sapply(input_list$var, '[', 4) #extract flows
+  nvars <- length(input_list$varlabels)  #number of variables/compartments in model
+  varnames <- input_list$varlabels
+
+  if(!is.null(input_list$varnames)) {
+    vartext <- input_list$varnames
+  }
+
+  flows <- input_list$flows
 
   #turns flow list into matrix, adding NA, found it online,
   #not sure how exactly it works
-  flowmat <- t(sapply(allflows, `length<-`, max(lengths(allflows))))
+  flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
   flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 
@@ -157,9 +160,9 @@ make_dataframes <- function(input_list) {
     vf <- substr(v, start = 1, stop = 1)  #get first letters
     v <- v[which(vf %in% LETTERS)]
     ids <- subset(ndf, label %in% v)[ , "id"]
-    ints[i, "from"] <- ids[2]
+    ints[i, "from"] <- ids[which(ids != tmp$from)]
     ints[i, "to"] <- NA
-    ints[i, "link"] <- ids[1]
+    ints[i, "link"] <- tmp$from
   }
 
   # Recombine the edge data frame
@@ -236,24 +239,24 @@ make_dataframes <- function(input_list) {
     newx1 <- ndf[which(ndf$id == start), "x"]
     newx2 <- ndf[which(ndf$id == end), "x"]
     newx <- (newx1+newx2)/2
-    ndf[which(ndf$id == id), "x"] <- newx
+    newy <- ndf[which(ndf$id == start), "y"]
+    ndf[which(ndf$id == id), c("x", "y")] <- c(newx, newy)
   }
 
   # update node positions that overlap
-  xys <- ndf[ , c("x", "y")]
-  overlapids <- which(duplicated(xys) | duplicated(xys, fromLast = TRUE))
-  numoverlap <- length(overlapids)
-  if(numoverlap > 0) {
-    newxs <- seq(0.1, 1.9, by = 0.15)
-    newxids <- c(6,5,4,3,2,1,0,1,2,3,4,5,6) + 1
-    xmults <- newxs[which(newxids==numoverlap)]
-    for(i in 1:numoverlap) {
-      oldx <- ndf[overlapids[i], "x"]
-      newx <- oldx * xmults[i]
-      ndf[overlapids[i], "x"] <- newx
-    }
-  }
-
+  # xys <- ndf[ , c("x", "y")]
+  # overlapids <- which(duplicated(xys) | duplicated(xys, fromLast = TRUE))
+  # numoverlap <- length(overlapids)
+  # if(numoverlap > 0) {
+  #   newxs <- seq(0.1, 1.9, by = 0.15)
+  #   newxids <- c(6,5,4,3,2,1,0,1,2,3,4,5,6) + 1
+  #   xmults <- newxs[which(newxids==numoverlap)]
+  #   for(i in 1:numoverlap) {
+  #     oldx <- ndf[overlapids[i], "x"]
+  #     newx <- oldx * xmults[i]
+  #     ndf[overlapids[i], "x"] <- newx
+  #   }
+  # }
 
   # Create segment coordinates
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
@@ -278,7 +281,6 @@ make_dataframes <- function(input_list) {
   # Set default curvature if cdf has data
   if(nrow(cdf) > 0) {
     cdf$curvature <- 0.25
-    cdf[cdf$interaction==TRUE, "curvature"] <- 0.5
 
     # add in row info
     cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
@@ -290,8 +292,10 @@ make_dataframes <- function(input_list) {
 
       # also update ystart and yend
       cdf$ystart <- ifelse(cdf$row == 2, cdf$ystart-1, cdf$ystart)
-      cdf$yend <- cdf$ystart
+      cdf$yend <- ifelse(cdf$row == 2, cdf$ystart, cdf$yend)
     }
+
+    cdf[cdf$interaction==TRUE, "curvature"] <- 0.4
 
     # curves need to move up 0.5 units to connect with tops/bottoms
     # of node rectangles
@@ -339,20 +343,15 @@ make_dataframes <- function(input_list) {
   # now drop "hidden" nodes without labels
   ndf <- subset(ndf, label != "")
 
+  # update vertical edges to go in and out at angles
+  vdf <- make_vdf_angled(vdf)
+
   # rename data frames for exporting
   nodes <- ndf
   horizontal_edges <- subset(sdf, select = -c(diff))
   vertical_edges <- subset(vdf, select = -c(diff))
   curved_edges <- subset(cdf, select = -c(diff))
   feedback_edges <- subset(fdf, select = -c(diff))
-
-  dfs <- list(nodes = nodes,
-              horizontal_edges = horizontal_edges,
-              vertical_edges = vertical_edges,
-              curved_edges = curved_edges,
-              feedback_edges = feedback_edges)
-  f <- make_diagram(dfs)
-  f
 
 
   return(list(nodes = nodes,

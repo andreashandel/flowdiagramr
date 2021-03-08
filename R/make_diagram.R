@@ -2,13 +2,75 @@
 #'
 #' @param df_list A list of data frames returned from the
 #'     \code{make_dataframes} function.
+#' @param label_flows A logical indicating whether to label the flows
+#'     (TRUE, default) or not (FALSE).
+#' @param external_flows A logical indicating whether to include flows into
+#'     and out of the system (external flows). Default is TRUE (include).
+#' @param interaction_label A logical indicating whether to make the diagram
+#'     with interaction terms (typically curved arrows leading to the
+#'     mid point of another arrow) or to simply label the main flow. See
+#'     vignettes for examples.
+#' @param with_grid A logical indicating whether to return the ggplot
+#'     with a grid. Default is FALSE. The grid can be helpful if you
+#'     want/need to move items around.
+#' @param node_outline_color A character string or vector of character strings
+#'     specifying the color of node outlines. If a vector, the colors will be
+#'     recycled in the order of the variables in the supplied data frame.
+#' @param node_fill_color A character string or vector of character strings
+#'     specifying the fill color of nodes. If a vector, the colors will be
+#'     recycled in the order of the variables in the supplied data frame.
+#' @param node_text_color A character string or vector of character strings
+#'     specifying the text color for node labels. If a vector, the colors will
+#'     be recycled in the order of the variables in the supplied data frame.
+#' @param node_text_size A numeric scalar specifying the text size for node
+#'     labels. Default value is 8.
+#' @param flow_text_color A character string or vector of character strings
+#'     specifying the text color for flow labels. If a vector, the colors will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' @param flow_text_size A numeric scalar specifying the text size for flow
+#'     labels. Default value is 3.
+#' @param main_arrow_color A character string or vector of character strings
+#'     specifying the text color for non-interaction flow arrows.
+#'     If a vector, the colors will be recycled in the order of the flows
+#'     in the supplied data frame.
+#' @param main_arrow_linetype A numeric scaler specifying the linetype for
+#'     main arrows (non-interaction arrows).
+#' @param main_arrow_size A numeric scaler specifying the line size for the
+#'     main arrows (non-interaction arrows).
+#' @param interaction_arrow_color A character string or vector of character
+#'     strings specifying the text color for interaction flow arrows.
+#'     If a vector, the colors will be recycled in the order of the flows
+#'     in the supplied data frame.
+#' @param interaction_arrow_linetype A numeric scalar specifying the linetype
+#'     for interaction arrows.
+#' @param interaction_arrow_size A numeric scalar specifying the line size for
+#'     the interaction arrows.
 #' @return A ggplot2 object.
 #' @import ggplot2
 #' @export
 
-make_diagram <- function (df_list) {
+make_diagram <- function (df_list,
+                          label_flows = TRUE,
+                          external_flows = TRUE,
+                          interaction_label = TRUE,
+                          with_grid = FALSE,
+                          node_outline_color = "black",
+                          node_fill_color = "white",
+                          node_text_color = "black",
+                          node_text_size = 8,
+                          flow_text_color = "black",
+                          flow_text_size = 3,
+                          main_arrow_color = "black",
+                          main_arrow_linetype = 1,
+                          main_arrow_size = 0.5,
+                          interaction_arrow_color = "black",
+                          interaction_arrow_linetype = 2,
+                          interaction_arrow_size = 0.5) {
   # TODO error checking
-  # TODO ggrepel for labels?
+
+  if(interaction_label == FALSE) {
+    df_list <- move_interaction_label(df_list)
+  }
 
   # unlist the data frames to objects
   nodes <- df_list$nodes
@@ -17,61 +79,16 @@ make_diagram <- function (df_list) {
   curved_edges <- df_list$curved_edges
   feedback_edges <- df_list$feedback_edges
 
-  # make the plot
-  outplot <- ggplot() +
-    geom_tile(data = nodes,
-              aes(x = x, y = y),
-              color = "black",
-              fill = "white",
-              width = 1,
-              height = 1) +
-    geom_text(data = nodes,
-              aes(x = x, y = y, label = label),
-              size = 8) +
-    geom_segment(data = horizontal_edges,
-                 aes(x = xstart+0.5, y = ystart, xend = xend-0.5, yend = yend),
-                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                 arrow.fill = "black",
-                 lineend = "round",
-                 linejoin = "mitre") +
-    geom_text(data = horizontal_edges,
-              aes(x = xmid, y = ymid, label = label)) +
-    geom_segment(data = vertical_edges,
-                 aes(x = xstart, y = ystart-0.5, xend = xend, yend = yend+0.5),
-                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                 arrow.fill = "black",
-                 lineend = "round",
-                 linejoin = "mitre") +
-    geom_text(data = vertical_edges,
-              aes(x = xmid+0.25, y = ymid, label = label)) +
-    geom_curve(data = feedback_edges,
-               ncp = 100,
-               curvature = -2,
-               aes(x = xstart-0.25, y = ystart+0.5, xend = xend+0.25, yend = yend+0.5),
-               arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-               arrow.fill = "black",
-               lineend = "round") +
-    geom_text(data = feedback_edges,
-              aes(x = xmid, y = ymid+0.85, label = label)) +
-    coord_equal(clip = "off") +
-    theme_void()
+  # recycle colors as needed
+  node_outline_color <- recycle_values(node_outline_color, nrow(nodes))
+  node_fill_color <- recycle_values(node_fill_color, nrow(nodes))
+  node_text_color <- recycle_values(node_text_color, nrow(nodes))
 
-  if(nrow(curved_edges) > 0) {
-    outplot <- outplot +
-      lapply(split(curved_edges, 1:nrow(curved_edges)), function(dat) {
-        geom_curve(data = dat, aes(x = xstart,
-                                   y = ystart,
-                                   xend = xend,
-                                   yend = yend),
-                   linetype = as.numeric(dat["interaction"]) + 1,
-                   curvature = dat["curvature"],
-                   arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                   arrow.fill = "black",
-                   lineend = "round") }
-      ) +
-      geom_text(data = curved_edges,
-                aes(x = labelx, y = labely, label = label))
-  }
+  # get the ggplot2 code as text
+  code <- get_code()
 
-  return(outplot)
+  # evaluate the ggplot2 code using current environment args
+  theplot <- eval(parse(text = code))
+
+  return(theplot)
 }

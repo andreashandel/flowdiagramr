@@ -12,6 +12,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r setup}
@@ -93,14 +96,88 @@ The data frames above are returned as a list.
 In some cases, many of the data frames will be empty, as is this case in this example with a relatively simple model.
 
 ```{r make-dfs}
-diagram_dfs <- make_dataframes(input_list = mbsir)
+inputs <- make_diagram_inputs(mbmodel = mbsir)
+diagram_dfs <- make_dataframes(input_list = inputs)
 diagram_dfs
 ```
 
 ## Make the diagram
 
-```{r make-diag}
+You can make a simple diagram using the default settings.
+If accepting all the default aesthetics, you only need to provide the list of dataframes, `diagram_dfs`.
+
+```{r make-diag, fig.width=6}
 diagram_plot <- make_diagram(df_list = diagram_dfs)
+diagram_plot
+```
+
+The **modeldiagram** package displays interaction terms by default.
+In the model above, the $b*S*I$ term is an interaction between S and I that determines the physical flow from S to I.
+The dashed arrow shows the interaction, which connects with the main physical flow.
+Some users may prefer simpler diagrams that gloss over the interaction term.
+This can be done by setting the argument `interaction_label = FALSE` (default is `interaction_label = TRUE`.
+
+```{r nointer, fig.width=6}
+make_diagram(df_list = diagram_dfs, interaction_label = FALSE)
+```
+
+There are several aesthetic arguments that can be passed to the `make_diagram` function.
+All the options are demonstrated below, generating an unpleasing diagram.
+
+```{r make-diag-aes, fig.width=6}
+diagram_plot <- make_diagram(df_list = diagram_dfs, 
+                             node_outline_color = "red",
+                             node_fill_color = c("red","blue"),
+                             node_text_color = c("blue", "red"),
+                             node_text_size = 3,
+                             flow_text_color = "green",
+                             flow_text_size = 20,
+                             main_arrow_color = "brown",
+                             main_arrow_linetype = 4,
+                             main_arrow_size = 2,
+                             interaction_arrow_color = "purple",
+                             interaction_arrow_linetype = 3,
+                             interaction_arrow_size = 1)
+diagram_plot
+```
+
+A better use of the aesthetics can result in pleasing diagrams.
+
+```{r make-diag-aes2, fig.width=6}
+diagram_plot <- make_diagram(df_list = diagram_dfs, 
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
+diagram_plot
+```
+
+It is also possible to generate a simple diagram with no flow labels (`label_flows = FALSE`):
+
+```{r make-diag-aes3, fig.width=6}
+diagram_plot <- make_diagram(df_list = diagram_dfs, 
+                             interaction_label = FALSE,
+                             label_flows = FALSE,
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
 diagram_plot
 ```
 
@@ -111,49 +188,15 @@ The `write_diagram_code` function does this.
 The function has no arguments because the **ggplot2** is generic given the data frames input list.
 
 ```{r code}
-gg_code <- write_diagram_code()
-cat(gg_code)
+my_dir <- "."
+my_file <- "diagram_ggplot2_code.R"
+write_ggplot2_code(directory = my_dir, filename = my_file)
 ```
 
-The user can then copy this code and make changes as desired.
-The code can also be simplified by deleting `geoms` that refer to empty data frames.
-In this case, we just need the chunks of code that refer to the `nodes` and `horizontal_edges` data frames.
-For example,
-
-```{r custom}
-# load ggplot
-library(ggplot2)
-
-# unlist the data frames to individual objects
-nodes <- diagram_dfs$nodes
-horizontal_edges <- diagram_dfs$horizontal_edges
-vertical_edges <- diagram_dfs$vertical_edges
-curved_edges <- diagram_dfs$curved_edges
-feedback_edges <- diagram_dfs$feedback_edges
-
-# make blue boxes with white lettering
-ggplot() +
-    geom_tile(data = nodes,
-              aes(x = x, y = y),
-              color = "white",  # CHANGED HERE
-              fill = "blue",  # CHANGED HERE
-              width = 1,
-              height = 1) +
-    geom_text(data = nodes,
-              aes(x = x, y = y, label = label),
-              size = 8,
-              color = "white") +  # ADDED TEXT COLOR
-    geom_segment(data = horizontal_edges,
-                 aes(x = xstart+0.5, y = ystart, xend = xend-0.5, yend = yend),
-                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-                 arrow.fill = "black",
-                 lineend = "round",
-                 linejoin = "mitre") +
-    geom_text(data = horizontal_edges,
-              aes(x = xmid, y = ymid, label = label)) +
-    coord_equal(clip = "off") +
-    theme_void()
+```{r del, echo = FALSE, message=FALSE, warning=FALSE, results = 'hide'}
+file.remove("./diagram_ggplot2_code.R")
 ```
+
 
 # More examples
 
@@ -164,15 +207,32 @@ This model includes demography (births and deaths) and cross-node connections (w
 The model is stored as `mbseird` and comes with the package.
 
 ```{r sird, fig.width=8}
-dfs <- make_dataframes(mbsird)
+inputs <- make_diagram_inputs(mbmodel = mbsird)
+dfs <- make_dataframes(inputs)
 fig <- make_diagram(dfs)
 fig
 ```
 
-## SIR stratified by two hosts
+The diagram above shows all of the demogaphic flows (e.g., $m*S$ and $n$), which the user may not want to focus on.
+The `external_flows` argument determines whether the flows into and out of the system are shown (`external_flows = TRUE`, default) or not (`external_flows = FALSE`).
+Below is the same diagram without the external flows.
+
+```{r notext, fig.width=8}
+inputs <- make_diagram_inputs(mbmodel = mbsird)
+dfs <- make_dataframes(inputs)
+make_diagram(dfs, external_flows = FALSE)
+```
+
+## SIR stratified by two hosts -- WORK IN PROGRESS
+
+Here we can see how the `make_diagram` function recycles colors for nodes.
+We have six nodes but only supply three colors.
 
 ```{r twohost, fig.height=5, fig.width=8}
-dfs <- make_dataframes(mbsirtwohost)
-fig <- make_diagram(dfs)
+inputs <- make_diagram_inputs(mbmodel = mbsirtwohost)
+dfs <- make_dataframes(inputs)
+fig <- make_diagram(dfs,
+                    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                    node_text_color = "white")
 fig
 ```
