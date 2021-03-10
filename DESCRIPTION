@@ -25,8 +25,8 @@ Suggests:
     pkgdown,
     rmarkdown,
     roxygen2,
-    testthat
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 URL: https://andreashandel.github.io/modeldiagram/
 BugReports: https://github.com/andreashandel/modeldiagram/issues
-    
+Config/testthat/edition: 3

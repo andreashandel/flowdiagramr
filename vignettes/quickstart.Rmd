@@ -1,8 +1,8 @@
 ---
-title: "Making a diagram from a **modelbuilder** object"
+title: Making a diagram 
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{making-a-diagram}
+  %\VignetteIndexEntry{Making a diagram}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -51,6 +51,7 @@ The object is called `mbsir`, which is part of the **modeldiagram** package and 
 The `mbsir` object is a list of lists:
 
 ```{r mbsir-look}
+load('mbsir.rda')
 str(mbsir, max.level = 1)
 ```
 
@@ -68,10 +69,12 @@ From this information, we can see that there are no flows into the `S` variable,
 **modeldiagram** generates data frames from the model structure that will be used in **ggplot2** to construct the diagram.
 Five (5) data frames are produced based on the model structure:
 
-1. `nodes`: a data frame with four columns
+EXPLAIN WHICH NEED TO BE PRESENT AND WHICH CAN BE MISSING/EMPTY
+
+1. `nodes`: a data frame with four columns - ALSO ROW?
     * `id`: the node (variable) id number, used to match with the edge data frames
     * `label`: the label of the node (variable), e.g. "S" for susceptible
-    * `x`: the x position of the node box
+    * `x`: the x position of the node box CENTER OR CORNER?
     * `y`: the y position of the node box
 1. `horizontal_edges`: a data frame with 9 columns
     * `to`: the `id` of the node *to which* the flow terminates (e.g., arrow points toward this node)
@@ -94,6 +97,8 @@ The user may need to make modifications to suite their particular needs and styl
 
 The data frames above are returned as a list.
 In some cases, many of the data frames will be empty, as is this case in this example with a relatively simple model.
+
+EDGES SHOWN BELOW HAVE COLUMNS NOT SHOWN/DESCRIBED ABOVE
 
 ```{r make-dfs}
 inputs <- make_diagram_inputs(mbmodel = mbsir)
@@ -207,6 +212,7 @@ This model includes demography (births and deaths) and cross-node connections (w
 The model is stored as `mbseird` and comes with the package.
 
 ```{r sird, fig.width=8}
+load('mbsird.rda')
 inputs <- make_diagram_inputs(mbmodel = mbsird)
 dfs <- make_dataframes(inputs)
 fig <- make_diagram(dfs)
@@ -229,6 +235,7 @@ Here we can see how the `make_diagram` function recycles colors for nodes.
 We have six nodes but only supply three colors.
 
 ```{r twohost, fig.height=5, fig.width=8}
+load('mbsirtwohost.rda')
 inputs <- make_diagram_inputs(mbmodel = mbsirtwohost)
 dfs <- make_dataframes(inputs)
 fig <- make_diagram(dfs,
