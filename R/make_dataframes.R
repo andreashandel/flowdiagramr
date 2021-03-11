@@ -2,11 +2,23 @@
 #'
 #' @param input_list A list of model elements. The list must contain at least
 #'     two elements with names \code{varlabels} and \code{flows}.
+#' @param nodes_df A data frame with user-specified node locations. The data
+#'     frame must contain the following columns: \code{id}, \code{label},
+#'     \code{x}, and \code{y}. An internal function will add the necessary
+#'     \code{row} column based on the values for \code{y}. See vignettes for
+#'     examples of the data frame structure.
 #' @return A list of data frames.
 #' @export
 
-make_dataframes <- function(input_list) {
+make_dataframes <- function(input_list, nodes_df = NULL) {
   # TODO error checking
+
+  # Make sure the nodes_df contains all the state variables included
+  # in the input_list and no other variables.
+  if(!is.null(nodes_df)) {
+    # returns fatal error if variables do not match
+    check_nodes_df(input_list, nodes_df)
+  }
 
 
   # Extract relevant details from the input_list and make a matrix
@@ -27,17 +39,21 @@ make_dataframes <- function(input_list) {
   flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 
-  # Create a node data frame
-  ndf <- data.frame(
-    id = 1:nvars,  # number of nodes
-    label = varnames,  # labels of nodes
-    row = 1  # hard code for 1 row, can be updated below
-  )
+  if(is.null(nodes_df)) {
+    # Create a node data frame
+    ndf <- data.frame(
+      id = 1:nvars,  # number of nodes
+      label = varnames,  # labels of nodes
+      row = 1  # hard code for 1 row, will be updated below, if necessary
+    )
 
-  # Split variables by rows if stratification implied by numbers
-  strats <- gsub("[^0-9.]", "",  varnames)
-  strats <- ifelse(strats == "", 1, strats)
-  ndf$row <- as.numeric(strats)
+    # Split variables by rows if stratification implied by numbers
+    strats <- gsub("[^0-9.]", "",  varnames)
+    strats <- ifelse(strats == "", 1, strats)
+    ndf$row <- as.numeric(strats)
+  } else {
+    ndf <- add_rowid(nodes_df)
+  }
 
 
   # Create the edge data frame by looping through the variables
@@ -201,17 +217,21 @@ make_dataframes <- function(input_list) {
     exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),
                           label = "",
                           row = 1)  # TODO
+    exnodes[setdiff(names(ndf), names(exnodes))] <- NA
     ndf <- rbind(ndf, exnodes)
   }
 
   # Add x and y locations for the nodes
-  ndf <- ndf[order(ndf$id), ]
-  ndf$x <- NA
-  ndf$y <- NA
-  for(rid in unique(ndf$row)) {
-    ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
-    ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * -2
+  if(is.null(nodes_df)) {
+    ndf <- ndf[order(ndf$id), ]
+    ndf$x <- NA
+    ndf$y <- NA
+    for(rid in unique(ndf$row)) {
+      ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
+      ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * -2
+    }
   }
+
 
   # update inflow node positions from nowhere
   inflownodes <- subset(ndf, id < -9990)$id
