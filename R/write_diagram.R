@@ -8,7 +8,7 @@
 #' @export
 
 
-write_ggplot2_code <- function(directory = NULL,
+write_diagram <- function(directory = NULL,
                                filename = NULL) {
 
   # save to current working directory if the not specified

@@ -5,7 +5,7 @@
 #' @return A list of data frames.
 #' @export
 
-make_dataframes <- function(input_list) {
+prepare_diagram <- function(input_list) {
   # TODO error checking
 
 
@@ -26,6 +26,8 @@ make_dataframes <- function(input_list) {
   flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
   flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
+
+  #browser()
 
   # Create a node data frame
   ndf <- data.frame(
