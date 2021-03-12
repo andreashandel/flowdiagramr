@@ -8,8 +8,11 @@ renamed main functions:  prepare_diagram, make_diagram, write_diagram
 
 
 ### General todo/notes
+Get predator-prey model to work
+
 As possible, use fs package for file/path operations (e.g. saving R code), seems better then base R
 
+At some point, write unit tests with testthat
 
 ### For prepare_diagram:
 Maybe be flexible with input structure. E.g. if varlabels/varnames/flows are provided in a different order, still ok? And if they are not named, can we instead try to see if the list has 2 or 3 entries, and try to interpret the 1st as varlabels, 2nd as varnames, 3rd as flows.
