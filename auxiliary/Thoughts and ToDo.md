@@ -3,7 +3,6 @@ reorganized and rewrote vignettes
 see here for 'odd' naming of vignettes:
 https://github.com/r-lib/pkgdown/issues/995
 
-
 renamed main functions:  prepare_diagram, make_diagram, write_diagram
 
 
@@ -14,14 +13,19 @@ As possible, use fs package for file/path operations (e.g. saving R code), seems
 
 At some point, write unit tests with testthat
 
+Somewhere (e.g. in auxiliary or inst folders), there should be a text file giving all the details needed for developers to work on this. E.g. big-picture description of all functions in the /R folder and on other folders. See e.g. the 'doscfordevelopers' folder in the DSAIDE package, especially documentation.md
+
+
 ### For prepare_diagram:
-Maybe be flexible with input structure. E.g. if varlabels/varnames/flows are provided in a different order, still ok? And if they are not named, can we instead try to see if the list has 2 or 3 entries, and try to interpret the 1st as varlabels, 2nd as varnames, 3rd as flows.
+At start of function, the input should be checked to make sure it looks as needed. If not, a meaningful error message should be given to user. This checking might be best done in a separate function?
+
+Maybe be flexible with input structure. E.g. if varlabels/varnames/flows are provided in a different order, still ok? And if they are not named, can we instead try to see if the list has 2 or 3 entries, and try to interpret the 1st as varlabels, 2nd as varnames, 3rd as flows? Not that crucial for now, but we could decide what we allow as input structure. Just need to make sure we fully document this, both in the function help file and the vignette.
 
 Adjust code such that trailing + signs are not required (e.g. it's ok to write 'b*S*I' instead of '+b*S*I')
 
 Update/fix code so that the predator-prey model diagram works.
 
-help file function needs
+help file needs more details
 
 ### For make_diagram:
 rename label_flows to flow_labels, rename interaction_label to interaction_flows (since that turns the flows on and off, not just the label), introduce a new interaction_labels, which turns on/off labels on interaction flows only. 
