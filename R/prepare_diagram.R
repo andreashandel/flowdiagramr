@@ -11,7 +11,7 @@
 #' @export
 
 
-prepare_diagram <- function(input_list) {
+prepare_diagram <- function(input_list, nodes_df = NULL) {
   # TODO error checking
 
   # Make sure the nodes_df contains all the state variables included
@@ -151,7 +151,7 @@ prepare_diagram <- function(input_list) {
       }
 
       # interaction flag if two variables are in the flow
-      if(length(vars) > 1) {
+      if(length(vars) > 1 & length(unique(connectvars)) > 1) {
         edf[nrow(edf), "interaction"] <- TRUE
       }
     }  #end flow loop
@@ -167,25 +167,30 @@ prepare_diagram <- function(input_list) {
   edf$link <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(edf, interaction == TRUE)
   edf <- subset(edf, interaction == FALSE)
-  intflows <- ints
-  intflows$label <- ""
-  intflows <- unique(intflows)
-  intflows$interaction <- FALSE
+  if(nrow(ints) > 0) {
+    intflows <- ints
+    intflows$label <- ""
+    intflows <- unique(intflows)
+    intflows$interaction <- FALSE
 
-  # Redefine the interaction from nodes
-  for(i in 1:nrow(ints)) {
-    tmp <- ints[i, ]
-    v <- get_vars_pars(tmp$label)
-    vf <- substr(v, start = 1, stop = 1)  #get first letters
-    v <- v[which(vf %in% LETTERS)]
-    ids <- subset(ndf, label %in% v)[ , "id"]
-    ints[i, "from"] <- ids[which(ids != tmp$from)]
-    ints[i, "to"] <- NA
-    ints[i, "link"] <- tmp$from
+    # Redefine the interaction from nodes
+    for(i in 1:nrow(ints)) {
+      tmp <- ints[i, ]
+      v <- get_vars_pars(tmp$label)
+      vf <- substr(v, start = 1, stop = 1)  #get first letters
+      v <- v[which(vf %in% LETTERS)]
+      ids <- subset(ndf, label %in% v)[ , "id"]
+      ints[i, "from"] <- ids[which(ids != tmp$from)]
+      ints[i, "to"] <- NA
+      ints[i, "link"] <- tmp$from
+    }
+
+    # Recombine the edge data frame
+    edf <- rbind(edf, ints, intflows)
   }
 
-  # Recombine the edge data frame
-  edf <- rbind(edf, ints, intflows)
+
+
 
   # Make dummy compartment for all flows in and out of the system.
   # Out of the system first
@@ -368,6 +373,9 @@ prepare_diagram <- function(input_list) {
 
   # update vertical edges to go in and out at angles
   vdf <- make_vdf_angled(vdf)
+
+  # update vertical edges to avoid overlaps
+  vdf <- fix_arrow_pos(vdf)
 
   # rename data frames for exporting
   nodes <- ndf

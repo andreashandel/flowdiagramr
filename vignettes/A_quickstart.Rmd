@@ -62,8 +62,8 @@ Here is how you can use **`r pkg`** to create this diagram.
 varlabels = c("S","I","R")
 varnames = c("Susceptible","Infected","Recovered")
 flows = list(S_flows = c("-b*S*I"), 
-                I_flows = c("b*S*I","-g*I"), 
-                R_flows = c("g*I"))
+                I_flows = c("+b*S*I","-g*I"), 
+                R_flows = c("+g*I"))
 mymodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
 ```
 
