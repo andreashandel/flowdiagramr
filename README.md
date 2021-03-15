@@ -17,8 +17,8 @@ simulation models using ggplot.
 
 For an introduction to the package, step-by-step instructions on getting
 started, and more information on the different ways you can use the
-package [see the *Get Started* tutorial
-(vignette)](https://andreashandel.github.io/DSAIDE/articles/quickstart.html).
+package [see the *Quick Start* tutorial
+(vignette)](https://andreashandel.github.io/modeldiagram/articles/quickstart.html).
 
 ## Further information
 
@@ -26,10 +26,6 @@ package [see the *Get Started* tutorial
     available.
 
 ## Citation and Contributors
-
-If the DSAIDE package does in any way help you with your work such that
-it warrants citing it, please cite [the DSAIDE publication in PLoS
-Computational Biology](https://doi.org/10.1371/journal.pcbi.1005642).
 
 This R package was developed by Andrew Tredennick and [Andreas
 Handel](https://www.andreashandel.com/). It is maintained Andreas

@@ -1,0 +1,219 @@
+---
+title: Basic modification of a diagram 
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic modification of a diagram}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup, include = FALSE}
+pkg = 'modeldiagram' #so we can easily switch names
+library(pkg, character.only = TRUE)
+```
+
+# Introduction
+
+We assume you went through the [getting started vignette]() and know the basics of using **`r pkg`**. 
+In this vignette, you will learn the simplest ways of customizing diagrams. Further vignettes show more advanced ways of customizing diagrams.
+
+# Setting arguments in `make_diagram`
+
+The easiest way to start customizing your model is by providing specific settings when you call the `make_diagram` function. 
+The help for the function shows you what settings you can customize easily, you can look at it with this command
+
+```{r, eval = FALSE}
+help('make_diagram')
+```
+
+Let's explore some of those. We'll use an extension of the SIR model you encountered in the [Getting started vignette]() as an example. 
+For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
+
+```{r}
+# specify the model
+varlabels = c("S","I","R")
+varnames = c("Susceptible","Infected","Recovered")
+# currently only works with trailing + signs
+flows = list(S_flows = c("+n", "-b*S*I", "-m*S"), 
+             I_flows = c("+b*S*I","-g*I", "-m*I"), 
+             R_flows = c("+g*I", "-m*R"))
+sirmodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+```
+
+Now, let's create two different diagrams for this model 
+
+```{r}
+# prepare inputs 
+sir_input_structure <- prepare_diagram(sirmodel)
+# make two diagrams with adjusted settings
+ugly_diagram <- make_diagram(sir_input_structure, 
+                             node_outline_color = "red",
+                             node_fill_color = c("red","blue"),
+                             node_text_color = c("blue", "red"),
+                             node_text_size = 3,
+                             flow_text_color = "green",
+                             flow_text_size = 20,
+                             main_arrow_color = "brown",
+                             main_arrow_linetype = 4,
+                             main_arrow_size = 2,
+                             interaction_arrow_color = "purple",
+                             interaction_arrow_linetype = 3,
+                             interaction_arrow_size = 1)
+nice_diagram <- make_diagram(sir_input_structure,  
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
+plot(ugly_diagram)
+plot(nice_diagram)
+```
+
+
+As you can see, it is possible to change the look of the diagram considerably by changing settings.
+Let's look at a few more options that you can configure. By default, **`r pkg`** shows all flows and labels them all. 
+While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. 
+You can easily turn on and off several components. The following code shows examples where we turned off different flows or labels. 
+Note that if you turn off some component, other options that apply to that component will be ignored. For instance if you don't show interaction flows, then of course all styling of those arrows is ignored. Below, we left it in the code.
+
+
+
+```{r}
+# Diagram without labeling of flows
+simpler_diagram_1 <- make_diagram(sir_input_structure,  
+                             label_flows = FALSE,
+                             external_flows = TRUE,
+                             interaction_label = TRUE,
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
+plot(simpler_diagram_1)
+```
+
+```{r}
+# Diagram without external flows
+simpler_diagram_2 <- make_diagram(sir_input_structure,  
+                             label_flows = TRUE,
+                             external_flows = FALSE,
+                             interaction_label = TRUE,
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
+plot(simpler_diagram_2)
+```
+
+```{r}
+#Diagram without external or interaction flows
+simpler_diagram_3 <- make_diagram(sir_input_structure,  
+                             label_flows = TRUE,
+                             external_flows = FALSE,
+                             interaction_label = FALSE,
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
+plot(simpler_diagram_3)
+```
+
+
+
+Let's explore some of these settings a bit more, now using the second example from the [Getting started vignette](), the predator prey model.
+
+```{r}
+# specify the model
+varlabels = c("B","I")
+varnames = c("Bacteria","Immunity")
+flows = list(B_flows = c("g*B", "-dB*B", "-k*B*I"), 
+             I_flows = c("r*B*I", "-dI*I"))
+#this is the actual model that needs to be used
+#but currently it doesn't work, prepare_diagram complains
+#flows = list(B_flows = c("g*B*(1-B/Bmax)", "-dB*B", "-k*B*I"), 
+#                I_flows = c("r*B*I", "-dI*I"))
+ppmodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+# prepare inputs 
+pp_input_structure <- prepare_diagram(ppmodel)
+# make two diagrams with adjusted settings
+diag1 <- make_diagram(pp_input_structure,  
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
+diag2 <- make_diagram(pp_input_structure,  
+                             node_outline_color = NA,
+                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                             node_text_color = "white",
+                             node_text_size = 10,
+                             flow_text_color = "black",
+                             flow_text_size = 5,
+                             main_arrow_color = "grey25",
+                             main_arrow_linetype = 1,
+                             main_arrow_size = 0.7,
+                             interaction_label = FALSE,
+                             interaction_arrow_color = "grey25",
+                             interaction_arrow_linetype = 2,
+                             interaction_arrow_size = 0.7)
+plot(diag1)
+plot(diag2)
+```
+
+The difference between the two diagrams is that for the second, we turned off showing interaction arrows and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next. 
+
+
+# Next steps
+
+With the approach just discussed, you can tweak the look of the diagram a good bit. Often, this might give you a diagram that's good enough. However, there might be times when you want to make further changes. For instance you might want to tweak the placement of the boxes and arrows or add some extra text somewhere on the diagram. **`r pkg`** gives you two ways of doing this. 
+We are describing them in [this vignette](). Before you read through this vignette and try to perform further modifications, it will be useful to learn a bit more about how **`r pkg`** works, and especially the structure of the data frames that are generated by `prepare_diagram` and used to produce the ggplot figure. This is described [in this vignette]().    
+
+
+

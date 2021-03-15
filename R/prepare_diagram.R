@@ -10,7 +10,8 @@
 #' @return A list of data frames.
 #' @export
 
-make_dataframes <- function(input_list, nodes_df = NULL) {
+
+prepare_diagram <- function(input_list) {
   # TODO error checking
 
   # Make sure the nodes_df contains all the state variables included
@@ -39,6 +40,7 @@ make_dataframes <- function(input_list, nodes_df = NULL) {
   flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 
+<<<<<<< HEAD:R/make_dataframes.R
   if(is.null(nodes_df)) {
     # Create a node data frame
     ndf <- data.frame(
@@ -54,6 +56,21 @@ make_dataframes <- function(input_list, nodes_df = NULL) {
   } else {
     ndf <- add_rowid(nodes_df)
   }
+=======
+  #browser()
+
+  # Create a node data frame
+  ndf <- data.frame(
+    id = 1:nvars,  # number of nodes
+    label = varnames,  # labels of nodes
+    row = 1  # hard code for 1 row, can be updated below
+  )
+
+  # Split variables by rows if stratification implied by numbers
+  strats <- gsub("[^0-9.]", "",  varnames)
+  strats <- ifelse(strats == "", 1, strats)
+  ndf$row <- as.numeric(strats)
+>>>>>>> origin/main:R/prepare_diagram.R
 
 
   # Create the edge data frame by looping through the variables
