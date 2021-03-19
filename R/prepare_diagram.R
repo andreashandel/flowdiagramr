@@ -116,7 +116,8 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
         tmp <- data.frame(from = i,
                           to = cn,
                           label = currentflow,
-                          interaction = FALSE)
+                          interaction = FALSE,
+                          out_interaction = FALSE)
 
         edf <- rbind(edf, tmp)
       }
@@ -131,7 +132,8 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
           tmp <- data.frame(from = NA,
                             to = i,
                             label = currentflow,
-                            interaction = FALSE)
+                            interaction = FALSE,
+                            out_interaction = FALSE)
           edf <- rbind(edf, tmp)
         }
       }
@@ -140,12 +142,14 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
           tmp <- data.frame(from = i,
                             to = i,
                             label = currentflow,
-                            interaction = FALSE)
+                            interaction = FALSE,
+                            out_interaction = FALSE)
         } else {
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
                             label = currentflow,
-                            interaction = FALSE)
+                            interaction = FALSE,
+                            out_interaction = FALSE)
         }
         edf <- rbind(edf, tmp)
       }
@@ -154,11 +158,25 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
       if(length(vars) > 1 & length(unique(connectvars)) > 1) {
         edf[nrow(edf), "interaction"] <- TRUE
       }
+      if(length(vars) > 1 & length(unique(connectvars)) <= 1) {
+        edf[nrow(edf), "out_interaction"] <- TRUE
+      }
     }  #end flow loop
   }  #end variable loop
 
   # Keep only distinct rows
   edf <- unique(edf)
+
+  # Duplicate rows with out_interaction == TRUE
+  repdf <- subset(edf, out_interaction == TRUE)
+  if(nrow(repdf) != 0) {
+    repdf$interaction <- TRUE
+    repdf$out_interaction <- NULL
+    edf[which(edf$out_interaction == TRUE), "label"] <- ""
+    edf$out_interaction <- NULL
+    edf <- rbind(edf, repdf)
+  }
+
 
   # Break edges apart into:
   #   direct flows
@@ -180,14 +198,25 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]
       ids <- subset(ndf, label %in% v)[ , "id"]
+
+      if(is.na(ints[i, "to"])){
+        ints[i, "link"] <- NA
+      } else if(ints[i, "to"] == ints[i, "from"]) {
+        ints[i, "link"] <- NA
+      } else {
+        ints[i, "link"] <- tmp$from
+      }
+
       ints[i, "from"] <- ids[which(ids != tmp$from)]
       ints[i, "to"] <- NA
-      ints[i, "link"] <- tmp$from
     }
 
     # Recombine the edge data frame
     edf <- rbind(edf, ints, intflows)
   }
+
+  # Keep only distinct rows
+  edf <- unique(edf)
 
 
 
@@ -213,7 +242,9 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
 
   # Make dummy compartment for "links" in interactions
   linkdummies <- NULL
-  numlinks <- length(edf[is.na(edf$to) & edf$interaction == TRUE, "to"])
+  numlinks <- length(edf[is.na(edf$to) &
+                           edf$interaction == TRUE &
+                           !is.na(edf$link), "to"])
   if(numlinks > 0) {
     linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
     edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
@@ -286,6 +317,9 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   #   }
   # }
 
+  # Subset out interactions to in/out flows
+  extints <- subset(edf, interaction == TRUE & is.na(link))
+
   # Create segment coordinates
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "to", by.y = "id",
@@ -293,6 +327,17 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   edf$xmid <- with(edf, (xend + xstart) / 2)
   edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25
   edf$diff <- with(edf, abs(to-from))
+
+  # Get midpoints of in/out segments for extints "to"
+
+  ## OK. Need to merge in nodes to get the start positions and
+  ## the edges to get the ending position (midpoints of edges with no
+  ## no label)
+  extlinks <- subset(edf, label == "")
+  extlinks <- merge(extints, extlinks[, c("xmid", "ymid", "to")],
+                    by.x = "from", by.y = "to")
+  extlinks$xstart <- extlinks
+  edf <- rbind()
 
   # split up the edges into constituent parts:
   # - curved segments
