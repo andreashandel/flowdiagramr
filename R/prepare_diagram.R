@@ -150,25 +150,29 @@ prepare_diagram <- function(input_list) {
   edf$link <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(edf, interaction == TRUE)
   edf <- subset(edf, interaction == FALSE)
-  intflows <- ints
-  intflows$label <- ""
-  intflows <- unique(intflows)
-  intflows$interaction <- FALSE
 
-  # Redefine the interaction from nodes
-  for(i in 1:nrow(ints)) {
-    tmp <- ints[i, ]
-    v <- get_vars_pars(tmp$label)
-    vf <- substr(v, start = 1, stop = 1)  #get first letters
-    v <- v[which(vf %in% LETTERS)]
-    ids <- subset(ndf, label %in% v)[ , "id"]
-    ints[i, "from"] <- ids[which(ids != tmp$from)]
-    ints[i, "to"] <- NA
-    ints[i, "link"] <- tmp$from
+  if(nrow(ints) > 0) {
+    intflows <- ints
+    intflows$label <- ""
+    intflows <- unique(intflows)
+    intflows$interaction <- FALSE
+
+    # Redefine the interaction from nodes
+    for(i in 1:nrow(ints)) {
+      tmp <- ints[i, ]
+      v <- get_vars_pars(tmp$label)
+      vf <- substr(v, start = 1, stop = 1)  #get first letters
+      v <- v[which(vf %in% LETTERS)]
+      ids <- subset(ndf, label %in% v)[ , "id"]
+      ints[i, "from"] <- ids[which(ids != tmp$from)]
+      ints[i, "to"] <- NA
+      ints[i, "link"] <- tmp$from
+    }
+
+    # Recombine the edge data frame
+    edf <- rbind(edf, ints, intflows)
   }
 
-  # Recombine the edge data frame
-  edf <- rbind(edf, ints, intflows)
 
   # Make dummy compartment for all flows in and out of the system.
   # Out of the system first
