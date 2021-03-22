@@ -18,7 +18,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r setup, include = FALSE}
-pkg = 'modeldiagram' #so we can easily switch names
+pkg = 'flowdiagramr' #so we can easily switch names
 library(pkg, character.only = TRUE)
 ```
 
@@ -52,15 +52,15 @@ mymodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
 
 
 ```{r}
-input_structure <- prepare_diagram(mymodel)
+#input_structure <- prepare_diagram(mymodel)
 ```
 
 ```{r}
-my_diagram <- make_diagram(input_structure)
+#my_diagram <- make_diagram(input_structure)
 ```
 
 
 ```{r}
-plot(my_diagram)
+#plot(my_diagram)
 ```
 

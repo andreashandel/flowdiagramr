@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Technical details • modeldiagram</title>
+<title>Technical details • flowdiagramr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Technical details">
-<meta property="og:description" content="modeldiagram">
+<meta property="og:description" content="flowdiagramr">
 <meta property="og:image" content="https://andreashandel.github.io/modeldiagram/index.html/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -37,7 +37,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">modeldiagram</a>
+        <a class="navbar-link" href="../index.html">flowdiagramr</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
       </span>
     </div>
@@ -67,7 +67,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/A_quickstart.html">A quick start to modeldiagram</a>
+      <a href="../articles/A_quickstart.html">A quick start to flowdiagramr</a>
     </li>
     <li>
       <a href="../articles/B_modify-diagrams-simple.html">Basic modification of a diagram</a>
@@ -77,6 +77,9 @@
     </li>
     <li>
       <a href="../articles/D_modify-diagrams-advanced.html">Advanced modification of a diagram</a>
+    </li>
+    <li>
+      <a href="../articles/E_non_model_diagrams.html">Other Diagrams</a>
     </li>
   </ul>
 </li>
@@ -104,7 +107,7 @@
       <h1 data-toc-skip>Technical details</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/andreashandel/modeldiagram/blob/master/vignettes/C_technical-details.Rmd"><code>vignettes/C_technical-details.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/C_technical-details.Rmd"><code>vignettes/C_technical-details.Rmd</code></a></small>
       <div class="hidden name"><code>C_technical-details.Rmd</code></div>
 
     </div>
@@ -112,13 +115,13 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pkg</span> <span class="op">=</span> <span class="st">'modeldiagram'</span> <span class="co">#so we can easily switch names</span>
+<code class="sourceCode R"><span class="va">pkg</span> <span class="op">=</span> <span class="st">'flowdiagramr'</span> <span class="co">#so we can easily switch names</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pkg</span>, character.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>We assume you went through the <a href="">getting started vignette</a> and also the <a href="">basic modification vignette</a>. If the basic modifications you can do give you what you want, there is no need to dig deeper and understand in more detail how <strong>modeldiagram</strong> works. However, it is quite likely that at some point, you want to further tweak your diagram. To do so successfully, it is useful to learn some more details about how the package works.</p>
-<p>As you learned, producing a diagram with <strong>modeldiagram</strong> involves two steps. After you have defined your model, there is a first step that takes your model and creates a list of data frames (which we called the <code>input_structure</code> in the prior vignettes). These data frames are used by <code>make_diagram</code> to produce the ggplot code and figure. Going back to the SIR model, these are the steps</p>
+<p>We assume you went through the <a href="">getting started vignette</a> and also the <a href="">basic modification vignette</a>. If the basic modifications you can do give you what you want, there is no need to dig deeper and understand in more detail how <strong>flowdiagramr</strong> works. However, it is quite likely that at some point, you want to further tweak your diagram. To do so successfully, it is useful to learn some more details about how the package works.</p>
+<p>As you learned, producing a diagram with <strong>flowdiagramr</strong> involves two steps. After you have defined your model, there is a first step that takes your model and creates a list of data frames (which we called the <code>input_structure</code> in the prior vignettes). These data frames are used by <code>make_diagram</code> to produce the ggplot code and figure. Going back to the SIR model, these are the steps</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Set up model</span>
 <span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>

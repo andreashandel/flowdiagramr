@@ -1,4 +1,4 @@
 library(testthat)
-library(modeldiagram)
+library(flowdiagramr)
 
-test_check("modeldiagram")
+test_check("flowdiagramr")
