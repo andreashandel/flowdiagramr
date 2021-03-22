@@ -58,7 +58,6 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   }
 
 
-
   # Create the edge data frame by looping through the variables
   # and associated flows.
   edf <- list()  #an empty list to be coerced to a data frame via rbind
