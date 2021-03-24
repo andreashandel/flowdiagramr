@@ -1,4 +1,4 @@
-pandoc: 2.11.4
+pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
@@ -7,8 +7,8 @@ articles:
   C_technical-details: C_technical-details.html
   D_modify-diagrams-advanced: D_modify-diagrams-advanced.html
   E_non_model_diagrams: E_non_model_diagrams.html
-last_built: 2021-03-22T19:07Z
+last_built: 2021-03-24T14:22Z
 urls:
-  reference: https://andreashandel.github.io/modeldiagram/index.html/reference
-  article: https://andreashandel.github.io/modeldiagram/index.html/articles
+  reference: https://andreashandel.github.io/flowdiagramr/index.html/reference
+  article: https://andreashandel.github.io/flowdiagramr/index.html/articles
 
