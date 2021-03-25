@@ -160,6 +160,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
       if(length(vars) > 1 & length(unique(connectvars)) <= 1) {
         edf[nrow(edf), "out_interaction"] <- TRUE
       }
+
     }  #end flow loop
   }  #end variable loop
 
@@ -318,6 +319,18 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
 
   # Subset out interactions to in/out flows
   extints <- subset(edf, interaction == TRUE & is.na(link))
+  if(nrow(extints) > 0) {
+    for(i in 1:nrow(extints)) {
+      tmp <- extints[i, ]
+      v <- get_vars_pars(tmp$label)
+      vf <- substr(v, start = 1, stop = 1)  #get first letters
+      v <- v[which(vf %in% LETTERS)]
+      ids <- subset(ndf, label %in% v)[ , "id"]
+      id <- ids[which(ids != tmp$from)]
+      extints[i, "to"] <- id
+    }
+  }
+
 
   # Create segment coordinates
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
@@ -332,11 +345,41 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   ## OK. Need to merge in nodes to get the start positions and
   ## the edges to get the ending position (midpoints of edges with no
   ## no label)
-  extlinks <- subset(edf, label == "")
-  extlinks <- merge(extints, extlinks[, c("xmid", "ymid", "to")],
-                    by.x = "from", by.y = "to")
-  extlinks$xstart <- extlinks
-  edf <- rbind()
+  if(nrow(extints) > 0) {
+    extlinks <- subset(edf, label == "")
+    extints <- merge(extints, ndf[,c("x", "y", "id")], by.x = "from", by.y = "id")
+    colnames(extints)[which(colnames(extints) == "x")] <- "xstart"
+    colnames(extints)[which(colnames(extints) == "y")] <- "ystart"
+    extints$xend <- NA
+    extints$yend <- NA
+    for(i in 1:nrow(extints)) {
+      tmp1 <- extints[i, ]
+      tmp1[ , c("xend", "yend")] <- NULL
+      tmp2 <- extlinks[which(tmp1$to == extlinks$from), ]
+      if(tmp2$to == tmp2$from) {
+        tmp3 <- merge(tmp1, tmp2[, c("xend", "yend", "from")],
+                         by.x = "to", by.y = "from")
+        tmp3$yend <- tmp3$yend + 0.75
+        tmp3$xend <- tmp3$xend + 0.17
+      } else {
+        tmp3 <- merge(tmp1, tmp2[, c("xmid", "ymid", "from")],
+                      by.x = "to", by.y = "from")
+      }
+      colnames(tmp3) <- c("to", "from", "label", "interaction", "link",
+                             "xstart", "ystart", "xend", "yend")
+      extints[i, ] <- tmp3
+    }
+    # extints <- merge(extints, extlinks[, c("xmid", "ymid", "from")],
+    #                  by.x = "to", by.y = "from")
+    # colnames(extints) <- c("to", "from", "label", "interaction", "link",
+    #                        "xstart", "ystart", "xend", "yend")
+    extints$xmid <- with(extints, (xend + xstart) / 2)
+    extints$ymid <- with(extints, (yend + ystart) / 2) + 0.25
+    extints$diff <- with(extints, abs(to-from))
+
+    edf <- rbind(edf, extints)
+  }
+
 
   # split up the edges into constituent parts:
   # - curved segments
@@ -350,60 +393,10 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   fdf <- subset(sdf, to == from)
   sdf <- subset(sdf, to != from)
 
-  # Set default curvature if cdf has data
+  # Set the curvature using internal function
   if(nrow(cdf) > 0) {
-    cdf$curvature <- 0.25
-
-    # add in row info
-    cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
-    cdf$row <- as.numeric(cdf$row)
-
-    # Update curvature based on row, if only 2 rows
-    if(max(as.numeric(ndf$row)) > 1 & max(as.numeric(ndf$row)) <= 2) {
-      cdf$curvature <- ifelse(cdf$row == 1, 0.25, -0.25)
-
-      # also update ystart and yend
-      cdf$ystart <- ifelse(cdf$row == 2, cdf$ystart-1, cdf$ystart)
-      cdf$yend <- ifelse(cdf$row == 2, cdf$ystart, cdf$yend)
-    }
-
-    cdf[cdf$interaction==TRUE, "curvature"] <- 0.4
-
-    # curves need to move up 0.5 units to connect with tops/bottoms
-    # of node rectangles
-    cdf$ystart <- cdf$ystart + 0.5
-    cdf$yend <- cdf$yend + 0.5
-    cdf$ymid <- cdf$ymid + 0.5
-
-    # if curve is for an interaction term, then yend needs to be moved
-    # back down by 0.5 to meet up with the edge rather than the node
-    cdf[cdf$interaction == TRUE, "yend"] <- cdf[cdf$interaction == TRUE, "yend"] - 0.5
-
-    # add curvature midpoint for accurate label placement
-    cdf$labelx <- NA
-    cdf$labely <- NA
-    for(i in 1:nrow(cdf)) {
-      tmp <- cdf[i, ]
-      mids <- calc_control_points(x1 = tmp$xstart,
-                                  y1 = tmp$ystart,
-                                  x2 = tmp$xend,
-                                  y2 = tmp$yend,
-                                  angle = 90,
-                                  curvature = tmp$curvature,
-                                  ncp = 1)
-      cdf[i, "labelx"] <- mids$x
-      cdf[i, "labely"] <- mids$y
-    }
-
-
-    # add y offset to curve labels according to row
-    for(i in 1:nrow(cdf)) {
-      tmp <- cdf[i, ]
-      offset <- ifelse(cdf[i, "row"] == 2, -0.2, 0.2)
-      cdf[i, "labely"] <- cdf[i, "labely"] + offset
-    }
+    cdf <- set_curvature(cdf, ndf)
   }
-
 
   # test to make sure splits are unique and sum up to original data frame
   test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(edf)
