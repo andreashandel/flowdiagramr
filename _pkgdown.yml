@@ -1,4 +1,4 @@
-url: https://andreashandel.github.io/modeldiagram/index.html
+url: https://andreashandel.github.io/flowdiagramr/index.html
 
 authors:
   Andreas Handel:
@@ -29,4 +29,4 @@ navbar:
       href: news/index.html
     github:
       icon: fab fa-github
-      href: https://github.com/andreashandel/modeldiagram
+      href: https://github.com/andreashandel/flowdiagramr

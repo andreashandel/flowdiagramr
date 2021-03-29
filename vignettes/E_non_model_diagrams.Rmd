@@ -1,0 +1,66 @@
+---
+title: Other Diagrams
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Other diagrams}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup, include = FALSE}
+pkg = 'flowdiagramr' #so we can easily switch names
+library(pkg, character.only = TRUE)
+```
+
+# Overview
+
+While the main reason for the existence of **`r pkg`** is create  nice-looking diagrams for compartmental simulation models, it is possible to create general flow charts.
+
+
+
+# Starting Example
+
+Trying to create a wikipedia example
+
+## Specify the model
+
+
+```{r}
+varlabels = c("Lamp","Plugged","Bulbout","Plugin","Newbulb","Repair")
+varnames = c("Lamp","Plugged","Bulbout","Plugin","Newbulb","Repair")
+
+flows = list(Lamp_flows = c("-Lamp"), 
+             Plugged_flows = c("Lamp","-no*Plugged","-yes*Plugged"), 
+             Bulbout_flows = c("yes*PLugged","-yes*Bulbout", "-no*Bulbout"),
+             Plugin_flows = c("no*Plugged"),
+             Newbulb_flows = c("yes*Bulbout"),
+             Repair_flows = c("no*Bulbout")
+             )
+
+mymodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+```
+
+
+```{r}
+#input_structure <- prepare_diagram(mymodel)
+```
+
+```{r}
+#my_diagram <- make_diagram(input_structure)
+```
+
+
+```{r}
+#plot(my_diagram)
+```
+

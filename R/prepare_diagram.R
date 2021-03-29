@@ -185,6 +185,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   edf$link <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(edf, interaction == TRUE)
   edf <- subset(edf, interaction == FALSE)
+
   if(nrow(ints) > 0) {
     intflows <- ints
     intflows$label <- ""
@@ -217,8 +218,6 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
 
   # Keep only distinct rows
   edf <- unique(edf)
-
-
 
 
   # Make dummy compartment for all flows in and out of the system.

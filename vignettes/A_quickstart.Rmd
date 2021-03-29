@@ -1,8 +1,8 @@
 ---
-title: A quick start to modeldiagram 
+title: A quick start to flowdiagramr 
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{A quick start to modeldiagram}
+  %\VignetteIndexEntry{A quick start to flowdiagramr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -161,4 +161,8 @@ In this example, we added some optional inputs to the `make_diagram` function to
 
 You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won't be great. Sometimes, the default will actually not look that great, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this, which are described in [this vignette](). 
 
-
+```{r}
+data = c("S","","R",
+          "","I","")
+varlabels = matrix(data,nrow = 2, byrow = TRUE)
+```

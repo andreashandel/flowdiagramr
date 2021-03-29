@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/index.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/index.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/reference/make_diagram.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/make_diagram.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/reference/make_diagram_inputs.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/make_diagram_inputs.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/reference/prepare_diagram.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/prepare_diagram.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/reference/write_diagram.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/write_diagram.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/articles/A_quickstart.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/A_quickstart.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/articles/B_modify-diagrams-simple.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/B_modify-diagrams-simple.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/articles/C_technical-details.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/C_technical-details.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/modeldiagram/index.html/articles/D_modify-diagrams-advanced.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/D_modify-diagrams-advanced.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/E_non_model_diagrams.html</loc>
   </url>
 </urlset>
