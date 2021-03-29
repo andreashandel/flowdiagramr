@@ -2,11 +2,24 @@
 #'
 #' @param input_list A list of model elements. The list must contain at least
 #'     two elements with names \code{varlabels} and \code{flows}.
+#' @param nodes_df A data frame with user-specified node locations. The data
+#'     frame must contain the following columns: \code{id}, \code{label},
+#'     \code{x}, and \code{y}. An internal function will add the necessary
+#'     \code{row} column based on the values for \code{y}. See vignettes for
+#'     examples of the data frame structure.
 #' @return A list of data frames.
 #' @export
 
-prepare_diagram <- function(input_list) {
+
+prepare_diagram <- function(input_list, nodes_df = NULL) {
   # TODO error checking
+
+  # Make sure the nodes_df contains all the state variables included
+  # in the input_list and no other variables.
+  if(!is.null(nodes_df)) {
+    # returns fatal error if variables do not match
+    check_nodes_df(input_list, nodes_df)
+  }
 
 
   # Extract relevant details from the input_list and make a matrix
@@ -27,19 +40,22 @@ prepare_diagram <- function(input_list) {
   flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 
-  #browser()
 
-  # Create a node data frame
-  ndf <- data.frame(
-    id = 1:nvars,  # number of nodes
-    label = varnames,  # labels of nodes
-    row = 1  # hard code for 1 row, can be updated below
-  )
+  if(is.null(nodes_df)) {
+    # Create a node data frame
+    ndf <- data.frame(
+      id = 1:nvars,  # number of nodes
+      label = varnames,  # labels of nodes
+      row = 1  # hard code for 1 row, will be updated below, if necessary
+    )
 
-  # Split variables by rows if stratification implied by numbers
-  strats <- gsub("[^0-9.]", "",  varnames)
-  strats <- ifelse(strats == "", 1, strats)
-  ndf$row <- as.numeric(strats)
+    # Split variables by rows if stratification implied by numbers
+    strats <- gsub("[^0-9.]", "",  varnames)
+    strats <- ifelse(strats == "", 1, strats)
+    ndf$row <- as.numeric(strats)
+  } else {
+    ndf <- add_rowid(nodes_df)
+  }
 
 
   # Create the edge data frame by looping through the variables
@@ -99,7 +115,8 @@ prepare_diagram <- function(input_list) {
         tmp <- data.frame(from = i,
                           to = cn,
                           label = currentflow,
-                          interaction = FALSE)
+                          interaction = FALSE,
+                          out_interaction = FALSE)
 
         edf <- rbind(edf, tmp)
       }
@@ -114,7 +131,8 @@ prepare_diagram <- function(input_list) {
           tmp <- data.frame(from = NA,
                             to = i,
                             label = currentflow,
-                            interaction = FALSE)
+                            interaction = FALSE,
+                            out_interaction = FALSE)
           edf <- rbind(edf, tmp)
         }
       }
@@ -123,25 +141,42 @@ prepare_diagram <- function(input_list) {
           tmp <- data.frame(from = i,
                             to = i,
                             label = currentflow,
-                            interaction = FALSE)
+                            interaction = FALSE,
+                            out_interaction = FALSE)
         } else {
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
                             label = currentflow,
-                            interaction = FALSE)
+                            interaction = FALSE,
+                            out_interaction = FALSE)
         }
         edf <- rbind(edf, tmp)
       }
 
       # interaction flag if two variables are in the flow
-      if(length(vars) > 1) {
+      if(length(vars) > 1 & length(unique(connectvars)) > 1) {
         edf[nrow(edf), "interaction"] <- TRUE
       }
+      if(length(vars) > 1 & length(unique(connectvars)) <= 1) {
+        edf[nrow(edf), "out_interaction"] <- TRUE
+      }
+
     }  #end flow loop
   }  #end variable loop
 
   # Keep only distinct rows
   edf <- unique(edf)
+
+  # Duplicate rows with out_interaction == TRUE
+  repdf <- subset(edf, out_interaction == TRUE)
+  if(nrow(repdf) != 0) {
+    repdf$interaction <- TRUE
+    repdf$out_interaction <- NULL
+    edf[which(edf$out_interaction == TRUE), "label"] <- ""
+    edf$out_interaction <- NULL
+    edf <- rbind(edf, repdf)
+  }
+
 
   # Break edges apart into:
   #   direct flows
@@ -164,14 +199,25 @@ prepare_diagram <- function(input_list) {
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]
       ids <- subset(ndf, label %in% v)[ , "id"]
+
+      if(is.na(ints[i, "to"])){
+        ints[i, "link"] <- NA
+      } else if(ints[i, "to"] == ints[i, "from"]) {
+        ints[i, "link"] <- NA
+      } else {
+        ints[i, "link"] <- tmp$from
+      }
+
       ints[i, "from"] <- ids[which(ids != tmp$from)]
       ints[i, "to"] <- NA
-      ints[i, "link"] <- tmp$from
     }
 
     # Recombine the edge data frame
     edf <- rbind(edf, ints, intflows)
   }
+
+  # Keep only distinct rows
+  edf <- unique(edf)
 
 
   # Make dummy compartment for all flows in and out of the system.
@@ -195,7 +241,9 @@ prepare_diagram <- function(input_list) {
 
   # Make dummy compartment for "links" in interactions
   linkdummies <- NULL
-  numlinks <- length(edf[is.na(edf$to) & edf$interaction == TRUE, "to"])
+  numlinks <- length(edf[is.na(edf$to) &
+                           edf$interaction == TRUE &
+                           !is.na(edf$link), "to"])
   if(numlinks > 0) {
     linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
     edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
@@ -207,17 +255,21 @@ prepare_diagram <- function(input_list) {
     exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),
                           label = "",
                           row = 1)  # TODO
+    exnodes[setdiff(names(ndf), names(exnodes))] <- NA
     ndf <- rbind(ndf, exnodes)
   }
 
   # Add x and y locations for the nodes
-  ndf <- ndf[order(ndf$id), ]
-  ndf$x <- NA
-  ndf$y <- NA
-  for(rid in unique(ndf$row)) {
-    ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
-    ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * -2
+  if(is.null(nodes_df)) {
+    ndf <- ndf[order(ndf$id), ]
+    ndf$x <- NA
+    ndf$y <- NA
+    for(rid in unique(ndf$row)) {
+      ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
+      ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * -2
+    }
   }
+
 
   # update inflow node positions from nowhere
   inflownodes <- subset(ndf, id < -9990)$id
@@ -264,6 +316,21 @@ prepare_diagram <- function(input_list) {
   #   }
   # }
 
+  # Subset out interactions to in/out flows
+  extints <- subset(edf, interaction == TRUE & is.na(link))
+  if(nrow(extints) > 0) {
+    for(i in 1:nrow(extints)) {
+      tmp <- extints[i, ]
+      v <- get_vars_pars(tmp$label)
+      vf <- substr(v, start = 1, stop = 1)  #get first letters
+      v <- v[which(vf %in% LETTERS)]
+      ids <- subset(ndf, label %in% v)[ , "id"]
+      id <- ids[which(ids != tmp$from)]
+      extints[i, "to"] <- id
+    }
+  }
+
+
   # Create segment coordinates
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "to", by.y = "id",
@@ -271,6 +338,47 @@ prepare_diagram <- function(input_list) {
   edf$xmid <- with(edf, (xend + xstart) / 2)
   edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25
   edf$diff <- with(edf, abs(to-from))
+
+  # Get midpoints of in/out segments for extints "to"
+
+  ## OK. Need to merge in nodes to get the start positions and
+  ## the edges to get the ending position (midpoints of edges with no
+  ## no label)
+  if(nrow(extints) > 0) {
+    extlinks <- subset(edf, label == "")
+    extints <- merge(extints, ndf[,c("x", "y", "id")], by.x = "from", by.y = "id")
+    colnames(extints)[which(colnames(extints) == "x")] <- "xstart"
+    colnames(extints)[which(colnames(extints) == "y")] <- "ystart"
+    extints$xend <- NA
+    extints$yend <- NA
+    for(i in 1:nrow(extints)) {
+      tmp1 <- extints[i, ]
+      tmp1[ , c("xend", "yend")] <- NULL
+      tmp2 <- extlinks[which(tmp1$to == extlinks$from), ]
+      if(tmp2$to == tmp2$from) {
+        tmp3 <- merge(tmp1, tmp2[, c("xend", "yend", "from")],
+                         by.x = "to", by.y = "from")
+        tmp3$yend <- tmp3$yend + 0.75
+        tmp3$xend <- tmp3$xend + 0.17
+      } else {
+        tmp3 <- merge(tmp1, tmp2[, c("xmid", "ymid", "from")],
+                      by.x = "to", by.y = "from")
+      }
+      colnames(tmp3) <- c("to", "from", "label", "interaction", "link",
+                             "xstart", "ystart", "xend", "yend")
+      extints[i, ] <- tmp3
+    }
+    # extints <- merge(extints, extlinks[, c("xmid", "ymid", "from")],
+    #                  by.x = "to", by.y = "from")
+    # colnames(extints) <- c("to", "from", "label", "interaction", "link",
+    #                        "xstart", "ystart", "xend", "yend")
+    extints$xmid <- with(extints, (xend + xstart) / 2)
+    extints$ymid <- with(extints, (yend + ystart) / 2) + 0.25
+    extints$diff <- with(extints, abs(to-from))
+
+    edf <- rbind(edf, extints)
+  }
+
 
   # split up the edges into constituent parts:
   # - curved segments
@@ -284,60 +392,10 @@ prepare_diagram <- function(input_list) {
   fdf <- subset(sdf, to == from)
   sdf <- subset(sdf, to != from)
 
-  # Set default curvature if cdf has data
+  # Set the curvature using internal function
   if(nrow(cdf) > 0) {
-    cdf$curvature <- 0.25
-
-    # add in row info
-    cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
-    cdf$row <- as.numeric(cdf$row)
-
-    # Update curvature based on row, if only 2 rows
-    if(max(as.numeric(ndf$row)) > 1 & max(as.numeric(ndf$row)) <= 2) {
-      cdf$curvature <- ifelse(cdf$row == 1, 0.25, -0.25)
-
-      # also update ystart and yend
-      cdf$ystart <- ifelse(cdf$row == 2, cdf$ystart-1, cdf$ystart)
-      cdf$yend <- ifelse(cdf$row == 2, cdf$ystart, cdf$yend)
-    }
-
-    cdf[cdf$interaction==TRUE, "curvature"] <- 0.4
-
-    # curves need to move up 0.5 units to connect with tops/bottoms
-    # of node rectangles
-    cdf$ystart <- cdf$ystart + 0.5
-    cdf$yend <- cdf$yend + 0.5
-    cdf$ymid <- cdf$ymid + 0.5
-
-    # if curve is for an interaction term, then yend needs to be moved
-    # back down by 0.5 to meet up with the edge rather than the node
-    cdf[cdf$interaction == TRUE, "yend"] <- cdf[cdf$interaction == TRUE, "yend"] - 0.5
-
-    # add curvature midpoint for accurate label placement
-    cdf$labelx <- NA
-    cdf$labely <- NA
-    for(i in 1:nrow(cdf)) {
-      tmp <- cdf[i, ]
-      mids <- calc_control_points(x1 = tmp$xstart,
-                                  y1 = tmp$ystart,
-                                  x2 = tmp$xend,
-                                  y2 = tmp$yend,
-                                  angle = 90,
-                                  curvature = tmp$curvature,
-                                  ncp = 1)
-      cdf[i, "labelx"] <- mids$x
-      cdf[i, "labely"] <- mids$y
-    }
-
-
-    # add y offset to curve labels according to row
-    for(i in 1:nrow(cdf)) {
-      tmp <- cdf[i, ]
-      offset <- ifelse(cdf[i, "row"] == 2, -0.2, 0.2)
-      cdf[i, "labely"] <- cdf[i, "labely"] + offset
-    }
+    cdf <- set_curvature(cdf, ndf)
   }
-
 
   # test to make sure splits are unique and sum up to original data frame
   test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(edf)
@@ -351,6 +409,9 @@ prepare_diagram <- function(input_list) {
 
   # update vertical edges to go in and out at angles
   vdf <- make_vdf_angled(vdf)
+
+  # update vertical edges to avoid overlaps
+  vdf <- fix_arrow_pos(vdf)
 
   # rename data frames for exporting
   nodes <- ndf
