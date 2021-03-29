@@ -1,4 +1,4 @@
-Package: modeldiagram
+Package: flowdiagramr
 Type: Package
 Title: ggplot diagrams of compartmental models 
 Description: Creates a ggplot based flow diagram figure based on input specifying variables and flows of a compartmental model.
@@ -27,6 +27,6 @@ Suggests:
     roxygen2,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
-URL: https://andreashandel.github.io/modeldiagram/
-BugReports: https://github.com/andreashandel/modeldiagram/issues
+URL: https://andreashandel.github.io/flowdiagramr/
+BugReports: https://github.com/andreashandel/flowdiagramr/issues
 Config/testthat/edition: 3

@@ -18,7 +18,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r setup, include = FALSE}
-pkg = 'modeldiagram' #so we can easily switch names
+pkg = 'flowdiagramr' #so we can easily switch names
 library(pkg, character.only = TRUE)
 ```
 
@@ -122,7 +122,14 @@ $$
 The model diagram is as follows.
 
 ```{r predpreydiagram,  fig.cap='',  echo=FALSE, out.width = "70%"}
-knitr::include_graphics('predpreydiagram.png')
+varlabels = c("B","I")
+varnames = c("Bacteria","Immunity")
+flows = list(B_flows = c("+g*B*(1-B/bmax)", "-dB*B", "-k*B*I"),
+             I_flows = c("+r*B*I", "-dI*I"))
+mymodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+input_structure <- prepare_diagram(mymodel)
+my_diagram <- make_diagram(input_structure)
+plot(my_diagram)
 ```
 
 

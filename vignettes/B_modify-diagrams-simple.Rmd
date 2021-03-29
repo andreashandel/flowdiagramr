@@ -18,7 +18,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r setup, include = FALSE}
-pkg = 'modeldiagram' #so we can easily switch names
+pkg = 'flowdiagramr' #so we can easily switch names
 library(pkg, character.only = TRUE)
 ```
 
@@ -166,8 +166,8 @@ Let's explore some of these settings a bit more, now using the second example fr
 # specify the model
 varlabels = c("B","I")
 varnames = c("Bacteria","Immunity")
-flows = list(B_flows = c("g*B", "-dB*B", "-k*B*I"), 
-             I_flows = c("r*B*I", "-dI*I"))
+flows = list(B_flows = c("+g*B", "-dB*B", "-k*B*I"), 
+             I_flows = c("+r*B*I", "-dI*I"))
 #this is the actual model that needs to be used
 #but currently it doesn't work, prepare_diagram complains
 #flows = list(B_flows = c("g*B*(1-B/Bmax)", "-dB*B", "-k*B*I"), 
