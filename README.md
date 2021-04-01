@@ -4,6 +4,12 @@
 # flowdiagramr <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/andreashandel/flowdiagramr/workflows/R-CMD-check/badge.svg)](https://github.com/andreashandel/flowdiagramr/actions)
+[![Coverage
+status](https://codecov.io/gh/andreashandel/flowdiagramr/branch/master/graph/badge.svg?token=OGO3sVEcPD)](https://codecov.io/gh/andreashandel/flowdiagramr)
+[![test-coverage](https://github.com/andreashandel/flowdiagramr/workflows/test-coverage/badge.svg)](https://github.com/andreashandel/flowdiagramr/actions)
+[![R-CMD-check](https://github.com/andreashandel/modeldiagram/workflows/R-CMD-check/badge.svg)](https://github.com/andreashandel/modeldiagram/actions)
 <!-- badges: end -->
 
 ## Description

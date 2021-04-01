@@ -20,7 +20,7 @@ navbar:
       href: index.html
     intro:
       text: Get started
-      href: articles/quickstart.html
+      href: articles/A_quickstart.html
     reference:
       text: Reference
       href: reference/index.html
