@@ -79,7 +79,10 @@
       <a href="../articles/D_modify_diagrams_advanced.html">Advanced modification of a diagram</a>
     </li>
     <li>
-      <a href="../articles/E_non_model_diagrams.html">Other Diagrams</a>
+      <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+    </li>
+    <li>
+      <a href="../articles/F_non_model_diagrams.html">Other Diagrams</a>
     </li>
   </ul>
 </li>
@@ -122,12 +125,12 @@
 <div id="terminology" class="section level1">
 <h1 class="hasAnchor">
 <a href="#terminology" class="anchor"></a>Terminology</h1>
-<p>The kinds of models and diagrams we are discussing here are used in many different areas of science. That also means there are many different ways and terminology to describe these models. What we mainly refer to as <em>compartments</em> or <em>variables</em> is also known as <em>stocks</em> or <em>nodes</em>. Similarly, what we mainly refer to as <em>flows</em> or <em>processes</em> is also known as <em>connections</em> or … We hope by showing examples it will be clear.</p>
+<p>The kinds of models and diagrams we are discussing here are used in many different areas of science. That also means there are many different ways and words to describe these models. What we mainly refer to as <em>compartments</em> or <em>variables</em> is also known as <em>stocks</em> or <em>nodes</em>. Similarly, what we mainly refer to as <em>flows</em> or <em>processes</em> is also known as <em>connections</em> or … We hope by showing examples it will be clear.</p>
 </div>
 <div id="starting-example" class="section level1">
 <h1 class="hasAnchor">
 <a href="#starting-example" class="anchor"></a>Starting Example</h1>
-<p>Here is a simple example to illustrate the process. Let’s assume we have a simple Susceptible-Infected-Recovered model, which is the starting point for a lot of infectious disease models. In this case, we have 3 compartments, name susceptible individuals, <strong>S</strong>, infected/infectious individuals, <strong>I</strong>, and recovered/removed individuals, <strong>R</strong>. We also have 2 processes/flows, one process by which susceptible individuals become infected at some rate after contact with infectious individuals, <strong>b*S*I</strong> and a process by which infected individuals recover at some rate, <strong>g*I.</strong></p>
+<p>Here is a simple example to illustrate the process. This first example is the <a href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology">Susceptible-Infected-Recovered model (SIR) model</a> which forms the basis of many models used in infectious disease epidemiology. For this model, we have 3 compartments/variables, name susceptible individuals, <strong>S</strong>, infected/infectious individuals, <strong>I</strong>, and recovered/removed individuals, <strong>R</strong>. We also have 2 processes/flows, one process by which susceptible individuals become infected at some rate after contact with infectious individuals, <strong>b*S*I</strong> and a process by which infected individuals recover at some rate, <strong>g*I.</strong></p>
 <p>Written out as differential equations, the model looks like this</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -138,7 +141,7 @@
 \]</span></p>
 <p>A diagram for the model looks as follows</p>
 <p><img src="sirdiagram.png" width="70%"></p>
-<p>Here is how you can use <strong>flowdiagramr</strong> to create this diagram.</p>
+<p>The purpose of <strong>flowdiagramr</strong> is to automatically create this diagram for you if you supply the model specification. Here is how.</p>
 <div id="specify-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#specify-the-model" class="anchor"></a>Specify the model</h2>
@@ -155,18 +158,18 @@
 <div id="create-elements-needed-for-diagram-generation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#create-elements-needed-for-diagram-generation" class="anchor"></a>Create elements needed for diagram generation</h2>
-<p>Once you have placed your model into a simple structure like the one above, you can start preparing the diagram generation. This happens in two steps (which as the advantage of easier manual modification, see below). First, you create a set of data frames that are used as input into the actual diagram plotting code. You do this as follows:</p>
+<p>Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which as the advantage of easier manual modification. You’ll learn more about that in subsequent vignettes. For now, we’ll explain the steps, then revisit them later. To get ready for diagram generation, you send your model to the <code>prepare_diagram</code> function.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
-<p>The <code>input_structure</code> object contains a list of data frames used by the actual diagram generation code. We’ll skip over this for now, you can learn more about it and how to manipulate it <a href="">here</a>.</p>
+<p>The <code>input_structure</code> object returned by this function contains a list of data frames used to make the diagram. We’ll skip over this for now, you can learn more about it and how to manipulate it <a href="./C_technical_details.html">here</a>.</p>
 </div>
 <div id="make-the-diagram" class="section level2">
 <h2 class="hasAnchor">
 <a href="#make-the-diagram" class="anchor"></a>Make the diagram</h2>
-<p>Now it’s time to make the diagram. This is done by sending the input structure you just created to the <code>make_diagram</code> function, like so</p>
+<p>Now it’s time to make the diagram. This is done by sending the object you got by calling <code>prepare_diagram</code> to the <code>make_diagram</code> function, like so</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span><span class="op">)</span></code></pre></div>
-<p><code>make_diagram</code> returns an object (here called <code>my_diagram</code>) which is a ggplot2 plot. You you can write this plot to a file or print to the screen, e.g. with</p>
+<p><code>make_diagram</code> returns a ggplot2 object (here called <code>my_diagram</code>). You you can write this plot to a file or print to the screen, e.g. with</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">"sirdiagram.png"</span>,<span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p>and</p>
@@ -178,22 +181,14 @@
 <div id="another-example" class="section level1">
 <h1 class="hasAnchor">
 <a href="#another-example" class="anchor"></a>Another example</h1>
-<p>Here is one more example, a classical predator-prey model from Ecology (also used in e.g. immunology to model pathogen and immune response). This model has two compartments/variables. In the context of immunology, the immune response, <strong>I</strong>, is the predator, and the pathogen (e.g. bacteria), <strong>B</strong>, are the prey. We will also include the following processes/flows:</p>
+<p>Here is one more example, the classical <a href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations">predator-prey model (also known as Lotka-Volterra model)</a>. This model has two compartments/variables. The model is also used in immunology to model pathogen and immune response. In the context of immunology, the immune response, <strong>I</strong>, is the predator, and the pathogen (e.g. bacteria), <strong>B</strong>, are the prey. We will also include the following processes/flows:</p>
 <ol style="list-style-type: decimal">
-<li>Bacteria grow/divide at some maximum rate (which we label <em>g</em>) and saturate as they approach some maximum carrying capacity, <em>B<sub>max</sub></em>.</li>
+<li>Bacteria grow/divide at some maximum rate (which we label <em>g</em>) and saturate as they approach some maximum carrying capacity, <em>b<sub>max</sub></em>.</li>
 <li>Bacteria die at a natural death rate (which we label <em>d<sub>B</sub></em>).</li>
 <li>Bacteria are killed by the immune response at some rate <em>k</em>.</li>
 <li>The immune response grows proportional to the number of bacteria and itself at some rate <em>r</em>.</li>
 <li>The immune response decays at some rate (which we label <em>d<sub>I</sub></em>).</li>
 </ol>
-<p>Written out as differential equations, the model looks like this</p>
-<p><span class="math display">\[
-\begin{aligned}
-\dot B &amp; = g B (1-\frac{B}{B_{max}}) - d_B B - k BI \\
-\dot I &amp; = r B I - d_I I
-\end{aligned}
-\]</span> The model diagram is as follows.</p>
-<p><img src="A_quickstart_files/figure-html/predpreydiagram-1.png" width="70%"></p>
 <p>To generate the diagram, you follow the same steps as above. First, create the model structure</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span>,<span class="st">"I"</span><span class="op">)</span>
@@ -202,22 +197,25 @@
              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+r*B*I"</span>, <span class="st">"-dI*I"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into <code>R</code>, they would work (provided you assigned numerical values to each variable and parameter).</p>
-<p>Next, prepare the model, then create it and plot it.</p>
+<p>Also note that for the purpose of generating the diagram, it is not required to write down differential equations for the model. But if you wanted to, for this model they are</p>
+<p><span class="math display">\[
+\begin{aligned}
+\dot B &amp; = g B (1-\frac{B}{b_{max}}) - d_B B - k BI \\
+\dot I &amp; = r B I - d_I I
+\end{aligned}
+\]</span></p>
+<p>Next, you use the same steps as above to create the model diagram.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
-<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span><span class="op">)</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span>, node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>, main_arrow_linetype <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="A_quickstart_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-<p>In this example, we added some optional inputs to the <code>make_diagram</code> function to start customizing the model, you’ll learn more about this next.</p>
+<p>In this example, we added some optional inputs to the <code>make_diagram</code> function to start customizing the model. You’ll learn more about this <a href="./B_modify_diagram_simple.html">in the next vignette</a>.</p>
 </div>
 <div id="next-steps" class="section level1">
 <h1 class="hasAnchor">
 <a href="#next-steps" class="anchor"></a>Next steps</h1>
-<p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won’t be great. Sometimes, the default will actually not look that great, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this, which are described in <a href="">this vignette</a>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">data</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">""</span>,<span class="st">"R"</span>,
-          <span class="st">""</span>,<span class="st">"I"</span>,<span class="st">""</span><span class="op">)</span>
-<span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">data</span>,nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won’t be great. Sometimes, the default will actually look bad, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this. <a href="./B_modify_diagram_simple.html">This vignette</a>, which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. You should read them later.</p>
 </div>
   </div>
 

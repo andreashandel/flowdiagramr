@@ -1,0 +1,74 @@
+---
+title: Other Diagrams
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Other Diagrams}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup, include = FALSE}
+pkg = 'flowdiagramr' #so we can easily switch names
+library(pkg, character.only = TRUE)
+```
+
+# Overview
+
+While the main reason for the existence of **`r pkg`** is to create nice-looking diagrams for compartmental simulation models, it is possible to create other, more general flow charts. This vignette gives a brief illustration how this can be done.
+
+
+
+
+# Starting Example
+
+As of this writing, the [Wikipedia Flowchart page](https://en.wikipedia.org/wiki/Flowchart) has the following as an example of a simple flow chart.
+
+
+```{r,  echo=FALSE, fig.cap='[svg by Booyabazookaoriginal png by Wapcaplet](https://commons.wikimedia.org/w/index.php?curid=714537)/Wikipedia', out.width = '40%', fig.align='center'}
+knitr::include_graphics("lampflowchart.png")
+```
+
+We'll try to recreate a version of this.
+
+## Specify the model
+
+
+```{r}
+varlabels = c("L","P","B","Pl","R","Re")
+varnames = c("Lamp","Pluggedin","Bulbout","Plugin","Replace","Repair")
+
+flows = list(Lamp_flows = c("-L"), 
+             Plugged_flows = c("L","-no*P","-yes*P"), 
+             Bulbout_flows = c("yes*P","-yes*B", "-no*B"),
+             Plugin_flows = c("no*P"),
+             Newbulb_flows = c("yes*B"),
+             Repair_flows = c("no*B")
+             )
+
+mymodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+```
+
+
+```{r}
+input_structure <- prepare_diagram(mymodel)
+```
+
+```{r}
+my_diagram <- make_diagram(input_structure)
+```
+
+
+```{r}
+plot(my_diagram)
+```
+

@@ -1,0 +1,39 @@
+---
+title: Using modelbuilder models with flowdiagramr
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using modelbuilder models with flowdiagramr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup, include = FALSE}
+pkg = 'flowdiagramr' #so we can easily switch names
+library(pkg, character.only = TRUE)
+```
+
+
+# Overview
+
+We have an R package called [**modelbuilder**]() which allows users to graphically build .
+The **`r pkg`** package is in some sense a spin-off from **modelbuilder** and is used as part of **modelbuilder**. As such, it is important that one can use **modelbuilder** built models with **`r pkg`**.
+
+Since **modelbuilder** models and **`r pkg`** models are slightly different, we provide a convience function that converts one format into the other. This is a very simple process, as the following example shows.
+
+
+
+# Example
+
+Assume you built a model with **modelbuilder** and saved it as an `R` object inside a `.Rda` file. 
+
+

@@ -79,7 +79,10 @@
       <a href="../articles/D_modify_diagrams_advanced.html">Advanced modification of a diagram</a>
     </li>
     <li>
-      <a href="../articles/E_non_model_diagrams.html">Other Diagrams</a>
+      <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+    </li>
+    <li>
+      <a href="../articles/F_non_model_diagrams.html">Other Diagrams</a>
     </li>
   </ul>
 </li>
@@ -117,16 +120,21 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>We assume you went through the <a href="">getting started vignette</a> and know the basics of using <strong>flowdiagramr</strong>. In this vignette, you will learn the simplest ways of customizing diagrams. Further vignettes show more advanced ways of customizing diagrams.</p>
+<p>We assume you went through the <a href="./A_quickstart.html">getting started vignette</a> and know the basics of using <strong>flowdiagramr</strong>. In this vignette, you will learn the simplest ways of customizing diagrams. Further vignettes show more advanced ways of customizing diagrams.</p>
 </div>
 <div id="setting-arguments-in-make_diagram" class="section level1">
 <h1 class="hasAnchor">
 <a href="#setting-arguments-in-make_diagram" class="anchor"></a>Setting arguments in <code>make_diagram</code>
 </h1>
-<p>The easiest way to start customizing your model is by providing specific settings when you call the <code>make_diagram</code> function. The help for the function shows you what settings you can customize easily, you can look at it with this command</p>
+<p>The easiest way to start customizing your model is by providing specific settings when you call the <code>make_diagram</code> function. The help file for the function shows you what settings you can customize, you can look at it with this command</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/help.html">help</a></span><span class="op">(</span><span class="st">'make_diagram'</span><span class="op">)</span></code></pre></div>
-<p>Let’s explore some of those. We’ll use an extension of the SIR model you encountered in the <a href="">Getting started vignette</a> as an example. For this extension, we also include natural births and deaths. We assume new births only enter the <strong>S</strong> compartment at some fixed flow, <strong>n</strong>, while deaths occur at rate <strong>m</strong> out of all compartments. The model is specified as follows</p>
+<p>Let’s explore some of those options and what they do.</p>
+</div>
+<div id="example-1" class="section level1">
+<h1 class="hasAnchor">
+<a href="#example-1" class="anchor"></a>Example 1</h1>
+<p>We’ll start with an example that uses an extension of the SIR model you encountered in the <a href="./A_quickstart.html">Getting started vignette</a>. For this extension, we also include natural births and deaths. We assume new births only enter the <strong>S</strong> compartment at some fixed flow, <strong>n</strong>, while deaths occur at rate <strong>m</strong> out of all compartments. The model is specified as follows</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the model</span>
 <span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
@@ -136,24 +144,21 @@
              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+b*S*I"</span>,<span class="st">"-g*I"</span>, <span class="st">"-m*I"</span><span class="op">)</span>, 
              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*I"</span>, <span class="st">"-m*R"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">sirmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
-<p>Now, let’s create two different diagrams for this model</p>
+<p>First, we need to call <code>prepare_diagram</code> to make the list of data frames needed as input for <code>make_model</code>. We’ll skip over this step again for now, you’ll learn more about these data frames and how to potentially modify them, in a later vignette.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># prepare inputs </span>
-<span class="va">sir_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span>
-<span class="co"># make two diagrams with adjusted settings</span>
-<span class="va">ugly_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>, 
-                             node_outline_color <span class="op">=</span> <span class="st">"red"</span>,
-                             node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"blue"</span><span class="op">)</span>,
-                             node_text_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span>,
-                             node_text_size <span class="op">=</span> <span class="fl">3</span>,
-                             flow_text_color <span class="op">=</span> <span class="st">"green"</span>,
-                             flow_text_size <span class="op">=</span> <span class="fl">20</span>,
-                             main_arrow_color <span class="op">=</span> <span class="st">"brown"</span>,
-                             main_arrow_linetype <span class="op">=</span> <span class="fl">4</span>,
-                             main_arrow_size <span class="op">=</span> <span class="fl">2</span>,
-                             interaction_arrow_color <span class="op">=</span> <span class="st">"purple"</span>,
-                             interaction_arrow_linetype <span class="op">=</span> <span class="fl">3</span>,
-                             interaction_arrow_size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">sir_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span></code></pre></div>
+<p>Now, let’s produce a basic diagram by calling <code>make_diagram</code> with its defaults.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make a default diagram</span>
+<span class="va">default_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">default_diagram</span><span class="op">)</span>
+<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
+<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<p>This looks ok, but probably not quite at the level what you want for a publication or presentation. So let’s provide some inputs to the <code>make_diagram</code> function to improve the look.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make a diagram with adjusted settings</span>
 <span class="va">nice_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
                              node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
                              node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
@@ -167,18 +172,13 @@
                              interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ugly_diagram</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">nice_diagram</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
 <span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">nice_diagram</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
-
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
-<p>As you can see, it is possible to change the look of the diagram considerably by changing settings. Let’s look at a few more options that you can configure. By default, <strong>flowdiagramr</strong> shows all flows and labels them all. While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. You can easily turn on and off several components. The following code shows examples where we turned off different flows or labels. Note that if you turn off some component, other options that apply to that component will be ignored. For instance if you don’t show interaction flows, then of course all styling of those arrows is ignored. Below, we left it in the code.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p>As you can see, it is possible to change the look of the diagram considerably by changing settings.</p>
+<p>Let’s look at a few more options that you can configure. By default, <strong>flowdiagramr</strong> shows all flows and labels them all. While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. You can easily turn on and off several components. The following code shows an example where we turned off labeling of the flows.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Diagram without labeling of flows</span>
 <span class="va">simpler_diagram_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
                              label_flows <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -198,8 +198,9 @@
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_1</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p>In this example, we are also turning off plotting of the flows that come into or go out of the system from the outside. In this example, those are births and deaths.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Diagram without external flows</span>
 <span class="va">simpler_diagram_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
                              label_flows <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -218,42 +219,28 @@
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_2</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#Diagram without external or interaction flows</span>
-<span class="va">simpler_diagram_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
-                             label_flows <span class="op">=</span> <span class="cn">TRUE</span>,
-                             external_flows <span class="op">=</span> <span class="cn">FALSE</span>,
-                             interaction_label <span class="op">=</span> <span class="cn">FALSE</span>,
-                             node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-                             node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-                             node_text_color <span class="op">=</span> <span class="st">"white"</span>,
-                             node_text_size <span class="op">=</span> <span class="fl">10</span>,
-                             flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
-                             flow_text_size <span class="op">=</span> <span class="fl">5</span>,
-                             main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
-                             main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
-                             interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
-                             interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_3</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
-<p>Let’s explore some of these settings a bit more, now using the second example from the <a href="">Getting started vignette</a>, the predator prey model.</p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p>Note that if you turn off some component, other options that apply to that component will be ignored. For instance if you turn off labeling of the flows, it does of course not matter what color and font size you give those labels. You can leave those specifications in the code, as we have done above. They will just be ignored.</p>
+</div>
+<div id="example-2" class="section level1">
+<h1 class="hasAnchor">
+<a href="#example-2" class="anchor"></a>Example 2</h1>
+<p>Let’s use the second example from the <a href="./A_quickstart.html">Getting started vignette</a>, the predator prey model, to explore some more options.</p>
+<p>First, we specify the model again.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the model</span>
 <span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span>,<span class="st">"I"</span><span class="op">)</span>
 <span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>,<span class="st">"Immunity"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*B"</span>, <span class="st">"-dB*B"</span>, <span class="st">"-k*B*I"</span><span class="op">)</span>, 
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*B*(1-B/bmax)"</span>, <span class="st">"-dB*B"</span>, <span class="st">"-k*B*I"</span><span class="op">)</span>,
              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+r*B*I"</span>, <span class="st">"-dI*I"</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#this is the actual model that needs to be used</span>
-<span class="co">#but currently it doesn't work, prepare_diagram complains</span>
-<span class="co">#flows = list(B_flows = c("g*B*(1-B/Bmax)", "-dB*B", "-k*B*I"), </span>
-<span class="co">#                I_flows = c("r*B*I", "-dI*I"))</span>
-<span class="va">ppmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
-<span class="co"># prepare inputs </span>
-<span class="va">pp_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span>
-<span class="co"># make two diagrams with adjusted settings</span>
+<span class="va">ppmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<p>Next, we prepare the input list of data frames</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># prepare inputs </span>
+<span class="va">pp_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span></code></pre></div>
+<p>Finally, we can make a diagram with settings adjusted to our liking.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make diagram with adjusted settings</span>
 <span class="va">diag1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_input_structure</span>,  
                              node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
                              node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
@@ -267,6 +254,11 @@
                              interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag1</span><span class="op">)</span></code></pre></div>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p>For the next diagram, we are turning off the interactions and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make another diagram with adjusted settings</span>
 <span class="va">diag2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_input_structure</span>,  
                              node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
                              node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
@@ -281,17 +273,15 @@
                              interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag1</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-2.png" width="700"></p>
-<p>The difference between the two diagrams is that for the second, we turned off showing interaction arrows and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p>As you can see, not showing the interactions doesn’t produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.</p>
 </div>
 <div id="next-steps" class="section level1">
 <h1 class="hasAnchor">
 <a href="#next-steps" class="anchor"></a>Next steps</h1>
-<p>With the approach just discussed, you can tweak the look of the diagram a good bit. Often, this might give you a diagram that’s good enough. However, there might be times when you want to make further changes. For instance you might want to tweak the placement of the boxes and arrows or add some extra text somewhere on the diagram. <strong>flowdiagramr</strong> gives you two ways of doing this. We are describing them in <a href="">this vignette</a>. Before you read through this vignette and try to perform further modifications, it will be useful to learn a bit more about how <strong>flowdiagramr</strong> works, and especially the structure of the data frames that are generated by <code>prepare_diagram</code> and used to produce the ggplot figure. This is described <a href="">in this vignette</a>.</p>
+<p>With the approach just discussed, you can tweak the look of the diagram a good bit. Often, this might give you a diagram that’s good enough for what you want. However, there might be times when you want to make further changes. For instance you might want to tweak the placement of the boxes and arrows or add some extra text somewhere on the diagram. <strong>flowdiagramr</strong> gives you ways of doing this.</p>
+<p>Before we describe how to make more detailed modifications, you need to learn a bit more about how <strong>flowdiagramr</strong> works, and especially the structure of the data frames that are generated by <code>prepare_diagram</code> and used to produce the ggplot figure. This is described <a href="./C_technical_details.html">in this vignette</a>.</p>
 </div>
   </div>
 

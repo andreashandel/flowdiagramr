@@ -6,8 +6,9 @@ articles:
   B_modify_diagrams_simple: B_modify_diagrams_simple.html
   C_technical_details: C_technical_details.html
   D_modify_diagrams_advanced: D_modify_diagrams_advanced.html
-  E_non_model_diagrams: E_non_model_diagrams.html
-last_built: 2021-04-01T15:17Z
+  E_flowdiagramr_and_modelbuilder: E_flowdiagramr_and_modelbuilder.html
+  F_non_model_diagrams: F_non_model_diagrams.html
+last_built: 2021-04-01T18:11Z
 urls:
   reference: https://andreashandel.github.io/flowdiagramr/index.html/reference
   article: https://andreashandel.github.io/flowdiagramr/index.html/articles

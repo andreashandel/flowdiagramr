@@ -4,10 +4,13 @@
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/index.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/make_diagram.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/convert_from_modelbuilder.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/make_diagram_inputs.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/flowdiagramr.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/make_diagram.html</loc>
   </url>
   <url>
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/prepare_diagram.html</loc>
@@ -28,6 +31,9 @@
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/D_modify_diagrams_advanced.html</loc>
   </url>
   <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/E_non_model_diagrams.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/E_flowdiagramr_and_modelbuilder.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/F_non_model_diagrams.html</loc>
   </url>
 </urlset>

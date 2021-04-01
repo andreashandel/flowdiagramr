@@ -1,15 +1,17 @@
 2021-04-01
 
-change main_arrow_linetype input to word (e.g. solid/dashed/etc.)
+- change main_arrow_linetype input to a word instead of a number (e.g. solid/dashed/etc.)
 
+- labeling of main vs interaction flows doesn't seem to work for PP model? see 1st vignette diagram, only main arrows should be dashed, but interaction arrows are also dashed.
 
+- write diagram should take as input the model list and generate the code (if possible). that probably means internally calling the other functions. also, written code should be fully 'stand-alone', as such include the model specification.
 
-Did this:
-reorganized and rewrote vignettes
-see here for 'odd' naming of vignettes:
-https://github.com/r-lib/pkgdown/issues/995
+- add more details to each public function roxygen block, e.g. examples and more documentation/information.
 
-renamed main functions:  prepare_diagram, make_diagram, write_diagram
+- add a simple 'vertical = TRUE' feature to make_diagram? Or skip and just let user specify input matrix?
+
+- modify diagram (vignette B) produces warning messages. Should probably fix and/or suppress.
+
 
 
 ### General todo/notes

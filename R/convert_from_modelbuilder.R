@@ -1,10 +1,10 @@
 #' Convert modelbuilder list object to list for modeldiagram
 #'
 #' @param mbmodel A modelbuilder object.
-#' @return A list.
+#' @return A list object that can be used as input for the prepare_diagram function.
 #' @export
 
-make_diagram_inputs <- function(mbmodel) {
+convert_from_modelbuilder <- function(mbmodel) {
   m <- mbmodel  # reassign for easy coding/typing
 
   # extract variable labels and names
