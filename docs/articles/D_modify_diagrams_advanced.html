@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -70,13 +70,13 @@
       <a href="../articles/A_quickstart.html">A quick start to flowdiagramr</a>
     </li>
     <li>
-      <a href="../articles/B_modify-diagrams-simple.html">Basic modification of a diagram</a>
+      <a href="../articles/B_modify_diagrams_simple.html">Basic modification of a diagram</a>
     </li>
     <li>
-      <a href="../articles/C_technical-details.html">Technical details</a>
+      <a href="../articles/C_technical_details.html">Technical details</a>
     </li>
     <li>
-      <a href="../articles/D_modify-diagrams-advanced.html">Advanced modification of a diagram</a>
+      <a href="../articles/D_modify_diagrams_advanced.html">Advanced modification of a diagram</a>
     </li>
     <li>
       <a href="../articles/E_non_model_diagrams.html">Other Diagrams</a>
@@ -101,14 +101,14 @@
 
       
 
-      </header><script src="D_modify-diagrams-advanced_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="D_modify_diagrams_advanced_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Advanced modification of a diagram</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/D_modify-diagrams-advanced.Rmd"><code>vignettes/D_modify-diagrams-advanced.Rmd</code></a></small>
-      <div class="hidden name"><code>D_modify-diagrams-advanced.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/D_modify_diagrams_advanced.Rmd"><code>vignettes/D_modify_diagrams_advanced.Rmd</code></a></small>
+      <div class="hidden name"><code>D_modify_diagrams_advanced.Rmd</code></div>
 
     </div>
 
@@ -133,12 +133,12 @@
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
 <span class="va">input_structure_original</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
 <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure_original</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify-diagrams-advanced_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<p><img src="D_modify_diagrams_advanced_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">input_structure_modified</span> <span class="op">&lt;-</span> <span class="va">input_structure_original</span>
 <span class="va">input_structure_modified</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">xend</span> <span class="op">=</span> <span class="fl">2.5</span>
 <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure_modified</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify-diagrams-advanced_files/figure-html/unnamed-chunk-2-2.png" width="700"></p>
+<p><img src="D_modify_diagrams_advanced_files/figure-html/unnamed-chunk-2-2.png" width="700"></p>
 </div>
 <div id="modifying-the-ggplot2-code" class="section level1">
 <h1 class="hasAnchor">

@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -70,13 +70,13 @@
       <a href="../articles/A_quickstart.html">A quick start to flowdiagramr</a>
     </li>
     <li>
-      <a href="../articles/B_modify-diagrams-simple.html">Basic modification of a diagram</a>
+      <a href="../articles/B_modify_diagrams_simple.html">Basic modification of a diagram</a>
     </li>
     <li>
-      <a href="../articles/C_technical-details.html">Technical details</a>
+      <a href="../articles/C_technical_details.html">Technical details</a>
     </li>
     <li>
-      <a href="../articles/D_modify-diagrams-advanced.html">Advanced modification of a diagram</a>
+      <a href="../articles/D_modify_diagrams_advanced.html">Advanced modification of a diagram</a>
     </li>
     <li>
       <a href="../articles/E_non_model_diagrams.html">Other Diagrams</a>
@@ -101,14 +101,14 @@
 
       
 
-      </header><script src="B_modify-diagrams-simple_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="B_modify_diagrams_simple_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Basic modification of a diagram</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/B_modify-diagrams-simple.Rmd"><code>vignettes/B_modify-diagrams-simple.Rmd</code></a></small>
-      <div class="hidden name"><code>B_modify-diagrams-simple.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/B_modify_diagrams_simple.Rmd"><code>vignettes/B_modify_diagrams_simple.Rmd</code></a></small>
+      <div class="hidden name"><code>B_modify_diagrams_simple.Rmd</code></div>
 
     </div>
 
@@ -170,13 +170,13 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ugly_diagram</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
 <span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
-<p><img src="B_modify-diagrams-simple_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">nice_diagram</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
 
 <span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
-<p><img src="B_modify-diagrams-simple_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
 <p>As you can see, it is possible to change the look of the diagram considerably by changing settings. Let’s look at a few more options that you can configure. By default, <strong>flowdiagramr</strong> shows all flows and labels them all. While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. You can easily turn on and off several components. The following code shows examples where we turned off different flows or labels. Note that if you turn off some component, other options that apply to that component will be ignored. For instance if you don’t show interaction flows, then of course all styling of those arrows is ignored. Below, we left it in the code.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Diagram without labeling of flows</span>
@@ -198,7 +198,7 @@
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_1</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span></code></pre></div>
-<p><img src="B_modify-diagrams-simple_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Diagram without external flows</span>
 <span class="va">simpler_diagram_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
@@ -218,7 +218,7 @@
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_2</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify-diagrams-simple_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Diagram without external or interaction flows</span>
 <span class="va">simpler_diagram_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
@@ -238,7 +238,7 @@
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_3</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify-diagrams-simple_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>Let’s explore some of these settings a bit more, now using the second example from the <a href="">Getting started vignette</a>, the predator prey model.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the model</span>
@@ -282,10 +282,10 @@
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag1</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify-diagrams-simple_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify-diagrams-simple_files/figure-html/unnamed-chunk-8-2.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-2.png" width="700"></p>
 <p>The difference between the two diagrams is that for the second, we turned off showing interaction arrows and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
 </div>
 <div id="next-steps" class="section level1">

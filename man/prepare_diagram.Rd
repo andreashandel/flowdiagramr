@@ -4,11 +4,17 @@
 \alias{prepare_diagram}
 \title{Create data frames for plotting from model elements.}
 \usage{
-prepare_diagram(input_list)
+prepare_diagram(input_list, nodes_df = NULL)
 }
 \arguments{
 \item{input_list}{A list of model elements. The list must contain at least
 two elements with names \code{varlabels} and \code{flows}.}
+
+\item{nodes_df}{A data frame with user-specified node locations. The data
+frame must contain the following columns: \code{id}, \code{label},
+\code{x}, and \code{y}. An internal function will add the necessary
+\code{row} column based on the values for \code{y}. See vignettes for
+examples of the data frame structure.}
 }
 \value{
 A list of data frames.

@@ -1,13 +1,13 @@
-pandoc: 2.7.3
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   A_quickstart: A_quickstart.html
-  B_modify-diagrams-simple: B_modify-diagrams-simple.html
-  C_technical-details: C_technical-details.html
-  D_modify-diagrams-advanced: D_modify-diagrams-advanced.html
+  B_modify_diagrams_simple: B_modify_diagrams_simple.html
+  C_technical_details: C_technical_details.html
+  D_modify_diagrams_advanced: D_modify_diagrams_advanced.html
   E_non_model_diagrams: E_non_model_diagrams.html
-last_built: 2021-03-24T14:22Z
+last_built: 2021-04-01T15:08Z
 urls:
   reference: https://andreashandel.github.io/flowdiagramr/index.html/reference
   article: https://andreashandel.github.io/flowdiagramr/index.html/articles

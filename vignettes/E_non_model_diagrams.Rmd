@@ -2,7 +2,7 @@
 title: Other Diagrams
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Other diagrams}
+  %\VignetteIndexEntry{Other Diagrams}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

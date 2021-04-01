@@ -14,7 +14,12 @@ knitr::opts_chunk$set(
 
 # flowdiagramr <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
+
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/andreashandel/flowdiagramr/workflows/R-CMD-check/badge.svg)](https://github.com/andreashandel/flowdiagramr/actions)
+[![Coverage status](https://codecov.io/gh/andreashandel/flowdiagramr/branch/master/graph/badge.svg?token=OGO3sVEcPD)](https://codecov.io/gh/andreashandel/flowdiagramr)
+[![test-coverage](https://github.com/andreashandel/flowdiagramr/workflows/test-coverage/badge.svg)](https://github.com/andreashandel/flowdiagramr/actions)
+[![R-CMD-check](https://github.com/andreashandel/modeldiagram/workflows/R-CMD-check/badge.svg)](https://github.com/andreashandel/modeldiagram/actions)
 <!-- badges: end -->
 
 
@@ -33,3 +38,5 @@ For an introduction to the package, step-by-step instructions on getting started
 ## Citation and Contributors
 
 This R package was developed by [Andrew Tredennick]( https://atredennick.github.io/) and [Andreas Handel](https://www.andreashandel.com/). It is maintained Andreas Handel. A full list of contributors and a Bibtex entry for the citation [can be found here](https://andreashandel.github.io/flowdiagramr/authors.html).
+
+This project was/is partially supported by NIH grants R01 GM124280 and GM 12480-03S1. 

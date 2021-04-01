@@ -29,3 +29,6 @@ Handel](https://www.andreashandel.com/). It is maintained Andreas
 Handel. A full list of contributors and a Bibtex entry for the citation
 [can be found
 here](https://andreashandel.github.io/flowdiagramr/authors.html).
+
+This project was/is partially supported by NIH grants R01 GM124280 and
+GM 12480-03S1.

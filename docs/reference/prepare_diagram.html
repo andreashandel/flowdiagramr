@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -112,13 +112,13 @@
       <a href="../articles/A_quickstart.html">A quick start to flowdiagramr</a>
     </li>
     <li>
-      <a href="../articles/B_modify-diagrams-simple.html">Basic modification of a diagram</a>
+      <a href="../articles/B_modify_diagrams_simple.html">Basic modification of a diagram</a>
     </li>
     <li>
-      <a href="../articles/C_technical-details.html">Technical details</a>
+      <a href="../articles/C_technical_details.html">Technical details</a>
     </li>
     <li>
-      <a href="../articles/D_modify-diagrams-advanced.html">Advanced modification of a diagram</a>
+      <a href="../articles/D_modify_diagrams_advanced.html">Advanced modification of a diagram</a>
     </li>
     <li>
       <a href="../articles/E_non_model_diagrams.html">Other Diagrams</a>
@@ -155,7 +155,7 @@
     <p>Create data frames for plotting from model elements.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prepare_diagram</span>(<span class='kw'>input_list</span>)</pre>
+    <pre class="usage"><span class='fu'>prepare_diagram</span><span class='op'>(</span><span class='va'>input_list</span>, nodes_df <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -164,6 +164,14 @@
       <th>input_list</th>
       <td><p>A list of model elements. The list must contain at least
 two elements with names <code>varlabels</code> and <code>flows</code>.</p></td>
+    </tr>
+    <tr>
+      <th>nodes_df</th>
+      <td><p>A data frame with user-specified node locations. The data
+frame must contain the following columns: <code>id</code>, <code>label</code>,
+<code>x</code>, and <code>y</code>. An internal function will add the necessary
+<code>row</code> column based on the values for <code>y</code>. See vignettes for
+examples of the data frame structure.</p></td>
     </tr>
     </table>
 
