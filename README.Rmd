@@ -29,7 +29,7 @@ Other types of flow charts are also supported.
 
 ## Getting Started
 
-For an introduction to the package, step-by-step instructions on getting started, and more information on the different ways you can use the package [see the _Quick Start_ tutorial (vignette)](https://andreashandel.github.io/flowdiagramr/articles/quickstart.html).
+For an introduction to the package, step-by-step instructions on getting started, and more information on the different ways you can use the package [see the _Quick Start_ tutorial (vignette)](./articles/A_quickstart.html).
 
 
 ## Further information

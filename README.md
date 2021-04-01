@@ -23,7 +23,7 @@ are also supported.
 For an introduction to the package, step-by-step instructions on getting
 started, and more information on the different ways you can use the
 package [see the *Quick Start* tutorial
-(vignette)](https://andreashandel.github.io/flowdiagramr/articles/quickstart.html).
+(vignette)](./articles/A_quickstart.html).
 
 ## Further information
 
