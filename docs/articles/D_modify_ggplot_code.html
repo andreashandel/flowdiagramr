@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Using modelbuilder models with flowdiagramr • flowdiagramr</title>
+<title>Modifying the ggplot2 code • flowdiagramr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Using modelbuilder models with flowdiagramr">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Modifying the ggplot2 code">
 <meta property="og:description" content="flowdiagramr">
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -104,29 +104,53 @@
 
       
 
-      </header><script src="E_flowdiagramr_and_modelbuilder_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="D_modify_ggplot_code_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Using modelbuilder models with flowdiagramr</h1>
+      <h1 data-toc-skip>Modifying the ggplot2 code</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/E_flowdiagramr_and_modelbuilder.Rmd"><code>vignettes/E_flowdiagramr_and_modelbuilder.Rmd</code></a></small>
-      <div class="hidden name"><code>E_flowdiagramr_and_modelbuilder.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/D_modify_ggplot_code.Rmd"><code>vignettes/D_modify_ggplot_code.Rmd</code></a></small>
+      <div class="hidden name"><code>D_modify_ggplot_code.Rmd</code></div>
 
     </div>
 
     
     
-<div id="overview" class="section level1">
+<div id="introduction" class="section level1">
 <h1 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h1>
-<p>We have an R package called <a href=""><strong>modelbuilder</strong></a> which allows users to graphically build . The <strong>flowdiagramr</strong> package is in some sense a spin-off from <strong>modelbuilder</strong> and is used as part of <strong>modelbuilder</strong>. As such, it is important that one can use <strong>modelbuilder</strong> built models with <strong>flowdiagramr</strong>.</p>
-<p>Since <strong>modelbuilder</strong> models and <strong>flowdiagramr</strong> models are slightly different, we provide a convience function that converts one format into the other. This is a very simple process, as the following example shows.</p>
+<a href="#introduction" class="anchor"></a>Introduction</h1>
+<p>We assume you went through the <a href="">getting started vignette</a> and also the <a href="">basic modification vignette</a>. We also expect you learned a bit about know the basics of using <strong>flowdiagramr</strong>. In this vignette, you will learn two advanced ways of customizing your diagram to make it look exactly the way you want to.</p>
 </div>
-<div id="example" class="section level1">
+<div id="modifying-the-ggplot2-code" class="section level1">
 <h1 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h1>
-<p>Assume you built a model with <strong>modelbuilder</strong> and saved it as an <code>R</code> object inside a <code>.Rda</code> file.</p>
+<a href="#modifying-the-ggplot2-code" class="anchor"></a>Modifying the ggplot2 code</h1>
+<p>Another, and the most flexible approach, is to modify the ggplot code that produces the diagram. To do this, you can retrieve the full ggplot2 code that creates the diagram and then edit it like you would any ggplot figure.</p>
+<p>We’ll illustrate this with a simple example. First, you define your model as above. Once you have your model, you send it to <code>write_diagram</code>, a function that writes the full code needed to generate the diagram. In this example, we are writing the <code>sirmodel</code> model we created above to the current directory and giving the file the specified name.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#write_diagram(filepath = '.', filename = 'sirmodel_diagram_code.R', model = sirmodel)</span></code></pre></div>
+<p>If things worked well, you should get a message telling you the location where the code was saved. This code is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure. Having all the code that generates the figure also allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot.</p>
+<p>Below is an example where we modify the code we produced above to fine tune some components. We are not showing the full code, but only the parts that are modified.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#old code</span>
+
+
+<span class="co">#new code</span></code></pre></div>
+<p>If you run the script with these modifications, here is the figure.</p>
+</div>
+<div id="general-suggestions" class="section level1">
+<h1 class="hasAnchor">
+<a href="#general-suggestions" class="anchor"></a>General suggestions</h1>
+<p>In general, we recommend implementing the easiest modifications first, even if you know you’ll be editing the ggplot code at the end. Thus, first use the options you can supply through <code>make_diagram</code> to get the diagram as close to what you want as possible. After that, make further modifications by altering the data frame objects generated by <code>prepare_diagram</code> and fed into <code>make_diagram</code>. Once you have gotten as far as you can with these approaches, write the ggplot code to a file and edit further.</p>
+<p>PROBLEM: IF WE WRITE GGPLOT CODE TO FILE, HOW DO WE CAPTURE EDITS TO INPUT STRUCTURE?</p>
+</div>
+<div id="input-as-matrix" class="section level1">
+<h1 class="hasAnchor">
+<a href="#input-as-matrix" class="anchor"></a>Input as matrix</h1>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">data</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">""</span>,<span class="st">"R"</span>,
+          <span class="st">""</span>,<span class="st">"I"</span>,<span class="st">""</span><span class="op">)</span>
+<span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">data</span>,nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 

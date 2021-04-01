@@ -26,7 +26,8 @@ make_diagram(
 }
 \arguments{
 \item{df_list}{A list of data frames returned from the
-\code{make_dataframes} function.}
+\code{prepare_diagram} function. See that function for details
+about this object.}
 
 \item{label_flows}{A logical indicating whether to label the flows
 (TRUE, default) or not (FALSE).}

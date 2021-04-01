@@ -1,7 +1,8 @@
 #' Make a ggplot2 model diagram.
 #'
 #' @param df_list A list of data frames returned from the
-#'     \code{make_dataframes} function.
+#'     \code{prepare_diagram} function. See that function for details
+#'     about this object.
 #' @param label_flows A logical indicating whether to label the flows
 #'     (TRUE, default) or not (FALSE).
 #' @param external_flows A logical indicating whether to include flows into

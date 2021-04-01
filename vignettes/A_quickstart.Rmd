@@ -143,11 +143,11 @@ plot(my_diagram)
 ```
 
 In this example, we added some optional inputs to the `make_diagram` function to start customizing the model. 
-You'll learn more about this [in the next vignette](./B_modify_diagram_simple.html).
+You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html).
 
 
 # Next steps
 
-You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won't be great. Sometimes, the default will actually look bad, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this. [This vignette](./B_modify_diagram_simple.html), which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. You should read them later. 
+You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won't be great. Sometimes, the default will actually look bad, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this. [This vignette](./B_modify_diagrams_simple.html), which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. You should read them later. 
 
 
