@@ -1,3 +1,9 @@
+2021-04-01
+
+change main_arrow_linetype input to word (e.g. solid/dashed/etc.)
+
+
+
 Did this:
 reorganized and rewrote vignettes
 see here for 'odd' naming of vignettes:

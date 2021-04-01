@@ -90,7 +90,12 @@ In general, we recommend implementing the easiest modifications first, even if y
 PROBLEM: IF WE WRITE GGPLOT CODE TO FILE, HOW DO WE CAPTURE EDITS TO INPUT STRUCTURE?
 
 
-
+# Input as matrix
+```{r}
+data = c("S","","R",
+          "","I","")
+varlabels = matrix(data,nrow = 2, byrow = TRUE)
+```
 
 
 
