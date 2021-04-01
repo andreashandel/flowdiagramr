@@ -1,7 +1,7 @@
 ******
 2021-04-01
 
-- why do nodes in input_structure object not have xstart/xend, ystart/yend to determine size of box, and only have x and y?
+- why do nodes in input_structure object not have xstart/xend, ystart/yend to determine size of box, and only have x and y? -- ATT added to issues.
 
 - prepare_diagram function should explain in detail both the input and output objects and their structure
 
@@ -23,7 +23,7 @@
 ******
 
 ### General todo/notes
-Get predator-prey model to work
+Get predator-prey model to work -- DONE.
 
 As possible, use fs package for file/path operations (e.g. saving R code), seems better then base R
 
@@ -39,7 +39,7 @@ Maybe be flexible with input structure. E.g. if varlabels/varnames/flows are pro
 
 Adjust code such that trailing + signs are not required (e.g. it's ok to write 'b*S*I' instead of '+b*S*I')
 
-Update/fix code so that the predator-prey model diagram works.
+Update/fix code so that the predator-prey model diagram works.  -- DONE.
 
 help file needs more details
 

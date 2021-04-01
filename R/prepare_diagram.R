@@ -7,7 +7,56 @@
 #'     \code{x}, and \code{y}. An internal function will add the necessary
 #'     \code{row} column based on the values for \code{y}. See vignettes for
 #'     examples of the data frame structure.
-#' @return A list of data frames.
+#'
+#' @return A list of five data frames:
+#' \itemize{
+#'   \item \code{nodes}: A data frame containing the node (state variable) ids,
+#'   labels, and positions. Position is defined with the \code{x} and
+#'   \code{y} columns, which define the center of the node squares. The
+#'   ggplot2 function \code{geom_tile} is used for placement of nodes and
+#'   the height and width are set to 1 to generate a perfect square centered
+#'   on \code{x} and \code{y}. The \code{row} column indicates which row
+#'   the node is placed on; this is also evident from the \code{y} values.
+#'   \code{id} is a numeric id for the node, which shows up in the edge
+#'   data frames for defining connects (see below).
+#'
+#'   \item \code{horizontal_edges}: A data frame containing name and position
+#'   information for straight flows from one node to an adjacent node. The
+#'   data frame contains nine columns:
+#'   \itemize{
+#'     \item{\code{to}}: The node id to which the arrow will point. That is, the node
+#'     receiving the flow.
+#'     \item{\code{from}}: The node id from which the arrow originate. That is, the
+#'     node donating the flow.
+#'     \item{\code{label}}: The label of the flow. Typically a mathematical expression.
+#'     \item{\code{xstart}}: The starting horizontal position of the arrow.
+#'     \item{\code{ystart}}: The starting veritcal position of the arrow.
+#'     \item{\code{xend}}: The ending horizontal position of the arrow.
+#'     \item{\code{yend}}: The ending vertical position of the arrow.
+#'     \item{\code{xmid}}: The horizontal midpoint of the arrow. Used for label
+#'     placement.
+#'     \item{\code{ymid}}: The vertical midpoint of the arrow. Used for label
+#'     placement.
+#'   }
+#'
+#'   \item \code{vertical_edges}: A data frame containing name and position
+#'   information for flows that arrive from out of the system or leave the
+#'   system. That is, flows that either (1) do not come from a node specified
+#'   in the nodes data frame or (2) exit the system without connecting to
+#'   another node. The data frame contains the same columns as
+#'   \code{horizontal_edges}. Note that either the \code{to} or \code{from}
+#'   value will be NA in each row (if rows are present). These flows arrive
+#'   or leave at 45 degree angles, despite the name of the data frame implying
+#'   a vertical entrance or exit.
+#'
+#'   \item{interaction}: A logical indicating whether the flow represents
+#'     an interaction between two or more nodes. If \code{TRUE}, the arrow
+#'     is drawn as dashed by default. Typically, horizontal edges connecting
+#'     two adjacent nodes are not interactions and thus
+#'     \code{interaction = FALSE} most of the time.
+#'
+#' }
+#'
 #' @export
 
 
@@ -176,6 +225,9 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
     edf$out_interaction <- NULL
     edf <- rbind(edf, repdf)
   }
+
+  # remove out_interaction completely
+  edf$out_interaction <- NULL
 
 
   # Break edges apart into:
@@ -413,11 +465,17 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   # update vertical edges to avoid overlaps
   vdf <- fix_arrow_pos(vdf)
 
+  # set to/from columns to NA if value is not in node dataframe
+  sdf <- set_node_to_na(sdf, ndf)
+  vdf <- set_node_to_na(vdf, ndf)
+  cdf <- set_node_to_na(cdf, ndf)
+  fdf <- set_node_to_na(fdf, ndf)
+
   # rename data frames for exporting
   nodes <- ndf
-  horizontal_edges <- subset(sdf, select = -c(diff))
-  vertical_edges <- subset(vdf, select = -c(diff))
-  curved_edges <- subset(cdf, select = -c(diff))
+  horizontal_edges <- subset(sdf, select = -c(diff, interaction, link))
+  vertical_edges <- subset(vdf, select = -c(diff, interaction, link))
+  curved_edges <- subset(cdf, select = -c(diff, link, ymid, xmid))
   feedback_edges <- subset(fdf, select = -c(diff))
 
 
