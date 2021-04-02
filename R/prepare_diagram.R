@@ -516,6 +516,12 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   cdf <- set_node_to_na(cdf, ndf)
   fdf <- set_node_to_na(fdf, ndf)
 
+  # remove rows with no location information
+  sdf <- remove_na_rows(sdf)
+  vdf <- remove_na_rows(vdf)
+  cdf <- remove_na_rows(cdf)
+  fdf <- remove_na_rows(fdf)
+
   # rename data frames for exporting
   nodes <- ndf
   horizontal_edges <- subset(sdf, select = -c(diff, interaction, link))

@@ -87,10 +87,10 @@ nice_diagram <- make_diagram(sir_input_structure,
                              flow_text_color = "black",
                              flow_text_size = 5,
                              main_arrow_color = "grey25",
-                             main_arrow_linetype = 1,
+                             main_arrow_linetype = "solid",
                              main_arrow_size = 0.7,
                              interaction_arrow_color = "grey25",
-                             interaction_arrow_linetype = 2,
+                             interaction_arrow_linetype = "dashed",
                              interaction_arrow_size = 0.7)
 plot(nice_diagram)
 ```
