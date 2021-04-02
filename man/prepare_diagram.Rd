@@ -88,7 +88,7 @@ is drawn as dashed by default.
 \item{\code{yend}}: The ending vertical position of the arrow.
 \item{\code{curvature}}: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.
-\itme{\code{row}}: The row on which the arrow is connecting nodes;
+\item{\code{row}}: The row on which the arrow is connecting nodes;
 this is also evident from the \code{ystart} and \code{yend} values.
 \item{\code{labelx}}: Horizontal position of label.
 \item{\code{labely}}: Vertical position of label.
