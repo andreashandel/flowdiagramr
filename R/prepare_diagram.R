@@ -1,7 +1,17 @@
 #' Create data frames for plotting from model elements.
 #'
 #' @param input_list A list of model elements. The list must contain at least
-#'     two elements with names \code{varlabels} and \code{flows}.
+#'     two elements with names \code{varlabels} and \code{flows}. The
+#'     \code{flows} list must contain a sub-list for each variable in
+#'     the \code{varlabels} vector. For example, if the user specifies
+#'     two variables in \code{input_list$varlabels}, then
+#'     \code{input_list$flows} must contain two sub-lists, each containing
+#'     a character vector of flows into and out of the node. Currently,
+#'     this function assumes that the \code{input_list$varlabels} sub-lists
+#'     are in the same order as the \code{input_list$varlabels} vector. See
+#'     examples. The \code{input_list} can contain any other elements that
+#'     the user might deem useful (e.g., metadata/comments), but only the
+#'     \code{varlabels} and \code{flows} are used by this function.
 #' @param nodes_df A data frame with user-specified node locations. The data
 #'     frame must contain the following columns: \code{id}, \code{label},
 #'     \code{x}, and \code{y}. An internal function will add the necessary
@@ -22,7 +32,7 @@
 #'
 #'   \item \code{horizontal_edges}: A data frame containing name and position
 #'   information for straight flows from one node to an adjacent node. The
-#'   data frame contains nine columns:
+#'   data frame contains nine (9) columns:
 #'   \itemize{
 #'     \item{\code{to}}: The node id to which the arrow will point. That is, the node
 #'     receiving the flow.
@@ -49,13 +59,48 @@
 #'   or leave at 45 degree angles, despite the name of the data frame implying
 #'   a vertical entrance or exit.
 #'
-#'   \item{interaction}: A logical indicating whether the flow represents
+#'   \item {curved_edges}: A data frame containing name and position
+#'   information for, typically, two types of curved arrows: (1) interaction
+#'   arrows that point toward a horizontal arrow or (2) a physical flow
+#'   that would normally be a horizontal arrow but must bypass at least
+#'   one node. The data frame has eleven (11) columns:
+#'   \itemize{
+#'     \item{\code{to}}: The node id to which the arrow will point. That is, the node
+#'     receiving the flow.
+#'     \item{\code{from}}: The node id from which the arrow originate. That is, the
+#'     node donating the flow.
+#'     \item{\code{label}}: The label of the flow. Typically a mathematical expression.
+#'     \item{interaction}: A logical indicating whether the flow represents
 #'     an interaction between two or more nodes. If \code{TRUE}, the arrow
-#'     is drawn as dashed by default. Typically, horizontal edges connecting
-#'     two adjacent nodes are not interactions and thus
-#'     \code{interaction = FALSE} most of the time.
+#'     is drawn as dashed by default.
+#'     \item{\code{xstart}}: The starting horizontal position of the arrow.
+#'     \item{\code{ystart}}: The starting veritcal position of the arrow.
+#'     \item{\code{xend}}: The ending horizontal position of the arrow.
+#'     \item{\code{yend}}: The ending vertical position of the arrow.
+#'     \item{\code{curvature}}: The amount of curvature applied to arrow.
+#'     Higher numbers indicate more curvature; 0 = straight line.
+#'     \itme{\code{row}}: The row on which the arrow is connecting nodes;
+#'      this is also evident from the \code{ystart} and \code{yend} values.
+#'     \item{\code{labelx}}: Horizontal position of label.
+#'     \item{\code{labely}}: Vertical position of label.
+#'   }
+#'
+#'   \item{\code{feedback_edges}}: A data frame containing name and position
+#'   information for arrows indicating a feedback into the same node. The
+#'   data frame contains the same columns as the \code{horizontal_edges}
+#'   data frame. Note that the \code{to} and \code{from} columns should have
+#'   the same values for feedback edges.
 #'
 #' }
+#'
+#' @examples
+#' varlabels <- c("S","I","R")
+#' varnames <- c("Susceptible","Infected","Recovered")  # optional
+#' flows <- list(S_flows = c("-b*S*I"),
+#'               I_flows = c("+b*S*I","-g*I"),
+#'               R_flows = c("+g*I"))
+#' mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows)
+#' prepare_diagram(input_list = mymodel)
 #'
 #' @export
 
@@ -476,7 +521,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   horizontal_edges <- subset(sdf, select = -c(diff, interaction, link))
   vertical_edges <- subset(vdf, select = -c(diff, interaction, link))
   curved_edges <- subset(cdf, select = -c(diff, link, ymid, xmid))
-  feedback_edges <- subset(fdf, select = -c(diff))
+  feedback_edges <- subset(fdf, select = -c(diff, link, interaction))
 
 
   return(list(nodes = nodes,
