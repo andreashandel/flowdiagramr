@@ -71,8 +71,15 @@ specifying the text color for non-interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
 in the supplied data frame.}
 
-\item{main_arrow_linetype}{A numeric scaler specifying the linetype for
-main arrows (non-interaction arrows).}
+\item{main_arrow_linetype}{Either a numeric scaler or a character scaler
+specifying the linetype for main arrows (non-interaction arrows). This
+argument is passed to the \code{linetype} argument in ggplot2. From
+the ggplot2 documentation: "The linetype aesthetic can be specified
+with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
+3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
+discrete variable, or a string of an even number (up to eight) of
+hexadecimal digits which give the lengths in consecutive positions in
+the string." Default is 1 (solid).}
 
 \item{main_arrow_size}{A numeric scaler specifying the line size for the
 main arrows (non-interaction arrows).}
@@ -82,8 +89,15 @@ strings specifying the text color for interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
 in the supplied data frame.}
 
-\item{interaction_arrow_linetype}{A numeric scalar specifying the linetype
-for interaction arrows.}
+\item{interaction_arrow_linetype}{Either a numeric scaler or a character scaler
+specifying the linetype for interaction arrows. This
+argument is passed to the \code{linetype} argument in ggplot2. From
+the ggplot2 documentation: "The linetype aesthetic can be specified
+with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
+3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
+discrete variable, or a string of an even number (up to eight) of
+hexadecimal digits which give the lengths in consecutive positions in
+the string." Default is 2 (dashed).}
 
 \item{interaction_arrow_size}{A numeric scalar specifying the line size for
 the interaction arrows.}
