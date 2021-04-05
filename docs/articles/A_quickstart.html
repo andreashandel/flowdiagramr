@@ -117,20 +117,20 @@
 
     
     
-<div id="overview" class="section level1">
-<h1 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h1>
+<div id="overview" class="section level2">
+<h2 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h2>
 <p><strong>flowdiagramr</strong> is designed to create nice-looking diagrams for compartmental simulation models and other kinds of scenarios where a model with compartments/nodes and flows/connections is needed. The user provides the compartments and the flows, and gets as return a model diagram in ggplot format, as well as code that created the diagram and can be further modified.</p>
 </div>
-<div id="terminology" class="section level1">
-<h1 class="hasAnchor">
-<a href="#terminology" class="anchor"></a>Terminology</h1>
+<div id="terminology" class="section level2">
+<h2 class="hasAnchor">
+<a href="#terminology" class="anchor"></a>Terminology</h2>
 <p>The kinds of models and diagrams we are discussing here are used in many different areas of science. That also means there are many different ways and words to describe these models. What we mainly refer to as <em>compartments</em> or <em>variables</em> is also known as <em>stocks</em> or <em>nodes</em>. Similarly, what we mainly refer to as <em>flows</em> or <em>processes</em> is also known as <em>connections</em> or … We hope by showing examples it will be clear.</p>
 </div>
-<div id="starting-example" class="section level1">
-<h1 class="hasAnchor">
-<a href="#starting-example" class="anchor"></a>Starting Example</h1>
-<p>Here is a simple example to illustrate the process. This first example is the <a href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology">Susceptible-Infected-Recovered model (SIR) model</a> which forms the basis of many models used in infectious disease epidemiology. For this model, we have 3 compartments/variables, name susceptible individuals, <strong>S</strong>, infected/infectious individuals, <strong>I</strong>, and recovered/removed individuals, <strong>R</strong>. We also have 2 processes/flows, one process by which susceptible individuals become infected at some rate after contact with infectious individuals, <strong>b*S*I</strong> and a process by which infected individuals recover at some rate, <strong>g*I.</strong></p>
+<div id="starting-example" class="section level2">
+<h2 class="hasAnchor">
+<a href="#starting-example" class="anchor"></a>Starting Example</h2>
+<p>Here is a simple example to illustrate the process. This is the <a href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology">Susceptible-Infected-Recovered (SIR) model</a> which forms the basis of many models used in infectious disease epidemiology. For this model, we have 3 compartments/variables, name susceptible individuals, <strong>S</strong>, infected/infectious individuals, <strong>I</strong>, and recovered/removed individuals, <strong>R</strong>. We also have 2 processes/flows, one process by which susceptible individuals become infected at some rate after contact with infectious individuals, <strong>b*S*I</strong> and a process by which infected individuals recover at some rate, <strong>g*I.</strong></p>
 <p>Written out as differential equations, the model looks like this</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -142,30 +142,31 @@
 <p>A diagram for the model looks as follows</p>
 <p><img src="sirdiagram.png" width="70%"></p>
 <p>The purpose of <strong>flowdiagramr</strong> is to automatically create this diagram for you if you supply the model specification. Here is how.</p>
-<div id="specify-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#specify-the-model" class="anchor"></a>Specify the model</h2>
-<p><strong>flowdiagramr</strong> wants the model input as a simple list structure. This list has 3 elements, the variable/compartment labels, optional their full-text names, and the processes/flows for each compartment. For the model above, this structure would look as follows:</p>
+<div id="specify-the-model" class="section level3">
+<h3 class="hasAnchor">
+<a href="#specify-the-model" class="anchor"></a>Specify the model</h3>
+<p><strong>flowdiagramr</strong> wants the model input as a simple list structure. This list needs to have a minimum of 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this structure would look as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Susceptible"</span>,<span class="st">"Infected"</span>,<span class="st">"Recovered"</span><span class="op">)</span>
 <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, 
-                I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, 
-                R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*I"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
-<p>Note that the main list (called <code>mymodel</code> above) can have any name, but the elements inside the list need to be called <code>varlabels</code>, <code>varnames</code> and <code>flows</code>. The <code>varnames</code> entry is optional. Also, the flows for each variable need to be named <code>X_flows</code> where X corresponds to the variable label (this doesn’t have to be a single letter). Finally, the flows need to be provided as valid mathematical expressions, so you need to write <code>b*S*I</code>, writing it as <code>bSI</code> will not work.</p>
+             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, 
+             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<p>Note that the main list (called <code>mymodel</code> above) can have any name, but the elements inside the list need to be called <code>varlabels</code> and <code>flows</code>. Also, the flows for each variable need to be named <code>X_flows</code> where X corresponds to the variable label (this doesn’t have to be a single letter). Finally, the flows need to be provided as valid mathematical expressions, so you need to write <code>b*S*I</code>, writing it as <code>bSI</code> will not work.</p>
+<p>In addition to the required two list elements, you can specify a few optional list elements, which we’ll discuss later.</p>
 </div>
-<div id="create-elements-needed-for-diagram-generation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#create-elements-needed-for-diagram-generation" class="anchor"></a>Create elements needed for diagram generation</h2>
-<p>Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which as the advantage of easier manual modification. You’ll learn more about that in subsequent vignettes. For now, we’ll explain the steps, then revisit them later. To get ready for diagram generation, you send your model to the <code>prepare_diagram</code> function.</p>
+<div id="create-elements-needed-for-diagram-generation" class="section level3">
+<h3 class="hasAnchor">
+<a href="#create-elements-needed-for-diagram-generation" class="anchor"></a>Create elements needed for diagram generation</h3>
+<p>Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which as the advantage of easier manual modification. You’ll learn more about that in subsequent vignettes. For now, we just show the steps, then revisit them later.</p>
+<p>To get ready for diagram generation, you send your model to the <code>prepare_diagram</code> function.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
-<p>The <code>input_structure</code> object returned by this function contains a list of data frames used to make the diagram. We’ll skip over this for now, you can learn more about it and how to manipulate it <a href="./C_technical_details.html">here</a>.</p>
+<p>The <code>input_structure</code> object returned by this function contains a list of data frames used to make the diagram. We’ll skip over this for now and revisit it in a later vignette.</p>
 </div>
-<div id="make-the-diagram" class="section level2">
-<h2 class="hasAnchor">
-<a href="#make-the-diagram" class="anchor"></a>Make the diagram</h2>
+<div id="make-the-diagram" class="section level3">
+<h3 class="hasAnchor">
+<a href="#make-the-diagram" class="anchor"></a>Make the diagram</h3>
 <p>Now it’s time to make the diagram. This is done by sending the object you got by calling <code>prepare_diagram</code> to the <code>make_diagram</code> function, like so</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span><span class="op">)</span></code></pre></div>
@@ -178,43 +179,42 @@
 <p><img src="A_quickstart_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 </div>
 </div>
-<div id="another-example" class="section level1">
-<h1 class="hasAnchor">
-<a href="#another-example" class="anchor"></a>Another example</h1>
-<p>Here is one more example, the classical <a href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations">predator-prey model (also known as Lotka-Volterra model)</a>. This model has two compartments/variables. The model is also used in immunology to model pathogen and immune response. In the context of immunology, the immune response, <strong>I</strong>, is the predator, and the pathogen (e.g. bacteria), <strong>B</strong>, are the prey. We will also include the following processes/flows:</p>
+<div id="another-example" class="section level2">
+<h2 class="hasAnchor">
+<a href="#another-example" class="anchor"></a>Another example</h2>
+<p>Here is one more example, the classical <a href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations">predator-prey model (also known as Lotka-Volterra model)</a>. This model has two compartments/variables. The model is also used in immunology to model pathogen and immune response. In the context of immunology, the immune response is the predator, and the pathogens are the prey. We’ll label them <strong>Imm</strong> and <strong>Pat</strong>, just to show that one can use labels that are longer than a single letter. We will also include the following processes/flows:</p>
 <ol style="list-style-type: decimal">
-<li>Bacteria grow/divide at some maximum rate (which we label <em>g</em>) and saturate as they approach some maximum carrying capacity, <em>b<sub>max</sub></em>.</li>
-<li>Bacteria die at a natural death rate (which we label <em>d<sub>B</sub></em>).</li>
+<li>Bacteria grow/divide at some maximum rate (which we label <em>g</em>) and saturate as they approach some maximum carrying capacity, <em>p<sub>max</sub></em>.</li>
+<li>Bacteria die at a natural death rate (which we label <em>d<sub>P</sub></em>).</li>
 <li>Bacteria are killed by the immune response at some rate <em>k</em>.</li>
 <li>The immune response grows proportional to the number of bacteria and itself at some rate <em>r</em>.</li>
 <li>The immune response decays at some rate (which we label <em>d<sub>I</sub></em>).</li>
 </ol>
 <p>To generate the diagram, you follow the same steps as above. First, create the model structure</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span>,<span class="st">"I"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>,<span class="st">"Immunity"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*B*(1-B/bmax)"</span>, <span class="st">"-dB*B"</span>, <span class="st">"-k*B*I"</span><span class="op">)</span>,
-             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+r*B*I"</span>, <span class="st">"-dI*I"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Pat"</span>,<span class="st">"Imm"</span><span class="op">)</span>
+<span class="va">flows</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*Pat*(1-Pat/pmax)"</span>, <span class="st">"-dP*Pat"</span>, <span class="st">"-k*Pat*Imm"</span><span class="op">)</span>,
+                 I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"r*Pat*Imm"</span>, <span class="st">"-dI*Imm"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into <code>R</code>, they would work (provided you assigned numerical values to each variable and parameter).</p>
 <p>Also note that for the purpose of generating the diagram, it is not required to write down differential equations for the model. But if you wanted to, for this model they are</p>
 <p><span class="math display">\[
 \begin{aligned}
-\dot B &amp; = g B (1-\frac{B}{b_{max}}) - d_B B - k BI \\
-\dot I &amp; = r B I - d_I I
+\frac{d}{dt}  Pat &amp; = g * Pat (1-\frac{Pat}{p_{max}}) - d_P * Pat - k * Pat * Imm \\
+\frac{d}{dt} Imm &amp; = r * Pat * Imm - d_I * Imm
 \end{aligned}
 \]</span></p>
 <p>Next, you use the same steps as above to create the model diagram.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
-<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span>, node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>, main_arrow_linetype <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span>, node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>, main_arrow_linetype <span class="op">=</span> <span class="st">"dashed"</span>, interaction_arrow_linetype <span class="op">=</span> <span class="st">"solid"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="A_quickstart_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>In this example, we added some optional inputs to the <code>make_diagram</code> function to start customizing the model. You’ll learn more about this <a href="./B_modify_diagrams_simple.html">in the next vignette</a>.</p>
 </div>
-<div id="next-steps" class="section level1">
-<h1 class="hasAnchor">
-<a href="#next-steps" class="anchor"></a>Next steps</h1>
+<div id="next-steps" class="section level2">
+<h2 class="hasAnchor">
+<a href="#next-steps" class="anchor"></a>Next steps</h2>
 <p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won’t be great. Sometimes, the default will actually look bad, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this. <a href="./B_modify_diagrams_simple.html">This vignette</a>, which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. You should read them later.</p>
 </div>
   </div>

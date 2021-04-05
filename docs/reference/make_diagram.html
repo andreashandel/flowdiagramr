@@ -253,8 +253,15 @@ in the supplied data frame.</p></td>
     </tr>
     <tr>
       <th>main_arrow_linetype</th>
-      <td><p>A numeric scaler specifying the linetype for
-main arrows (non-interaction arrows).</p></td>
+      <td><p>Either a numeric scaler or a character scaler
+specifying the linetype for main arrows (non-interaction arrows). This
+argument is passed to the <code>linetype</code> argument in ggplot2. From
+the ggplot2 documentation: "The linetype aesthetic can be specified
+with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
+3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
+discrete variable, or a string of an even number (up to eight) of
+hexadecimal digits which give the lengths in consecutive positions in
+the string." Default is 1 (solid).</p></td>
     </tr>
     <tr>
       <th>main_arrow_size</th>
@@ -270,8 +277,15 @@ in the supplied data frame.</p></td>
     </tr>
     <tr>
       <th>interaction_arrow_linetype</th>
-      <td><p>A numeric scalar specifying the linetype
-for interaction arrows.</p></td>
+      <td><p>Either a numeric scaler or a character scaler
+specifying the linetype for interaction arrows. This
+argument is passed to the <code>linetype</code> argument in ggplot2. From
+the ggplot2 documentation: "The linetype aesthetic can be specified
+with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
+3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
+discrete variable, or a string of an even number (up to eight) of
+hexadecimal digits which give the lengths in consecutive positions in
+the string." Default is 2 (dashed).</p></td>
     </tr>
     <tr>
       <th>interaction_arrow_size</th>

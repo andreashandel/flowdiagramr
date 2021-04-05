@@ -206,9 +206,7 @@
 <p>If we send this input structure to <code>make_diagram</code>, we get the following plot</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">plot1</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">plot1</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <p>Next, instead of sending this structure to the <code>make_diagram</code> function right away, we’ll take a look at it and modify it. Here are the details contained in this object</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -220,39 +218,23 @@
 <span class="co">#&gt; 3  3     R   1 12 -2</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $horizontal_edges</span>
-<span class="co">#&gt;   to from label interaction out_interaction link xstart ystart xend yend xmid</span>
-<span class="co">#&gt; 2  2    1             FALSE           FALSE   NA      6     -2    9   -2  7.5</span>
-<span class="co">#&gt; 3  3    2   g*I       FALSE           FALSE   NA      9     -2   12   -2 10.5</span>
-<span class="co">#&gt;    ymid</span>
-<span class="co">#&gt; 2 -1.75</span>
-<span class="co">#&gt; 3 -1.75</span>
+<span class="co">#&gt;   to from label xstart ystart xend yend xmid  ymid</span>
+<span class="co">#&gt; 2  2    1            6     -2    9   -2  7.5 -1.75</span>
+<span class="co">#&gt; 3  3    2   g*I      9     -2   12   -2 10.5 -1.75</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $vertical_edges</span>
-<span class="co">#&gt;      to  from label interaction out_interaction link xstart ystart xend yend</span>
-<span class="co">#&gt; 1     1 -9991     n       FALSE           FALSE   NA    5.5   -1.0  6.0 -1.5</span>
-<span class="co">#&gt; 5  9991     1   m*S       FALSE           FALSE   NA    6.0   -2.5  6.5 -3.0</span>
-<span class="co">#&gt; 6  9992     2   m*I       FALSE           FALSE   NA    9.0   -2.5  9.5 -3.0</span>
-<span class="co">#&gt; 7  9993     3   m*R       FALSE           FALSE   NA   12.0   -2.5 12.5 -3.0</span>
-<span class="co">#&gt; 11   NA    NA  &lt;NA&gt;          NA              NA   NA     NA     NA   NA   NA</span>
-<span class="co">#&gt; 2    NA    NA  &lt;NA&gt;          NA              NA   NA     NA     NA   NA   NA</span>
-<span class="co">#&gt;     xmid  ymid</span>
-<span class="co">#&gt; 1   5.75 -1.00</span>
-<span class="co">#&gt; 5   6.00 -2.75</span>
-<span class="co">#&gt; 6   9.00 -2.75</span>
-<span class="co">#&gt; 7  12.00 -2.75</span>
-<span class="co">#&gt; 11    NA    NA</span>
-<span class="co">#&gt; 2     NA    NA</span>
+<span class="co">#&gt;   to from label xstart ystart xend yend  xmid  ymid</span>
+<span class="co">#&gt; 1  1   NA     n    5.5   -1.0  6.0 -1.5  5.75 -1.00</span>
+<span class="co">#&gt; 5 NA    1   m*S    6.0   -2.5  6.5 -3.0  6.00 -2.75</span>
+<span class="co">#&gt; 6 NA    2   m*I    9.0   -2.5  9.5 -3.0  9.00 -2.75</span>
+<span class="co">#&gt; 7 NA    3   m*R   12.0   -2.5 12.5 -3.0 12.00 -2.75</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $curved_edges</span>
-<span class="co">#&gt;     to from label interaction out_interaction link xstart ystart xend yend xmid</span>
-<span class="co">#&gt; 1 5551    2 b*S*I        TRUE           FALSE    1      9   -1.5  7.5   -2 8.25</span>
-<span class="co">#&gt;    ymid curvature row labelx labely</span>
-<span class="co">#&gt; 1 -1.25       0.4   1   8.15  -1.25</span>
+<span class="co">#&gt;   to from label interaction xstart ystart xend yend curvature row labelx labely</span>
+<span class="co">#&gt; 1 NA    2 b*S*I        TRUE      9   -1.5  7.5   -2       0.4   1   8.15  -1.25</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $feedback_edges</span>
-<span class="co">#&gt;  [1] to              from            label           interaction    </span>
-<span class="co">#&gt;  [5] out_interaction link            xstart          ystart         </span>
-<span class="co">#&gt;  [9] xend            yend            xmid            ymid           </span>
+<span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  </span>
 <span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></code></pre></div>
 <p>Let’s modify this object somewhat. The following code moves one of the arrows and …</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -262,9 +244,7 @@
 <p>With those modifications, the resulting diagram looks like this</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure_modified</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">plot2</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">plot2</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 </div>
 <div id="example-2" class="section level1">

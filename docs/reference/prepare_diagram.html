@@ -166,7 +166,17 @@
     <tr>
       <th>input_list</th>
       <td><p>A list of model elements. The list must contain at least
-two elements with names <code>varlabels</code> and <code>flows</code>.</p></td>
+two elements with names <code>varlabels</code> and <code>flows</code>. The
+<code>flows</code> list must contain a sub-list for each variable in
+the <code>varlabels</code> vector. For example, if the user specifies
+two variables in <code>input_list$varlabels</code>, then
+<code>input_list$flows</code> must contain two sub-lists, each containing
+a character vector of flows into and out of the node. Currently,
+this function assumes that the <code>input_list$varlabels</code> sub-lists
+are in the same order as the <code>input_list$varlabels</code> vector. See
+examples. The <code>input_list</code> can contain any other elements that
+the user might deem useful (e.g., metadata/comments), but only the
+<code>varlabels</code> and <code>flows</code> are used by this function.</p></td>
     </tr>
     <tr>
       <th>nodes_df</th>
@@ -180,8 +190,106 @@ examples of the data frame structure.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of data frames.</p>
+    <p>A list of five data frames:</p><ul>
+<li><p><code>nodes</code>: A data frame containing the node (state variable) ids,
+labels, and positions. Position is defined with the <code>x</code> and
+<code>y</code> columns, which define the center of the node squares. The
+ggplot2 function <code>geom_tile</code> is used for placement of nodes and
+the height and width are set to 1 to generate a perfect square centered
+on <code>x</code> and <code>y</code>. The <code>row</code> column indicates which row
+the node is placed on; this is also evident from the <code>y</code> values.
+<code>id</code> is a numeric id for the node, which shows up in the edge
+data frames for defining connects (see below).</p></li>
+<li><p><code>horizontal_edges</code>: A data frame containing name and position
+information for straight flows from one node to an adjacent node. The
+data frame contains nine (9) columns:</p><ul>
+<li><p><code>to</code>: The node id to which the arrow will point. That is, the node
+receiving the flow.</p></li>
+<li><p><code>from</code>: The node id from which the arrow originate. That is, the
+node donating the flow.</p></li>
+<li><p><code>label</code>: The label of the flow. Typically a mathematical expression.</p></li>
+<li><p><code>xstart</code>: The starting horizontal position of the arrow.</p></li>
+<li><p><code>ystart</code>: The starting veritcal position of the arrow.</p></li>
+<li><p><code>xend</code>: The ending horizontal position of the arrow.</p></li>
+<li><p><code>yend</code>: The ending vertical position of the arrow.</p></li>
+<li><p><code>xmid</code>: The horizontal midpoint of the arrow. Used for label
+placement.</p></li>
+<li><p><code>ymid</code>: The vertical midpoint of the arrow. Used for label
+placement.</p></li>
+</ul></li>
+<li><p><code>vertical_edges</code>: A data frame containing name and position
+information for flows that arrive from out of the system or leave the
+system. That is, flows that either (1) do not come from a node specified
+in the nodes data frame or (2) exit the system without connecting to
+another node. The data frame contains the same columns as
+<code>horizontal_edges</code>. Note that either the <code>to</code> or <code>from</code>
+value will be NA in each row (if rows are present). These flows arrive
+or leave at 45 degree angles, despite the name of the data frame implying
+a vertical entrance or exit.</p></li>
+<li><p>curved_edges: A data frame containing name and position
+information for, typically, two types of curved arrows: (1) interaction
+arrows that point toward a horizontal arrow or (2) a physical flow
+that would normally be a horizontal arrow but must bypass at least
+one node. The data frame has eleven (11) columns:</p><ul>
+<li><p><code>to</code>: The node id to which the arrow will point. That is, the node
+receiving the flow.</p></li>
+<li><p><code>from</code>: The node id from which the arrow originate. That is, the
+node donating the flow.</p></li>
+<li><p><code>label</code>: The label of the flow. Typically a mathematical expression.</p></li>
+<li><p>interaction: A logical indicating whether the flow represents
+an interaction between two or more nodes. If <code>TRUE</code>, the arrow
+is drawn as dashed by default.</p></li>
+<li><p><code>xstart</code>: The starting horizontal position of the arrow.</p></li>
+<li><p><code>ystart</code>: The starting veritcal position of the arrow.</p></li>
+<li><p><code>xend</code>: The ending horizontal position of the arrow.</p></li>
+<li><p><code>yend</code>: The ending vertical position of the arrow.</p></li>
+<li><p><code>curvature</code>: The amount of curvature applied to arrow.
+Higher numbers indicate more curvature; 0 = straight line.</p></li>
+<li><p><code>row</code>: The row on which the arrow is connecting nodes;
+this is also evident from the <code>ystart</code> and <code>yend</code> values.</p></li>
+<li><p><code>labelx</code>: Horizontal position of label.</p></li>
+<li><p><code>labely</code>: Vertical position of label.</p></li>
+</ul></li>
+<li><p><code>feedback_edges</code>: A data frame containing name and position
+information for arrows indicating a feedback into the same node. The
+data frame contains the same columns as the <code>horizontal_edges</code>
+data frame. Note that the <code>to</code> and <code>from</code> columns should have
+the same values for feedback edges.</p></li>
+</ul>
 
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='va'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span><span class='op'>)</span>
+<span class='va'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span><span class='op'>)</span>  <span class='co'># optional</span>
+<span class='va'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>S_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-b*S*I"</span><span class='op'>)</span>,
+              I_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"+b*S*I"</span>,<span class='st'>"-g*I"</span><span class='op'>)</span>,
+              R_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"+g*I"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varlabels <span class='op'>=</span> <span class='va'>varlabels</span>, varnames <span class='op'>=</span> <span class='va'>varnames</span>, flows <span class='op'>=</span> <span class='va'>flows</span><span class='op'>)</span>
+<span class='fu'>prepare_diagram</span><span class='op'>(</span>input_list <span class='op'>=</span> <span class='va'>mymodel</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $nodes
+#&gt;   id label row x  y
+#&gt; 1  1     S   1 3 -2
+#&gt; 2  2     I   1 6 -2
+#&gt; 3  3     R   1 9 -2
+#&gt; 
+#&gt; $horizontal_edges
+#&gt;   to from label xstart ystart xend yend xmid  ymid
+#&gt; 1  2    1            3     -2    6   -2  4.5 -1.75
+#&gt; 2  3    2   g*I      6     -2    9   -2  7.5 -1.75
+#&gt; 
+#&gt; $vertical_edges
+#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  
+#&gt; &lt;0 rows&gt; (or 0-length row.names)
+#&gt; 
+#&gt; $curved_edges
+#&gt;   to from label interaction xstart ystart xend yend curvature row labelx labely
+#&gt; 1 NA    2 b*S*I        TRUE      6   -1.5  4.5   -2       0.4   1   5.15  -1.25
+#&gt; 
+#&gt; $feedback_edges
+#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  
+#&gt; &lt;0 rows&gt; (or 0-length row.names)
+#&gt; </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

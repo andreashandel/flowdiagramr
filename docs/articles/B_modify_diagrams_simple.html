@@ -117,47 +117,66 @@
 
     
     
-<div id="introduction" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
+<div id="introduction" class="section level2">
+<h2 class="hasAnchor">
+<a href="#introduction" class="anchor"></a>Introduction</h2>
 <p>We assume you went through the <a href="./A_quickstart.html">getting started vignette</a> and know the basics of using <strong>flowdiagramr</strong>. In this vignette, you will learn the simplest ways of customizing diagrams. Further vignettes show more advanced ways of customizing diagrams.</p>
 </div>
-<div id="setting-arguments-in-make_diagram" class="section level1">
-<h1 class="hasAnchor">
-<a href="#setting-arguments-in-make_diagram" class="anchor"></a>Setting arguments in <code>make_diagram</code>
-</h1>
-<p>The easiest way to start customizing your model is by providing specific settings when you call the <code>make_diagram</code> function. The help file for the function shows you what settings you can customize, you can look at it with this command</p>
+<div id="providing-additional-input-when-specifying-the-model" class="section level2">
+<h2 class="hasAnchor">
+<a href="#providing-additional-input-when-specifying-the-model" class="anchor"></a>Providing additional input when specifying the model</h2>
+<p>You previously learned that to specify a model, you need to set up a list that contains at minimum the elements <code>varlabels</code> and <code>flows</code>. It is possible to supply a few additional elements, namely the element <code>varnames</code> which contains the full names for each variable/compartment and an element <code>varlocations</code>, which contains a matrix showing the grid-based arrangement of the compartment boxes. Here is an example for the SIR model you saw previously.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, 
+             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, 
+             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*I"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Susceptible"</span>,<span class="st">"Infected"</span>,<span class="st">"Recovered"</span><span class="op">)</span>
+<span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>,
+                               <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span> <span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">sirmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></code></pre></div>
+<p>The <code>varnames</code> argument is self-explanatory. The <code>varlocations</code> argument needs some explanation. What this allows you to do is to define a grid and place the compartments at specific locations. This is often necessary when you create more complicated models since the automated placement by <code>make_diagram</code> is likely not ideal. In the above example, we defined a grid with 2 rows and 3 columns and placed the <strong>S</strong> and <strong>R</strong> compartments in the left and right corner of the top row and the <strong>I</strong> compartment in the middle of the bottom row. All other slots are empty.</p>
+<p>You can take this extended specification of the model and feed it to the diagram preparation and generation functions, like so.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># prepare inputs </span>
+<span class="va">sir_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span>
+<span class="co"># make  diagram</span>
+<span class="co">#sir_diagram &lt;- make_diagram(sir_input_structure, use_varnames = TRUE)</span>
+<span class="co">#plot(sir_diagram)</span></code></pre></div>
+<p>Note that we provided the <code>make_diagram</code> fuction with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. There are a number of options you can set when calling <code>make_diagram</code>, we’ll discuss several of them now.</p>
+</div>
+<div id="setting-arguments-in-make_diagram" class="section level2">
+<h2 class="hasAnchor">
+<a href="#setting-arguments-in-make_diagram" class="anchor"></a>Setting arguments in <code>make_diagram</code>
+</h2>
+<p>In the previous vignette and the example above, you saw that it is possible to start customizing the diagram by providing specific settings when calling the <code>make_diagram</code> function. The help file for the function shows you what settings you can customize, you can look at it with this command</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/help.html">help</a></span><span class="op">(</span><span class="st">'make_diagram'</span><span class="op">)</span></code></pre></div>
 <p>Let’s explore some of those options and what they do.</p>
-</div>
-<div id="example-1" class="section level1">
-<h1 class="hasAnchor">
-<a href="#example-1" class="anchor"></a>Example 1</h1>
-<p>We’ll start with an example that uses an extension of the SIR model you encountered in the <a href="./A_quickstart.html">Getting started vignette</a>. For this extension, we also include natural births and deaths. We assume new births only enter the <strong>S</strong> compartment at some fixed flow, <strong>n</strong>, while deaths occur at rate <strong>m</strong> out of all compartments. The model is specified as follows</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div id="example-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#example-1" class="anchor"></a>Example 1</h3>
+<p>We’ll first play with an extension of the SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the <strong>S</strong> compartment at some fixed flow, <strong>n</strong>, while deaths occur at rate <strong>m</strong> out of all compartments. The model is specified as follows</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the model</span>
 <span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
 <span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Susceptible"</span>,<span class="st">"Infected"</span>,<span class="st">"Recovered"</span><span class="op">)</span>
-<span class="co"># currently only works with trailing + signs</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+n"</span>, <span class="st">"-b*S*I"</span>, <span class="st">"-m*S"</span><span class="op">)</span>, 
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="st">"-b*S*I"</span>, <span class="st">"-m*S"</span><span class="op">)</span>, 
              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+b*S*I"</span>,<span class="st">"-g*I"</span>, <span class="st">"-m*I"</span><span class="op">)</span>, 
-             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*I"</span>, <span class="st">"-m*R"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">sirmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
+             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*I"</span>, <span class="st">"-m*R"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">sirmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span>, varnames <span class="op">=</span> <span class="va">varnames</span><span class="op">)</span></code></pre></div>
 <p>First, we need to call <code>prepare_diagram</code> to make the list of data frames needed as input for <code>make_model</code>. We’ll skip over this step again for now, you’ll learn more about these data frames and how to potentially modify them, in a later vignette.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># prepare inputs </span>
 <span class="va">sir_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span></code></pre></div>
 <p>Now, let’s produce a basic diagram by calling <code>make_diagram</code> with its defaults.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make a default diagram</span>
 <span class="va">default_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">default_diagram</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">default_diagram</span><span class="op">)</span></code></pre></div>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>This looks ok, but probably not quite at the level what you want for a publication or presentation. So let’s provide some inputs to the <code>make_diagram</code> function to improve the look.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make a diagram with adjusted settings</span>
 <span class="va">nice_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
                              node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
@@ -167,18 +186,16 @@
                              flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
                              flow_text_size <span class="op">=</span> <span class="fl">5</span>,
                              main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
+                             main_arrow_linetype <span class="op">=</span> <span class="st">"solid"</span>,
                              main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
                              interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
+                             interaction_arrow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">nice_diagram</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">nice_diagram</span><span class="op">)</span></code></pre></div>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>As you can see, it is possible to change the look of the diagram considerably by changing settings.</p>
 <p>Let’s look at a few more options that you can configure. By default, <strong>flowdiagramr</strong> shows all flows and labels them all. While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. You can easily turn on and off several components. The following code shows an example where we turned off labeling of the flows.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Diagram without labeling of flows</span>
 <span class="va">simpler_diagram_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
                              label_flows <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -196,11 +213,10 @@
                              interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_1</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_segment).</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_1</span><span class="op">)</span></code></pre></div>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>In this example, we are also turning off plotting of the flows that come into or go out of the system from the outside. In this example, those are births and deaths.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Diagram without external flows</span>
 <span class="va">simpler_diagram_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
                              label_flows <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -219,27 +235,28 @@
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_2</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>Note that if you turn off some component, other options that apply to that component will be ignored. For instance if you turn off labeling of the flows, it does of course not matter what color and font size you give those labels. You can leave those specifications in the code, as we have done above. They will just be ignored.</p>
+</div>
 </div>
 <div id="example-2" class="section level1">
 <h1 class="hasAnchor">
 <a href="#example-2" class="anchor"></a>Example 2</h1>
 <p>Let’s use the second example from the <a href="./A_quickstart.html">Getting started vignette</a>, the predator prey model, to explore some more options.</p>
-<p>First, we specify the model again.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>First, we specify the model again. We did a bit of renaming here, what we called pathogen before is now called bacteria and labeled <strong>B</strong> and the Immune response is abbreviated as <strong>I</strong>. Parameter names have been adjusted accordingly, but otherwise it is the same model you already saw.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the model</span>
 <span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span>,<span class="st">"I"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>,<span class="st">"Immunity"</span><span class="op">)</span>
+<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>,<span class="st">"Immune Response"</span><span class="op">)</span>
 <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*B*(1-B/bmax)"</span>, <span class="st">"-dB*B"</span>, <span class="st">"-k*B*I"</span><span class="op">)</span>,
              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+r*B*I"</span>, <span class="st">"-dI*I"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">ppmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>Next, we prepare the input list of data frames</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># prepare inputs </span>
 <span class="va">pp_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span></code></pre></div>
 <p>Finally, we can make a diagram with settings adjusted to our liking.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make diagram with adjusted settings</span>
 <span class="va">diag1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_input_structure</span>,  
                              node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
@@ -255,9 +272,9 @@
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag1</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <p>For the next diagram, we are turning off the interactions and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make another diagram with adjusted settings</span>
 <span class="va">diag2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_input_structure</span>,  
                              node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
@@ -274,7 +291,7 @@
                              interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
                              interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 <p>As you can see, not showing the interactions doesn’t produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.</p>
 </div>
 <div id="next-steps" class="section level1">
