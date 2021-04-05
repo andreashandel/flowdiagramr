@@ -1,22 +1,27 @@
 ******
 2021-04-05
 
-- why do nodes in input_structure object not have xstart/xend, ystart/yend to determine size of box, and only have x and y?
 
-- add more details to each public function roxygen block, e.g. examples and more documentation/information.
+High:
 
-- write_diagram should take as input either a model list or the input_structure object. if model list, then the function will include a call to prepare_diagram. for either scenario, the code that is being generated should be fully 'stand-alone'. that means the original model list or the input_structure object should be written at the top of the output code.
+- AT: PP model not working (after removal of trailing + signs). SIR model in vignette B not working after removing trailing + from B*S*I. "Birth arrow" not showing in vignette B SIR.
 
-- add a simple 'vertical = TRUE' feature to make_diagram? Or skip and just let user specify input matrix?
+- AT: warning msg for remove_na_rows.R on check needs fixing.
 
-COMPLETED----
-- prepare_diagram function should explain in detail both the input and output objects and their structure -- DONE.
-- modify diagram (vignette B) produces warning messages. Should probably fix and/or suppress. -- FIXED.
-- change main_arrow_linetype input to a word instead of a number (e.g. solid/dashed/etc.) -- ALREADY POSSIBLE, WILL UPDATE DOC.
-- labeling of main vs interaction flows doesn't seem to work for PP model? see 1st vignette diagram, only main arrows should be dashed, but interaction arrows are also dashed.  -- WORKS FOR ME. INTERACTION ARROW TYPE IS DASHED DEFAULT, MUST SPECIFY OTHERWISE.
+- AT: add content to 'documentation.md' 
+
+- AT: make sure all code is documented well
+
+- AT: add more details to each public function roxygen block, e.g. examples and more documentation/information.
+
+- AT: implement write_diagram_code function
+
+- AT: give nodes in input_structure object xstart/xend, ystart/yend to determine size of box
+
+- AH: implement grid layout and changes for make_diagram outlined below (see vignette B)
 
 
-******
+Low:
 
 - Write unit tests with testthat
 

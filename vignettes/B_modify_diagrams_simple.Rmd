@@ -22,16 +22,48 @@ pkg = 'flowdiagramr' #so we can easily switch names
 library(pkg, character.only = TRUE)
 ```
 
-# Introduction
+## Introduction
 
 We assume you went through the [getting started vignette](./A_quickstart.html) and know the basics of using **`r pkg`**. 
 In this vignette, you will learn the simplest ways of customizing diagrams. Further vignettes show more advanced ways of customizing diagrams.
 
 
-# Setting arguments in `make_diagram`
 
-The easiest way to start customizing your model is by providing specific settings when you call the `make_diagram` function. 
-The help file for the function shows you what settings you can customize, you can look at it with this command
+## Providing additional input when specifying the model
+
+You previously learned that to specify a model, you need to set up a list that contains at minimum the elements `varlabels` and `flows`. It is possible to supply a few additional elements, namely the element `varnames` which contains the full names for each variable/compartment and an element `varlocations`, which contains a matrix showing the grid-based arrangement of the compartment boxes. Here is an example for the SIR model you saw previously.
+
+
+```{r}
+varlabels = c("S","I","R")
+flows = list(S_flows = c("-b*S*I"), 
+             I_flows = c("+b*S*I","-g*I"), 
+             R_flows = c("+g*I"))
+varnames = c("Susceptible","Infected","Recovered")
+varlocations = matrix(data = c("S", "", "R",
+                               "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
+sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames, varlocations = varlocations)
+```
+
+The `varnames` argument is self-explanatory. The `varlocations` argument needs some explanation. What this allows you to do is to define a grid and place the compartments at specific locations. This is often necessary when you create more complicated models since the automated placement by `make_diagram` is likely not ideal. In the above example, we defined a grid with 2 rows and 3 columns and placed the **S** and **R** compartments in the left and right corner of the top row and the **I** compartment in the middle of the bottom row. All other slots are empty. 
+
+You can take this extended specification of the model and feed it to the diagram preparation and generation functions, like so.
+
+```{r}
+# prepare inputs 
+sir_input_structure <- prepare_diagram(sirmodel)
+# make  diagram
+#sir_diagram <- make_diagram(sir_input_structure, use_varnames = TRUE)
+#plot(sir_diagram)
+```
+
+Note that we provided the `make_diagram` fuction with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. There are a number of options you can set when calling `make_diagram`, we'll discuss several of them now.
+
+
+
+## Setting arguments in `make_diagram`
+
+In the previous vignette and the example above, you saw that it is possible to start customizing the diagram by providing specific settings when calling the `make_diagram` function. The help file for the function shows you what settings you can customize, you can look at it with this command
 
 ```{r, eval = FALSE}
 help('make_diagram')
@@ -40,20 +72,18 @@ help('make_diagram')
 Let's explore some of those options and what they do. 
 
 
-# Example 1
+### Example 1
 
-We'll start with an example that uses an extension of the SIR model you encountered in the [Getting started vignette](./A_quickstart.html). 
-For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
+We'll first play with an extension of the SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
 
 ```{r}
 # specify the model
 varlabels = c("S","I","R")
 varnames = c("Susceptible","Infected","Recovered")
-# currently only works with trailing + signs
-flows = list(S_flows = c("+n", "-b*S*I", "-m*S"), 
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
              I_flows = c("+b*S*I","-g*I", "-m*I"), 
-             R_flows = c("+g*I", "-m*R"))
-sirmodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+             R_flows = c("g*I", "-m*R"))
+sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames)
 ```
 
 
@@ -156,12 +186,12 @@ Note that if you turn off some component, other options that apply to that compo
 
 Let's use the second example from the [Getting started vignette](./A_quickstart.html), the predator prey model, to explore some more options.
 
-First, we specify the model again.
+First, we specify the model again. We did a bit of renaming here, what we called pathogen before is now called bacteria and labeled **B** and the Immune response is abbreviated as **I**. Parameter names have been adjusted accordingly, but otherwise it is the same model you already saw.
 
 ```{r}
 # specify the model
 varlabels = c("B","I")
-varnames = c("Bacteria","Immunity")
+varnames = c("Bacteria","Immune Response")
 flows = list(B_flows = c("+g*B*(1-B/bmax)", "-dB*B", "-k*B*I"),
              I_flows = c("+r*B*I", "-dI*I"))
 ppmodel = list(varlabels = varlabels, varnames = varnames, flows = flows)

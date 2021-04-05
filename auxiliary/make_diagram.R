@@ -34,6 +34,7 @@
 #'     specifying the text color for non-interaction flow arrows.
 #'     If a vector, the colors will be recycled in the order of the flows
 #'     in the supplied data frame.
+<<<<<<< Updated upstream
 #' @param main_arrow_linetype Either a numeric scaler or a character scaler
 #'     specifying the linetype for main arrows (non-interaction arrows). This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
@@ -43,12 +44,17 @@
 #'     discrete variable, or a string of an even number (up to eight) of
 #'     hexadecimal digits which give the lengths in consecutive positions in
 #'     the string." Default is 1 (solid).
+=======
+#' @param main_arrow_linetype A numeric scalar or string specifying the linetype for
+#'     main arrows (non-interaction arrows). E.g. 1 or "solid" for solid.
+>>>>>>> Stashed changes
 #' @param main_arrow_size A numeric scaler specifying the line size for the
 #'     main arrows (non-interaction arrows).
 #' @param interaction_arrow_color A character string or vector of character
 #'     strings specifying the text color for interaction flow arrows.
 #'     If a vector, the colors will be recycled in the order of the flows
 #'     in the supplied data frame.
+<<<<<<< Updated upstream
 #' @param interaction_arrow_linetype Either a numeric scaler or a character scaler
 #'     specifying the linetype for interaction arrows. This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
@@ -58,6 +64,10 @@
 #'     discrete variable, or a string of an even number (up to eight) of
 #'     hexadecimal digits which give the lengths in consecutive positions in
 #'     the string." Default is 2 (dashed).
+=======
+#' @param interaction_arrow_linetype A numeric scalar or string specifying the linetype
+#'     for interaction arrows. E.g. 2 or "dashed" for dashed.
+>>>>>>> Stashed changes
 #' @param interaction_arrow_size A numeric scalar specifying the line size for
 #'     the interaction arrows.
 #' @return A ggplot2 object.
