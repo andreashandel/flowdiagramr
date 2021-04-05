@@ -34,6 +34,7 @@ Low:
 
 - Add check_model() and check_input_structure() helper functions
 
+- Add an option to give each flow their own name/label (e.g. replace/add to b*S*I by calling "infection process"). Similar to flowlabels and flownames for boxes.
 
 Questions:
 
