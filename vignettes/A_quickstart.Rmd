@@ -121,8 +121,8 @@ First, create the model structure
 
 ```{r}
 varlabels = c("Pat","Imm")
-flows     = list(B_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
-                 I_flows = c("r*Pat*Imm", "-dI*Imm"))
+flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
+                 Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
 mymodel = list(varlabels = varlabels, flows = flows)
 ```
 

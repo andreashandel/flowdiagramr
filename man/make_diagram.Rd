@@ -17,10 +17,10 @@ make_diagram(
   flow_text_color = "black",
   flow_text_size = 3,
   main_arrow_color = "black",
-  main_arrow_linetype = 1,
+  main_arrow_linetype = "solid",
   main_arrow_size = 0.5,
   interaction_arrow_color = "black",
-  interaction_arrow_linetype = 2,
+  interaction_arrow_linetype = "dashed",
   interaction_arrow_size = 0.5
 )
 }
@@ -71,7 +71,7 @@ specifying the text color for non-interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
 in the supplied data frame.}
 
-\item{main_arrow_linetype}{Either a numeric scaler or a character scaler
+\item{main_arrow_linetype}{Either a numeric scalar or a character scalar
 specifying the linetype for main arrows (non-interaction arrows). This
 argument is passed to the \code{linetype} argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
@@ -89,7 +89,7 @@ strings specifying the text color for interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
 in the supplied data frame.}
 
-\item{interaction_arrow_linetype}{Either a numeric scaler or a character scaler
+\item{interaction_arrow_linetype}{Either a numeric scalar or a character scalar
 specifying the linetype for interaction arrows. This
 argument is passed to the \code{linetype} argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified

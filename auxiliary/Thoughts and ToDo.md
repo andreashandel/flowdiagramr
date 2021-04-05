@@ -21,6 +21,7 @@ High:
 - AH: implement grid layout and changes for make_diagram outlined below (see vignette B)
 
 
+
 Low:
 
 - Write unit tests with testthat
@@ -30,6 +31,9 @@ Low:
 - Implement error checking inside functions
 
 - Add code to check size of content for box and make box size properly. Also content to minimize label and arrow overlap?
+
+- Add check_model() and check_input_structure() helper functions
+
 
 Questions:
 
@@ -45,7 +49,15 @@ if model list, then the function will include a call to prepare_diagram. for eit
 
 user can also provide optional location and filename for result. default path is current working directory. default filename is diagram_code.R
 
-write_diagram(filepath = filepath, filename = filename, model = mymodel, input_structure = input_structure)
+write_diagram(filepath = filepath, 
+			  filename = filename, 
+			  model = mymodel, #either
+			  input_structure = input_structure, #or - if provided, ignore model
+			  make_diagram_settings = list(node_text_color = "white", node_text_size = 10, use_varnames=) 
+			  )
+
+#not used since you provided your own input_structure
+#prepare_diagram(mymodel)
 
 
 
