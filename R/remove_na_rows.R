@@ -1,6 +1,6 @@
 #' Remove rows with no location information.
 #'
-#' @param df
+#' @param df A data frame.
 #' @return A data frame.
 #' @noRd
 
