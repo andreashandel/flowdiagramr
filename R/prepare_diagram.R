@@ -128,6 +128,9 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
 
   flows <- input_list$flows
 
+  #add implicit + signs to make explicit before additional parsing
+  flows <- add_plus_signs(flows)
+
   #turns flow list into matrix, adding NA, found it online,
   #not sure how exactly it works
   flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
