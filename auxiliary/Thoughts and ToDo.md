@@ -4,9 +4,9 @@
 
 High:
 
-- AT: PP model not working (after removal of trailing + signs). SIR model in vignette B not working after removing trailing + from B*S*I. "Birth arrow" not showing in vignette B SIR.
+- AT: PP model not working (after removal of trailing + signs). SIR model in vignette B not working after removing trailing + from B*S*I. "Birth arrow" not showing in vignette B SIR. -- DONE.
 
-- AT: warning msg for remove_na_rows.R on check needs fixing.
+- AT: warning msg for remove_na_rows.R on check needs fixing. -- DONE.
 
 - AT: add content to 'documentation.md' 
 

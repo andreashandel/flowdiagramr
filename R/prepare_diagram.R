@@ -97,8 +97,8 @@
 #' varlabels <- c("S","I","R")
 #' varnames <- c("Susceptible","Infected","Recovered")  # optional
 #' flows <- list(S_flows = c("-b*S*I"),
-#'               I_flows = c("+b*S*I","-g*I"),
-#'               R_flows = c("+g*I"))
+#'               I_flows = c("b*S*I","-g*I"),
+#'               R_flows = c("g*I"))
 #' mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows)
 #' prepare_diagram(input_list = mymodel)
 #'
@@ -117,8 +117,8 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
 
 
   # Extract relevant details from the input_list and make a matrix
-  # of variables X flows for iterating and indexing the nodes and
-  # connections.
+  # of variables-by-flows for iterating and indexing the nodes and
+  # connections. Variables will go along rows and flows along columns.
   nvars <- length(input_list$varlabels)  #number of variables/compartments in model
   varnames <- input_list$varlabels
 
@@ -126,18 +126,21 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
     vartext <- input_list$varnames
   }
 
+  #extract the flows list
   flows <- input_list$flows
 
   #add implicit + signs to make explicit before additional parsing
   flows <- add_plus_signs(flows)
 
   #turns flow list into matrix, adding NA, found it online,
-  #not sure how exactly it works
+  #not sure how exactly it works (from AH and modelbuilder code base)
+  #variables are along rows and flows along columns.
   flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
   flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 
 
+  #define nodes data frame structure if not probvided by user
   if(is.null(nodes_df)) {
     # Create a node data frame
     ndf <- data.frame(
@@ -151,6 +154,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
     strats <- ifelse(strats == "", 1, strats)
     ndf$row <- as.numeric(strats)
   } else {
+    # add a row id if nodes_df is supplied by user, for consistency
     ndf <- add_rowid(nodes_df)
   }
 
@@ -176,7 +180,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
       # Extract the variable names
       varspars <- unique(get_vars_pars(currentflowfull))
       varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
-      vars <- varspars[which(varfirsts %in% LETTERS)]
+      vars <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
 
       # If the flow does not show up in any other rows BUT starts with
       # a plus sign, then the donating node will be the state variable
@@ -264,7 +268,9 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   # Keep only distinct rows
   edf <- unique(edf)
 
-  # Duplicate rows with out_interaction == TRUE
+  # Duplicate rows with out_interaction == TRUE to assign the interaction
+  # flag and then remove the out-interaction flag. This is done to
+  # achieve appropriate labeling.
   repdf <- subset(edf, out_interaction == TRUE)
   if(nrow(repdf) != 0) {
     repdf$interaction <- TRUE
@@ -274,7 +280,8 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
     edf <- rbind(edf, repdf)
   }
 
-  # remove out_interaction completely
+  # remove out_interaction completely now that interaction is
+  # appropriately flagged with correct labeling
   edf$out_interaction <- NULL
 
 
@@ -321,18 +328,16 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
 
 
   # Make dummy compartment for all flows in and out of the system.
-  # Out of the system first
+  # Out of the system
   outdummies <- NULL
-  # numnas <- length(edf[is.na(edf$to), "to"])
   numnas <- length(edf[is.na(edf$to) & edf$interaction == FALSE, "to"])
   if(numnas > 0) {
     outdummies <- as.numeric(paste0("999", c(1:numnas)))
     edf[is.na(edf$to) & edf$interaction == FALSE, "to"] <- outdummies
   }
 
-  # In to the system second
+  # In to the system
   indummies <- NULL
-  # numnas <- length(edf[is.na(edf$from), "from"])
   numnas <- length(edf[is.na(edf$from) & edf$interaction == FALSE, "from"])
   if(numnas > 0) {
     indummies <- as.numeric(paste0("-999", c(1:numnas)))
@@ -401,21 +406,6 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
     ndf[which(ndf$id == id), c("x", "y")] <- c(newx, newy)
   }
 
-  # update node positions that overlap
-  # xys <- ndf[ , c("x", "y")]
-  # overlapids <- which(duplicated(xys) | duplicated(xys, fromLast = TRUE))
-  # numoverlap <- length(overlapids)
-  # if(numoverlap > 0) {
-  #   newxs <- seq(0.1, 1.9, by = 0.15)
-  #   newxids <- c(6,5,4,3,2,1,0,1,2,3,4,5,6) + 1
-  #   xmults <- newxs[which(newxids==numoverlap)]
-  #   for(i in 1:numoverlap) {
-  #     oldx <- ndf[overlapids[i], "x"]
-  #     newx <- oldx * xmults[i]
-  #     ndf[overlapids[i], "x"] <- newx
-  #   }
-  # }
-
   # Subset out interactions to in/out flows
   extints <- subset(edf, interaction == TRUE & is.na(link))
   if(nrow(extints) > 0) {
@@ -439,11 +429,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25
   edf$diff <- with(edf, abs(to-from))
 
-  # Get midpoints of in/out segments for extints "to"
-
-  ## OK. Need to merge in nodes to get the start positions and
-  ## the edges to get the ending position (midpoints of edges with no
-  ## no label)
+  # Get midpoints of in/out segments for external interactions "to" locations
   if(nrow(extints) > 0) {
     extlinks <- subset(edf, label == "")
     extints <- merge(extints, ndf[,c("x", "y", "id")], by.x = "from", by.y = "id")
@@ -468,10 +454,6 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
                              "xstart", "ystart", "xend", "yend")
       extints[i, ] <- tmp3
     }
-    # extints <- merge(extints, extlinks[, c("xmid", "ymid", "from")],
-    #                  by.x = "to", by.y = "from")
-    # colnames(extints) <- c("to", "from", "label", "interaction", "link",
-    #                        "xstart", "ystart", "xend", "yend")
     extints$xmid <- with(extints, (xend + xstart) / 2)
     extints$ymid <- with(extints, (yend + ystart) / 2) + 0.25
     extints$diff <- with(extints, abs(to-from))
