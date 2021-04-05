@@ -34,7 +34,7 @@
 #'     specifying the text color for non-interaction flow arrows.
 #'     If a vector, the colors will be recycled in the order of the flows
 #'     in the supplied data frame.
-#' @param main_arrow_linetype Either a numeric scaler or a character scaler
+#' @param main_arrow_linetype Either a numeric scalar or a character scalar
 #'     specifying the linetype for main arrows (non-interaction arrows). This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
@@ -49,7 +49,7 @@
 #'     strings specifying the text color for interaction flow arrows.
 #'     If a vector, the colors will be recycled in the order of the flows
 #'     in the supplied data frame.
-#' @param interaction_arrow_linetype Either a numeric scaler or a character scaler
+#' @param interaction_arrow_linetype Either a numeric scalar or a character scalar
 #'     specifying the linetype for interaction arrows. This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
