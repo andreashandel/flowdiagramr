@@ -106,5 +106,8 @@ the interaction arrows.}
 A ggplot2 object.
 }
 \description{
-Make a ggplot2 model diagram.
+\code{make_diagram()} generates a \strong{ggplot2} object based on the data frames
+made with \code{\link{prepare_diagram}}. The function only applies
+aesthetics that are not associated with x, y locations. Colors, linetypes,
+and other graphical options can be set by the user.
 }

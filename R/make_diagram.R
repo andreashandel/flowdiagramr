@@ -1,5 +1,11 @@
 #' Make a ggplot2 model diagram.
 #'
+#' @description
+#' `make_diagram()` generates a **ggplot2** object based on the data frames
+#' made with \code{\link{prepare_diagram}}. The function only applies
+#' aesthetics that are not associated with x, y locations. Colors, linetypes,
+#' and other graphical options can be set by the user.
+#'
 #' @param df_list A list of data frames returned from the
 #'     \code{prepare_diagram} function. See that function for details
 #'     about this object.
@@ -84,6 +90,8 @@ make_diagram <- function (df_list,
   # TODO error checking
 
   if(interaction_label == FALSE) {
+    # This removes interaction segments and puts the flow label
+    # back with the physical flow.
     df_list <- move_interaction_label(df_list)
   }
 
