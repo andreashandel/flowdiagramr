@@ -1,5 +1,18 @@
 #' Create data frames for plotting from model elements.
 #'
+#' @description
+#' `prepare_diagram()` creates a list of data frames with label and
+#' position information for plotting a (typically) dynamic model
+#' flow diagram. The data frames are specifically designed for plotting
+#' with **ggplot2** (see \code{\link{make_diagram}} and
+#' \code{\link{write_diagram}}). The model elements are state variables
+#' (nodes) and flows between them, often specified by mathematical
+#' expressions. `prepare_diagram` attempts to make good decisions about
+#' where nodes, flows (arrow segment), and labels should be placed and
+#' the connections between all the elements. However, complex models with
+#' complex diagrams will likely need user modification. This is documented
+#' in the vignettes.
+#'
 #' @param input_list A list of model elements. The list must contain at least
 #'     two elements with names \code{varlabels} and \code{flows}. The
 #'     \code{flows} list must contain a sub-list for each variable in
@@ -119,9 +132,15 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   # Extract relevant details from the input_list and make a matrix
   # of variables-by-flows for iterating and indexing the nodes and
   # connections. Variables will go along rows and flows along columns.
-  nvars <- length(input_list$varlabels)  #number of variables/compartments in model
+
+  #number of variables/compartments in model
+  nvars <- length(input_list$varlabels)
+
+  #labels for the nodes and what we expect to show up in the flow math
   varnames <- input_list$varlabels
 
+  #set vartext to the full length names, if provided
+  #TODO add option for variable labels to be vartext rather tahn varnames
   if(!is.null(input_list$varnames)) {
     vartext <- input_list$varnames
   }
@@ -139,19 +158,21 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 
-
-  #define nodes data frame structure if not probvided by user
+  #define nodes data frame structure if not provided by user
   if(is.null(nodes_df)) {
     # Create a node data frame
     ndf <- data.frame(
-      id = 1:nvars,  # number of nodes
-      label = varnames,  # labels of nodes
+      id = 1:nvars,  # numeric id for nodes
+      label = varnames,  # labels for nodes
       row = 1  # hard code for 1 row, will be updated below, if necessary
     )
 
-    # Split variables by rows if stratification implied by numbers
+    # Split variables by rows if stratification implied by numbers at
+    # the end of state variables. For example, two "S" compartments labeled
+    # "S1" and "S2" will be split across rows, assuming some stratification.
+    # Note that stratification up to 9 is currently supported.
     strats <- gsub("[^0-9.]", "",  varnames)
-    strats <- ifelse(strats == "", 1, strats)
+    strats <- ifelse(strats == "", 1, strats)  # add implicit 1 if no strats
     ndf$row <- as.numeric(strats)
   } else {
     # add a row id if nodes_df is supplied by user, for consistency
@@ -162,47 +183,76 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   # Create the edge data frame by looping through the variables
   # and associated flows.
   edf <- list()  #an empty list to be coerced to a data frame via rbind
-  for(i in 1:nrow(flowmatred)) {
-    varflowsfull = flowmat[i,] #all flows with sign for current variable
-    varflows = flowmatred[i,] #all flows for current variable
-    varflowsigns = signmat[i,] #signs of flows for current variable
-    varflows = varflows[!is.na(varflows)] #remove NA entries
 
+  #start loop over variables (rows in the flowmatred matrix)
+  for(i in 1:nrow(flowmatred)) {
+    varflowsfull <- flowmat[i, ] #all flows with sign for current variable
+    varflows <- flowmatred[i, ] #all flows for current variable
+    varflowsigns <- signmat[i, ] #signs of flows for current variable
+
+    #remove NA entries because these only show up to match the
+    #matrix dimensions needed given the variable with the largest
+    #number of flows in/out.
+    varflows <- varflows[!is.na(varflows)]
+
+    #start loop over all the flows in/out of the current variable (node)
     for(j in 1:length(varflows)) {
-      currentflowfull = varflowsfull[j] #loop through all flows for variable
-      currentflow = varflows[j] #loop through all flows for variable
-      currentsign = varflowsigns[j] #loop through all flows for variable
+      currentflowfull <- varflowsfull[j] #loop through all flows for variable
+      currentflow <- varflows[j] #loop through all flows for variable
+      currentsign <- varflowsigns[j] #loop through all flows for variable
 
       # Find the variables for which the current flow appears, i.e., what
       # other rows of the matrix does it show up in.
       connectvars <- unname(which(flowmatred == currentflow, arr.ind = TRUE)[,1])
 
-      # Extract the variable names
+      # Extract the variable names in the flow expression
       varspars <- unique(get_vars_pars(currentflowfull))
       varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
+
+      #vars is now a vector of the variables that are in the flow math
       vars <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
 
-      # If the flow does not show up in any other rows BUT starts with
-      # a plus sign, then the donating node will be the state variable
-      # in the flow
+      # Assign connecting variables for inflows (+ flows)
       if(currentsign == "+") {
+        # If the flow does not show up in any other rows (connectvars == 1)
+        # and there are no variables in the flow math, then the only connecting
+        # variable is the current (i) variable
         if(length(connectvars) == 1 & length(vars) == 0) {
           connectvars <- i
         }
+
+        # If the flow does not show up in any other rows (connectvars == 1)
+        # and there is at least on variable in the flow math, then the
+        # connecting variable(s) will either be the current variable once
+        # (indicating an inflow like births) or the current variable twice
+        # (indicating a feedback flow)
         if(length(connectvars) == 1 & length(vars) >= 1){
+
+          # if the current (i) variable does not show up in the flow math
+          # then the connecting variable is just the current variable once,
+          # indicating a independent inflow from out of the system (e.g., birth)
           if(!varnames[i] %in% vars) {
             connectvars <- i
           }
+
+          # is the the current (i) variables shows up in the flow math, then
+          # the connecting variables are the current variable twice, indicating
+          # a feedback loop
           if(varnames[i] %in% vars) {
             connectvars <- c(i, i)
           }
         }
+
+        # If there are more than one unique connecting variables, then
+        # the connecting variables are simply those defined above by
+        # searching the matrix of flows
         if(length(connectvars) > 1) {
           connectvars <- connectvars
         }
       }
 
-      # If current sign is negative, it is an outflow and goes either the
+
+      # If current sign is negative, it is an outflow and goes either to the
       # connectvar that is not equal to the current variable id (indexed by i)
       # or it goes to NA (this happens when there is an unspecified death
       # compartment, for example).
@@ -213,21 +263,22 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
           cn <- connectvars[connectvars!=i]
         }
 
+        # Create a data frame with all the necessary segment information
         tmp <- data.frame(from = i,
                           to = cn,
                           label = currentflow,
                           interaction = FALSE,
                           out_interaction = FALSE)
 
+        # Bind to edge data frame for flows
         edf <- rbind(edf, tmp)
       }
 
       # If the current sign is positive AND the flow only shows up in
       # one row of the flow matrix, then this is an inflow external to the
-      # system or as a function of the current variable itself. Currently,
-      # we assume these arise from the variable itself, but we can extend
-      # this functionality later on.
+      # system or as a function of the current variable itself.
       if(currentsign == "+" & length(connectvars) == 1) {
+        # These are typically births/imports
         if(connectvars == i) {
           tmp <- data.frame(from = NA,
                             to = i,
@@ -237,7 +288,12 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
           edf <- rbind(edf, tmp)
         }
       }
+
+      # If the current sign is positive and the length of connecting variables
+      # is equal to two, then it is either a feedback loop (1 unique
+      # connecting variable) or a physical flow between two unique variables.
       if(currentsign == "+" & length(connectvars) == 2) {
+        # These are feedbacks of somekind
         if(length(unique(connectvars)) == 1) {
           tmp <- data.frame(from = i,
                             to = i,
@@ -245,6 +301,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
                             interaction = FALSE,
                             out_interaction = FALSE)
         } else {
+          # These are physical flows between two variables
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
                             label = currentflow,
@@ -255,29 +312,38 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
       }
 
       # interaction flag if two variables are in the flow
-      if(length(vars) > 1 & length(unique(connectvars)) > 1) {
-        edf[nrow(edf), "interaction"] <- TRUE
-      }
-      if(length(vars) > 1 & length(unique(connectvars)) <= 1) {
-        edf[nrow(edf), "out_interaction"] <- TRUE
+      if(length(vars) > 1) {
+        if(length(unique(connectvars)) > 1) {
+          # this means that the flow connects two variables and both
+          # are present in the flow math
+          edf[nrow(edf), "interaction"] <- TRUE
+        } else {
+          # this means that the flow comes from or goes to somewhere out
+          # of the system, and only 1 variable is included in the
+          # flow math. this is designated as an "out_interaction"
+          edf[nrow(edf), "out_interaction"] <- TRUE
+        }
       }
 
     }  #end flow loop
   }  #end variable loop
 
-  # Keep only distinct rows
+  # Keep only distinct rows; duplication occurs because one variable's
+  # inflow can be another variable's outflow, but we only want these once
+  # in the data frame for edges (segments/arrows/flows).
   edf <- unique(edf)
 
   # Duplicate rows with out_interaction == TRUE to assign the interaction
-  # flag and then remove the out-interaction flag. This is done to
-  # achieve appropriate labeling.
+  # flag and then remove the out_interaction flag. This is done to
+  # achieve appropriate labeling. We want the physical flow to have no label
+  # and for the interaction arrow to carry to the label.
   repdf <- subset(edf, out_interaction == TRUE)
-  if(nrow(repdf) != 0) {
-    repdf$interaction <- TRUE
-    repdf$out_interaction <- NULL
-    edf[which(edf$out_interaction == TRUE), "label"] <- ""
-    edf$out_interaction <- NULL
-    edf <- rbind(edf, repdf)
+  if(nrow(repdf) != 0) {  # avoids errors if no rows
+    repdf$interaction <- TRUE  # set this to TRUE for linetypes
+    repdf$out_interaction <- NULL  # remove this now
+    edf[which(edf$out_interaction == TRUE), "label"] <- ""  # take away the label for the physical flow
+    edf$out_interaction <- NULL  # remove this now
+    edf <- rbind(edf, repdf)  # tack them together
   }
 
   # remove out_interaction completely now that interaction is
@@ -289,17 +355,29 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   #   direct flows
   #   interactions to meet at edges
   #   the flows resulting from interactions
+  # All flows are treated seperately because their start and end positions
+  # depend on state variables in different ways.
+
   edf$link <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(edf, interaction == TRUE)
   edf <- subset(edf, interaction == FALSE)
 
-  if(nrow(ints) > 0) {
-    intflows <- ints
-    intflows$label <- ""
-    intflows <- unique(intflows)
-    intflows$interaction <- FALSE
+  # If there are interactions, then duplicate them and reassign the to/from
+  # columns such that we have two segments for each interaction flagged
+  # row: (1) the physical flow with from/to for donating and receiving
+  # varables and (2) an interaction flow with an NA for the to column
+  # and from is the non-donating variable in the flow math. A new "link"
+  # column is added to identify which variable is linking the interaction
+  # (the link is the "from" variable in the physical flow).
+  if(nrow(ints) > 0) {  # avoids errors if no interactions
+    intflows <- ints  # duplicate
+    intflows$label <- ""  # strip the label from the physical flow
+    intflows <- unique(intflows)  # just keep unique flows
+    intflows$interaction <- FALSE  # reset interaction to false b/c a main flow now
 
-    # Redefine the interaction from nodes
+    # Redefine the from, to, and link columns for the interaction
+    # arrows. "to" will always be NA until updated to meet at the center
+    # of the physical flow arrow.
     for(i in 1:nrow(ints)) {
       tmp <- ints[i, ]
       v <- get_vars_pars(tmp$label)
@@ -381,7 +459,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   for(id in inflownodes) {
     newxyid <- edf[which(edf$from == id), "to"]
     newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
-    newxy$y <- newxy$y + 2
+    newxy$y <- newxy$y + 2  # above the variable
     ndf[which(ndf$id == id), c("x", "y")] <- newxy
   }
 
@@ -390,7 +468,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   for(id in outflownodes) {
     newxyid <- edf[which(edf$to == id), "from"]
     newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
-    newxy$y <- newxy$y - 2
+    newxy$y <- newxy$y - 2  # below the variable
     ndf[which(ndf$id == id), c("x", "y")] <- newxy
   }
 
@@ -401,7 +479,7 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
     end <- edf[which(edf$to == id), "from"]
     newx1 <- ndf[which(ndf$id == start), "x"]
     newx2 <- ndf[which(ndf$id == end), "x"]
-    newx <- (newx1+newx2)/2
+    newx <- (newx1+newx2)/2  # midpoint of the physical arrow
     newy <- ndf[which(ndf$id == start), "y"]
     ndf[which(ndf$id == id), c("x", "y")] <- c(newx, newy)
   }
@@ -421,12 +499,14 @@ prepare_diagram <- function(input_list, nodes_df = NULL) {
   }
 
 
-  # Create segment coordinates
+  # Create segment coordinates by merging with node locations
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
   edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "to", by.y = "id",
                suffixes = c("start", "end"))
+
+  # label locations are mid points
   edf$xmid <- with(edf, (xend + xstart) / 2)
-  edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25
+  edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25  # label slightly above the arrrow
   edf$diff <- with(edf, abs(to-from))
 
   # Get midpoints of in/out segments for external interactions "to" locations

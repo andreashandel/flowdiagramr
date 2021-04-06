@@ -103,14 +103,24 @@ the same values for feedback edges.
 }
 }
 \description{
-Create data frames for plotting from model elements.
+\code{prepare_diagram()} creates a list of data frames with label and
+position information for plotting a (typically) dynamic model
+flow diagram. The data frames are specifically designed for plotting
+with \strong{ggplot2} (see \code{\link{make_diagram}} and
+\code{\link{write_diagram}}). The model elements are state variables
+(nodes) and flows between them, often specified by mathematical
+expressions. \code{prepare_diagram} attempts to make good decisions about
+where nodes, flows (arrow segment), and labels should be placed and
+the connections between all the elements. However, complex models with
+complex diagrams will likely need user modification. This is documented
+in the vignettes.
 }
 \examples{
 varlabels <- c("S","I","R")
 varnames <- c("Susceptible","Infected","Recovered")  # optional
 flows <- list(S_flows = c("-b*S*I"),
-              I_flows = c("+b*S*I","-g*I"),
-              R_flows = c("+g*I"))
+              I_flows = c("b*S*I","-g*I"),
+              R_flows = c("g*I"))
 mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows)
 prepare_diagram(input_list = mymodel)
 
