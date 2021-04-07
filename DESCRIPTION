@@ -15,7 +15,8 @@ LazyData: TRUE
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports:
-    ggplot2 (>= 2.2)
+    ggplot2 (>= 2.2),
+    fs
 Depends:
     R (>= 3.6)
 Suggests: 

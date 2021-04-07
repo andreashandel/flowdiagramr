@@ -2,11 +2,24 @@
 % Please edit documentation in R/write_diagram.R
 \name{write_diagram}
 \alias{write_diagram}
-\title{Write the ggplot2 code to an R file.}
+\title{Generate a reproducible R script to make the diagram.}
 \usage{
-write_diagram(directory = NULL, filename = NULL)
+write_diagram(
+  input_list = NULL,
+  input_structure = NULL,
+  directory = NULL,
+  filename = NULL
+)
 }
 \arguments{
+\item{input_list}{A \strong{flowdiagramr} input list. See
+\code{\link{prepare_diagram}}. If \code{input_list} is provided, then
+\code{input_structure} cannot be provided.}
+
+\item{input_structure}{A \strong{flowdiagramr} input structure, resulting from
+a call to \code{\link{prepare_diagram}}. If \code{input_structure} is
+provided, then \code{input_list} cannot be provided.}
+
 \item{directory}{File directory in which to save the R file. Defualt
 location is the current working directory.}
 
@@ -17,5 +30,7 @@ location is the current working directory.}
 A message telling the user where the file is.
 }
 \description{
-Write the ggplot2 code to an R file.
+\code{write_diagram()} makes a stand-alone R script to reproduce a diagram,
+including the model inputs, the data frames from
+\code{\link{prepare_diagram}}, and the \strong{ggplot2} code.
 }
