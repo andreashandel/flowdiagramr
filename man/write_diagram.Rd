@@ -24,7 +24,7 @@ provided, then \code{input_list} cannot be provided.}
 location is the current working directory.}
 
 \item{filename}{Name of the file, must end in '.R'. Default name is
-'diagram_ggplot_code.R'.}
+'diagram_code.R'.}
 }
 \value{
 A message telling the user where the file is.
@@ -32,5 +32,8 @@ A message telling the user where the file is.
 \description{
 \code{write_diagram()} makes a stand-alone R script to reproduce a diagram,
 including the model inputs, the data frames from
-\code{\link{prepare_diagram}}, and the \strong{ggplot2} code.
+\code{\link{prepare_diagram}}, and the \strong{ggplot2} code. The R script
+is intended to run "as-is", meaning there is code to make the objects
+the user sends as arguments (either the \code{input_list} or the
+\code{input_structure}).
 }

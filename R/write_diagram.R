@@ -17,7 +17,7 @@
 #' @param directory File directory in which to save the R file. Defualt
 #'     location is the current working directory.
 #' @param filename Name of the file, must end in '.R'. Default name is
-#'     'diagram_ggplot_code.R'.
+#'     'diagram_code.R'.
 #' @return A message telling the user where the file is.
 #' @import fs
 #' @export
@@ -31,7 +31,7 @@ write_diagram <- function(input_list = NULL,
   # make sure only input_list or input_structure is provided
   if(!is.null(input_list) & !is.null(input_structure)) {
     stop(paste0("Please provide either the input_list or the input_structure,",
-                "but not both."))
+                " but not both."))
   }
 
   # save to current working directory if the not specified
