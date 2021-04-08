@@ -13,16 +13,16 @@
 #' complex diagrams will likely need user modification. This is documented
 #' in the vignettes.
 #'
-#' @param input_list A list of model elements. The list must contain at least
+#' @param model_list A list of model elements. The list must contain at least
 #'     two elements with names \code{varlabels} and \code{flows}. The
 #'     \code{flows} list must contain a sub-list for each variable in
 #'     the \code{varlabels} vector. For example, if the user specifies
-#'     two variables in \code{input_list$varlabels}, then
-#'     \code{input_list$flows} must contain two sub-lists, each containing
+#'     two variables in \code{model_list$varlabels}, then
+#'     \code{model_list$flows} must contain two sub-lists, each containing
 #'     a character vector of flows into and out of the node. Currently,
-#'     this function assumes that the \code{input_list$varlabels} sub-lists
-#'     are in the same order as the \code{input_list$varlabels} vector. See
-#'     examples. The \code{input_list} can contain any other elements that
+#'     this function assumes that the \code{model_list$varlabels} sub-lists
+#'     are in the same order as the \code{model_list$varlabels} vector. See
+#'     examples. The \code{model_list} can contain any other elements that
 #'     the user might deem useful (e.g., metadata/comments), but only the
 #'     \code{varlabels} and \code{flows} are used by this function.
 #' @param nodes_df A data frame with user-specified node locations. The data
@@ -113,40 +113,40 @@
 #'               I_flows = c("b*S*I","-g*I"),
 #'               R_flows = c("g*I"))
 #' mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows)
-#' prepare_diagram(input_list = mymodel)
+#' prepare_diagram(model_list = mymodel)
 #'
 #' @export
 
 
-prepare_diagram <- function(input_list, nodes_df = NULL) {
+prepare_diagram <- function(model_list, nodes_df = NULL) {
   # TODO error checking
 
   # Make sure the nodes_df contains all the state variables included
-  # in the input_list and no other variables.
+  # in the model_list and no other variables.
   if(!is.null(nodes_df)) {
     # returns fatal error if variables do not match
-    check_nodes_df(input_list, nodes_df)
+    check_nodes_df(model_list, nodes_df)
   }
 
 
-  # Extract relevant details from the input_list and make a matrix
+  # Extract relevant details from the model_list and make a matrix
   # of variables-by-flows for iterating and indexing the nodes and
   # connections. Variables will go along rows and flows along columns.
 
   #number of variables/compartments in model
-  nvars <- length(input_list$varlabels)
+  nvars <- length(model_list$varlabels)
 
   #labels for the nodes and what we expect to show up in the flow math
-  varnames <- input_list$varlabels
+  varnames <- model_list$varlabels
 
   #set vartext to the full length names, if provided
   #TODO add option for variable labels to be vartext rather tahn varnames
-  if(!is.null(input_list$varnames)) {
-    vartext <- input_list$varnames
+  if(!is.null(model_list$varnames)) {
+    vartext <- model_list$varnames
   }
 
   #extract the flows list
-  flows <- input_list$flows
+  flows <- model_list$flows
 
   #add implicit + signs to make explicit before additional parsing
   flows <- add_plus_signs(flows)

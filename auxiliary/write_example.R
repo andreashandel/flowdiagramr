@@ -6,13 +6,13 @@ flows = list(S_flows = c("-b*S*I"),
              R_flows = c("g*I"))
 mymodel = list(varlabels = varlabels, flows = flows)
 
-input_structure <- prepare_diagram(mymodel)
+diagram_list <- prepare_diagram(model_list = mymodel)
 
 
-write_diagram(input_list  = mymodel,
+write_diagram(model_list = mymodel,
               directory = "../../Desktop/",
               filename = "test1.R")
 
-write_diagram(input_structure = input_structure,
+write_diagram(diagram_list = diagram_list,
               directory = "../../Desktop/",
               filename = "test2.R")

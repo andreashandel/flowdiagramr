@@ -105,12 +105,12 @@ sirmodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
 Next, we send the model to the `prepare_diagram` function.
 
 ```{r}
-sir_input_structure <- prepare_diagram(sirmodel)
+sir_diagram_list <- prepare_diagram(sirmodel)
 ```
 
 If we send this input structure to `make_diagram`, we get the following plot
 ```{r}
-plot1 <- make_diagram(sir_input_structure)
+plot1 <- make_diagram(sir_diagram_list)
 plot(plot1)
 ```
 
@@ -118,21 +118,21 @@ Next, instead of sending this structure to the `make_diagram` function right awa
 Here are the details contained in this object
 
 ```{r}
-print(sir_input_structure)
+print(sir_diagram_list)
 ```
 
 Let's modify this object somewhat. The following code moves one of the arrows and ...
 
 ```{r}
-input_structure_modified <- sir_input_structure
-input_structure_modified$curved_edges$xend[1] = 5.5
-input_structure_modified$nodes$x[3] = 13 
+diagram_list_modified <- sir_diagram_list
+diagram_list_modified$curved_edges$xend[1] = 5.5
+diagram_list_modified$nodes$x[3] = 13 
 ```
 
 With those modifications, the resulting diagram looks like this
 
 ```{r}
-plot2 <- make_diagram(input_structure_modified)
+plot2 <- make_diagram(diagram_list_modified)
 plot(plot2)
 ```
 

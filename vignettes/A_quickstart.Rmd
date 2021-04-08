@@ -79,10 +79,10 @@ Once you specified your model in the list structure just described, the next ste
 To get ready for diagram generation, you send your model to the `prepare_diagram` function.
 
 ```{r}
-input_structure <- prepare_diagram(mymodel)
+diagram_list <- prepare_diagram(mymodel)
 ```
 
-The `input_structure` object returned by this function contains a list of data frames used to make the diagram. We'll skip over this for now and revisit it in a later vignette.
+The `diagram_list` object returned by this function contains a list of data frames used to make the diagram. We'll skip over this for now and revisit it in a later vignette.
 
 
 ### Make the diagram 
@@ -90,7 +90,7 @@ The `input_structure` object returned by this function contains a list of data f
 Now it's time to make the diagram. This is done by sending the object you got by calling `prepare_diagram` to the `make_diagram` function, like so
 
 ```{r}
-my_diagram <- make_diagram(input_structure)
+my_diagram <- make_diagram(diagram_list)
 ```
 
 `make_diagram` returns a ggplot2 object (here called `my_diagram`). You you can write this plot to a file or print to the screen, e.g. with
@@ -141,8 +141,8 @@ $$
 Next, you use the same steps as above to create the model diagram.
 
 ```{r}
-input_structure <- prepare_diagram(mymodel)
-my_diagram <- make_diagram(input_structure, node_fill_color = c('blue','red'), main_arrow_linetype = "dashed", interaction_arrow_linetype = "solid")
+diagram_list <- prepare_diagram(mymodel)
+my_diagram <- make_diagram(diagram_list, node_fill_color = c('blue','red'), main_arrow_linetype = "dashed", interaction_arrow_linetype = "solid")
 plot(my_diagram)
 ```
 

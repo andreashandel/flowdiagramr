@@ -5,20 +5,20 @@
 \title{Generate a reproducible R script to make the diagram.}
 \usage{
 write_diagram(
-  input_list = NULL,
-  input_structure = NULL,
+  model_list = NULL,
+  diagram_list = NULL,
   directory = NULL,
   filename = NULL
 )
 }
 \arguments{
-\item{input_list}{A \strong{flowdiagramr} input list. See
-\code{\link{prepare_diagram}}. If \code{input_list} is provided, then
-\code{input_structure} cannot be provided.}
+\item{model_list}{A \strong{flowdiagramr} input list. See
+\code{\link{prepare_diagram}}. If \code{model_list} is provided, then
+\code{diagram_list} cannot be provided.}
 
-\item{input_structure}{A \strong{flowdiagramr} input structure, resulting from
-a call to \code{\link{prepare_diagram}}. If \code{input_structure} is
-provided, then \code{input_list} cannot be provided.}
+\item{diagram_list}{A \strong{flowdiagramr} input structure, resulting from
+a call to \code{\link{prepare_diagram}}. If \code{diagram_list} is
+provided, then \code{model} cannot be provided.}
 
 \item{directory}{File directory in which to save the R file. Defualt
 location is the current working directory.}
@@ -34,6 +34,6 @@ A message telling the user where the file is.
 including the model inputs, the data frames from
 \code{\link{prepare_diagram}}, and the \strong{ggplot2} code. The R script
 is intended to run "as-is", meaning there is code to make the objects
-the user sends as arguments (either the \code{input_list} or the
-\code{input_structure}).
+the user sends as arguments (either the \code{model} or the
+\code{diagram_list}).
 }

@@ -4,19 +4,19 @@
 \alias{prepare_diagram}
 \title{Create data frames for plotting from model elements.}
 \usage{
-prepare_diagram(input_list, nodes_df = NULL)
+prepare_diagram(model_list, nodes_df = NULL)
 }
 \arguments{
-\item{input_list}{A list of model elements. The list must contain at least
+\item{model_list}{A list of model elements. The list must contain at least
 two elements with names \code{varlabels} and \code{flows}. The
 \code{flows} list must contain a sub-list for each variable in
 the \code{varlabels} vector. For example, if the user specifies
-two variables in \code{input_list$varlabels}, then
-\code{input_list$flows} must contain two sub-lists, each containing
+two variables in \code{model_list$varlabels}, then
+\code{model_list$flows} must contain two sub-lists, each containing
 a character vector of flows into and out of the node. Currently,
-this function assumes that the \code{input_list$varlabels} sub-lists
-are in the same order as the \code{input_list$varlabels} vector. See
-examples. The \code{input_list} can contain any other elements that
+this function assumes that the \code{model_list$varlabels} sub-lists
+are in the same order as the \code{model_list$varlabels} vector. See
+examples. The \code{model_list} can contain any other elements that
 the user might deem useful (e.g., metadata/comments), but only the
 \code{varlabels} and \code{flows} are used by this function.}
 
@@ -122,6 +122,6 @@ flows <- list(S_flows = c("-b*S*I"),
               I_flows = c("b*S*I","-g*I"),
               R_flows = c("g*I"))
 mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows)
-prepare_diagram(input_list = mymodel)
+prepare_diagram(model_list = mymodel)
 
 }

@@ -5,7 +5,7 @@
 \title{Make a ggplot2 model diagram.}
 \usage{
 make_diagram(
-  df_list,
+  diagram_list,
   label_flows = TRUE,
   external_flows = TRUE,
   interaction_label = TRUE,
@@ -25,7 +25,7 @@ make_diagram(
 )
 }
 \arguments{
-\item{df_list}{A list of data frames returned from the
+\item{diagram_list}{A list of data frames returned from the
 \code{prepare_diagram} function. See that function for details
 about this object.}
 

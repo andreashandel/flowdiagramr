@@ -5,15 +5,15 @@
 #' including the model inputs, the data frames from
 #' \code{\link{prepare_diagram}}, and the **ggplot2** code. The R script
 #' is intended to run "as-is", meaning there is code to make the objects
-#' the user sends as arguments (either the `input_list` or the
-#' `input_structure`).
+#' the user sends as arguments (either the `model` or the
+#' `diagram_list`).
 #'
-#' @param input_list A **flowdiagramr** input list. See
-#'     \code{\link{prepare_diagram}}. If `input_list` is provided, then
-#'     `input_structure` cannot be provided.
-#' @param input_structure A **flowdiagramr** input structure, resulting from
-#'     a call to \code{\link{prepare_diagram}}. If `input_structure` is
-#'     provided, then `input_list` cannot be provided.
+#' @param model_list A **flowdiagramr** input list. See
+#'     \code{\link{prepare_diagram}}. If `model_list` is provided, then
+#'     `diagram_list` cannot be provided.
+#' @param diagram_list A **flowdiagramr** input structure, resulting from
+#'     a call to \code{\link{prepare_diagram}}. If `diagram_list` is
+#'     provided, then `model` cannot be provided.
 #' @param directory File directory in which to save the R file. Defualt
 #'     location is the current working directory.
 #' @param filename Name of the file, must end in '.R'. Default name is
@@ -23,14 +23,14 @@
 #' @export
 
 
-write_diagram <- function(input_list = NULL,
-                          input_structure = NULL,
+write_diagram <- function(model_list = NULL,
+                          diagram_list = NULL,
                           directory = NULL,
                           filename = NULL) {
 
-  # make sure only input_list or input_structure is provided
-  if(!is.null(input_list) & !is.null(input_structure)) {
-    stop(paste0("Please provide either the input_list or the input_structure,",
+  # make sure only model or diagram_list is provided
+  if(!is.null(model_list) & !is.null(diagram_list)) {
+    stop(paste0("Please provide either the model or the diagram_list,",
                 " but not both."))
   }
 
@@ -47,9 +47,10 @@ write_diagram <- function(input_list = NULL,
   # The R script for writing out is built as a series of blocks
   # that are concatenated at the very end of the function.
 
-
   # Load libraries block ---
-  lib_block <- "library(ggplot2) \n library(flowdiagramr)"
+  lib_block <- paste0("library(ggplot2)",
+                      "\n",
+                      "library(flowdiagramr)")
 
 
   # Graphing aesthetics block ---
@@ -63,7 +64,12 @@ write_diagram <- function(input_list = NULL,
   # Make a character vectore to hold all the aes assignments
   args_block <- character(length(args))
   for(i in 1:length(args_block)) {
-    args_block[i] <- paste(names(args)[[i]], "<-", args[[i]])
+    argtext <- args[[i]]
+    if(is.logical(argtext) | is.numeric(argtext)) {
+      args_block[i] <- paste0(names(args)[[i]], " <- ", args[[i]])
+    } else {
+      args_block[i] <- paste0(names(args)[[i]], " <- '", args[[i]], "'")
+    }
   }
 
   # Collapse the aes args block with line breaks
@@ -73,26 +79,28 @@ write_diagram <- function(input_list = NULL,
   # ggplot2 code block ---
   gg_block <- get_code()  # gets the code used by flowdiagramr
 
+
   # Printing block ---
   print_block <- "print(outplot)"
 
+
   # Model structure block ---
-  # If input_list is provided, we simply deparse the list and then make
+  # If model is provided, we simply deparse the list and then make
   # the necessary data frames. This is all stored as text blocks that
   # are collapsed with line breaks
 
-  # generate code block for input_list, of provided
-  if(!is.null(input_list)) {
-    input_block <- paste("input_list <-", deparse1(input_list))
-    prep_block <- "input_structure <- prepare_diagram(input_list)"
-    unlist_block <- paste("nodes <- input_structure$nodes",
-                          "horizontal_edges <- input_structure$horizontal_edges",
-                          "vertical_edges <- input_structure$vertical_edges",
-                          "curved_edges <- input_structure$curved_edges",
-                          "feedback_edges <- input_structure$feedback_edges",
+  # generate code block for model, of provided
+  if(!is.null(model_list)) {
+    input_block <- paste("model_list <-", deparse1(model_list))
+    prep_block <- "diagram_list <- prepare_diagram(model_list = model_list)"
+    unlist_block <- paste("nodes <- diagram_list$nodes",
+                          "horizontal_edges <- diagram_list$horizontal_edges",
+                          "vertical_edges <- diagram_list$vertical_edges",
+                          "curved_edges <- diagram_list$curved_edges",
+                          "feedback_edges <- diagram_list$feedback_edges",
                           sep = "\n")
 
-    # Entire script if input_list provided
+    # Entire script if model provided
     outcode <- paste(lib_block,
                      input_block,
                      prep_block,
@@ -101,14 +109,14 @@ write_diagram <- function(input_list = NULL,
                      gg_block,
                      print_block, sep = "\n\n")
 
-  } else {  # if input_structure provided, break out the data frames from
-            # the list and define them using data.frame.
-    df_block <- character(length(input_structure))
-    for(i in 1:length(input_structure)) {
-      dfname <- names(input_structure)[i]
+  } else {  # if diagram_list provided, break out the data frames from
+            # the list and define them using data.frame().
+    df_block <- character(length(diagram_list))
+    for(i in 1:length(diagram_list)) {
+      dfname <- names(diagram_list)[i]
       start <- paste(dfname, "<- data.frame(")
       end <- ")"
-      tmp <- input_structure[[i]]
+      tmp <- diagram_list[[i]]
       dtmp <- character(length(ncol(tmp)))
       for(j in 1:ncol(tmp)) {
         cname <- colnames(tmp)[j]
@@ -120,7 +128,7 @@ write_diagram <- function(input_list = NULL,
 
     df_block <- paste(df_block, collapse = "\n")
 
-    # Entire script if input_structure provided.
+    # Entire script if diagram_list provided.
     outcode <- paste(lib_block,
                      df_block,
                      args_block,

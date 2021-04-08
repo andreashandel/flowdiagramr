@@ -93,7 +93,7 @@ First, we need to call `prepare_diagram` to make the list of data frames needed 
 
 ```{r}
 # prepare inputs 
-sir_input_structure <- prepare_diagram(sirmodel)
+sir_diagram_list <- prepare_diagram(sirmodel)
 ```
 
 Now, let's produce a basic diagram by calling `make_diagram` with its defaults.
@@ -101,7 +101,7 @@ Now, let's produce a basic diagram by calling `make_diagram` with its defaults.
 
 ```{r}
 # make a default diagram
-default_diagram <- make_diagram(sir_input_structure)
+default_diagram <- make_diagram(sir_diagram_list)
 plot(default_diagram)
 ```
 
@@ -110,7 +110,7 @@ So let's provide some inputs to the `make_diagram` function to improve the look.
 
 ```{r}
 # make a diagram with adjusted settings
-nice_diagram <- make_diagram(sir_input_structure,  
+nice_diagram <- make_diagram(sir_diagram_list,  
                              node_outline_color = NA,
                              node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
                              node_text_color = "white",
@@ -134,7 +134,7 @@ You can easily turn on and off several components. The following code shows an e
 
 ```{r}
 # Diagram without labeling of flows
-simpler_diagram_1 <- make_diagram(sir_input_structure,  
+simpler_diagram_1 <- make_diagram(sir_diagram_list,  
                              label_flows = FALSE,
                              external_flows = TRUE,
                              interaction_label = TRUE,
@@ -159,7 +159,7 @@ In this example, we are also turning off plotting of the flows that come into or
 
 ```{r}
 # Diagram without external flows
-simpler_diagram_2 <- make_diagram(sir_input_structure,  
+simpler_diagram_2 <- make_diagram(sir_diagram_list,  
                              label_flows = TRUE,
                              external_flows = FALSE,
                              interaction_label = TRUE,
@@ -202,14 +202,14 @@ Next, we prepare the input list of data frames
 
 ```{r}
 # prepare inputs 
-pp_input_structure <- prepare_diagram(ppmodel)
+pp_diagram_list <- prepare_diagram(ppmodel)
 ```
 
 Finally, we can make a diagram with settings adjusted to our liking.
 
 ```{r}
 # make diagram with adjusted settings
-diag1 <- make_diagram(pp_input_structure,  
+diag1 <- make_diagram(pp_diagram_list,  
                              node_outline_color = NA,
                              node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
                              node_text_color = "white",
@@ -229,7 +229,7 @@ For the next diagram, we are turning off the interactions and only show physical
 
 ```{r}
 # make another diagram with adjusted settings
-diag2 <- make_diagram(pp_input_structure,  
+diag2 <- make_diagram(pp_diagram_list,  
                              node_outline_color = NA,
                              node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
                              node_text_color = "white",

@@ -6,7 +6,7 @@
 #' aesthetics that are not associated with x, y locations. Colors, linetypes,
 #' and other graphical options can be set by the user.
 #'
-#' @param df_list A list of data frames returned from the
+#' @param diagram_list A list of data frames returned from the
 #'     \code{prepare_diagram} function. See that function for details
 #'     about this object.
 #' @param label_flows A logical indicating whether to label the flows
@@ -70,7 +70,7 @@
 #' @import ggplot2
 #' @export
 
-make_diagram <- function (df_list,
+make_diagram <- function (diagram_list,
                           label_flows = TRUE,
                           external_flows = TRUE,
                           interaction_label = TRUE,
@@ -92,15 +92,15 @@ make_diagram <- function (df_list,
   if(interaction_label == FALSE) {
     # This removes interaction segments and puts the flow label
     # back with the physical flow.
-    df_list <- move_interaction_label(df_list)
+    diagram_list <- move_interaction_label(diagram_list)
   }
 
   # unlist the data frames to objects
-  nodes <- df_list$nodes
-  horizontal_edges <- df_list$horizontal_edges
-  vertical_edges <- df_list$vertical_edges
-  curved_edges <- df_list$curved_edges
-  feedback_edges <- df_list$feedback_edges
+  nodes <- diagram_list$nodes
+  horizontal_edges <- diagram_list$horizontal_edges
+  vertical_edges <- diagram_list$vertical_edges
+  curved_edges <- diagram_list$curved_edges
+  feedback_edges <- diagram_list$feedback_edges
 
   # recycle colors as needed
   node_outline_color <- recycle_values(node_outline_color, nrow(nodes))
