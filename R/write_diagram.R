@@ -3,7 +3,10 @@
 #' @description
 #' `write_diagram()` makes a stand-alone R script to reproduce a diagram,
 #' including the model inputs, the data frames from
-#' \code{\link{prepare_diagram}}, and the **ggplot2** code.
+#' \code{\link{prepare_diagram}}, and the **ggplot2** code. The R script
+#' is intended to run "as-is", meaning there is code to make the objects
+#' the user sends as arguments (either the `input_list` or the
+#' `input_structure`).
 #'
 #' @param input_list A **flowdiagramr** input list. See
 #'     \code{\link{prepare_diagram}}. If `input_list` is provided, then
@@ -25,6 +28,12 @@ write_diagram <- function(input_list = NULL,
                           directory = NULL,
                           filename = NULL) {
 
+  # make sure only input_list or input_structure is provided
+  if(!is.null(input_list) & !is.null(input_structure)) {
+    stop(paste0("Please provide either the input_list or the input_structure,",
+                "but not both."))
+  }
+
   # save to current working directory if the not specified
   if(is.null(directory)) {
     directory <- getwd()
@@ -35,23 +44,42 @@ write_diagram <- function(input_list = NULL,
     filename <- "diagram_code.R"
   }
 
+  # The R script for writing out is built as a series of blocks
+  # that are concatenated at the very end of the function.
+
+
+  # Load libraries block ---
   lib_block <- "library(ggplot2) \n library(flowdiagramr)"
+
+
+  # Graphing aesthetics block ---
+  # The ggplot aesthetic arguments need to be defined, here we just
+  # pull the defaults from the function and then make them look like code
 
   # Get graphing arguments
   args <- as.list(formals(make_diagram))
   args <- args[2:length(args)]
 
+  # Make a character vectore to hold all the aes assignments
   args_block <- character(length(args))
   for(i in 1:length(args_block)) {
     args_block[i] <- paste(names(args)[[i]], "<-", args[[i]])
   }
 
+  # Collapse the aes args block with line breaks
   args_block <- paste(args_block, collapse = "\n")
 
 
-  gg_block <- get_code()
+  # ggplot2 code block ---
+  gg_block <- get_code()  # gets the code used by flowdiagramr
 
+  # Printing block ---
   print_block <- "print(outplot)"
+
+  # Model structure block ---
+  # If input_list is provided, we simply deparse the list and then make
+  # the necessary data frames. This is all stored as text blocks that
+  # are collapsed with line breaks
 
   # generate code block for input_list, of provided
   if(!is.null(input_list)) {
@@ -64,6 +92,7 @@ write_diagram <- function(input_list = NULL,
                           "feedback_edges <- input_structure$feedback_edges",
                           sep = "\n")
 
+    # Entire script if input_list provided
     outcode <- paste(lib_block,
                      input_block,
                      prep_block,
@@ -72,7 +101,8 @@ write_diagram <- function(input_list = NULL,
                      gg_block,
                      print_block, sep = "\n\n")
 
-  } else {
+  } else {  # if input_structure provided, break out the data frames from
+            # the list and define them using data.frame.
     df_block <- character(length(input_structure))
     for(i in 1:length(input_structure)) {
       dfname <- names(input_structure)[i]
@@ -90,6 +120,7 @@ write_diagram <- function(input_list = NULL,
 
     df_block <- paste(df_block, collapse = "\n")
 
+    # Entire script if input_structure provided.
     outcode <- paste(lib_block,
                      df_block,
                      args_block,
