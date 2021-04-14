@@ -16,3 +16,8 @@ write_diagram(model_list = mymodel,
 write_diagram(diagram_list = diagram_list,
               directory = "../../Desktop/",
               filename = "test2.R")
+
+write_diagram(model_list = mymodel,
+              diagram_list = diagram_list,
+              directory = "../../Desktop/",
+              filename = "test3.R")

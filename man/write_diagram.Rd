@@ -7,6 +7,7 @@
 write_diagram(
   model_list = NULL,
   diagram_list = NULL,
+  make_diagram_settings = NULL,
   directory = NULL,
   filename = NULL
 )
@@ -19,6 +20,10 @@ write_diagram(
 \item{diagram_list}{A \strong{flowdiagramr} input structure, resulting from
 a call to \code{\link{prepare_diagram}}. If \code{diagram_list} is
 provided, then \code{model} cannot be provided.}
+
+\item{make_diagram_settings}{A named list of diagram aesthetics. See
+\code{\link{make_diagram}} documentation. Default is \code{NULL} and the
+default values from \code{\link{make_diagram}} are used.}
 
 \item{directory}{File directory in which to save the R file. Defualt
 location is the current working directory.}

@@ -14,6 +14,9 @@
 #' @param diagram_list A **flowdiagramr** input structure, resulting from
 #'     a call to \code{\link{prepare_diagram}}. If `diagram_list` is
 #'     provided, then `model` cannot be provided.
+#' @param make_diagram_settings A named list of diagram aesthetics. See
+#'    \code{\link{make_diagram}} documentation. Default is `NULL` and the
+#'    default values from \code{\link{make_diagram}} are used.
 #' @param directory File directory in which to save the R file. Defualt
 #'     location is the current working directory.
 #' @param filename Name of the file, must end in '.R'. Default name is
@@ -25,13 +28,14 @@
 
 write_diagram <- function(model_list = NULL,
                           diagram_list = NULL,
+                          make_diagram_settings = NULL,
                           directory = NULL,
                           filename = NULL) {
 
   # make sure only model or diagram_list is provided
-  if(!is.null(model_list) & !is.null(diagram_list)) {
+  if(is.null(model_list) & is.null(diagram_list)) {
     stop(paste0("Please provide either the model or the diagram_list,",
-                " but not both."))
+                " or both."))
   }
 
   # save to current working directory if the not specified
@@ -58,10 +62,15 @@ write_diagram <- function(model_list = NULL,
   # pull the defaults from the function and then make them look like code
 
   # Get graphing arguments
-  args <- as.list(formals(make_diagram))
-  args <- args[2:length(args)]
+  if(is.null(make_diagram_settings)) {
+    args <- as.list(formals(make_diagram))
+    # remove the first element, which is always the function name
+    args <- args[2:length(args)]
+  } else {
+    args <- make_diagram_settings
+  }
 
-  # Make a character vectore to hold all the aes assignments
+  # Make a character vector to hold all the aes assignments
   args_block <- character(length(args))
   for(i in 1:length(args_block)) {
     argtext <- args[[i]]
@@ -89,28 +98,33 @@ write_diagram <- function(model_list = NULL,
   # the necessary data frames. This is all stored as text blocks that
   # are collapsed with line breaks
 
-  # generate code block for model, of provided
   if(!is.null(model_list)) {
     input_block <- paste("model_list <-", deparse1(model_list))
-    prep_block <- "diagram_list <- prepare_diagram(model_list = model_list)"
-    unlist_block <- paste("nodes <- diagram_list$nodes",
-                          "horizontal_edges <- diagram_list$horizontal_edges",
-                          "vertical_edges <- diagram_list$vertical_edges",
-                          "curved_edges <- diagram_list$curved_edges",
-                          "feedback_edges <- diagram_list$feedback_edges",
+
+    if(is.null(diagram_list)) {
+      prep_block <- "diagram_list <- prepare_diagram(model_list = model_list)"
+      unlist_block <- paste("nodes <- diagram_list$nodes",
+                            "horizontal_edges <- diagram_list$horizontal_edges",
+                            "vertical_edges <- diagram_list$vertical_edges",
+                            "curved_edges <- diagram_list$curved_edges",
+                            "feedback_edges <- diagram_list$feedback_edges",
+                            sep = "\n")
+    } else {
+      msg <- paste0("# Since a user-supplied diagram_list is provided,\n",
+                    "# the default one created by prepare_diagram() is not used")
+      prep_block <- paste(msg,
+                          "# diagram_list <- prepare_diagram(model_list = model_list)",
                           sep = "\n")
+      unlist_block <- paste("# nodes <- diagram_list$nodes",
+                            "# horizontal_edges <- diagram_list$horizontal_edges",
+                            "# vertical_edges <- diagram_list$vertical_edges",
+                            "# curved_edges <- diagram_list$curved_edges",
+                            "# feedback_edges <- diagram_list$feedback_edges",
+                            sep = "\n")
+    }
+  }
 
-    # Entire script if model provided
-    outcode <- paste(lib_block,
-                     input_block,
-                     prep_block,
-                     unlist_block,
-                     args_block,
-                     gg_block,
-                     print_block, sep = "\n\n")
-
-  } else {  # if diagram_list provided, break out the data frames from
-            # the list and define them using data.frame().
+  if(!is.null(diagram_list)) {
     df_block <- character(length(diagram_list))
     for(i in 1:length(diagram_list)) {
       dfname <- names(diagram_list)[i]
@@ -127,14 +141,35 @@ write_diagram <- function(model_list = NULL,
     }
 
     df_block <- paste(df_block, collapse = "\n")
+  }
 
-    # Entire script if diagram_list provided.
+  # Entire script
+  if(!is.null(model_list) & is.null(diagram_list)) {
+    outcode <- paste(lib_block,
+                     input_block,
+                     prep_block,
+                     unlist_block,
+                     args_block,
+                     gg_block,
+                     print_block, sep = "\n\n")
+  } else if(is.null(model_list) & !is.null(diagram_list)) {
     outcode <- paste(lib_block,
                      df_block,
                      args_block,
                      gg_block,
                      print_block, sep = "\n\n")
+  } else {
+    outcode <- paste(lib_block,
+                     input_block,
+                     prep_block,
+                     unlist_block,
+                     df_block,
+                     args_block,
+                     gg_block,
+                     print_block, sep = "\n\n")
   }
+
+
 
   # create the full path output directory
   outfile <- paste0(directory, "/", filename)
@@ -143,6 +178,6 @@ write_diagram <- function(model_list = NULL,
   cat(outcode, file = outfile)
 
   # report the file location on return
-  message <- paste("Your file was saved here:", path_real(outfile))
+  message <- paste("Your file was saved here:", fs::path_real(outfile))
   return(message)
 }

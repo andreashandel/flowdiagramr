@@ -7,11 +7,21 @@
 convert_from_modelbuilder(mbmodel)
 }
 \arguments{
-\item{mbmodel}{A modelbuilder object.}
+\item{mbmodel}{A \strong{modelbuilder} model object.}
 }
 \value{
-A list object that can be used as input for the prepare_diagram function.
+A list object that can be used as input for the
+\code{\link{prepare_diagram}} function. The list contains three elements:
+\itemize{
+\item{\code{varlabels}}: A vector of variable labels. Typically
+single uppercase characters. Must start with uppercase.
+\item{\code{varnames}}: A vector of variables names. Full names
+that correspond with the variable labels.
+\item{\code{flows}}: A list of flows. The elements are vectors of
+flows into and out of each variable.
+}
 }
 \description{
-Convert modelbuilder list object to list for modeldiagram
+\code{convert_from_modelbuilder()} takes a \strong{modelbuilder} model object and
+converts it to the list format used by \strong{flowdiagramr}.
 }

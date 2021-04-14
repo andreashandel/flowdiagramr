@@ -68,7 +68,7 @@ value will be NA in each row (if rows are present). These flows arrive
 or leave at 45 degree angles, despite the name of the data frame implying
 a vertical entrance or exit.
 
-\item {curved_edges}: A data frame containing name and position
+\item \code{curved_edges}: A data frame containing name and position
 information for, typically, two types of curved arrows: (1) interaction
 arrows that point toward a horizontal arrow or (2) a physical flow
 that would normally be a horizontal arrow but must bypass at least
