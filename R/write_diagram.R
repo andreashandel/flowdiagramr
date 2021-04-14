@@ -96,7 +96,7 @@ write_diagram <- function(model_list = NULL,
   # Model structure block ---
   # If model is provided, we simply deparse the list and then make
   # the necessary data frames. This is all stored as text blocks that
-  # are collapsed with line breaks
+  # are collapsed with line breaks.
 
   if(!is.null(model_list)) {
     input_block <- paste("model_list <-", deparse1(model_list))
@@ -136,11 +136,11 @@ write_diagram <- function(model_list = NULL,
         cname <- colnames(tmp)[j]
         dtmp[j] <- paste(cname, "=", deparse(tmp[ , j]))
       }
-      dftmp <- paste(start, "\n", paste(dtmp, collapse = ",\n"), "\n", end)
+      dftmp <- paste0(start, "\n  ", paste(dtmp, collapse = ",\n  "), "\n", end)
       df_block[i] <- dftmp
     }
 
-    df_block <- paste(df_block, collapse = "\n")
+    df_block <- paste(df_block, collapse = "\n\n")
   }
 
   # Entire script
