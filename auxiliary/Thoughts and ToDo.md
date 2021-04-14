@@ -22,7 +22,7 @@ This means mysettings needs to be in a form that is accepted as input by both ma
 
 - layout for prepare_diagram(). Take a look at what I wrote for vignette B (basic modification). See if you think that's a good approach. If yes, implement. If not, let's discuss more. That would replace the nodes_df input into prepare_diagram.
 
-~~- ok about layers terminology for ggplot.  ~~
+~~ok about layers terminology for ggplot.~~
 
 
 ******
