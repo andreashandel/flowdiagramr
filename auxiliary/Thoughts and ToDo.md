@@ -5,7 +5,7 @@
 
 - I decided that if I started messing with the code now, we might just confuse each other (I would change code and you would need time to figure out what I'm doing). So I think I'll let you keep coding for now, and once you are 'done' (i.e. current contract is over or we think version 1.0 of package is done), we'll switch roles, namely I'll then start coding and will ask you for input if I get stuck.
 
-- write_diagram: If user provides both the model_list and diagram_list, my suggestion is to re-print model_list at top, also have the prepare_diagram() call in the code, but uncomment it and add a note to it saying "Since a user-supplied diagram_list is provided, the default one created by prepare_diagram() is not used" or something like that. If idea not clear, let me know and I'll sketch up something in an example R script.
+- ~~write_diagram: If user provides both the model_list and diagram_list, my suggestion is to re-print model_list at top, also have the prepare_diagram() call in the code, but uncomment it and add a note to it saying "Since a user-supplied diagram_list is provided, the default one created by prepare_diagram() is not used" or something like that. If idea not clear, let me know and I'll sketch up something in an example R script.~~
 
 - write_diagram: supplying make_diagram settings to the write_diagram function can be as list or as a named vector, whichever you think is the better option. We don't need to allow both, just pick the one we think is better and tell the user to specify it that way. It might be good to have it in a way that can be used for both make_diagram and write_diagram. Say a user defines some custom settings while playing with make_diagram, like this:
 
@@ -14,13 +14,15 @@ diag = make_diagram(diagram_list, mysettings)
 
 and then use that same structure if they want to get the code, like this:
 
-write_diagram(diagram_list, make_diagram_settings = mysettings)
+~~write_diagram(diagram_list, make_diagram_settings = mysettings)~~
 
 This means mysettings needs to be in a form that is accepted as input by both make_diagram and write_diagram. A named vector seems a bit simpler, but if we need the flexibility of a list, I think that's ok too.
 
+*ATT: we'll have to use a list because we are mixing logicals, numerics, and characeters.*
+
 - layout for prepare_diagram(). Take a look at what I wrote for vignette B (basic modification). See if you think that's a good approach. If yes, implement. If not, let's discuss more. That would replace the nodes_df input into prepare_diagram.
 
-- ok about layers terminology for ggplot.  
+~~- ok about layers terminology for ggplot.  ~~
 
 
 ******
