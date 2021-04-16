@@ -110,19 +110,23 @@ So let's provide some inputs to the `make_diagram` function to improve the look.
 
 ```{r}
 # make a diagram with adjusted settings
-nice_diagram <- make_diagram(sir_diagram_list,  
-                             node_outline_color = NA,
-                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                             node_text_color = "white",
-                             node_text_size = 10,
-                             flow_text_color = "black",
-                             flow_text_size = 5,
-                             main_arrow_color = "grey25",
-                             main_arrow_linetype = "solid",
-                             main_arrow_size = 0.7,
-                             interaction_arrow_color = "grey25",
-                             interaction_arrow_linetype = "dashed",
-                             interaction_arrow_size = 0.7)
+nice_diagram <- make_diagram(
+  diagram_list = sir_diagram_list,
+  diagram_settings = list(
+    node_outline_color = NA,
+    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    node_text_color = "white",
+    node_text_size = 10,
+    flow_text_color = "black",
+    flow_text_size = 5,
+    main_arrow_color = "grey25",
+    main_arrow_linetype = "solid",
+    main_arrow_size = 0.7,
+    interaction_arrow_color = "grey25",
+    interaction_arrow_linetype = "dashed",
+    interaction_arrow_size = 0.7
+  )
+)
 plot(nice_diagram)
 ```
 
@@ -134,22 +138,27 @@ You can easily turn on and off several components. The following code shows an e
 
 ```{r}
 # Diagram without labeling of flows
-simpler_diagram_1 <- make_diagram(sir_diagram_list,  
-                             label_flows = FALSE,
-                             external_flows = TRUE,
-                             interaction_label = TRUE,
-                             node_outline_color = NA,
-                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                             node_text_color = "white",
-                             node_text_size = 10,
-                             flow_text_color = "black",
-                             flow_text_size = 5,
-                             main_arrow_color = "grey25",
-                             main_arrow_linetype = 1,
-                             main_arrow_size = 0.7,
-                             interaction_arrow_color = "grey25",
-                             interaction_arrow_linetype = 2,
-                             interaction_arrow_size = 0.7)
+simpler_diagram_1 <- make_diagram(
+  diagram_list = sir_diagram_list,
+  diagram_settings = list(
+    label_flows = FALSE,
+    external_flows = TRUE,
+    interaction_label = TRUE,
+    node_outline_color = NA,
+    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    node_text_color = "white",
+    node_text_size = 10,
+    flow_text_color = "black",
+    flow_text_size = 5,
+    main_arrow_color = "grey25",
+    main_arrow_linetype = 1,
+    main_arrow_size = 0.7,
+    interaction_arrow_color = "grey25",
+    interaction_arrow_linetype = 2,
+    interaction_arrow_size = 0.7
+  )
+)
+
 plot(simpler_diagram_1)
 ```
 
@@ -159,22 +168,27 @@ In this example, we are also turning off plotting of the flows that come into or
 
 ```{r}
 # Diagram without external flows
-simpler_diagram_2 <- make_diagram(sir_diagram_list,  
-                             label_flows = TRUE,
-                             external_flows = FALSE,
-                             interaction_label = TRUE,
-                             node_outline_color = NA,
-                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                             node_text_color = "white",
-                             node_text_size = 10,
-                             flow_text_color = "black",
-                             flow_text_size = 5,
-                             main_arrow_color = "grey25",
-                             main_arrow_linetype = 1,
-                             main_arrow_size = 0.7,
-                             interaction_arrow_color = "grey25",
-                             interaction_arrow_linetype = 2,
-                             interaction_arrow_size = 0.7)
+simpler_diagram_2 <- make_diagram(
+  diagram_list = sir_diagram_list,
+  diagram_settings = list(
+    label_flows = TRUE,
+    external_flows = FALSE,
+    interaction_label = TRUE,
+    node_outline_color = NA,
+    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    node_text_color = "white",
+    node_text_size = 10,
+    flow_text_color = "black",
+    flow_text_size = 5,
+    main_arrow_color = "grey25",
+    main_arrow_linetype = 1,
+    main_arrow_size = 0.7,
+    interaction_arrow_color = "grey25",
+    interaction_arrow_linetype = 2,
+    interaction_arrow_size = 0.7
+  )
+)
+
 plot(simpler_diagram_2)
 ```
 
@@ -209,19 +223,24 @@ Finally, we can make a diagram with settings adjusted to our liking.
 
 ```{r}
 # make diagram with adjusted settings
-diag1 <- make_diagram(pp_diagram_list,  
-                             node_outline_color = NA,
-                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                             node_text_color = "white",
-                             node_text_size = 10,
-                             flow_text_color = "black",
-                             flow_text_size = 5,
-                             main_arrow_color = "grey25",
-                             main_arrow_linetype = 1,
-                             main_arrow_size = 0.7,
-                             interaction_arrow_color = "grey25",
-                             interaction_arrow_linetype = 2,
-                             interaction_arrow_size = 0.7)
+diag1 <- make_diagram(
+  diagram_list = pp_diagram_list,
+  diagram_settings = list(
+    node_outline_color = NA,
+    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    node_text_color = "white",
+    node_text_size = 10,
+    flow_text_color = "black",
+    flow_text_size = 5,
+    main_arrow_color = "grey25",
+    main_arrow_linetype = 1,
+    main_arrow_size = 0.7,
+    interaction_arrow_color = "grey25",
+    interaction_arrow_linetype = 2,
+    interaction_arrow_size = 0.7
+  )
+)
+
 plot(diag1)
 ```
 
@@ -229,20 +248,25 @@ For the next diagram, we are turning off the interactions and only show physical
 
 ```{r}
 # make another diagram with adjusted settings
-diag2 <- make_diagram(pp_diagram_list,  
-                             node_outline_color = NA,
-                             node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                             node_text_color = "white",
-                             node_text_size = 10,
-                             flow_text_color = "black",
-                             flow_text_size = 5,
-                             main_arrow_color = "grey25",
-                             main_arrow_linetype = 1,
-                             main_arrow_size = 0.7,
-                             interaction_label = FALSE,
-                             interaction_arrow_color = "grey25",
-                             interaction_arrow_linetype = 2,
-                             interaction_arrow_size = 0.7)
+diag2 <- make_diagram(
+  diagram_list = pp_diagram_list,
+  diagram_settings = list(
+    node_outline_color = NA,
+    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    node_text_color = "white",
+    node_text_size = 10,
+    flow_text_color = "black",
+    flow_text_size = 5,
+    main_arrow_color = "grey25",
+    main_arrow_linetype = 1,
+    main_arrow_size = 0.7,
+    interaction_label = FALSE,
+    interaction_arrow_color = "grey25",
+    interaction_arrow_linetype = 2,
+    interaction_arrow_size = 0.7
+  )
+)
+
 plot(diag2)
 ```
 

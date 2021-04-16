@@ -142,7 +142,14 @@ Next, you use the same steps as above to create the model diagram.
 
 ```{r}
 diagram_list <- prepare_diagram(mymodel)
-my_diagram <- make_diagram(diagram_list, node_fill_color = c('blue','red'), main_arrow_linetype = "dashed", interaction_arrow_linetype = "solid")
+my_diagram <- make_diagram(
+  diagram_list, 
+  diagram_settings = list(
+    node_fill_color = c('blue','red'),
+    main_arrow_linetype = "dashed",
+    interaction_arrow_linetype = "solid")
+)
+
 plot(my_diagram)
 ```
 

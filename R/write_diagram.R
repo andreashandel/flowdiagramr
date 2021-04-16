@@ -62,13 +62,12 @@ write_diagram <- function(model_list = NULL,
   # pull the defaults from the function and then make them look like code
 
   # Get graphing arguments
-  if(is.null(make_diagram_settings)) {
-    args <- as.list(formals(make_diagram))
-    # remove the first element, which is always the function name
-    args <- args[2:length(args)]
-  } else {
-    args <- make_diagram_settings
+  defaults <- get_diagram_settings_defaults()
+
+  if(!is.null(make_diagram_settings)) {
+    defaults[names(make_diagram_settings)] <- make_diagram_settings
   }
+  args <- defaults
 
   # Make a character vector to hold all the aes assignments
   args_block <- character(length(args))

@@ -6,22 +6,12 @@
 \usage{
 make_diagram(
   diagram_list,
-  label_flows = TRUE,
-  external_flows = TRUE,
-  interaction_label = TRUE,
-  with_grid = FALSE,
-  node_outline_color = "black",
-  node_fill_color = "white",
-  node_text_color = "black",
-  node_text_size = 8,
-  flow_text_color = "black",
-  flow_text_size = 3,
-  main_arrow_color = "black",
-  main_arrow_linetype = "solid",
-  main_arrow_size = 0.5,
-  interaction_arrow_color = "black",
-  interaction_arrow_linetype = "dashed",
-  interaction_arrow_size = 0.5
+  diagram_settings = list(label_flows = TRUE, external_flows = TRUE, interaction_label
+    = TRUE, with_grid = FALSE, node_outline_color = "black", node_fill_color = "white",
+    node_text_color = "black", node_text_size = 8, flow_text_color = "black",
+    flow_text_size = 3, main_arrow_color = "black", main_arrow_linetype = "solid",
+    main_arrow_size = 0.5, interaction_arrow_color = "black", interaction_arrow_linetype
+    = "dashed", interaction_arrow_size = 0.5)
 )
 }
 \arguments{
@@ -29,49 +19,41 @@ make_diagram(
 \code{prepare_diagram} function. See that function for details
 about this object.}
 
-\item{label_flows}{A logical indicating whether to label the flows
-(TRUE, default) or not (FALSE).}
-
-\item{external_flows}{A logical indicating whether to include flows into
-and out of the system (external flows). Default is TRUE (include).}
-
-\item{interaction_label}{A logical indicating whether to make the diagram
+\item{diagram_settings}{A list of diagram aesthetic settings. The
+following elements are supported and default values are provided:
+\itemize{
+\item \code{label_flows}: A logical indicating whether to label the flows
+(TRUE, default) or not (FALSE).
+\item \code{external_flows}: A logical indicating whether to include flows into
+and out of the system (external flows). Default is TRUE (include).
+\item \code{interaction_label}: A logical indicating whether to make the diagram
 with interaction terms (typically curved arrows leading to the
 mid point of another arrow) or to simply label the main flow. See
-vignettes for examples.}
-
-\item{with_grid}{A logical indicating whether to return the ggplot
+vignettes for examples.
+\item \code{with_grid}: A logical indicating whether to return the ggplot
 with a grid. Default is FALSE. The grid can be helpful if you
-want/need to move items around.}
-
-\item{node_outline_color}{A character string or vector of character strings
+want/need to move items around.
+\item \code{node_outline_color}: A character string or vector of character strings
 specifying the color of node outlines. If a vector, the colors will be
-recycled in the order of the variables in the supplied data frame.}
-
-\item{node_fill_color}{A character string or vector of character strings
+recycled in the order of the variables in the supplied data frame.
+\item \code{node_fill_color}: A character string or vector of character strings
 specifying the fill color of nodes. If a vector, the colors will be
-recycled in the order of the variables in the supplied data frame.}
-
-\item{node_text_color}{A character string or vector of character strings
+recycled in the order of the variables in the supplied data frame.
+\item \code{node_text_color}: A character string or vector of character strings
 specifying the text color for node labels. If a vector, the colors will
-be recycled in the order of the variables in the supplied data frame.}
-
-\item{node_text_size}{A numeric scalar specifying the text size for node
-labels. Default value is 8.}
-
-\item{flow_text_color}{A character string or vector of character strings
+be recycled in the order of the variables in the supplied data frame.
+\item \code{node_text_size}: A numeric scalar specifying the text size for node
+labels. Default value is 8.
+\item \code{flow_text_color}: A character string or vector of character strings
 specifying the text color for flow labels. If a vector, the colors will
-be recycled in the order of the flows in the supplied data frame.}
-
-\item{flow_text_size}{A numeric scalar specifying the text size for flow
-labels. Default value is 3.}
-
-\item{main_arrow_color}{A character string or vector of character strings
+be recycled in the order of the flows in the supplied data frame.
+\item \code{flow_text_size}: A numeric scalar specifying the text size for flow
+labels. Default value is 3.
+\item \code{main_arrow_color}: A character string or vector of character strings
 specifying the text color for non-interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
-in the supplied data frame.}
-
-\item{main_arrow_linetype}{Either a numeric scalar or a character scalar
+in the supplied data frame.
+\item \code{main_arrow_linetype}: Either a numeric scalar or a character scalar
 specifying the linetype for main arrows (non-interaction arrows). This
 argument is passed to the \code{linetype} argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
@@ -79,17 +61,14 @@ with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 1 (solid).}
-
-\item{main_arrow_size}{A numeric scaler specifying the line size for the
-main arrows (non-interaction arrows).}
-
-\item{interaction_arrow_color}{A character string or vector of character
+the string." Default is 1 (solid).
+\item \code{main_arrow_size}: A numeric scaler specifying the line size for the
+main arrows (non-interaction arrows).
+\item \code{interaction_arrow_color}: A character string or vector of character
 strings specifying the text color for interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
-in the supplied data frame.}
-
-\item{interaction_arrow_linetype}{Either a numeric scalar or a character scalar
+in the supplied data frame.
+\item \code{interaction_arrow_linetype}: Either a numeric scalar or a character scalar
 specifying the linetype for interaction arrows. This
 argument is passed to the \code{linetype} argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
@@ -97,10 +76,10 @@ with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 2 (dashed).}
-
-\item{interaction_arrow_size}{A numeric scalar specifying the line size for
-the interaction arrows.}
+the string." Default is 2 (dashed).
+\item \code{interaction_arrow_size}: A numeric scalar specifying the line size for
+the interaction arrows.
+}}
 }
 \value{
 A ggplot2 object.

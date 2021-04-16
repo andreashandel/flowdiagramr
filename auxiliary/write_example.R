@@ -10,6 +10,7 @@ diagram_list <- prepare_diagram(model_list = mymodel)
 
 
 write_diagram(model_list = mymodel,
+              make_diagram_settings = list(node_fill_color = "red"),
               directory = "../../Desktop/",
               filename = "test1.R")
 
