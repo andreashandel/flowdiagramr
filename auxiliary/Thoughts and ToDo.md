@@ -35,9 +35,9 @@ High:
 
 - AT: make sure all code is documented well
 
-- AT: add more details to each public function roxygen block, e.g. examples and more documentation/information.
+~~- AT: add more details to each public function roxygen block, e.g. examples and more documentation/information.~~~
 
-- AT: implement write_diagram_code function
+~~- AT: implement write_diagram_code function~~
 
 - AT: give nodes in input_structure object xstart/xend, ystart/yend to determine size of box
 
@@ -49,7 +49,7 @@ Low:
 
 - Write unit tests with testthat
 
-- Use fs package for file/path operations (e.g. saving R code), seems better then base R
+~~- Use fs package for file/path operations (e.g. saving R code), seems better then base R~~
 
 - Implement error checking inside functions
 
@@ -68,20 +68,20 @@ Questions:
 
 
 ### For write_diagram:
-write_diagram_code should take as input either a model list OR the input_structure object. 
-if model list, then the function will include a call to prepare_diagram. for either scenario, the code that is being generated should be fully 'stand-alone'. that means the original model list or the input_structure object should be written at the top of the output code.
+~~write_diagram_code should take as input either a model list OR the input_structure object. 
+if model list, then the function will include a call to prepare_diagram. for either scenario, the code that is being generated should be fully 'stand-alone'. that means the original model list or the input_structure object should be written at the top of the output code.~~
 
-user can also provide optional location and filename for result. default path is current working directory. default filename is diagram_code.R
+~~user can also provide optional location and filename for result. default path is current working directory. default filename is diagram_code.R~~
 
-write_diagram(filepath = filepath, 
+~~write_diagram(filepath = filepath, 
 			  filename = filename, 
 			  model = mymodel, #either
 			  input_structure = input_structure, #or - if provided, ignore model
 			  make_diagram_settings = list(node_text_color = "white", node_text_size = 10, use_varnames=) 
-			  )
+			  )~~
 
-#not used since you provided your own input_structure
-#prepare_diagram(mymodel)
+~~#not used since you provided your own input_structure
+#prepare_diagram(mymodel)~~
 
 
 
