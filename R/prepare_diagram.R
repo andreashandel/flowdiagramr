@@ -118,14 +118,14 @@
 #' @export
 
 
-prepare_diagram <- function(model_list, nodes_df = NULL) {
+prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   # TODO error checking
 
   # Make sure the nodes_df contains all the state variables included
   # in the model_list and no other variables.
-  if(!is.null(nodes_df)) {
+  if(!is.null(nodes_matrix)) {
     # returns fatal error if variables do not match
-    check_nodes_df(model_list, nodes_df)
+    check_nodes_matrix(model_list, nodes_matrix)
   }
 
 
@@ -159,7 +159,7 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 
   #define nodes data frame structure if not provided by user
-  if(is.null(nodes_df)) {
+  if(is.null(nodes_matrix)) {
     # Create a node data frame
     ndf <- data.frame(
       id = 1:nvars,  # numeric id for nodes
@@ -176,7 +176,7 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
     ndf$row <- as.numeric(strats)
   } else {
     # add a row id if nodes_df is supplied by user, for consistency
-    ndf <- add_rowid(nodes_df)
+    # ndf <- add_rowid(nodes_df)
   }
 
 
@@ -442,8 +442,9 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
     ndf <- rbind(ndf, exnodes)
   }
 
-  # Add x and y locations for the nodes
-  if(is.null(nodes_df)) {
+
+  # Add xmin, xmax, ymin, ymax locations for nodes
+  if(is.null(nodes_matrix)) {
     ndf <- ndf[order(ndf$id), ]
     ndf$x <- NA
     ndf$y <- NA
@@ -451,6 +452,12 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
       ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
       ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * -2
     }
+    xoff <- 0.5
+    yoff <- 0.5
+    ndf$xmin <- with(ndf, x - xoff)
+    ndf$xmax <- with(ndf, x + xoff)
+    ndf$ymin <- with(ndf, y - yoff)
+    ndf$ymax <- with(ndf, y + yoff)
   }
 
 
