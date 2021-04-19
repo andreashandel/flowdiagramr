@@ -23,14 +23,14 @@
 
 The main functions that are exposed to a user are the following:
 
-* `prepare_diagram` takes as input a model list and creates the data frames that form the input for the diagram generation/
+* `prepare_diagram` takes as input a model list and creates the data frames that form the input for the diagram generation.
 * `make_diagram` takes as input a list of data frames as created by `prepare_diagram` and returns a ggplot2 object containing the model diagram.
 * `write_diagram` takes the model list and writes the full ggplot code required to generate the model to a file. the resulting code is fully stand-alone.
 * `convert_from_modelbuilder` takes a modelbuilder model object and turns it into a list object needed for this package.
 
 
 The following are helper functions that are used internally but not exposed to the user:
-
+* `add_plus_signs` - explicitly adds leading + signs to flows, e.g. turns `b*S*I` into `+b*S*I`
 
 
 ### Materials inside the /inst folder
