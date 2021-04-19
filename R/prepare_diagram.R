@@ -209,6 +209,21 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
 
       #vars is now a vector of the variables that are in the flow math
       vars <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
+      varsids <- ndf[which(ndf$label %in% vars), "id"]
+
+      # add a connecting var if the expression is only in one row but
+      # the flow math contains another state variable (node)
+      if(length(varsids) != 0){
+        if(length(unique(connectvars)) == 1) {
+          if(length(varsids) == 1 & unique(connectvars) != varsids) {
+            connectvars <- c(connectvars, varsids)
+
+            # also create a flag for adding interaction
+            flag <- TRUE
+          }
+        }
+      }
+
 
       # Assign connecting variables for inflows (+ flows)
       if(currentsign == "+") {
@@ -220,7 +235,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
         }
 
         # If the flow does not show up in any other rows (connectvars == 1)
-        # and there is at least on variable in the flow math, then the
+        # and there is at least one variable in the flow math, then the
         # connecting variable(s) will either be the current variable once
         # (indicating an inflow like births) or the current variable twice
         # (indicating a feedback flow)
@@ -243,7 +258,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
 
         # If there are more than one unique connecting variables, then
         # the connecting variables are simply those defined above by
-        # searching the matrix of flows
+        # searching the matrix of flows and/or the variables in the expression
         if(length(connectvars) > 1) {
           connectvars <- connectvars
         }
@@ -266,7 +281,8 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
                           to = cn,
                           label = currentflow,
                           interaction = FALSE,
-                          out_interaction = FALSE)
+                          out_interaction = FALSE,
+                          direct_interaction = FALSE)
 
         # Bind to edge data frame for flows
         edf <- rbind(edf, tmp)
@@ -282,14 +298,17 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
                             to = i,
                             label = currentflow,
                             interaction = FALSE,
-                            out_interaction = FALSE)
+                            out_interaction = FALSE,
+                            direct_interaction = FALSE)
           edf <- rbind(edf, tmp)
         }
       }
 
       # If the current sign is positive and the length of connecting variables
-      # is equal to two, then it is either a feedback loop (1 unique
-      # connecting variable) or a physical flow between two unique variables.
+      # is equal to two, then it is :
+      #   a feedback loop (1 unique connecting variable)
+      #   a physical flow between two unique variables
+      #   an interaction flow between to unique variables
       if(currentsign == "+" & length(connectvars) == 2) {
         # These are feedbacks of somekind
         if(length(unique(connectvars)) == 1) {
@@ -297,14 +316,24 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
                             to = i,
                             label = currentflow,
                             interaction = FALSE,
-                            out_interaction = FALSE)
+                            out_interaction = FALSE,
+                            direct_interaction = FALSE)
         } else {
           # These are physical flows between two variables
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
                             label = currentflow,
                             interaction = FALSE,
-                            out_interaction = FALSE)
+                            out_interaction = FALSE,
+                            direct_interaction = FALSE)
+
+          # update interaction flag if flag exists
+          if(exists("flag")) {
+            tmp$direct_interaction <- TRUE
+
+            # remove flag to make null again
+            rm(flag)
+          }
         }
         edf <- rbind(edf, tmp)
       }
@@ -573,7 +602,6 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
     edf <- rbind(edf, extints)
   }
 
-
   # split up the edges into constituent parts:
   # - curved segments
   # - straight (horizontal) segments
@@ -618,6 +646,13 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   vdf <- remove_na_rows(vdf)
   cdf <- remove_na_rows(cdf)
   fdf <- remove_na_rows(fdf)
+
+  # convert direct interaction to flag to regular interaction flag,
+  # now only relevant for plotting
+  sdf <- update_interactions(sdf)
+  vdf <- update_interactions(vdf)
+  cdf <- update_interactions(cdf)
+  fdf <- update_interactions(fdf)
 
   # rename data frames for exporting
   nodes <- ndf

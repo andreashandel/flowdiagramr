@@ -7,7 +7,7 @@
 
 set_curvature <- function(cdf, ndf) {
   # default for all to start
-  cdf$curvature <- 0.25
+  cdf$curvature <- 0.5
 
   # add in row info
   cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
