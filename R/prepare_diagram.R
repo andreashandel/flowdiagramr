@@ -213,9 +213,9 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
 
       # add a connecting var if the expression is only in one row but
       # the flow math contains another state variable (node)
-      if(length(varsids) != 0){
+      if(length(varsids) == 1){
         if(length(unique(connectvars)) == 1) {
-          if(length(varsids) == 1 & unique(connectvars) != varsids) {
+          if(unique(connectvars) != varsids) {
             connectvars <- c(connectvars, varsids)
 
             # also create a flag for adding interaction
