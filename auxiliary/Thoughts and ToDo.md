@@ -50,7 +50,7 @@ diag = make_diagram(diagram_list, mysettings)~~
 
 *ATT: I used a list because we are mixing logicals, numerics, and characeters.*
 
-- layout for prepare_diagram(). Take a look at what I wrote for vignette B (basic modification). See if you think that's a good approach. If yes, implement. If not, let's discuss more. That would replace the nodes_df input into prepare_diagram.
+~~- layout for prepare_diagram(). Take a look at what I wrote for vignette B (basic modification). See if you think that's a good approach. If yes, implement. If not, let's discuss more. That would replace the nodes_df input into prepare_diagram.~~
 
 ~~ok about layers terminology for ggplot.~~
 
@@ -69,9 +69,9 @@ High:
 
 ~~- AT: implement write_diagram_code function~~
 
-- AT: give nodes in input_structure object xstart/xend, ystart/yend to determine size of box
+~~- AT: give nodes in input_structure object xstart/xend, ystart/yend to determine size of box~~
 
-- AT: implement grid layout and changes for make_diagram outlined below (see vignette B)
+~~- AT: implement grid layout and changes for make_diagram outlined below (see vignette B)~~
 
 
 
@@ -120,7 +120,7 @@ At start of function, the input should be checked to make sure it looks as neede
 
 Maybe be flexible with input structure. E.g. if varlabels/varnames/flows are provided in a different order, still ok? And if they are not named, can we instead try to see if the list has 2 or 3 entries, and try to interpret the 1st as varlabels, 2nd as varnames, 3rd as flows? Not that crucial for now, but we could decide what we allow as input structure. Just need to make sure we fully document this, both in the function help file and the vignette.
 
-Adjust code such that trailing + signs are not required (e.g. it's ok to write 'b*S*I' instead of '+b*S*I')
+~~Adjust code such that trailing + signs are not required (e.g. it's ok to write 'b*S*I' instead of '+b*S*I')~~
 
 
 ### For make_diagram:
