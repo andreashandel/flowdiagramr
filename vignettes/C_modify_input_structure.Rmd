@@ -44,9 +44,7 @@ You can learn the details from the help file for the `prepare_diagram` function,
 help('prepare_diagram')
 ```
 
-We'll explain the object returned from `prepare_diagram` next.
-
-THIS SHOULD GO INTO HELP FILE.
+THIS SHOULD GO INTO HELP FILE. THEN DELETE FROM HERE, SO WE ONLY HAVE IN ONE PLACE.
 
 Five (5) data frames are produced based on the model structure:
 
@@ -144,3 +142,31 @@ plot(plot2)
 
 Here is another example, the predator prey model you saw in earlier vignettes.
 
+Setting up the model:
+
+```{r}
+varlabels = c("Pat","Imm")
+flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
+                 Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
+mymodel = list(varlabels = varlabels, flows = flows)
+```
+
+Preparing the diagram:
+
+```{r}
+diagram_list <- prepare_diagram(mymodel)
+```
+
+Let's assume that you want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called `Pmax`, not `pmax`. You can't do that when you specify the model since `r pkg` requires that parameters start with a lower case letter. Not a big deal, you can fix this now by replacing the label for that flow as such:
+
+
+```{r}
+diagram_list$feedback_edges$label[1] <- "g*Pat*(1-Pat/Pmax)"
+```
+
+Sure enough, if you plot this now, the parameter is labeled as you wanted, showing `Pmax` instead of `pmax`.
+
+```{r}
+my_diagram <- make_diagram(diagram_list)
+plot(my_diagram)
+```

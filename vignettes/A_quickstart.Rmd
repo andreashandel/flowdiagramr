@@ -67,9 +67,18 @@ flows = list(S_flows = c("-b*S*I"),
 mymodel = list(varlabels = varlabels, flows = flows)
 ```
 
-Note that the main list (called `mymodel` above) can have any name, but the elements inside the list need to be called `varlabels` and `flows`. Also, the flows for each variable need to be named `X_flows` where X corresponds to the variable label (this doesn't have to be a single letter). Finally, the flows need to be provided as valid mathematical expressions, so you need to write `b*S*I`, writing it as `bSI` will not work.
+**Model conventions and requirements:**
+
+* The main list (called `mymodel` above) can have any name. 
+* The elements inside the list need to be called `varlabels` and `flows`. 
+* All variable labels need to start with an upper-case letter and can be any combination of letters and numbers.
+* All parameters need to start with a lower-case letter and can be any combination of letters and numbers.
+* The flows for each variable need to be named `NN_flows` where NN corresponds to the variable label. 
+* Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write `b*S*I`, writing it as `bSI` will not work.
+* Minus signs for outflows are required, plus signs for inflows are optional.
 
 In addition to the required two list elements, you can specify a few optional list elements, which we'll discuss later. 
+
 
 
 ### Create elements needed for diagram generation
@@ -142,6 +151,7 @@ Next, you use the same steps as above to create the model diagram.
 
 ```{r}
 diagram_list <- prepare_diagram(mymodel)
+
 my_diagram <- make_diagram(
   diagram_list, 
   diagram_settings = list(
