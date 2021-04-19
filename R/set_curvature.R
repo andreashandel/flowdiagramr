@@ -41,8 +41,11 @@ set_curvature <- function(cdf, ndf) {
 
       # if curve is for an interaction term, then yend needs to be moved
       # back down by 0.5 to meet up with the edge rather than the node
-      cdf[cdf$interaction == TRUE, "yend"] <- cdf[cdf$interaction == TRUE, "yend"] - 0.5
+      if(cdf[i, "interaction"] == TRUE) {
+        cdf[i, "yend"] <- cdf[i, "yend"] - 0.5
+      }
     }
+
     if(is.na(cdf[i, "link"])) {
       s <- cdf[i, "xstart"]
       e <- cdf[i, "xend"]

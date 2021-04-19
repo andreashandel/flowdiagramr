@@ -9,7 +9,7 @@ flows = list(S_flows = c("n","-m*S","-bI*S*I", "-bP*S*P"),
             )
 mymodel = list(varlabels = varlabels, flows = flows)
 diagram_list = prepare_diagram(mymodel)
-#make_diagram(diagram_list)
+# make_diagram(diagram_list)
 
 
 test_that("right number of vertical edges", {
