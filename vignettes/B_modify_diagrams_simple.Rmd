@@ -52,10 +52,11 @@ You can take this extended specification of the model and feed it to the diagram
 
 ```{r}
 # prepare inputs 
-sir_input_structure <- prepare_diagram(sirmodel)
+sir_input_structure <- prepare_diagram(sirmodel, nodes_matrix = varlocations)
 # make  diagram
-#sir_diagram <- make_diagram(sir_input_structure, use_varnames = TRUE)
-#plot(sir_diagram)
+# sir_diagram <- make_diagram(sir_input_structure, use_varnames = TRUE)
+sir_diagram <- make_diagram(sir_input_structure)
+plot(sir_diagram)
 ```
 
 Note that we provided the `make_diagram` fuction with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. There are a number of options you can set when calling `make_diagram`, we'll discuss several of them now.

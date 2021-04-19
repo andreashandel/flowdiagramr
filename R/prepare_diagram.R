@@ -25,11 +25,9 @@
 #'     examples. The \code{model_list} can contain any other elements that
 #'     the user might deem useful (e.g., metadata/comments), but only the
 #'     \code{varlabels} and \code{flows} are used by this function.
-#' @param nodes_df A data frame with user-specified node locations. The data
-#'     frame must contain the following columns: \code{id}, \code{label},
-#'     \code{x}, and \code{y}. An internal function will add the necessary
-#'     \code{row} column based on the values for \code{y}. See vignettes for
-#'     examples of the data frame structure.
+#' @param nodes_matrix An optional character matrix that places variables (nodes) in
+#'     their desired x (columns) and y (row) locations. See examples.
+#'     Defualt is `NULL`.
 #'
 #' @return A list of five data frames:
 #' \itemize{
@@ -115,17 +113,22 @@
 #' mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows)
 #' prepare_diagram(model_list = mymodel)
 #'
+#' # digram with user-defined placements
+#' varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
+#'                         nrow = 2, ncol = 3, byrow = TRUE)
+#' prepare_diagram(model_list = mymodel, nodes_matrix = varlocations)
+#'
 #' @export
 
 
-prepare_diagram <- function(model_list, nodes_df = NULL) {
+prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   # TODO error checking
 
   # Make sure the nodes_df contains all the state variables included
   # in the model_list and no other variables.
-  if(!is.null(nodes_df)) {
+  if(!is.null(nodes_matrix)) {
     # returns fatal error if variables do not match
-    check_nodes_df(model_list, nodes_df)
+    check_nodes_matrix(model_list, nodes_matrix)
   }
 
 
@@ -159,25 +162,20 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
   signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
 
   #define nodes data frame structure if not provided by user
-  if(is.null(nodes_df)) {
-    # Create a node data frame
-    ndf <- data.frame(
-      id = 1:nvars,  # numeric id for nodes
-      label = varnames,  # labels for nodes
-      row = 1  # hard code for 1 row, will be updated below, if necessary
-    )
+  # Create a node data frame
+  ndf <- data.frame(
+    id = 1:nvars,  # numeric id for nodes
+    label = varnames,  # labels for nodes
+    row = 1  # hard code for 1 row, will be updated below, if necessary
+  )
 
-    # Split variables by rows if stratification implied by numbers at
-    # the end of state variables. For example, two "S" compartments labeled
-    # "S1" and "S2" will be split across rows, assuming some stratification.
-    # Note that stratification up to 9 is currently supported.
-    strats <- gsub("[^0-9.]", "",  varnames)
-    strats <- ifelse(strats == "", 1, strats)  # add implicit 1 if no strats
-    ndf$row <- as.numeric(strats)
-  } else {
-    # add a row id if nodes_df is supplied by user, for consistency
-    ndf <- add_rowid(nodes_df)
-  }
+  # Split variables by rows if stratification implied by numbers at
+  # the end of state variables. For example, two "S" compartments labeled
+  # "S1" and "S2" will be split across rows, assuming some stratification.
+  # Note that stratification up to 9 is currently supported.
+  strats <- gsub("[^0-9.]", "",  varnames)
+  strats <- ifelse(strats == "", 1, strats)  # add implicit 1 if no strats
+  ndf$row <- as.numeric(strats)
 
 
   # Create the edge data frame by looping through the variables
@@ -442,8 +440,9 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
     ndf <- rbind(ndf, exnodes)
   }
 
-  # Add x and y locations for the nodes
-  if(is.null(nodes_df)) {
+
+  # Add midpoint locations for nodes
+  if(is.null(nodes_matrix)) {
     ndf <- ndf[order(ndf$id), ]
     ndf$x <- NA
     ndf$y <- NA
@@ -451,7 +450,23 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
       ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
       ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * -2
     }
+  } else {
+    ny <- 1:nrow(nodes_matrix) * -2
+    nx <- 1:ncol(nodes_matrix) * 3
+    for(nid in varnames) {
+      pos <- which(nodes_matrix == nid, arr.ind = TRUE)
+      ndf[which(ndf$label == nid), "x"] <- nx[pos[1, 2]]
+      ndf[which(ndf$label == nid), "y"] <- ny[pos[1, 1]]
+    }
   }
+
+  # Add xmin/max and ymin/max columns for node rectangles
+  xoff <- 0.5  # default
+  yoff <- 0.5  # default
+  ndf$xmin <- with(ndf, x - xoff)
+  ndf$xmax <- with(ndf, x + xoff)
+  ndf$ymin <- with(ndf, y - yoff)
+  ndf$ymax <- with(ndf, y + yoff)
 
 
   # update inflow node positions from nowhere
@@ -461,6 +476,11 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
     newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
     newxy$y <- newxy$y + 2  # above the variable
     ndf[which(ndf$id == id), c("x", "y")] <- newxy
+
+    # set min/max to midpoint for ease because these are not actually
+    # drawn, therefore rectangle boundaries do not need to be accurate
+    ndf[which(ndf$id == id), c("xmin", "ymin")] <- newxy
+    ndf[which(ndf$id == id), c("xmax", "ymax")] <- newxy
   }
 
   # update outflow node positions to nowhere
@@ -470,6 +490,11 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
     newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
     newxy$y <- newxy$y - 2  # below the variable
     ndf[which(ndf$id == id), c("x", "y")] <- newxy
+
+    # set min/max to midpoint for ease because these are not actually
+    # drawn, therefore rectangle boundaries do not need to be accurate
+    ndf[which(ndf$id == id), c("xmin", "ymin")] <- newxy
+    ndf[which(ndf$id == id), c("xmax", "ymax")] <- newxy
   }
 
   # update invisible interaction link nodes
@@ -480,8 +505,15 @@ prepare_diagram <- function(model_list, nodes_df = NULL) {
     newx1 <- ndf[which(ndf$id == start), "x"]
     newx2 <- ndf[which(ndf$id == end), "x"]
     newx <- (newx1+newx2)/2  # midpoint of the physical arrow
-    newy <- ndf[which(ndf$id == start), "y"]
+    newy1 <- ndf[which(ndf$id == start), "y"]
+    newy2 <- ndf[which(ndf$id == end), "y"]
+    newy <- (newy1+newy2)/2  # midpoint of the physical arrow
     ndf[which(ndf$id == id), c("x", "y")] <- c(newx, newy)
+
+    # set min/max to midpoint for ease because these are not actually
+    # drawn, therefore rectangle boundaries do not need to be accurate
+    ndf[which(ndf$id == id), c("xmin", "ymin")] <- c(newx, newy)
+    ndf[which(ndf$id == id), c("xmax", "ymax")] <- c(newx, newy)
   }
 
   # Subset out interactions to in/out flows

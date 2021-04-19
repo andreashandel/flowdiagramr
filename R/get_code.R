@@ -8,12 +8,16 @@ outplot <- ggplot() +
 
   # LAYER 1: STATE VARIABLES
   # plot the states variable nodes as tiles
-  geom_tile(data = nodes,
-            aes(x = x, y = y),
+  # geom_tile(data = nodes,
+  #           aes(x = x, y = y),
+  #           color = node_outline_color,
+  #           fill = node_fill_color,
+  #           width = 1,
+  #           height = 1) +
+  geom_rect(data = nodes,
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
             color = node_outline_color,
-            fill = node_fill_color,
-            width = 1,
-            height = 1) +
+            fill = node_fill_color) +
   geom_text(data = nodes,
             aes(x = x, y = y, label = label),
             size = node_text_size,

@@ -4,7 +4,7 @@
 \alias{prepare_diagram}
 \title{Create data frames for plotting from model elements.}
 \usage{
-prepare_diagram(model_list, nodes_df = NULL)
+prepare_diagram(model_list, nodes_matrix = NULL)
 }
 \arguments{
 \item{model_list}{A list of model elements. The list must contain at least
@@ -20,11 +20,9 @@ examples. The \code{model_list} can contain any other elements that
 the user might deem useful (e.g., metadata/comments), but only the
 \code{varlabels} and \code{flows} are used by this function.}
 
-\item{nodes_df}{A data frame with user-specified node locations. The data
-frame must contain the following columns: \code{id}, \code{label},
-\code{x}, and \code{y}. An internal function will add the necessary
-\code{row} column based on the values for \code{y}. See vignettes for
-examples of the data frame structure.}
+\item{nodes_matrix}{An optional character matrix that places variables (nodes) in
+their desired x (columns) and y (row) locations. See examples.
+Defualt is \code{NULL}.}
 }
 \value{
 A list of five data frames:
@@ -123,5 +121,10 @@ flows <- list(S_flows = c("-b*S*I"),
               R_flows = c("g*I"))
 mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows)
 prepare_diagram(model_list = mymodel)
+
+# digram with user-defined placements
+varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
+                        nrow = 2, ncol = 3, byrow = TRUE)
+prepare_diagram(model_list = mymodel, nodes_matrix = varlocations)
 
 }
