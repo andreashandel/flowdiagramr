@@ -28,15 +28,27 @@ outplot <- ggplot() +
   # these are the flows that go from one node to the next without
   # by-passing a node. flows that by-pass nodes are added using the
   # curved_edges dataframe.
-  geom_segment(data = horizontal_edges,
-               aes(x = xstart+0.5, y = ystart, xend = xend-0.5, yend = yend),
-               arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-               color = main_arrow_color,
-               arrow.fill = main_arrow_color,
-               lineend = "round",
-               linejoin = "mitre",
-               linetype = main_arrow_linetype,
-               size = main_arrow_size) +
+
+  lapply(split(horizontal_edges, 1:nrow(horizontal_edges)), function(dat) {
+      geom_segment(data = dat, aes(x = xstart,
+                                 y = ystart,
+                                 xend = xend,
+                                 yend = yend),
+                 linetype = ifelse(as.numeric(dat["interaction"]),
+                                   interaction_arrow_linetype,
+                                   main_arrow_linetype),
+                 arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+                 color = ifelse(as.numeric(dat["interaction"]),
+                                interaction_arrow_color,
+                                main_arrow_color),
+                 arrow.fill = ifelse(as.numeric(dat["interaction"]),
+                                interaction_arrow_color,
+                                main_arrow_color),
+                 lineend = "round",
+                 size = ifelse(as.numeric(dat["interaction"]),
+                               interaction_arrow_size,
+                               main_arrow_size)) }
+    )  +
   {if(label_flows) {
     geom_text(data = horizontal_edges,
             aes(x = xmid, y = ymid, label = label),

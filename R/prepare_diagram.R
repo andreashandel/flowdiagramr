@@ -361,21 +361,31 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   edf <- unique(edf)
 
   # Parse the meaning of duplicate labels. Usually this is a complex mix
-  # of a direct, physical flow and interactions from several other
+  # of a direct, physical flows and interactions from several other
   # state variables. We assume that the "main" flow among the "auxilliary"
   # duplicate flows is the one that traverses left-to-right (e.g., 1 to 2)
   # with the smallest gap and has no interaction flags.
   dups <- as.matrix(table(edf$label))  # tally the occurences of each flow
   dupids <- rownames(dups)[which(dups[,1] > 1)]  # grab the one with >1 occurence
-  flowdups <- subset(edf, label == dupids)  # take a subset of the edge data frame
-  edf <- subset(edf, label != dupids)  # restrict edf to non-duplicate flows
-  flowdups <- subset(flowdups, sign(to-from) == 1)  # keep left-to-right flows
-  flowdups <- subset(flowdups, interaction == FALSE &
-                       out_interaction == FALSE &
-                       direct_interaction == FALSE)  # drop interactions
-  diffs <- with(flowdups, to - from)  # calc difference between nodes
-  mainid <- which(diffs == min(diffs))  # keep the minimum node diff as main flow
-  maindup <- flowdups[mainid, ]  # extract just the main flow
+  if(length(dupids) > 0) {
+    flowdups <- subset(edf, label == dupids)  # take a subset of the edge data frame
+    edf <- subset(edf, label != dupids)  # restrict edf to non-duplicate flows
+    flowdups <- subset(flowdups, sign(to-from) == 1)  # keep left-to-right flows
+    flowdups <- subset(flowdups, interaction == FALSE &
+                         out_interaction == FALSE &
+                         direct_interaction == FALSE)  # drop interactions
+    diffs <- with(flowdups, to - from)  # calc difference between nodes
+    mainid <- which(diffs == min(diffs))  # keep the minimum node diff as main flow
+    maindup <- flowdups[mainid, ]  # extract just the main flow
+    intdup <- flowdups[mainid, ]  # extract again for interaction
+    intdup$interaction <- TRUE
+    edf <- rbind(edf, maindup, intdup)
+  }
+
+
+  # Now add interaction arrows based on the state variables in the flow
+  # vps <- get_vars_pars(maindup$label)
+  # vs <- vps[which(vps %in% LETTERS)]
 
 
   # Duplicate rows with out_interaction == TRUE to assign the interaction
@@ -636,6 +646,10 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   fdf <- subset(sdf, to == from)
   sdf <- subset(sdf, to != from)
 
+  # Add x offsets to straight edges
+  sdf$xstart <- sdf$xstart + xoff
+  sdf$xend <- sdf$xend - xoff
+
   # Set the curvature using internal function
   if(nrow(cdf) > 0) {
     cdf <- set_curvature(cdf, ndf)
@@ -678,7 +692,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
 
   # rename data frames for exporting
   nodes <- ndf
-  horizontal_edges <- subset(sdf, select = -c(diff, interaction, linkto, linkfrom))
+  horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom))
   vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto, linkfrom))
   curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
   feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction))
