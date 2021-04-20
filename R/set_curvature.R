@@ -25,14 +25,14 @@ set_curvature <- function(cdf, ndf) {
   cdf[cdf$interaction==TRUE, "curvature"] <- 0.4
 
   for(i in 1:nrow(cdf)) {
-    if(cdf[i, "interaction"] == TRUE & is.na(cdf[i, "link"])) {
+    if(cdf[i, "interaction"] == TRUE & is.na(cdf[i, "linkfrom"])) {
       cdf[i, "curvature"] <- 0.1
     }
-    if(cdf[i, "interaction"] == TRUE & !is.na(cdf[i, "link"])) {
+    if(cdf[i, "interaction"] == TRUE & !is.na(cdf[i, "linkfrom"])) {
       cdf[i, "curvature"] <- 0.4
     }
 
-    if(!is.na(cdf[i, "link"])) {
+    if(!is.na(cdf[i, "linkfrom"])) {
       # curves need to move up 0.5 units to connect with tops/bottoms
       # of node rectangles, only when linking to horizontal flow
       cdf[i, "ystart"] <- cdf[i, "ystart"] + 0.5
@@ -46,7 +46,7 @@ set_curvature <- function(cdf, ndf) {
       }
     }
 
-    if(is.na(cdf[i, "link"])) {
+    if(is.na(cdf[i, "linkfrom"])) {
       s <- cdf[i, "xstart"]
       e <- cdf[i, "xend"]
       if(s < e) {
@@ -68,7 +68,7 @@ set_curvature <- function(cdf, ndf) {
   cdf$labely <- NA
   for(i in 1:nrow(cdf)) {
     tmp <- cdf[i, ]
-    if(!is.na(tmp$link)) {
+    if(!is.na(tmp$linkfrom)) {
       mids <- calc_control_points(x1 = tmp$xstart,
                                   y1 = tmp$ystart,
                                   x2 = tmp$xend,

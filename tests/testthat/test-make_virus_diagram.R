@@ -11,7 +11,7 @@ flows = list(U_flows = c("n","-dU*U","-b*U*V"),
 )
 mymodel = list(varlabels = varlabels, flows = flows)
 diagram_list = prepare_diagram(mymodel)
-# make_diagram(diagram_list)
+make_diagram(diagram_list)
 
 
 test_that("right number of vertical edges", {

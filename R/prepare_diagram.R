@@ -122,7 +122,7 @@
 
 
 prepare_diagram <- function(model_list, nodes_matrix = NULL) {
-  # TODO error checking
+ # TODO error checking
 
   # Make sure the nodes_df contains all the state variables included
   # in the model_list and no other variables.
@@ -385,7 +385,8 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   # All flows are treated seperately because their start and end positions
   # depend on state variables in different ways.
 
-  edf$link <- NA  #empty column for interaction flows, but needed for binding
+  edf$linkto <- NA  #empty column for interaction flows, but needed for binding
+  edf$linkfrom <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(edf, interaction == TRUE)
   edf <- subset(edf, interaction == FALSE)
 
@@ -413,11 +414,14 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
       ids <- subset(ndf, label %in% v)[ , "id"]
 
       if(is.na(ints[i, "to"])){
-        ints[i, "link"] <- NA
+        ints[i, "linkfrom"] <- NA
+        ints[i, "linkto"] <- NA
       } else if(ints[i, "to"] == ints[i, "from"]) {
-        ints[i, "link"] <- NA
+        ints[i, "linkfrom"] <- NA
+        ints[i, "linkto"] <- NA
       } else {
-        ints[i, "link"] <- tmp$from
+        ints[i, "linkfrom"] <- tmp$from
+        ints[i, "linkto"] <- tmp$to
       }
 
       ints[i, "from"] <- ids[which(ids != tmp$from)]
@@ -453,7 +457,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   linkdummies <- NULL
   numlinks <- length(edf[is.na(edf$to) &
                            edf$interaction == TRUE &
-                           !is.na(edf$link), "to"])
+                           !is.na(edf$linkto), "to"])
   if(numlinks > 0) {
     linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
     edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
@@ -529,8 +533,8 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   # update invisible interaction link nodes
   linknodes <- subset(ndf, id > 5550 & id < 9990)$id
   for(id in linknodes) {
-    start <- edf[which(edf$to == id), "link"]
-    end <- edf[which(edf$to == id), "from"]
+    start <- edf[which(edf$to == id), "linkfrom"]
+    end <- edf[which(edf$to == id), "linkto"]
     newx1 <- ndf[which(ndf$id == start), "x"]
     newx2 <- ndf[which(ndf$id == end), "x"]
     newx <- (newx1+newx2)/2  # midpoint of the physical arrow
@@ -546,7 +550,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   }
 
   # Subset out interactions to in/out flows
-  extints <- subset(edf, interaction == TRUE & is.na(link))
+  extints <- subset(edf, interaction == TRUE & is.na(linkto))
   if(nrow(extints) > 0) {
     for(i in 1:nrow(extints)) {
       tmp <- extints[i, ]
@@ -656,10 +660,10 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
 
   # rename data frames for exporting
   nodes <- ndf
-  horizontal_edges <- subset(sdf, select = -c(diff, interaction, link))
-  vertical_edges <- subset(vdf, select = -c(diff, interaction, link))
-  curved_edges <- subset(cdf, select = -c(diff, link, ymid, xmid))
-  feedback_edges <- subset(fdf, select = -c(diff, link, interaction))
+  horizontal_edges <- subset(sdf, select = -c(diff, interaction, linkto, linkfrom))
+  vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto, linkfrom))
+  curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
+  feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction))
 
 
   return(list(nodes = nodes,

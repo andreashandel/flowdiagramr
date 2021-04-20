@@ -8,7 +8,13 @@ flows = list(S_flows = c("n","-m*S","-bI*S*I", "-bP*S*P"),
              P_flows = c("q*I", "-c*P")
             )
 mymodel = list(varlabels = varlabels, flows = flows)
-diagram_list = prepare_diagram(mymodel)
+model_list <- mymodel
+nodes_matrix = matrix(c("", "P", "",
+                        "S", "I", "R"),
+                      ncol = 3, byrow = TRUE)
+
+
+diagram_list = prepare_diagram(mymodel, nodes_matrix = nodes_matrix)
 make_diagram(diagram_list)
 
 
