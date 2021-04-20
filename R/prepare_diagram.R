@@ -360,6 +360,24 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   # in the data frame for edges (segments/arrows/flows).
   edf <- unique(edf)
 
+  # Parse the meaning of duplicate labels. Usually this is a complex mix
+  # of a direct, physical flow and interactions from several other
+  # state variables. We assume that the "main" flow among the "auxilliary"
+  # duplicate flows is the one that traverses left-to-right (e.g., 1 to 2)
+  # with the smallest gap and has no interaction flags.
+  dups <- as.matrix(table(edf$label))  # tally the occurences of each flow
+  dupids <- rownames(dups)[which(dups[,1] > 1)]  # grab the one with >1 occurence
+  flowdups <- subset(edf, label == dupids)  # take a subset of the edge data frame
+  edf <- subset(edf, label != dupids)  # restrict edf to non-duplicate flows
+  flowdups <- subset(flowdups, sign(to-from) == 1)  # keep left-to-right flows
+  flowdups <- subset(flowdups, interaction == FALSE &
+                       out_interaction == FALSE &
+                       direct_interaction == FALSE)  # drop interactions
+  diffs <- with(flowdups, to - from)  # calc difference between nodes
+  mainid <- which(diffs == min(diffs))  # keep the minimum node diff as main flow
+  maindup <- flowdups[mainid, ]  # extract just the main flow
+
+
   # Duplicate rows with out_interaction == TRUE to assign the interaction
   # flag and then remove the out_interaction flag. This is done to
   # achieve appropriate labeling. We want the physical flow to have no label

@@ -10,6 +10,10 @@ flows = list(U_flows = c("n","-dU*U","-b*U*V"),
              V_flows = c("p*I", "-dV*V", "-b*U*V")
 )
 mymodel = list(varlabels = varlabels, flows = flows)
+
+model_list = mymodel
+nodes_matrix = NULL
+
 diagram_list = prepare_diagram(mymodel)
 make_diagram(diagram_list)
 
