@@ -1,15 +1,17 @@
 ******
 2021-04-19
 
-- I tried 2 new models, see 'SIRP_diagram' and 'virus_diagram' code in the testthat folder. Both don't quite work. The main issue is the logic for some of the flows. For the SIRP model, the logic for the q*I term going into P is the problem. For the basic virus model, the b*U*V term is the problem.
+~~- I tried 2 new models, see 'SIRP_diagram' and 'virus_diagram' code in the testthat folder. Both don't quite work. The main issue is the logic for some of the flows. For the SIRP model, the logic for the q*I term going into P is the problem. For the basic virus model, the b*U*V term is the problem.~~
 
-To fix the q*I flow, I think we need to check all inflows for any containing variables, and any variables other than themselves, we should draw arrows from those variables. So, in this case, an arrow from I to P. And since q*I is arriving in P but not leaving I, we can guess that it's not a physical flow, but instead I is 'producing' P without 'becoming' P and labeling it as interaction (non-physical) flow.
+~~To fix the q*I flow, I think we need to check all inflows for any containing variables, and any variables other than themselves, we should draw arrows from those variables. So, in this case, an arrow from I to P. And since q*I is arriving in P but not leaving I, we can guess that it's not a physical flow, but instead I is 'producing' P without 'becoming' P and labeling it as interaction (non-physical) flow.~~
 
-For the b*U*V terms, similar. We parse inflows, we see that b*U*V arrives in I and has U and V in it, so we make two arrows from U and V to I, those should somehow 'meet' before or when they arrive at I since they are the same. Right now they do that, but there are too many flows.
+~~For the b*U*V terms, similar. We parse inflows, we see that b*U*V arrives in I and has U and V in it, so we make two arrows from U and V to I, those should somehow 'meet' before or when they arrive at I since they are the same. Right now they do that, but there are too many flows.~~
 
-Not sure what needs to change, but I think the underlying logic should be to look at all flows, for each flow see how often they show up, and if it's only an inflow, only an outflow, or shows up both as in and out. And what variables are inside the flow. Based on that, draw lines. But each flow should only be processed once, so even though b*U*V shows up 3 times in the model, it should be taken once, determined that it's an outflow for U and V and an inflow for I, and lines drawn accordingly. 
+~~Not sure what needs to change, but I think the underlying logic should be to look at all flows, for each flow see how often they show up, and if it's only an inflow, only an outflow, or shows up both as in and out. And what variables are inside the flow. Based on that, draw lines. But each flow should only be processed once, so even though b*U*V shows up 3 times in the model, it should be taken once, determined that it's an outflow for U and V and an inflow for I, and lines drawn accordingly.~~
 
-I have some of that kind of logic in modelbuilder, e.g. in the generate_stochastic function. There it needs to parse flows to build a transition matrix, is in some sense fairly similar to what we need here. Could take a look, though I'm not sure if taking that code and adjusting saves any time, might be easier to write from scratch.
+~~I have some of that kind of logic in modelbuilder, e.g. in the generate_stochastic function. There it needs to parse flows to build a transition matrix, is in some sense fairly similar to what we need here. Could take a look, though I'm not sure if taking that code and adjusting saves any time, might be easier to write from scratch.~~
+
+ATT: Implemented.
 
 - When writing string/regex code, if possible explain for each regex what it means/does (since I'm terrible at regex).
 E.g. like so:  
