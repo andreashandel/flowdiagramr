@@ -10,11 +10,15 @@ flows = list(U_flows = c("n","-dU*U","-b*U*V"),
              V_flows = c("p*I", "-dV*V", "-b*U*V")
 )
 mymodel = list(varlabels = varlabels, flows = flows)
+
+model_list = mymodel
+nodes_matrix = NULL
+
 diagram_list = prepare_diagram(mymodel)
-make_diagram(diagram_list)
+# make_diagram(diagram_list)
 
 
 test_that("right number of vertical edges", {
-  expect_equal(5, nrow(diagram_list$vertical_edges))
+  expect_equal(4, nrow(diagram_list$vertical_edges))
 })
 

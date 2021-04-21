@@ -122,7 +122,7 @@
 
 
 prepare_diagram <- function(model_list, nodes_matrix = NULL) {
-  # TODO error checking
+ # TODO error checking
 
   # Make sure the nodes_df contains all the state variables included
   # in the model_list and no other variables.
@@ -209,6 +209,21 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
 
       #vars is now a vector of the variables that are in the flow math
       vars <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
+      varsids <- ndf[which(ndf$label %in% vars), "id"]
+
+      # add a connecting var if the expression is only in one row but
+      # the flow math contains another state variable (node)
+      if(length(varsids) == 1){
+        if(length(unique(connectvars)) == 1) {
+          if(unique(connectvars) != varsids) {
+            connectvars <- c(connectvars, varsids)
+
+            # also create a flag for adding interaction
+            flag <- TRUE
+          }
+        }
+      }
+
 
       # Assign connecting variables for inflows (+ flows)
       if(currentsign == "+") {
@@ -220,7 +235,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
         }
 
         # If the flow does not show up in any other rows (connectvars == 1)
-        # and there is at least on variable in the flow math, then the
+        # and there is at least one variable in the flow math, then the
         # connecting variable(s) will either be the current variable once
         # (indicating an inflow like births) or the current variable twice
         # (indicating a feedback flow)
@@ -243,7 +258,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
 
         # If there are more than one unique connecting variables, then
         # the connecting variables are simply those defined above by
-        # searching the matrix of flows
+        # searching the matrix of flows and/or the variables in the expression
         if(length(connectvars) > 1) {
           connectvars <- connectvars
         }
@@ -266,7 +281,8 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
                           to = cn,
                           label = currentflow,
                           interaction = FALSE,
-                          out_interaction = FALSE)
+                          out_interaction = FALSE,
+                          direct_interaction = FALSE)
 
         # Bind to edge data frame for flows
         edf <- rbind(edf, tmp)
@@ -282,14 +298,17 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
                             to = i,
                             label = currentflow,
                             interaction = FALSE,
-                            out_interaction = FALSE)
+                            out_interaction = FALSE,
+                            direct_interaction = FALSE)
           edf <- rbind(edf, tmp)
         }
       }
 
       # If the current sign is positive and the length of connecting variables
-      # is equal to two, then it is either a feedback loop (1 unique
-      # connecting variable) or a physical flow between two unique variables.
+      # is equal to two, then it is :
+      #   a feedback loop (1 unique connecting variable)
+      #   a physical flow between two unique variables
+      #   an interaction flow between to unique variables
       if(currentsign == "+" & length(connectvars) == 2) {
         # These are feedbacks of somekind
         if(length(unique(connectvars)) == 1) {
@@ -297,14 +316,24 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
                             to = i,
                             label = currentflow,
                             interaction = FALSE,
-                            out_interaction = FALSE)
+                            out_interaction = FALSE,
+                            direct_interaction = FALSE)
         } else {
           # These are physical flows between two variables
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
                             label = currentflow,
                             interaction = FALSE,
-                            out_interaction = FALSE)
+                            out_interaction = FALSE,
+                            direct_interaction = FALSE)
+
+          # update interaction flag if flag exists
+          if(exists("flag")) {
+            tmp$direct_interaction <- TRUE
+
+            # remove flag to make null again
+            rm(flag)
+          }
         }
         edf <- rbind(edf, tmp)
       }
@@ -331,6 +360,28 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   # in the data frame for edges (segments/arrows/flows).
   edf <- unique(edf)
 
+  # Parse the meaning of duplicate labels. Usually this is a complex mix
+  # of a direct, physical flows and interactions from several other
+  # state variables. We assume that the "main" flow among the "auxilliary"
+  # duplicate flows is the one that traverses left-to-right (e.g., 1 to 2)
+  # with the smallest gap and has no interaction flags.
+  dups <- as.matrix(table(edf$label))  # tally the occurences of each flow
+  dupids <- rownames(dups)[which(dups[,1] > 1)]  # grab the one with >1 occurence
+  if(length(dupids) > 0) {
+    flowdups <- subset(edf, label == dupids)  # take a subset of the edge data frame
+    edf <- subset(edf, label != dupids)  # restrict edf to non-duplicate flows
+    flowdups <- subset(flowdups, sign(to-from) == 1)  # keep left-to-right flows
+    flowdups <- subset(flowdups, interaction == FALSE &
+                         out_interaction == FALSE &
+                         direct_interaction == FALSE)  # drop interactions
+    diffs <- with(flowdups, to - from)  # calc difference between nodes
+    mainid <- which(diffs == min(diffs))  # keep the minimum node diff as main flow
+    maindup <- flowdups[mainid, ]  # extract just the main flow for physical flow
+    intdup <- flowdups[mainid, ]  # extract again for interaction flow, which is parsed later on
+    intdup$interaction <- TRUE  # set interaction flag to TRUE
+    edf <- rbind(edf, maindup, intdup)
+  }
+
   # Duplicate rows with out_interaction == TRUE to assign the interaction
   # flag and then remove the out_interaction flag. This is done to
   # achieve appropriate labeling. We want the physical flow to have no label
@@ -356,7 +407,8 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   # All flows are treated seperately because their start and end positions
   # depend on state variables in different ways.
 
-  edf$link <- NA  #empty column for interaction flows, but needed for binding
+  edf$linkto <- NA  #empty column for interaction flows, but needed for binding
+  edf$linkfrom <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(edf, interaction == TRUE)
   edf <- subset(edf, interaction == FALSE)
 
@@ -384,11 +436,14 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
       ids <- subset(ndf, label %in% v)[ , "id"]
 
       if(is.na(ints[i, "to"])){
-        ints[i, "link"] <- NA
+        ints[i, "linkfrom"] <- NA
+        ints[i, "linkto"] <- NA
       } else if(ints[i, "to"] == ints[i, "from"]) {
-        ints[i, "link"] <- NA
+        ints[i, "linkfrom"] <- NA
+        ints[i, "linkto"] <- NA
       } else {
-        ints[i, "link"] <- tmp$from
+        ints[i, "linkfrom"] <- tmp$from
+        ints[i, "linkto"] <- tmp$to
       }
 
       ints[i, "from"] <- ids[which(ids != tmp$from)]
@@ -424,7 +479,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   linkdummies <- NULL
   numlinks <- length(edf[is.na(edf$to) &
                            edf$interaction == TRUE &
-                           !is.na(edf$link), "to"])
+                           !is.na(edf$linkto), "to"])
   if(numlinks > 0) {
     linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
     edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
@@ -500,8 +555,8 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   # update invisible interaction link nodes
   linknodes <- subset(ndf, id > 5550 & id < 9990)$id
   for(id in linknodes) {
-    start <- edf[which(edf$to == id), "link"]
-    end <- edf[which(edf$to == id), "from"]
+    start <- edf[which(edf$to == id), "linkfrom"]
+    end <- edf[which(edf$to == id), "linkto"]
     newx1 <- ndf[which(ndf$id == start), "x"]
     newx2 <- ndf[which(ndf$id == end), "x"]
     newx <- (newx1+newx2)/2  # midpoint of the physical arrow
@@ -517,7 +572,7 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   }
 
   # Subset out interactions to in/out flows
-  extints <- subset(edf, interaction == TRUE & is.na(link))
+  extints <- subset(edf, interaction == TRUE & is.na(linkto))
   if(nrow(extints) > 0) {
     for(i in 1:nrow(extints)) {
       tmp <- extints[i, ]
@@ -573,7 +628,6 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
     edf <- rbind(edf, extints)
   }
 
-
   # split up the edges into constituent parts:
   # - curved segments
   # - straight (horizontal) segments
@@ -585,6 +639,10 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   sdf <- subset(sdf, abs(diff) < 9990)
   fdf <- subset(sdf, to == from)
   sdf <- subset(sdf, to != from)
+
+  # Add x offsets to straight edges
+  sdf$xstart <- sdf$xstart + xoff
+  sdf$xend <- sdf$xend - xoff
 
   # Set the curvature using internal function
   if(nrow(cdf) > 0) {
@@ -619,12 +677,19 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
   cdf <- remove_na_rows(cdf)
   fdf <- remove_na_rows(fdf)
 
+  # convert direct interaction to flag to regular interaction flag,
+  # now only relevant for plotting
+  sdf <- update_interactions(sdf)
+  vdf <- update_interactions(vdf)
+  cdf <- update_interactions(cdf)
+  fdf <- update_interactions(fdf)
+
   # rename data frames for exporting
   nodes <- ndf
-  horizontal_edges <- subset(sdf, select = -c(diff, interaction, link))
-  vertical_edges <- subset(vdf, select = -c(diff, interaction, link))
-  curved_edges <- subset(cdf, select = -c(diff, link, ymid, xmid))
-  feedback_edges <- subset(fdf, select = -c(diff, link, interaction))
+  horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom))
+  vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto, linkfrom))
+  curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
+  feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction))
 
 
   return(list(nodes = nodes,
