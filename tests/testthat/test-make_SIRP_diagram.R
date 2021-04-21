@@ -9,13 +9,9 @@ flows = list(S_flows = c("n","-m*S","-bI*S*I", "-bP*S*P"),
             )
 mymodel = list(varlabels = varlabels, flows = flows)
 model_list <- mymodel
-# nodes_matrix = matrix(c("", "P", "",
-#                         "S", "I", "R"),
-#                       ncol = 3, byrow = TRUE)
 
-
-diagram_list = prepare_diagram(mymodel, nodes_matrix = nodes_matrix)
-make_diagram(diagram_list)
+diagram_list = prepare_diagram(mymodel)
+# make_diagram(diagram_list)
 
 
 test_that("right number of vertical edges", {

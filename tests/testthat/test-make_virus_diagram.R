@@ -15,7 +15,7 @@ model_list = mymodel
 nodes_matrix = NULL
 
 diagram_list = prepare_diagram(mymodel)
-make_diagram(diagram_list)
+# make_diagram(diagram_list)
 
 
 test_that("right number of vertical edges", {
