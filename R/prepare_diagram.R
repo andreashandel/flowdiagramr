@@ -376,17 +376,11 @@ prepare_diagram <- function(model_list, nodes_matrix = NULL) {
                          direct_interaction == FALSE)  # drop interactions
     diffs <- with(flowdups, to - from)  # calc difference between nodes
     mainid <- which(diffs == min(diffs))  # keep the minimum node diff as main flow
-    maindup <- flowdups[mainid, ]  # extract just the main flow
-    intdup <- flowdups[mainid, ]  # extract again for interaction
-    intdup$interaction <- TRUE
+    maindup <- flowdups[mainid, ]  # extract just the main flow for physical flow
+    intdup <- flowdups[mainid, ]  # extract again for interaction flow, which is parsed later on
+    intdup$interaction <- TRUE  # set interaction flag to TRUE
     edf <- rbind(edf, maindup, intdup)
   }
-
-
-  # Now add interaction arrows based on the state variables in the flow
-  # vps <- get_vars_pars(maindup$label)
-  # vs <- vps[which(vps %in% LETTERS)]
-
 
   # Duplicate rows with out_interaction == TRUE to assign the interaction
   # flag and then remove the out_interaction flag. This is done to
