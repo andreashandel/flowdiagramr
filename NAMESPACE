@@ -3,6 +3,6 @@
 export(convert_from_modelbuilder)
 export(make_diagram)
 export(prepare_diagram)
-export(write_diagram)
+export(write_diagram_code)
 import(fs)
 import(ggplot2)

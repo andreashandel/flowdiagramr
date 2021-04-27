@@ -139,10 +139,12 @@
 <p>You can take this extended specification of the model and feed it to the diagram preparation and generation functions, like so.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># prepare inputs </span>
-<span class="va">sir_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span>
+<span class="va">sir_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span>, nodes_matrix <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span>
 <span class="co"># make  diagram</span>
-<span class="co">#sir_diagram &lt;- make_diagram(sir_input_structure, use_varnames = TRUE)</span>
-<span class="co">#plot(sir_diagram)</span></code></pre></div>
+<span class="co"># sir_diagram &lt;- make_diagram(sir_input_structure, use_varnames = TRUE)</span>
+<span class="va">sir_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sir_diagram</span><span class="op">)</span></code></pre></div>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>Note that we provided the <code>make_diagram</code> fuction with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. There are a number of options you can set when calling <code>make_diagram</code>, we’ll discuss several of them now.</p>
 </div>
 <div id="setting-arguments-in-make_diagram" class="section level2">
@@ -168,74 +170,88 @@
 <p>First, we need to call <code>prepare_diagram</code> to make the list of data frames needed as input for <code>make_model</code>. We’ll skip over this step again for now, you’ll learn more about these data frames and how to potentially modify them, in a later vignette.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># prepare inputs </span>
-<span class="va">sir_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span></code></pre></div>
+<span class="va">sir_diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span></code></pre></div>
 <p>Now, let’s produce a basic diagram by calling <code>make_diagram</code> with its defaults.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make a default diagram</span>
-<span class="va">default_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span><span class="op">)</span>
+<span class="va">default_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_diagram_list</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">default_diagram</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 <p>This looks ok, but probably not quite at the level what you want for a publication or presentation. So let’s provide some inputs to the <code>make_diagram</code> function to improve the look.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make a diagram with adjusted settings</span>
-<span class="va">nice_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
-                             node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-                             node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-                             node_text_color <span class="op">=</span> <span class="st">"white"</span>,
-                             node_text_size <span class="op">=</span> <span class="fl">10</span>,
-                             flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
-                             flow_text_size <span class="op">=</span> <span class="fl">5</span>,
-                             main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             main_arrow_linetype <span class="op">=</span> <span class="st">"solid"</span>,
-                             main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
-                             interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             interaction_arrow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
-                             interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
+<span class="va">nice_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
+  diagram_list <span class="op">=</span> <span class="va">sir_diagram_list</span>,
+  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
+    node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+    node_text_color <span class="op">=</span> <span class="st">"white"</span>,
+    node_text_size <span class="op">=</span> <span class="fl">10</span>,
+    flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
+    flow_text_size <span class="op">=</span> <span class="fl">5</span>,
+    main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    main_arrow_linetype <span class="op">=</span> <span class="st">"solid"</span>,
+    main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    interaction_arrow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
+    interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span>
+  <span class="op">)</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">nice_diagram</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>As you can see, it is possible to change the look of the diagram considerably by changing settings.</p>
 <p>Let’s look at a few more options that you can configure. By default, <strong>flowdiagramr</strong> shows all flows and labels them all. While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. You can easily turn on and off several components. The following code shows an example where we turned off labeling of the flows.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Diagram without labeling of flows</span>
-<span class="va">simpler_diagram_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
-                             label_flows <span class="op">=</span> <span class="cn">FALSE</span>,
-                             external_flows <span class="op">=</span> <span class="cn">TRUE</span>,
-                             interaction_label <span class="op">=</span> <span class="cn">TRUE</span>,
-                             node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-                             node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-                             node_text_color <span class="op">=</span> <span class="st">"white"</span>,
-                             node_text_size <span class="op">=</span> <span class="fl">10</span>,
-                             flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
-                             flow_text_size <span class="op">=</span> <span class="fl">5</span>,
-                             main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
-                             main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
-                             interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
-                             interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
+<span class="va">simpler_diagram_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
+  diagram_list <span class="op">=</span> <span class="va">sir_diagram_list</span>,
+  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    label_flows <span class="op">=</span> <span class="cn">FALSE</span>,
+    external_flows <span class="op">=</span> <span class="cn">TRUE</span>,
+    interaction_label <span class="op">=</span> <span class="cn">TRUE</span>,
+    node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
+    node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+    node_text_color <span class="op">=</span> <span class="st">"white"</span>,
+    node_text_size <span class="op">=</span> <span class="fl">10</span>,
+    flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
+    flow_text_size <span class="op">=</span> <span class="fl">5</span>,
+    main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
+    main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
+    interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span>
+  <span class="op">)</span>
+<span class="op">)</span>
+
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_1</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <p>In this example, we are also turning off plotting of the flows that come into or go out of the system from the outside. In this example, those are births and deaths.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Diagram without external flows</span>
-<span class="va">simpler_diagram_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">sir_input_structure</span>,  
-                             label_flows <span class="op">=</span> <span class="cn">TRUE</span>,
-                             external_flows <span class="op">=</span> <span class="cn">FALSE</span>,
-                             interaction_label <span class="op">=</span> <span class="cn">TRUE</span>,
-                             node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-                             node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-                             node_text_color <span class="op">=</span> <span class="st">"white"</span>,
-                             node_text_size <span class="op">=</span> <span class="fl">10</span>,
-                             flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
-                             flow_text_size <span class="op">=</span> <span class="fl">5</span>,
-                             main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
-                             main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
-                             interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
-                             interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
+<span class="va">simpler_diagram_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
+  diagram_list <span class="op">=</span> <span class="va">sir_diagram_list</span>,
+  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    label_flows <span class="op">=</span> <span class="cn">TRUE</span>,
+    external_flows <span class="op">=</span> <span class="cn">FALSE</span>,
+    interaction_label <span class="op">=</span> <span class="cn">TRUE</span>,
+    node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
+    node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+    node_text_color <span class="op">=</span> <span class="st">"white"</span>,
+    node_text_size <span class="op">=</span> <span class="fl">10</span>,
+    flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
+    flow_text_size <span class="op">=</span> <span class="fl">5</span>,
+    main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
+    main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
+    interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span>
+  <span class="op">)</span>
+<span class="op">)</span>
+
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram_2</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 <p>Note that if you turn off some component, other options that apply to that component will be ignored. For instance if you turn off labeling of the flows, it does of course not matter what color and font size you give those labels. You can leave those specifications in the code, as we have done above. They will just be ignored.</p>
 </div>
 </div>
@@ -254,44 +270,54 @@
 <p>Next, we prepare the input list of data frames</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># prepare inputs </span>
-<span class="va">pp_input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span></code></pre></div>
+<span class="va">pp_diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span></code></pre></div>
 <p>Finally, we can make a diagram with settings adjusted to our liking.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make diagram with adjusted settings</span>
-<span class="va">diag1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_input_structure</span>,  
-                             node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-                             node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-                             node_text_color <span class="op">=</span> <span class="st">"white"</span>,
-                             node_text_size <span class="op">=</span> <span class="fl">10</span>,
-                             flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
-                             flow_text_size <span class="op">=</span> <span class="fl">5</span>,
-                             main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
-                             main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
-                             interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
-                             interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
+<span class="va">diag1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
+  diagram_list <span class="op">=</span> <span class="va">pp_diagram_list</span>,
+  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
+    node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+    node_text_color <span class="op">=</span> <span class="st">"white"</span>,
+    node_text_size <span class="op">=</span> <span class="fl">10</span>,
+    flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
+    flow_text_size <span class="op">=</span> <span class="fl">5</span>,
+    main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
+    main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
+    interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span>
+  <span class="op">)</span>
+<span class="op">)</span>
+
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag1</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
 <p>For the next diagram, we are turning off the interactions and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make another diagram with adjusted settings</span>
-<span class="va">diag2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_input_structure</span>,  
-                             node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-                             node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-                             node_text_color <span class="op">=</span> <span class="st">"white"</span>,
-                             node_text_size <span class="op">=</span> <span class="fl">10</span>,
-                             flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
-                             flow_text_size <span class="op">=</span> <span class="fl">5</span>,
-                             main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
-                             main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
-                             interaction_label <span class="op">=</span> <span class="cn">FALSE</span>,
-                             interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-                             interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
-                             interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>
+<span class="va">diag2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
+  diagram_list <span class="op">=</span> <span class="va">pp_diagram_list</span>,
+  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
+    node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+    node_text_color <span class="op">=</span> <span class="st">"white"</span>,
+    node_text_size <span class="op">=</span> <span class="fl">10</span>,
+    flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
+    flow_text_size <span class="op">=</span> <span class="fl">5</span>,
+    main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
+    main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    interaction_label <span class="op">=</span> <span class="cn">FALSE</span>,
+    interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
+    interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span>
+  <span class="op">)</span>
+<span class="op">)</span>
+
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
-<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
 <p>As you can see, not showing the interactions doesn’t produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.</p>
 </div>
 <div id="next-steps" class="section level1">

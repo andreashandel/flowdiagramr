@@ -152,7 +152,16 @@
              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, 
              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
-<p>Note that the main list (called <code>mymodel</code> above) can have any name, but the elements inside the list need to be called <code>varlabels</code> and <code>flows</code>. Also, the flows for each variable need to be named <code>X_flows</code> where X corresponds to the variable label (this doesn’t have to be a single letter). Finally, the flows need to be provided as valid mathematical expressions, so you need to write <code>b*S*I</code>, writing it as <code>bSI</code> will not work.</p>
+<p><strong>Model conventions and requirements:</strong></p>
+<ul>
+<li>The main list (called <code>mymodel</code> above) can have any name.</li>
+<li>The elements inside the list need to be called <code>varlabels</code> and <code>flows</code>.</li>
+<li>All variable labels need to start with an upper-case letter and can be any combination of letters and numbers.</li>
+<li>All parameters need to start with a lower-case letter and can be any combination of letters and numbers.</li>
+<li>The flows for each variable need to be named <code>NN_flows</code> where NN corresponds to the variable label.</li>
+<li>Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write <code>b*S*I</code>, writing it as <code>bSI</code> will not work.</li>
+<li>Minus signs for outflows are required, plus signs for inflows are optional.</li>
+</ul>
 <p>In addition to the required two list elements, you can specify a few optional list elements, which we’ll discuss later.</p>
 </div>
 <div id="create-elements-needed-for-diagram-generation" class="section level3">
@@ -161,22 +170,22 @@
 <p>Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which as the advantage of easier manual modification. You’ll learn more about that in subsequent vignettes. For now, we just show the steps, then revisit them later.</p>
 <p>To get ready for diagram generation, you send your model to the <code>prepare_diagram</code> function.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
-<p>The <code>input_structure</code> object returned by this function contains a list of data frames used to make the diagram. We’ll skip over this for now and revisit it in a later vignette.</p>
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
+<p>The <code>diagram_list</code> object returned by this function contains a list of data frames used to make the diagram. We’ll skip over this for now and revisit it in a later vignette.</p>
 </div>
 <div id="make-the-diagram" class="section level3">
 <h3 class="hasAnchor">
 <a href="#make-the-diagram" class="anchor"></a>Make the diagram</h3>
 <p>Now it’s time to make the diagram. This is done by sending the object you got by calling <code>prepare_diagram</code> to the <code>make_diagram</code> function, like so</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span></code></pre></div>
 <p><code>make_diagram</code> returns a ggplot2 object (here called <code>my_diagram</code>). You you can write this plot to a file or print to the screen, e.g. with</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">"sirdiagram.png"</span>,<span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p>and</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
-<p><img src="A_quickstart_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="A_quickstart_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 </div>
 </div>
 <div id="another-example" class="section level2">
@@ -193,8 +202,8 @@
 <p>To generate the diagram, you follow the same steps as above. First, create the model structure</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Pat"</span>,<span class="st">"Imm"</span><span class="op">)</span>
-<span class="va">flows</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*Pat*(1-Pat/pmax)"</span>, <span class="st">"-dP*Pat"</span>, <span class="st">"-k*Pat*Imm"</span><span class="op">)</span>,
-                 I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"r*Pat*Imm"</span>, <span class="st">"-dI*Imm"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">flows</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Pat_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*Pat*(1-Pat/pmax)"</span>, <span class="st">"-dP*Pat"</span>, <span class="st">"-k*Pat*Imm"</span><span class="op">)</span>,
+                 Imm_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"r*Pat*Imm"</span>, <span class="st">"-dI*Imm"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into <code>R</code>, they would work (provided you assigned numerical values to each variable and parameter).</p>
 <p>Also note that for the purpose of generating the diagram, it is not required to write down differential equations for the model. But if you wanted to, for this model they are</p>
@@ -206,10 +215,18 @@
 \]</span></p>
 <p>Next, you use the same steps as above to create the model diagram.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
-<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span>, node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>, main_arrow_linetype <span class="op">=</span> <span class="st">"dashed"</span>, interaction_arrow_linetype <span class="op">=</span> <span class="st">"solid"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
+  <span class="va">diagram_list</span>, 
+  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>,
+    main_arrow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
+    interaction_arrow_linetype <span class="op">=</span> <span class="st">"solid"</span><span class="op">)</span>
+<span class="op">)</span>
+
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
-<p><img src="A_quickstart_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="A_quickstart_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>In this example, we added some optional inputs to the <code>make_diagram</code> function to start customizing the model. You’ll learn more about this <a href="./B_modify_diagrams_simple.html">in the next vignette</a>.</p>
 </div>
 <div id="next-steps" class="section level2">

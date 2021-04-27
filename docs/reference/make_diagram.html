@@ -47,7 +47,10 @@
 
 
 <meta property="og:title" content="Make a ggplot2 model diagram. — make_diagram" />
-<meta property="og:description" content="Make a ggplot2 model diagram." />
+<meta property="og:description" content="make_diagram() generates a ggplot2 object based on the data frames
+made with prepare_diagram. The function only applies
+aesthetics that are not associated with x, y locations. Colors, linetypes,
+and other graphical options can be set by the user." />
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png" />
 
 
@@ -155,105 +158,67 @@
     </div>
 
     <div class="ref-description">
-    <p>Make a ggplot2 model diagram.</p>
+    <p><code>make_diagram()</code> generates a <strong>ggplot2</strong> object based on the data frames
+made with <code><a href='prepare_diagram.html'>prepare_diagram</a></code>. The function only applies
+aesthetics that are not associated with x, y locations. Colors, linetypes,
+and other graphical options can be set by the user.</p>
     </div>
 
     <pre class="usage"><span class='fu'>make_diagram</span><span class='op'>(</span>
-  <span class='va'>df_list</span>,
-  label_flows <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  external_flows <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  interaction_label <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  with_grid <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  node_outline_color <span class='op'>=</span> <span class='st'>"black"</span>,
-  node_fill_color <span class='op'>=</span> <span class='st'>"white"</span>,
-  node_text_color <span class='op'>=</span> <span class='st'>"black"</span>,
-  node_text_size <span class='op'>=</span> <span class='fl'>8</span>,
-  flow_text_color <span class='op'>=</span> <span class='st'>"black"</span>,
-  flow_text_size <span class='op'>=</span> <span class='fl'>3</span>,
-  main_arrow_color <span class='op'>=</span> <span class='st'>"black"</span>,
-  main_arrow_linetype <span class='op'>=</span> <span class='fl'>1</span>,
-  main_arrow_size <span class='op'>=</span> <span class='fl'>0.5</span>,
-  interaction_arrow_color <span class='op'>=</span> <span class='st'>"black"</span>,
-  interaction_arrow_linetype <span class='op'>=</span> <span class='fl'>2</span>,
-  interaction_arrow_size <span class='op'>=</span> <span class='fl'>0.5</span>
+  <span class='va'>diagram_list</span>,
+  diagram_settings <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>label_flows <span class='op'>=</span> <span class='cn'>TRUE</span>, external_flows <span class='op'>=</span> <span class='cn'>TRUE</span>, interaction_label
+    <span class='op'>=</span> <span class='cn'>TRUE</span>, with_grid <span class='op'>=</span> <span class='cn'>FALSE</span>, node_outline_color <span class='op'>=</span> <span class='st'>"black"</span>, node_fill_color <span class='op'>=</span> <span class='st'>"white"</span>,
+    node_text_color <span class='op'>=</span> <span class='st'>"black"</span>, node_text_size <span class='op'>=</span> <span class='fl'>8</span>, flow_text_color <span class='op'>=</span> <span class='st'>"black"</span>,
+    flow_text_size <span class='op'>=</span> <span class='fl'>3</span>, main_arrow_color <span class='op'>=</span> <span class='st'>"black"</span>, main_arrow_linetype <span class='op'>=</span> <span class='st'>"solid"</span>,
+    main_arrow_size <span class='op'>=</span> <span class='fl'>0.5</span>, interaction_arrow_color <span class='op'>=</span> <span class='st'>"black"</span>, interaction_arrow_linetype
+    <span class='op'>=</span> <span class='st'>"dashed"</span>, interaction_arrow_size <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>df_list</th>
+      <th>diagram_list</th>
       <td><p>A list of data frames returned from the
 <code>prepare_diagram</code> function. See that function for details
 about this object.</p></td>
     </tr>
     <tr>
-      <th>label_flows</th>
-      <td><p>A logical indicating whether to label the flows
-(TRUE, default) or not (FALSE).</p></td>
-    </tr>
-    <tr>
-      <th>external_flows</th>
-      <td><p>A logical indicating whether to include flows into
-and out of the system (external flows). Default is TRUE (include).</p></td>
-    </tr>
-    <tr>
-      <th>interaction_label</th>
-      <td><p>A logical indicating whether to make the diagram
+      <th>diagram_settings</th>
+      <td><p>A list of diagram aesthetic settings. The
+following elements are supported and default values are provided:</p><ul>
+<li><p><code>label_flows</code>: A logical indicating whether to label the flows
+(TRUE, default) or not (FALSE).</p></li>
+<li><p><code>external_flows</code>: A logical indicating whether to include flows into
+and out of the system (external flows). Default is TRUE (include).</p></li>
+<li><p><code>interaction_label</code>: A logical indicating whether to make the diagram
 with interaction terms (typically curved arrows leading to the
 mid point of another arrow) or to simply label the main flow. See
-vignettes for examples.</p></td>
-    </tr>
-    <tr>
-      <th>with_grid</th>
-      <td><p>A logical indicating whether to return the ggplot
+vignettes for examples.</p></li>
+<li><p><code>with_grid</code>: A logical indicating whether to return the ggplot
 with a grid. Default is FALSE. The grid can be helpful if you
-want/need to move items around.</p></td>
-    </tr>
-    <tr>
-      <th>node_outline_color</th>
-      <td><p>A character string or vector of character strings
+want/need to move items around.</p></li>
+<li><p><code>node_outline_color</code>: A character string or vector of character strings
 specifying the color of node outlines. If a vector, the colors will be
-recycled in the order of the variables in the supplied data frame.</p></td>
-    </tr>
-    <tr>
-      <th>node_fill_color</th>
-      <td><p>A character string or vector of character strings
+recycled in the order of the variables in the supplied data frame.</p></li>
+<li><p><code>node_fill_color</code>: A character string or vector of character strings
 specifying the fill color of nodes. If a vector, the colors will be
-recycled in the order of the variables in the supplied data frame.</p></td>
-    </tr>
-    <tr>
-      <th>node_text_color</th>
-      <td><p>A character string or vector of character strings
+recycled in the order of the variables in the supplied data frame.</p></li>
+<li><p><code>node_text_color</code>: A character string or vector of character strings
 specifying the text color for node labels. If a vector, the colors will
-be recycled in the order of the variables in the supplied data frame.</p></td>
-    </tr>
-    <tr>
-      <th>node_text_size</th>
-      <td><p>A numeric scalar specifying the text size for node
-labels. Default value is 8.</p></td>
-    </tr>
-    <tr>
-      <th>flow_text_color</th>
-      <td><p>A character string or vector of character strings
+be recycled in the order of the variables in the supplied data frame.</p></li>
+<li><p><code>node_text_size</code>: A numeric scalar specifying the text size for node
+labels. Default value is 8.</p></li>
+<li><p><code>flow_text_color</code>: A character string or vector of character strings
 specifying the text color for flow labels. If a vector, the colors will
-be recycled in the order of the flows in the supplied data frame.</p></td>
-    </tr>
-    <tr>
-      <th>flow_text_size</th>
-      <td><p>A numeric scalar specifying the text size for flow
-labels. Default value is 3.</p></td>
-    </tr>
-    <tr>
-      <th>main_arrow_color</th>
-      <td><p>A character string or vector of character strings
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>flow_text_size</code>: A numeric scalar specifying the text size for flow
+labels. Default value is 3.</p></li>
+<li><p><code>main_arrow_color</code>: A character string or vector of character strings
 specifying the text color for non-interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
-in the supplied data frame.</p></td>
-    </tr>
-    <tr>
-      <th>main_arrow_linetype</th>
-      <td><p>Either a numeric scaler or a character scaler
+in the supplied data frame.</p></li>
+<li><p><code>main_arrow_linetype</code>: Either a numeric scalar or a character scalar
 specifying the linetype for main arrows (non-interaction arrows). This
 argument is passed to the <code>linetype</code> argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
@@ -261,23 +226,14 @@ with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 1 (solid).</p></td>
-    </tr>
-    <tr>
-      <th>main_arrow_size</th>
-      <td><p>A numeric scaler specifying the line size for the
-main arrows (non-interaction arrows).</p></td>
-    </tr>
-    <tr>
-      <th>interaction_arrow_color</th>
-      <td><p>A character string or vector of character
+the string." Default is 1 (solid).</p></li>
+<li><p><code>main_arrow_size</code>: A numeric scaler specifying the line size for the
+main arrows (non-interaction arrows).</p></li>
+<li><p><code>interaction_arrow_color</code>: A character string or vector of character
 strings specifying the text color for interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
-in the supplied data frame.</p></td>
-    </tr>
-    <tr>
-      <th>interaction_arrow_linetype</th>
-      <td><p>Either a numeric scaler or a character scaler
+in the supplied data frame.</p></li>
+<li><p><code>interaction_arrow_linetype</code>: Either a numeric scalar or a character scalar
 specifying the linetype for interaction arrows. This
 argument is passed to the <code>linetype</code> argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
@@ -285,12 +241,10 @@ with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 2 (dashed).</p></td>
-    </tr>
-    <tr>
-      <th>interaction_arrow_size</th>
-      <td><p>A numeric scalar specifying the line size for
-the interaction arrows.</p></td>
+the string." Default is 2 (dashed).</p></li>
+<li><p><code>interaction_arrow_size</code>: A numeric scalar specifying the line size for
+the interaction arrows.</p></li>
+</ul></td>
     </tr>
     </table>
 

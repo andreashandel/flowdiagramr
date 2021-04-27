@@ -25,8 +25,9 @@ The main functions that are exposed to a user are the following:
 
 * `prepare_diagram` takes as input a model list and creates the data frames that form the input for the diagram generation.
 * `make_diagram` takes as input a list of data frames as created by `prepare_diagram` and returns a ggplot2 object containing the model diagram.
-* `write_diagram` takes the model list and writes the full ggplot code required to generate the model to a file. the resulting code is fully stand-alone.
+* `write_diagram_code` takes the model list and writes the full ggplot code required to generate the model to a file. the resulting code is fully stand-alone.
 * `convert_from_modelbuilder` takes a modelbuilder model object and turns it into a list object needed for this package.
+
 
 
 The following are helper functions that are used internally but not exposed to the user:
@@ -60,14 +61,12 @@ Additional packages are needed for development (but not use) of the package. Tho
 According to pkgdown, logo should be includes as described here:
 https://pkgdown.r-lib.org/reference/build_home.html#package-logo
 
-
 ### To update R documentation and vignette
 * Edit documentation inside R functions. 
 * Build documentation with More/Document or devtools::document()
 * Edit vignette inside the /vignettes folder.
 * To build new vignette, run devtools::build_vignettes()
 * To update the pkgdown website, run pkgdown::build_site()
-* To re-build html documentation files, copy and zip simulator functions and build vignettes and site, run the processing-script provided in this folder.
 
 ### To build the package
 * in RStudio, use the functions in the 'build' tab to test and build the package.

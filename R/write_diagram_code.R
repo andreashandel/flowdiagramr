@@ -1,7 +1,7 @@
 #' Generate a reproducible R script to make the diagram.
 #'
 #' @description
-#' `write_diagram()` makes a stand-alone R script to reproduce a diagram,
+#' Generates code in the form of a stand-alone R script to reproduce a diagram,
 #' including the model inputs, the data frames from
 #' \code{\link{prepare_diagram}}, and the **ggplot2** code. The R script
 #' is intended to run "as-is", meaning there is code to make the objects
@@ -26,16 +26,16 @@
 #' @export
 
 
-write_diagram <- function(model_list = NULL,
-                          diagram_list = NULL,
-                          make_diagram_settings = NULL,
-                          directory = NULL,
-                          filename = NULL) {
+write_diagram_code <- function(model_list = NULL,
+                               diagram_list = NULL,
+                               make_diagram_settings = NULL,
+                               directory = NULL,
+                               filename = NULL)
+{
 
-  # make sure only model or diagram_list is provided
+  # make sure at least one of model_list or diagram_list is provided
   if(is.null(model_list) & is.null(diagram_list)) {
-    stop(paste0("Please provide either the model or the diagram_list,",
-                " or both."))
+    stop("Please provide at least one of the model list or the diagram list as input")
   }
 
   # save to current working directory if the not specified

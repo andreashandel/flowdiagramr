@@ -1,15 +1,15 @@
 #' Create data frames for plotting from model elements.
 #'
 #' @description
-#' `prepare_diagram()` creates a list of data frames with label and
-#' position information for plotting a (typically) dynamic model
-#' flow diagram. The data frames are specifically designed for plotting
-#' with **ggplot2** (see \code{\link{make_diagram}} and
-#' \code{\link{write_diagram}}). The model elements are state variables
-#' (nodes) and flows between them, often specified by mathematical
-#' expressions. `prepare_diagram` attempts to make good decisions about
-#' where nodes, flows (arrow segment), and labels should be placed and
-#' the connections between all the elements. However, complex models with
+#' This function takes as input a (typically) compartmental model
+#' consisting of variables/compartments and flows
+#' and creates a list of data frames with label and
+#' position information for plotting a flow diagram.
+#' The resulting object is used as an input to
+#' \code{\link{make_diagram}}, which creates a **ggplot2** based
+#' diagram.
+#' Attempts to make good decisions regarding the placement of nodes,
+#' flows (arrow segment), and labels are made. However, complex models with
 #' complex diagrams will likely need user modification. This is documented
 #' in the vignettes.
 #'

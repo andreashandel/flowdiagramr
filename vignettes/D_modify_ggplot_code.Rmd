@@ -40,7 +40,7 @@ Another, and the most flexible approach, is to modify the ggplot code that produ
 We'll illustrate this with a simple example. First, you define your model as above. Once you have your model, you send it to `write_diagram`, a function that writes the full code needed to generate the diagram. In this example, we are writing the `sirmodel` model we created above to the current directory and giving the file the specified name.
 
 ```{r}
-#write_diagram(filepath = '.', filename = 'sirmodel_diagram_code.R', model = sirmodel)
+#write_diagram_code(filepath = '.', filename = 'sirmodel_diagram_code.R', model = sirmodel)
 ```
 
 If things worked well, you should get a message telling you the location where the code was saved.
