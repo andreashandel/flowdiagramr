@@ -22,14 +22,15 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/andreashandel/modeldiagram/workflows/R-CMD-check/badge.svg)](https://github.com/andreashandel/modeldiagram/actions)
 <!-- badges: end -->
 
+**This package is still under early, active development. If you see this message, assume that several parts of the package don't quite work yet.**
 
 ## Description
-This package allows automated creation of flow diagrams for compartmental simulation models using ggplot. 
-Other types of flow charts are also supported.
+This package allows automated creation of flow diagrams for compartmental simulation models using ggplot. Other types of flow charts are also supported.
 
 ## Getting Started
 
-For an introduction to the package, step-by-step instructions on getting started, and more information on the different ways you can use the package [see the _Quick Start_ tutorial (vignette)](./articles/A_quickstart.html).
+
+For an introduction to the package, step-by-step instructions on getting started, and more information on the different ways you can use the package [see the _Quick Start_ tutorial (vignette)](https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html).
 
 
 ## Further information

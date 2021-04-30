@@ -12,6 +12,10 @@ status](https://codecov.io/gh/andreashandel/flowdiagramr/branch/master/graph/bad
 [![R-CMD-check](https://github.com/andreashandel/modeldiagram/workflows/R-CMD-check/badge.svg)](https://github.com/andreashandel/modeldiagram/actions)
 <!-- badges: end -->
 
+**This package is still under early, active development. If you see this
+message, assume that several parts of the package don’t quite work
+yet.**
+
 ## Description
 
 This package allows automated creation of flow diagrams for
@@ -23,7 +27,7 @@ are also supported.
 For an introduction to the package, step-by-step instructions on getting
 started, and more information on the different ways you can use the
 package [see the *Quick Start* tutorial
-(vignette)](./articles/A_quickstart.html).
+(vignette)](https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html).
 
 ## Further information
 

@@ -104,7 +104,7 @@
 
       
 
-      </header><script src="D_modify_ggplot_code_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="D_modify_ggplot_code_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Modifying the ggplot2 code</h1>
@@ -128,7 +128,7 @@
 <p>Another, and the most flexible approach, is to modify the ggplot code that produces the diagram. To do this, you can retrieve the full ggplot2 code that creates the diagram and then edit it like you would any ggplot figure.</p>
 <p>We’ll illustrate this with a simple example. First, you define your model as above. Once you have your model, you send it to <code>write_diagram</code>, a function that writes the full code needed to generate the diagram. In this example, we are writing the <code>sirmodel</code> model we created above to the current directory and giving the file the specified name.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#write_diagram(filepath = '.', filename = 'sirmodel_diagram_code.R', model = sirmodel)</span></code></pre></div>
+<code class="sourceCode R"><span class="co">#write_diagram_code(filepath = '.', filename = 'sirmodel_diagram_code.R', model = sirmodel)</span></code></pre></div>
 <p>If things worked well, you should get a message telling you the location where the code was saved. This code is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure. Having all the code that generates the figure also allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot.</p>
 <p>Below is an example where we modify the code we produced above to fine tune some components. We are not showing the full code, but only the parts that are modified.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">

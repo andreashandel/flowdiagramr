@@ -104,7 +104,7 @@
 
       
 
-      </header><script src="A_quickstart_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="A_quickstart_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>A quick start to flowdiagramr</h1>
@@ -206,13 +206,6 @@
                  Imm_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"r*Pat*Imm"</span>, <span class="st">"-dI*Imm"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into <code>R</code>, they would work (provided you assigned numerical values to each variable and parameter).</p>
-<p>Also note that for the purpose of generating the diagram, it is not required to write down differential equations for the model. But if you wanted to, for this model they are</p>
-<p><span class="math display">\[
-\begin{aligned}
-\frac{d}{dt}  Pat &amp; = g * Pat (1-\frac{Pat}{p_{max}}) - d_P * Pat - k * Pat * Imm \\
-\frac{d}{dt} Imm &amp; = r * Pat * Imm - d_I * Imm
-\end{aligned}
-\]</span></p>
 <p>Next, you use the same steps as above to create the model diagram.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
@@ -228,6 +221,13 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="A_quickstart_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>In this example, we added some optional inputs to the <code>make_diagram</code> function to start customizing the model. You’ll learn more about this <a href="./B_modify_diagrams_simple.html">in the next vignette</a>.</p>
+<p>As a reminder, for the purpose of generating the diagram, it is not required to write down differential equations for the model. In fact, you can make diagrams for any model that consists of compartments and flows. We’ll show some examples of such diagrams that are not based on simulation models <a href="./F_non_model_diagrams.html">in this vignette</a>. But for completeness, here are the equations for the model we just plotted.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac{d}{dt}  Pat &amp; = g * Pat (1-\frac{Pat}{p_{max}}) - d_P * Pat - k * Pat * Imm \\
+\frac{d}{dt} Imm &amp; = r * Pat * Imm - d_I * Imm
+\end{aligned}
+\]</span></p>
 </div>
 <div id="next-steps" class="section level2">
 <h2 class="hasAnchor">

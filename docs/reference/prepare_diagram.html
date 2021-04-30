@@ -47,15 +47,15 @@
 
 
 <meta property="og:title" content="Create data frames for plotting from model elements. — prepare_diagram" />
-<meta property="og:description" content="prepare_diagram() creates a list of data frames with label and
-position information for plotting a (typically) dynamic model
-flow diagram. The data frames are specifically designed for plotting
-with ggplot2 (see make_diagram and
-write_diagram). The model elements are state variables
-(nodes) and flows between them, often specified by mathematical
-expressions. prepare_diagram attempts to make good decisions about
-where nodes, flows (arrow segment), and labels should be placed and
-the connections between all the elements. However, complex models with
+<meta property="og:description" content="This function takes as input a (typically) compartmental model
+consisting of variables/compartments and flows
+and creates a list of data frames with label and
+position information for plotting a flow diagram.
+The resulting object is used as an input to
+make_diagram, which creates a ggplot2 based
+diagram.
+Attempts to make good decisions regarding the placement of nodes,
+flows (arrow segment), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
 in the vignettes." />
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png" />
@@ -165,15 +165,15 @@ in the vignettes." />
     </div>
 
     <div class="ref-description">
-    <p><code>prepare_diagram()</code> creates a list of data frames with label and
-position information for plotting a (typically) dynamic model
-flow diagram. The data frames are specifically designed for plotting
-with <strong>ggplot2</strong> (see <code><a href='make_diagram.html'>make_diagram</a></code> and
-<code><a href='write_diagram.html'>write_diagram</a></code>). The model elements are state variables
-(nodes) and flows between them, often specified by mathematical
-expressions. <code>prepare_diagram</code> attempts to make good decisions about
-where nodes, flows (arrow segment), and labels should be placed and
-the connections between all the elements. However, complex models with
+    <p>This function takes as input a (typically) compartmental model
+consisting of variables/compartments and flows
+and creates a list of data frames with label and
+position information for plotting a flow diagram.
+The resulting object is used as an input to
+<code><a href='make_diagram.html'>make_diagram</a></code>, which creates a <strong>ggplot2</strong> based
+diagram.
+Attempts to make good decisions regarding the placement of nodes,
+flows (arrow segment), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
 in the vignettes.</p>
     </div>

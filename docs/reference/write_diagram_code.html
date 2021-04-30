@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • flowdiagramr</title>
+<title>Generate a reproducible R script to make the diagram. — write_diagram_code • flowdiagramr</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,13 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Generate a reproducible R script to make the diagram. — write_diagram_code" />
+<meta property="og:description" content="Generates code in the form of a stand-alone R script to reproduce a diagram,
+including the model inputs, the data frames from
+prepare_diagram, and the ggplot2 code. The R script
+is intended to run &quot;as-is&quot;, meaning there is code to make the objects
+the user sends as arguments (either the model or the
+diagram_list)." />
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png" />
 
 
@@ -66,7 +72,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -146,66 +152,68 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Generate a reproducible R script to make the diagram.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/andreashandel/flowdiagramr/blob/master/R/write_diagram_code.R'><code>R/write_diagram_code.R</code></a></small>
+    <div class="hidden name"><code>write_diagram_code.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Generates code in the form of a stand-alone R script to reproduce a diagram,
+including the model inputs, the data frames from
+<code><a href='prepare_diagram.html'>prepare_diagram</a></code>, and the <strong>ggplot2</strong> code. The R script
+is intended to run "as-is", meaning there is code to make the objects
+the user sends as arguments (either the <code>model</code> or the
+<code>diagram_list</code>).</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>write_diagram_code</span><span class='op'>(</span>
+  model_list <span class='op'>=</span> <span class='cn'>NULL</span>,
+  diagram_list <span class='op'>=</span> <span class='cn'>NULL</span>,
+  make_diagram_settings <span class='op'>=</span> <span class='cn'>NULL</span>,
+  directory <span class='op'>=</span> <span class='cn'>NULL</span>,
+  filename <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="convert_from_modelbuilder.html">convert_from_modelbuilder()</a></code> </p>
-        </td>
-        <td><p>Convert modelbuilder list object to list for modeldiagram</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="flowdiagramr.html">flowdiagramr</a></code> </p>
-        </td>
-        <td><p>flowdiagramr: A package to create flow diagrams</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_diagram.html">make_diagram()</a></code> </p>
-        </td>
-        <td><p>Make a ggplot2 model diagram.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prepare_diagram.html">prepare_diagram()</a></code> </p>
-        </td>
-        <td><p>Create data frames for plotting from model elements.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="write_diagram_code.html">write_diagram_code()</a></code> </p>
-        </td>
-        <td><p>Generate a reproducible R script to make the diagram.</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>model_list</th>
+      <td><p>A <strong>flowdiagramr</strong> input list. See
+<code><a href='prepare_diagram.html'>prepare_diagram</a></code>. If <code>model_list</code> is provided, then
+<code>diagram_list</code> cannot be provided.</p></td>
+    </tr>
+    <tr>
+      <th>diagram_list</th>
+      <td><p>A <strong>flowdiagramr</strong> input structure, resulting from
+a call to <code><a href='prepare_diagram.html'>prepare_diagram</a></code>. If <code>diagram_list</code> is
+provided, then <code>model</code> cannot be provided.</p></td>
+    </tr>
+    <tr>
+      <th>make_diagram_settings</th>
+      <td><p>A named list of diagram aesthetics. See
+<code><a href='make_diagram.html'>make_diagram</a></code> documentation. Default is <code>NULL</code> and the
+default values from <code><a href='make_diagram.html'>make_diagram</a></code> are used.</p></td>
+    </tr>
+    <tr>
+      <th>directory</th>
+      <td><p>File directory in which to save the R file. Defualt
+location is the current working directory.</p></td>
+    </tr>
+    <tr>
+      <th>filename</th>
+      <td><p>Name of the file, must end in '.R'. Default name is
+'diagram_code.R'.</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A message telling the user where the file is.</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
