@@ -30,42 +30,10 @@ In this vignette, you will learn the simplest ways of customizing diagrams. Furt
 
 
 
-## Providing additional input when specifying the model
-
-You previously learned that to specify a model, you need to set up a list that contains at minimum the elements `varlabels` and `flows`. It is possible to supply a few additional elements, namely the element `varnames` which contains the full names for each variable/compartment and an element `varlocations`, which contains a matrix showing the grid-based arrangement of the compartment boxes. Here is an example for the SIR model you saw previously.
-
-
-```{r}
-varlabels = c("S","I","R")
-flows = list(S_flows = c("-b*S*I"), 
-             I_flows = c("+b*S*I","-g*I"), 
-             R_flows = c("+g*I"))
-varnames = c("Susceptible","Infected","Recovered")
-varlocations = matrix(data = c("S", "", "R",
-                               "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
-sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames, varlocations = varlocations)
-```
-
-The `varnames` argument is self-explanatory. The `varlocations` argument needs some explanation. What this allows you to do is to define a grid and place the compartments at specific locations. This is often necessary when you create more complicated models since the automated placement by `make_diagram` is likely not ideal. In the above example, we defined a grid with 2 rows and 3 columns and placed the **S** and **R** compartments in the left and right corner of the top row and the **I** compartment in the middle of the bottom row. All other slots are empty. 
-
-You can take this extended specification of the model and feed it to the diagram preparation and generation functions, like so.
-
-```{r}
-# prepare inputs 
-sir_input_structure <- prepare_diagram(sirmodel, nodes_matrix = varlocations)
-# make  diagram
-# sir_diagram <- make_diagram(sir_input_structure, use_varnames = TRUE)
-sir_diagram <- make_diagram(sir_input_structure)
-plot(sir_diagram)
-```
-
-Note that we provided the `make_diagram` fuction with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. There are a number of options you can set when calling `make_diagram`, we'll discuss several of them now.
-
-
 
 ## Setting arguments in `make_diagram`
 
-In the previous vignette and the example above, you saw that it is possible to start customizing the diagram by providing specific settings when calling the `make_diagram` function. The help file for the function shows you what settings you can customize, you can look at it with this command
+The last example of the [getting started vignette](./A_quickstart.html) showed an example on how to customize the diagram by setting verious options when calling the `make_diagram` function. The help file for the function shows you all the settings you can customize, you can look at it with this command
 
 ```{r, eval = FALSE}
 help('make_diagram')
@@ -81,11 +49,10 @@ We'll first play with an extension of the SIR model. For this extension, we also
 ```{r}
 # specify the model
 varlabels = c("S","I","R")
-varnames = c("Susceptible","Infected","Recovered")
 flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
              I_flows = c("+b*S*I","-g*I", "-m*I"), 
              R_flows = c("g*I", "-m*R"))
-sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames)
+sirmodel = list(varlabels = varlabels, flows = flows)
 ```
 
 
@@ -207,10 +174,9 @@ First, we specify the model again. We did a bit of renaming here, what we called
 ```{r}
 # specify the model
 varlabels = c("B","I")
-varnames = c("Bacteria","Immune Response")
 flows = list(B_flows = c("+g*B*(1-B/bmax)", "-dB*B", "-k*B*I"),
              I_flows = c("+r*B*I", "-dI*I"))
-ppmodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+ppmodel = list(varlabels = varlabels, flows = flows)
 ```
 
 Next, we prepare the input list of data frames
@@ -272,6 +238,40 @@ plot(diag2)
 ```
 
 As you can see, not showing the interactions doesn't produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.
+
+
+## Providing additional input when specifying the model
+
+You previously learned that to specify a model, you need to set up a list that contains at minimum the elements `varlabels` and `flows`. That's what we used so far. It is possible to supply a few additional elements, namely the element `varnames` which contains the full names for each variable/compartment and an element `varlocations`, which contains a matrix showing the grid-based arrangement of the compartment boxes. Here is an example for the SIR model you saw previously.
+
+
+```{r}
+varlabels = c("S","I","R")
+flows = list(S_flows = c("-b*S*I"), 
+             I_flows = c("+b*S*I","-g*I"), 
+             R_flows = c("+g*I"))
+varnames = c("Susceptible","Infected","Recovered")
+varlocations = matrix(data = c("S", "", "R",
+                               "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
+sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames, varlocations = varlocations)
+```
+
+The `varnames` argument is self-explanatory. If you supply this argument, you can have the variable names be shown in the plot by setting `use_varnames = TRUE` when calling the `make_diagram` function.
+
+The `varlocations` argument needs some explanation. What this allows you to do is to define a grid and place the compartments at specific locations. This is often necessary when you create more complicated models since the automated placement by `make_diagram` is likely not ideal. In the above example, we defined a grid with 2 rows and 3 columns and placed the **S** and **R** compartments in the left and right corner of the top row and the **I** compartment in the middle of the bottom row. All other slots are empty. 
+
+You can take this extended specification of the model and feed it to the diagram preparation and generation functions, like so.
+
+```{r}
+# prepare inputs 
+sir_input_structure <- prepare_diagram(sirmodel)
+# make  diagram
+# sir_diagram <- make_diagram(sir_input_structure, use_varnames = TRUE)
+sir_diagram <- make_diagram(sir_input_structure)
+plot(sir_diagram)
+```
+
+Note that we provided the `make_diagram` fuction with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. 
 
 
 

@@ -22,12 +22,13 @@
 #'     a character vector of flows into and out of the node. Currently,
 #'     this function assumes that the \code{model_list$varlabels} sub-lists
 #'     are in the same order as the \code{model_list$varlabels} vector. See
-#'     examples. The \code{model_list} can contain any other elements that
-#'     the user might deem useful (e.g., metadata/comments), but only the
-#'     \code{varlabels} and \code{flows} are used by this function.
-#' @param nodes_matrix An optional character matrix that places variables (nodes) in
-#'     their desired x (columns) and y (row) locations. See examples.
-#'     Defualt is `NULL`.
+#'     examples.
+#'     The \code{model_list} can contain the optional argument \code{varnames}
+#'     which can contain the full text for each compartment/variable and
+#'      \code{varlocations} which contains a matrix that specifies the
+#'      locations of the compartments/variables on an x-y grid with
+#'     their desired x (columns) and y (row) locations.
+#'     See examples for more.
 #'
 #' @return A list of five data frames:
 #' \itemize{
@@ -110,19 +111,19 @@
 #' flows <- list(S_flows = c("-b*S*I"),
 #'               I_flows = c("b*S*I","-g*I"),
 #'               R_flows = c("g*I"))
-#' mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows)
-#' prepare_diagram(model_list = mymodel)
-#'
-#' # digram with user-defined placements
 #' varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
 #'                         nrow = 2, ncol = 3, byrow = TRUE)
-#' prepare_diagram(model_list = mymodel, nodes_matrix = varlocations)
+#' mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows, varlocations = varlocations)
+#' prepare_diagram(model_list = mymodel)
 #'
 #' @export
 
 
-prepare_diagram <- function(model_list, nodes_matrix = NULL) {
+prepare_diagram <- function(model_list) {
  # TODO error checking
+
+  #assign for now this way so rest of code works
+  nodes_matrix = model_list$varlocations
 
   # Make sure the nodes_df contains all the state variables included
   # in the model_list and no other variables.

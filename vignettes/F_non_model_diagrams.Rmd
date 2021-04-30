@@ -54,8 +54,12 @@ flows = list(Lamp_flows = c("-L"),
              Newbulb_flows = c("yes*B"),
              Repair_flows = c("no*B")
              )
-
-mymodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+varlocations = matrix(data = c("L", "",
+                               "P", "Pl",
+                               "B", "R", 
+                               "Re","" ), ncol = 2, byrow = TRUE)
+mymodel = list(varlabels = varlabels, varnames = varnames, 
+               flows = flows, varlocations = varlocations)
 ```
 
 
