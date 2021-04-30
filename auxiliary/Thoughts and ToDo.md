@@ -1,4 +1,18 @@
 ******
+2021-04-30
+
+High:
+- Adjust code such that the last example in the 'modify diagrams' vignette looks good (will also apply to example in 'other diagrams' vignette). That means some logic that tries to draw flow arrows between boxes from their closest sides, instead of always leaving on right, entering on left.
+
+- Add the use_varnames = TRUE setting described in the 'modify diagrams' vignette. This should replace the box labels with their full names. This might mean the boxes need to be sized in a way that ensures the text fits into them. 
+
+Low:
+- For the above, when adding the variable text, if it is more than one word (.e.g. 'Asymptomatic Recovered'), could we implement a centered two-line placement of the text? Maybe this is more easily done as part of the manual intervention approach by either modifying the input list or directly the code? 
+
+- I think we should maybe change the default settings for make_diagram such that the default already looks rather nice. E.g. settings that are more similar to the nice_diagram example on the 'modify diagrams' vignette.
+
+
+******
 2021-04-19
 
 ~~- I tried 2 new models, see 'SIRP_diagram' and 'virus_diagram' code in the testthat folder. Both don't quite work. The main issue is the logic for some of the flows. For the SIRP model, the logic for the q*I term going into P is the problem. For the basic virus model, the b*U*V term is the problem.~~

@@ -121,7 +121,8 @@ flows <- list(S_flows = c("-b*S*I"),
               R_flows = c("g*I"))
 varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
                         nrow = 2, ncol = 3, byrow = TRUE)
-mymodel <- list(varlabels = varlabels, varnames = varnames, flows = flows, varlocations = varlocations)
+mymodel <- list(varlabels = varlabels, varnames = varnames,
+flows = flows, varlocations = varlocations)
 prepare_diagram(model_list = mymodel)
 
 }

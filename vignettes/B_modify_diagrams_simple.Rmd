@@ -131,7 +131,7 @@ plot(simpler_diagram_1)
 ```
 
 
-In this example, we are also turning off plotting of the flows that come into or go out of the system from the outside. In this example, those are births and deaths.
+In the following example, we are also turning off plotting of the flows that come into or go out of the system from the outside. In this example, those are births and deaths.
 
 
 ```{r}
@@ -165,7 +165,7 @@ Note that if you turn off some component, other options that apply to that compo
 
 
 
-# Example 2
+### Example 2
 
 Let's use the second example from the [Getting started vignette](./A_quickstart.html), the predator prey model, to explore some more options.
 
@@ -240,10 +240,15 @@ plot(diag2)
 As you can see, not showing the interactions doesn't produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.
 
 
+
 ## Providing additional input when specifying the model
 
-You previously learned that to specify a model, you need to set up a list that contains at minimum the elements `varlabels` and `flows`. That's what we used so far. It is possible to supply a few additional elements, namely the element `varnames` which contains the full names for each variable/compartment and an element `varlocations`, which contains a matrix showing the grid-based arrangement of the compartment boxes. Here is an example for the SIR model you saw previously.
+There is another simple, but likely often quite useful way you can make adjustments to the model plot.
+You previously learned that to specify a model, you need to set up a list that contains at minimum the elements `varlabels` and `flows`. That's what we used so far. It is possible to supply a few additional elements, namely the element `varnames` which contains the full names for each variable/compartment and an element `varlocations`, which contains a matrix showing the grid-based arrangement of the compartment boxes. Let's see it in action.
 
+### Example 1
+
+Here is an example for the SIR model you saw previously, now with the additional two arguments just introduced.
 
 ```{r}
 varlabels = c("S","I","R")
@@ -258,7 +263,7 @@ sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames, varlo
 
 The `varnames` argument is self-explanatory. If you supply this argument, you can have the variable names be shown in the plot by setting `use_varnames = TRUE` when calling the `make_diagram` function.
 
-The `varlocations` argument needs some explanation. What this allows you to do is to define a grid and place the compartments at specific locations. This is often necessary when you create more complicated models since the automated placement by `make_diagram` is likely not ideal. In the above example, we defined a grid with 2 rows and 3 columns and placed the **S** and **R** compartments in the left and right corner of the top row and the **I** compartment in the middle of the bottom row. All other slots are empty. 
+The `varlocations` argument needs some explanation. What this allows you to do is to define a grid and place the compartments at specific locations. This is often necessary when you create more complicated models since the automated placement of the variables/nodes by `make_diagram` is likely not ideal. In the above example, we defined a grid with 2 rows and 3 columns and placed the **S** and **R** compartments in the left and right corner of the top row and the **I** compartment in the middle of the bottom row. All other slots are empty. 
 
 You can take this extended specification of the model and feed it to the diagram preparation and generation functions, like so.
 
@@ -271,17 +276,37 @@ sir_diagram <- make_diagram(sir_input_structure)
 plot(sir_diagram)
 ```
 
-Note that we provided the `make_diagram` fuction with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. 
+Note that we also provided the `make_diagram` function with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. 
+
+### Example 2
+
+Let's do one more example that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by adjusting the `varlocations` matrix as follows (for completeness, the code shows the whole model setup again):
+
+```{r}
+varlabels = c("S","I","R")
+flows = list(S_flows = c("-b*S*I"), 
+             I_flows = c("+b*S*I","-g*I"), 
+             R_flows = c("+g*I"))
+varnames = c("Susceptible","Infected","Recovered")
+varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE)
+sirmodel2 = list(varlabels = varlabels, flows = flows, varnames = varnames, varlocations = varlocations)
+sir_input_structure2 <- prepare_diagram(sirmodel2)
+sir_diagram2 <- make_diagram(sir_input_structure2)
+plot(sir_diagram2)
+```
 
 
 
-# Next steps
 
-With the approach just discussed, you can tweak the look of the diagram a good bit. Often, this might give you a diagram that's good enough for what you want. However, there might be times when you want to make further changes. For instance you might want to tweak the placement of the boxes and arrows or add some extra text somewhere on the diagram. **`r pkg`** gives you ways of doing this. 
 
-In the next vignette, we explain a way to modify the diagram that is a bit more flexible and a bit more complex. In the vignette after that, we describe an approach that is the most flexible, but also the most complex one.
+## Next steps
 
-After you have exhausted the modifcations described here, and need to make further changes, we recommend as a next step to tweak the input structure that is produced by the `prepare_diagram` function before sending it to the `make_diagram` function. This is described [in this vignette](./C_modify_input_structure.html).    
+With the approach just discussed, you can tweak the look of the diagram a good bit. This might give you a diagram that's good enough for what you want. However, at times you might want to make further changes. For instance you might want to tweak the placement of the boxes and arrows or add some extra text somewhere on the diagram. **`r pkg`** gives you ways of doing this. 
+
+After you have exhausted the modifications described here, and need to make further changes, we recommend as a next step to tweak the input structure that is produced by the `prepare_diagram` function before sending it to the `make_diagram` function. This gives you a good bit more flexibility in adjusting the model, and is not that difficulty to do. This is described [in the next vignette](./C_modify_input_structure.html).    
+
+Finally, it is possible to obtain the underlying code that produces the plot and manually adjust anything you like. This is most flexible, but also requires the most manual intervention. We get to that after you have gone through the [next vignette](./C_modify_input_structure.html).
+
 
 
 
