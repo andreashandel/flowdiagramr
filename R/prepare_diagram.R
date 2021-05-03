@@ -648,9 +648,37 @@ prepare_diagram <- function(model_list) {
   fdf <- subset(sdf, to == from)
   sdf <- subset(sdf, to != from)
 
-  # Add x offsets to straight edges
-  sdf$xstart <- sdf$xstart + xoff
-  sdf$xend <- sdf$xend - xoff
+  # Add offsets to straight edges. The offset depends on the variation
+  # in x and y. If xstart == xend, then this is a vertical alignment and
+  # y offsets are applied. If ystart == yend, then this is a
+  # horizontal alignment and x offsets are applied. If vertical, the midpoints
+  # are also updated to move the label to the right of the arrow.
+  if(nrow(sdf) != 0) {
+    for(i in 1:nrow(sdf)) {
+      if(sdf[i, "xstart"] == sdf[i, "xend"]) {
+        sdf[i, "ystart"] <- sdf[i, "ystart"] - yoff
+        sdf[i, "yend"] <- sdf[i, "yend"] + yoff
+        sdf[i, "ymid"] <- (sdf[i, "yend"] + sdf[i, "ystart"]) / 2
+        sdf[i, "xmid"] <- ((sdf[i, "xend"] + sdf[i, "xstart"]) / 2) + 0.25  # label to right
+      } else {
+        sdf[i, "xstart"] <- sdf[i, "xstart"] + xoff
+        sdf[i, "xend"] <- sdf[i, "xend"] - xoff
+      }
+    }
+  }
+
+  # The same logic above applies to curved arrows with an interaction
+  if(nrow(cdf) != 0) {
+    for(i in 1:nrow(cdf)) {
+      if(cdf[i, "interaction"] == TRUE &
+         cdf[i, "direct_interaction"] == FALSE) {
+        if(cdf[i, "xstart"] == cdf[i, "xend"]) {
+          cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
+          cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
+        }
+      }
+    }
+  }
 
   # Set the curvature using internal function
   if(nrow(cdf) > 0) {

@@ -283,7 +283,7 @@ Note that we also provided the `make_diagram` function with an option that speci
 
 Let's do one more example that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by adjusting the `varlocations` matrix as follows (for completeness, the code shows the whole model setup again):
 
-```{r}
+```{r, fig.height=5}
 varlabels = c("S","I","R")
 flows = list(S_flows = c("-b*S*I"), 
              I_flows = c("+b*S*I","-g*I"), 

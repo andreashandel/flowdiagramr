@@ -29,7 +29,13 @@ set_curvature <- function(cdf, ndf) {
       cdf[i, "curvature"] <- 0.1
     }
     if(cdf[i, "interaction"] == TRUE & !is.na(cdf[i, "linkfrom"])) {
-      cdf[i, "curvature"] <- 0.4
+      if(cdf[i, "xmid"] == cdf[i, "xend"]) {
+        # this indicates that the alignment is vertical, requiring
+        # more curvature to bend around the top of the box
+        cdf[i, "curvature"] <- 0.7
+      } else {
+        cdf[i, "curvature"] <- 0.4
+      }
     }
 
     if(!is.na(cdf[i, "linkfrom"])) {
@@ -78,6 +84,11 @@ set_curvature <- function(cdf, ndf) {
                                   ncp = 1)
       cdf[i, "labelx"] <- mids$x
       cdf[i, "labely"] <- mids$y
+      if(cdf[i, "curvature"] == 0.7) {
+        # this indicates vertical alignment, so x location of label
+        # needs to be nudged away from the larger curve.
+        cdf[i, "labelx"] <- mids$x + 0.15
+      }
     } else {
       s <- cdf[i, "xstart"]
       e <- cdf[i, "xend"]
