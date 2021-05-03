@@ -11,8 +11,6 @@
 
 - For the above, when adding the variable text, if it is more than one word (.e.g. 'Asymptomatic Recovered'), could we implement a centered two-line placement of the text? Maybe this is more easily done as part of the manual intervention approach by either modifying the input list or directly the code? 
 
-- I think we should maybe change the default settings for make_diagram such that the default already looks rather nice. E.g. settings that are more similar to the nice_diagram example on the 'modify diagrams' vignette.
-
 - When writing string/regex code, if possible explain for each regex what it means/does (since I'm terrible at regex). E.g. like so:  
 
 ```pattern = "(\\+|-).*"  #find first plus or minus sign in string```
@@ -35,7 +33,7 @@
 
 - Add an option to give each flow their own name/label (e.g. replace/add to b*S*I by calling "infection process"). Similar to flowlabels and flownames for boxes.
 
-- Explaine limitations on naming of variables and parameters in vignette and when describing input structure for prepare_diagram()
+- Explain limitations on naming of variables and parameters in vignette and when describing input structure for prepare_diagram()
 
 - At start of prepare_diagram function, the input should be checked to make sure it looks as needed. If not, a meaningful error message should be given to user.
 
@@ -47,3 +45,5 @@
 - Adjust code such that the last example in the 'modify diagrams' vignette looks good (will also apply to example in 'other diagrams' vignette). That means some logic that tries to draw flow arrows between boxes from their closest sides, instead of always leaving on right, entering on left.
 
 - getting the default values for make_diagram by pulling them from get_diagram_settings_default is I think not ideal. I can easily see myself changing the defaults in make_diagram and forgetting to do it in that other R script. Could you instead pull the defaults using something like args(make_diagram) or formals(make_diagram) and getting rid of get_diagraim_settings_default altogether?
+
+- I think we should maybe change the default settings for make_diagram such that the default already looks rather nice. E.g. settings that are more similar to the nice_diagram example on the 'modify diagrams' vignette.
