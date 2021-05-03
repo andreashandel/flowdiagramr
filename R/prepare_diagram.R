@@ -7,8 +7,7 @@
 #' position information for plotting a flow diagram.
 #' The resulting object is used as an input to
 #' \code{\link{make_diagram}}, which creates a **ggplot2** based
-#' diagram.
-#' Attempts to make good decisions regarding the placement of nodes,
+#' diagram. Attempts to make good decisions regarding the placement of nodes,
 #' flows (arrow segment), and labels are made. However, complex models with
 #' complex diagrams will likely need user modification. This is documented
 #' in the vignettes.
@@ -22,13 +21,12 @@
 #'     a character vector of flows into and out of the node. Currently,
 #'     this function assumes that the \code{model_list$varlabels} sub-lists
 #'     are in the same order as the \code{model_list$varlabels} vector. See
-#'     examples.
-#'     The \code{model_list} can contain the optional argument \code{varnames}
-#'     which can contain the full text for each compartment/variable and
-#'      \code{varlocations} which contains a matrix that specifies the
-#'      locations of the compartments/variables on an x-y grid with
-#'     their desired x (columns) and y (row) locations.
-#'     See examples for more.
+#'     examples. The \code{model_list} can contain the optional argument
+#'     \code{varnames} which can contain the full text for each
+#'     compartment/variable and \code{varlocations} which contains a matrix
+#'     that specifies the locations of the compartments/variables on an x-y
+#'     grid with their desired x (columns) and y (row) locations. See examples
+#'     for more.
 #'
 #' @return A list of five data frames:
 #' \itemize{
@@ -121,10 +119,14 @@
 
 
 prepare_diagram <- function(model_list) {
- # TODO error checking
+  # TODO error checking
 
-  #assign for now this way so rest of code works
-  nodes_matrix = model_list$varlocations
+  # assign the nodes matrix if provided
+  if(!is.null(model_list$varlocations)) {
+    nodes_matrix <- model_list$varlocations
+  } else {
+    nodes_matrix <- NULL
+  }
 
   # Make sure the nodes_df contains all the state variables included
   # in the model_list and no other variables.
@@ -144,10 +146,12 @@ prepare_diagram <- function(model_list) {
   #labels for the nodes and what we expect to show up in the flow math
   varnames <- model_list$varlabels
 
-  #set vartext to the full length names, if provided
-  #TODO add option for variable labels to be vartext rather tahn varnames
+  #set longvarnames to the full length names, if provided, otherwise
+  #set to NA for  storage in data frame
   if(!is.null(model_list$varnames)) {
-    vartext <- model_list$varnames
+    longvarnames <- model_list$varnames
+  } else {
+    longvarnames <- rep(NA, length(varnames))
   }
 
   #extract the flows list
@@ -168,6 +172,7 @@ prepare_diagram <- function(model_list) {
   ndf <- data.frame(
     id = 1:nvars,  # numeric id for nodes
     label = varnames,  # labels for nodes
+    name = longvarnames,  # long names for labels
     row = 1  # hard code for 1 row, will be updated below, if necessary
   )
 
@@ -492,6 +497,7 @@ prepare_diagram <- function(model_list) {
   if(is.numeric(outdummies) | is.numeric(indummies) | is.numeric(linkdummies)) {
     exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),
                           label = "",
+                          name = NA,
                           row = 1)  # TODO
     exnodes[setdiff(names(ndf), names(exnodes))] <- NA
     ndf <- rbind(ndf, exnodes)

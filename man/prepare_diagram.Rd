@@ -16,13 +16,12 @@ two variables in \code{model_list$varlabels}, then
 a character vector of flows into and out of the node. Currently,
 this function assumes that the \code{model_list$varlabels} sub-lists
 are in the same order as the \code{model_list$varlabels} vector. See
-examples.
-The \code{model_list} can contain the optional argument \code{varnames}
-which can contain the full text for each compartment/variable and
-\code{varlocations} which contains a matrix that specifies the
-locations of the compartments/variables on an x-y grid with
-their desired x (columns) and y (row) locations.
-See examples for more.}
+examples. The \code{model_list} can contain the optional argument
+\code{varnames} which can contain the full text for each
+compartment/variable and \code{varlocations} which contains a matrix
+that specifies the locations of the compartments/variables on an x-y
+grid with their desired x (columns) and y (row) locations. See examples
+for more.}
 }
 \value{
 A list of five data frames:
@@ -107,8 +106,7 @@ and creates a list of data frames with label and
 position information for plotting a flow diagram.
 The resulting object is used as an input to
 \code{\link{make_diagram}}, which creates a \strong{ggplot2} based
-diagram.
-Attempts to make good decisions regarding the placement of nodes,
+diagram. Attempts to make good decisions regarding the placement of nodes,
 flows (arrow segment), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
 in the vignettes.

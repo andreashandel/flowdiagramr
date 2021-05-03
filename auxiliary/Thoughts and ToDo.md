@@ -6,6 +6,8 @@
 - Adjust code such that the last example in the 'modify diagrams' vignette looks good (will also apply to example in 'other diagrams' vignette). That means some logic that tries to draw flow arrows between boxes from their closest sides, instead of always leaving on right, entering on left.
 
 - Add the use_varnames = TRUE setting described in the 'modify diagrams' vignette. This should replace the box labels with their full names. This might mean the boxes need to be sized in a way that ensures the text fits into them. 
+    + This is implemented but it is tricky to get the boxes the correction size. This is mostly because of the current workflow: locations and dimensions of the node boxes are specified in the `prepare_diagram` function, which happens *before* the package knows whether the user is going to specify the `use_varnames` argument as TRUE. One workaround is to have the `use_varnames` argument in `prepare_diagram` rather than in `make_diagram`. Then I could implement something that expands the x and y limits of the rectangles based on character number and default size.
+    + Current workaround in the B vignette (not ideal, but works) is to change the `node_text_size` argument in the `diagram_settings` list so it all fits.
 
 ## Low
 

@@ -11,7 +11,8 @@ make_diagram(
     node_text_color = "black", node_text_size = 8, flow_text_color = "black",
     flow_text_size = 3, main_arrow_color = "black", main_arrow_linetype = "solid",
     main_arrow_size = 0.5, interaction_arrow_color = "black", interaction_arrow_linetype
-    = "dashed", interaction_arrow_size = 0.5)
+    = "dashed", interaction_arrow_size = 0.5),
+  use_varnames = FALSE
 )
 }
 \arguments{
@@ -80,6 +81,10 @@ the string." Default is 2 (dashed).
 \item \code{interaction_arrow_size}: A numeric scalar specifying the line size for
 the interaction arrows.
 }}
+
+\item{use_varnames}{A logical indicating whether to label nodes with
+variable abbreviations (\code{FALSE}; default) or to use the full names
+provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).}
 }
 \value{
 A ggplot2 object.

@@ -71,6 +71,10 @@
 #'     the interaction arrows.
 #' }
 #'
+#' @param use_varnames A logical indicating whether to label nodes with
+#'     variable abbreviations (`FALSE`; default) or to use the full names
+#'     provided in the `varnames` element of `model_list` (`TRUE`).
+#'
 #' @return A ggplot2 object.
 #' @import ggplot2
 #' @export
@@ -92,7 +96,8 @@ make_diagram <- function (diagram_list,
                             main_arrow_size = 0.5,
                             interaction_arrow_color = "black",
                             interaction_arrow_linetype = "dashed",
-                            interaction_arrow_size = 0.5)
+                            interaction_arrow_size = 0.5),
+                          use_varnames = FALSE
                           ) {
   # TODO error checking
 
@@ -119,6 +124,11 @@ make_diagram <- function (diagram_list,
   vertical_edges <- diagram_list$vertical_edges
   curved_edges <- diagram_list$curved_edges
   feedback_edges <- diagram_list$feedback_edges
+
+  # change the label to full name, if requested
+  if(use_varnames) {
+    nodes$label <- nodes$name
+  }
 
   # recycle colors as needed
   node_outline_color <- recycle_values(node_outline_color, nrow(nodes))

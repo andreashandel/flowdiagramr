@@ -271,8 +271,9 @@ You can take this extended specification of the model and feed it to the diagram
 # prepare inputs 
 sir_input_structure <- prepare_diagram(sirmodel)
 # make  diagram
-# sir_diagram <- make_diagram(sir_input_structure, use_varnames = TRUE)
-sir_diagram <- make_diagram(sir_input_structure)
+sir_diagram <- make_diagram(sir_input_structure,
+                            diagram_settings = list(node_text_size = 4),
+                            use_varnames = TRUE)
 plot(sir_diagram)
 ```
 
