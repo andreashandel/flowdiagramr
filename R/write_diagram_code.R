@@ -62,7 +62,7 @@ write_diagram_code <- function(model_list = NULL,
   # pull the defaults from the function and then make them look like code
 
   # Get graphing arguments
-  defaults <- get_diagram_settings_defaults()
+  defaults <- eval(formals(make_diagram)$diagram_settings)
 
   if(!is.null(make_diagram_settings)) {
     defaults[names(make_diagram_settings)] <- make_diagram_settings

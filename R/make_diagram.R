@@ -102,7 +102,7 @@ make_diagram <- function (diagram_list,
   # TODO error checking
 
   # assign default settings to be updated by user
-  defaults <- get_diagram_settings_defaults()
+  defaults <- eval(formals(make_diagram)$diagram_settings)
 
   # update defaults with user settings
   defaults[names(diagram_settings)] <- diagram_settings
