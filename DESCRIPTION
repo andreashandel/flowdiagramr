@@ -1,6 +1,6 @@
 Package: flowdiagramr
 Type: Package
-Title: easy creation of ggplot2 based figures of flow diagrams 
+Title: Easy Creation of ggplot2 Based Figures of Flow Diagrams 
 Description: Creates a ggplot based flow diagram figure based on input specifying variables and flows of a compartmental model.
 Version: 0.0.2
 Date: 2021-04-01
