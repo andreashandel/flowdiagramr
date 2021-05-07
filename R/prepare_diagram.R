@@ -119,7 +119,12 @@
 
 
 prepare_diagram <- function(model_list) {
-  # TODO error checking
+
+  # check user inputs for necessary elements
+  check <- check_model_list(model_list)
+  if(check$bad == TRUE) {
+    stop(check$msg)
+  }
 
   # assign the nodes matrix if provided
   if(!is.null(model_list$varlocations)) {
@@ -451,7 +456,7 @@ prepare_diagram <- function(model_list) {
     intflows$interaction <- FALSE  # reset interaction to false b/c a main flow now
 
     # Redefine the from, to, and link columns for the interaction
-    # arrows. "to" will always be NA until updated to meet at the center
+    # arrows. "to" is NA until updated to meet at the center
     # of the physical flow arrow.
     for(i in 1:nrow(ints)) {
       tmp <- ints[i, ]
@@ -461,18 +466,25 @@ prepare_diagram <- function(model_list) {
       ids <- subset(ndf, label %in% v)[ , "id"]  #extract the relevant numeric ids
 
       if(is.na(ints[i, "to"])){
+        # If the receiving node is NA, then this is an interaction
+        # with a feedback flow, meaning the "link node" is also NA.
         ints[i, "linkfrom"] <- NA
         ints[i, "linkto"] <- NA
       } else if(ints[i, "to"] == ints[i, "from"]) {
+        # If the to and from nodes are tha same, this is a feedback
+        # flow that does not require a link, so NAs.
         ints[i, "linkfrom"] <- NA
         ints[i, "linkto"] <- NA
       } else {
+        # In all other cases, the "link from" node will be the current
+        # "from" node and the "link to" node will be the current "to" node.
         ints[i, "linkfrom"] <- tmp$from
         ints[i, "linkto"] <- tmp$to
       }
 
+      # Redefine the "from" node as the other node in this interaction.
       ints[i, "from"] <- ids[which(ids != tmp$from)]
-      ints[i, "to"] <- NA
+      ints[i, "to"] <- NA  # set NA for "to" node for all interactions
     }
 
     # Recombine the edge data frame
@@ -484,6 +496,14 @@ prepare_diagram <- function(model_list) {
 
 
   # Make dummy compartment for all flows in and out of the system.
+  # Dummy compartments are given ids that start with three numbers
+  # that identify the type of dummy:
+  #   999* = dummy compartments for flows out of the system (e.g., death pool)
+  #   -999* = dummy comparments for flows in the system (e.g., birth pool)
+  #   555* = dummy compartments for interaction links
+  # These are just used to create empty nodes for arrows to originate from
+  # or go to.
+
   # Out of the system
   outdummies <- NULL
   numnas <- length(edf[is.na(edf$to) & edf$interaction == FALSE, "to"])
@@ -516,13 +536,20 @@ prepare_diagram <- function(model_list) {
     exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),
                           label = "",
                           name = NA,
-                          row = 1)  # TODO
+                          row = 1)
     exnodes[setdiff(names(ndf), names(exnodes))] <- NA
     ndf <- rbind(ndf, exnodes)
   }
 
 
   # Add midpoint locations for nodes
+  # Here we just iterate over the nodes and take their position in the
+  # data frame rows and multiply by 3 (e.g., 1*3, 2*3, 3*3) to get
+  # arbitrary x positions. y positions take the row id and multiply by
+  # negative 2, meaning that additional rows always go below the row that
+  # was previously defined.
+  # If the nodes_matrix is provided, then the same procedure is applied, but
+  # based on the row and column positions provided by the user.
   if(is.null(nodes_matrix)) {
     ndf <- ndf[order(ndf$id), ]
     ndf$x <- NA
@@ -542,6 +569,7 @@ prepare_diagram <- function(model_list) {
   }
 
   # Add xmin/max and ymin/max columns for node rectangles
+  # I use a 0.5 offset in both directions, creating a 1x1 sized square.
   xoff <- 0.5  # default
   yoff <- 0.5  # default
   ndf$xmin <- with(ndf, x - xoff)
@@ -550,7 +578,7 @@ prepare_diagram <- function(model_list) {
   ndf$ymax <- with(ndf, y + yoff)
 
 
-  # update inflow node positions from nowhere
+  # update inflow node positions from nowhere (e.g. births)
   inflownodes <- subset(ndf, id < -9990)$id
   for(id in inflownodes) {
     newxyid <- edf[which(edf$from == id), "to"]
@@ -578,7 +606,8 @@ prepare_diagram <- function(model_list) {
     ndf[which(ndf$id == id), c("xmax", "ymax")] <- newxy
   }
 
-  # update invisible interaction link nodes
+  # update invisible interaction link nodes, i.e., nodes that need to sit
+  # at the midpoint of some other arrow, but not be drawn
   linknodes <- subset(ndf, id > 5550 & id < 9990)$id
   for(id in linknodes) {
     start <- edf[which(edf$to == id), "linkfrom"]

@@ -74,8 +74,10 @@ write_diagram_code <- function(model_list = NULL,
   for(i in 1:length(args_block)) {
     argtext <- args[[i]]
     if(is.logical(argtext) | is.numeric(argtext)) {
+      # if logical or numeric, does not need quotes
       args_block[i] <- paste0(names(args)[[i]], " <- ", args[[i]])
     } else {
+      # otherwise the argument is a string and needs quotes
       args_block[i] <- paste0(names(args)[[i]], " <- '", args[[i]], "'")
     }
   }
@@ -144,6 +146,7 @@ write_diagram_code <- function(model_list = NULL,
 
   # Entire script
   if(!is.null(model_list) & is.null(diagram_list)) {
+    # if just the model_list is provided, include the list prepping blocks
     outcode <- paste(lib_block,
                      input_block,
                      prep_block,
@@ -152,12 +155,14 @@ write_diagram_code <- function(model_list = NULL,
                      gg_block,
                      print_block, sep = "\n\n")
   } else if(is.null(model_list) & !is.null(diagram_list)) {
+    # If just the diagram_list is provided, just include the data frames blocks
     outcode <- paste(lib_block,
                      df_block,
                      args_block,
                      gg_block,
                      print_block, sep = "\n\n")
   } else {
+    # If both are provided, return all blocks
     outcode <- paste(lib_block,
                      input_block,
                      prep_block,
