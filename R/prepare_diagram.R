@@ -150,8 +150,13 @@ prepare_diagram <- function(model_list) {
   #set to NA for  storage in data frame
   if(!is.null(model_list$varnames)) {
     longvarnames <- model_list$varnames
+
+    # replace spaces with line breaks to create two (or more) lined
+    # names that are centered in the box
     longvarnames <- gsub(" ", "\n", longvarnames)
   } else {
+    # store as NAs if not provided because we need this column in
+    # the nodes data frame
     longvarnames <- rep(NA, length(varnames))
   }
 
@@ -165,8 +170,12 @@ prepare_diagram <- function(model_list) {
   #not sure how exactly it works (from AH and modelbuilder code base)
   #variables are along rows and flows along columns.
   flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
-  flowmatred <- sub("\\+|-","",flowmat)   #strip leading +/- from flows
-  signmat <- gsub("(\\+|-).*","\\1",flowmat) #extract only the + or - signs from flows so we know the direction
+
+  #strip leading +/- from flows and replace with no space
+  flowmatred <- sub("\\+|-","",flowmat)
+
+  #extract only the + or - signs from flows so we know the direction
+  signmat <- gsub("(\\+|-).*","\\1",flowmat)
 
   #define nodes data frame structure if not provided by user
   # Create a node data frame
@@ -177,12 +186,18 @@ prepare_diagram <- function(model_list) {
     row = 1  # hard code for 1 row, will be updated below, if necessary
   )
 
+
   # Split variables by rows if stratification implied by numbers at
   # the end of state variables. For example, two "S" compartments labeled
   # "S1" and "S2" will be split across rows, assuming some stratification.
   # Note that stratification up to 9 is currently supported.
+
+  #find any characters that are NOT numbers (0-9) and replace any
+  #non-number characters with blanks
   strats <- gsub("[^0-9.]", "",  varnames)
-  strats <- ifelse(strats == "", 1, strats)  # add implicit 1 if no strats
+  #add implicit 1 if no strats
+  strats <- ifelse(strats == "", 1, strats)
+  #convert to numeric and make the stratifications encoded as rows
   ndf$row <- as.numeric(strats)
 
 
@@ -217,6 +232,8 @@ prepare_diagram <- function(model_list) {
 
       #vars is now a vector of the variables that are in the flow math
       vars <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
+
+      #extract the numeric ids for the variables in this flow
       varsids <- ndf[which(ndf$label %in% vars), "id"]
 
       # add a connecting var if the expression is only in one row but
@@ -438,10 +455,10 @@ prepare_diagram <- function(model_list) {
     # of the physical flow arrow.
     for(i in 1:nrow(ints)) {
       tmp <- ints[i, ]
-      v <- get_vars_pars(tmp$label)
+      v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
       vf <- substr(v, start = 1, stop = 1)  #get first letters
-      v <- v[which(vf %in% LETTERS)]
-      ids <- subset(ndf, label %in% v)[ , "id"]
+      v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
+      ids <- subset(ndf, label %in% v)[ , "id"]  #extract the relevant numeric ids
 
       if(is.na(ints[i, "to"])){
         ints[i, "linkfrom"] <- NA
