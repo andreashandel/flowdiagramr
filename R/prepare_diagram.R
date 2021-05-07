@@ -150,6 +150,7 @@ prepare_diagram <- function(model_list) {
   #set to NA for  storage in data frame
   if(!is.null(model_list$varnames)) {
     longvarnames <- model_list$varnames
+    longvarnames <- gsub(" ", "\n", longvarnames)
   } else {
     longvarnames <- rep(NA, length(varnames))
   }

@@ -255,7 +255,7 @@ varlabels = c("S","I","R")
 flows = list(S_flows = c("-b*S*I"), 
              I_flows = c("+b*S*I","-g*I"), 
              R_flows = c("+g*I"))
-varnames = c("Susceptible","Infected","Recovered")
+varnames = c("Susceptible","Infected","All Recovered")
 varlocations = matrix(data = c("S", "", "R",
                                "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
 sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames, varlocations = varlocations)
