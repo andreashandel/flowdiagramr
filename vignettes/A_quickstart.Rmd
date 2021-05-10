@@ -99,7 +99,7 @@ The `diagram_list` object returned by this function contains a list of data fram
 Now it's time to make the diagram. This is done by sending the object you got by calling `prepare_diagram` to the `make_diagram` function, like so
 
 ```{r}
-my_diagram <- make_diagram(diagram_list)
+my_diagram <- make_diagram(diagram_list, with_grid = TRUE)
 ```
 
 `make_diagram` returns a ggplot2 object (here called `my_diagram`). You you can write this plot to a file or print to the screen, e.g. with

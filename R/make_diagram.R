@@ -84,7 +84,6 @@ make_diagram <- function (diagram_list,
                             label_flows = TRUE,
                             external_flows = TRUE,
                             interaction_label = TRUE,
-                            with_grid = FALSE,
                             node_outline_color = NA,
                             node_fill_color = "#6aa4c8",
                             node_text_color = "white",
@@ -97,7 +96,8 @@ make_diagram <- function (diagram_list,
                             interaction_arrow_color = "grey25",
                             interaction_arrow_linetype = "dashed",
                             interaction_arrow_size = 0.7),
-                          use_varnames = FALSE
+                          use_varnames = FALSE,
+                          with_grid = FALSE
                           ) {
   # TODO error checking
 

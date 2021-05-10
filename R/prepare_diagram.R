@@ -555,12 +555,12 @@ prepare_diagram <- function(model_list) {
     ndf$x <- NA
     ndf$y <- NA
     for(rid in unique(ndf$row)) {
-      ndf[which(ndf$row == rid), "x"] <- 1:nrow(ndf[which(ndf$row == rid), ])*3
-      ndf[which(ndf$row == rid), "y"] <- as.numeric(rid) * -2
+      ndf[which(ndf$row == rid), "x"] <- (1:nrow(ndf[which(ndf$row == rid), ])*3)-3
+      ndf[which(ndf$row == rid), "y"] <- (as.numeric(rid) * -2)+2
     }
   } else {
-    ny <- 1:nrow(nodes_matrix) * -2
-    nx <- 1:ncol(nodes_matrix) * 3
+    ny <- (1:nrow(nodes_matrix) * -2)+2
+    nx <- (1:ncol(nodes_matrix) * 3)-3
     for(nid in varnames) {
       pos <- which(nodes_matrix == nid, arr.ind = TRUE)
       ndf[which(ndf$label == nid), "x"] <- nx[pos[1, 2]]
