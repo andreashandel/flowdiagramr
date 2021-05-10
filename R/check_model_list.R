@@ -2,7 +2,7 @@
 #' `check_model_list` makes sure that the necessary elements are included
 #' in the model list provided by the user. This is an internal function.
 #'
-#' @param model_list
+#' @param model_list the model input structure needed for the \code{\link{prepare_diagram}} function
 #' @return Either an error or nothing.
 #' @noRd
 

@@ -229,10 +229,63 @@
 \end{aligned}
 \]</span></p>
 </div>
+<div id="one-more-example" class="section level2">
+<h2 class="hasAnchor">
+<a href="#one-more-example" class="anchor"></a>One more example</h2>
+<p>We’ll finish with one more model, this time doing a slightly more complex one.</p>
+<p>This is an SIR model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (think e.g. Cholera in water) and susceptible can get infected that way. We also still allow direct transmission. And on top of that, we are considering 2 distinct groups (e.g. children and adults) and stratify by them. They are assumed to shed into the same environment (which we label <strong>P</strong>). This gives us 2x3+1=7 compartments. Here is the model</p>
+<p><strong>I first wrote the model like this. Then realized that having the flows together won’t work.</strong></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")</span>
+<span class="co"># flows = list(Sc_flows = c("-Sc*(bcc*Ic+bca*Ia+bcp*P)"),</span>
+<span class="co">#              Ic_flows = c("Sc*(bcc*Ic+bca*Ia+bcp*P)","-gc*Ic"),</span>
+<span class="co">#              Rc_flows = c("gc*Ic"),</span>
+<span class="co">#              Sa_flows = c("-Sa*(bac*Ic+baa*Ia+bap*P)"),</span>
+<span class="co">#              Ia_flows = c("Sa*(bac*Ic+baa*Ia+bap*P)","-ga*Ia"),</span>
+<span class="co">#              Ra_flows = c("ga*Ia"),</span>
+<span class="co">#              P_flows = c("sc*Ic","sa*Ia","-d*P")</span>
+<span class="co">#              )</span>
+<span class="co"># mymodel = list(varlabels = varlabels, flows = flows)</span>
+<span class="co"># diagram_list &lt;- prepare_diagram(mymodel)</span>
+<span class="co"># model_plot &lt;- make_diagram(diagram_list)</span>
+<span class="co"># plot(model_plot)</span></code></pre></div>
+<p><strong>This model is wrong, I accidentally left the minus signs in the Ia flows. prepare_diagram produces a very confusing error message.</strong></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")</span>
+<span class="co"># flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), </span>
+<span class="co">#              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), </span>
+<span class="co">#              Rc_flows = c("gc*Ic"),</span>
+<span class="co">#              Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), </span>
+<span class="co">#              Ia_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P","-ga*Ia"), </span>
+<span class="co">#              Ra_flows = c("ga*Ia"),</span>
+<span class="co">#              P_flows = c("sc*Ic","sa*Ia","-d*P")</span>
+<span class="co">#              )</span>
+<span class="co"># mymodel = list(varlabels = varlabels, flows = flows)</span>
+<span class="co"># diagram_list &lt;- prepare_diagram(mymodel)</span>
+<span class="co"># model_plot &lt;- make_diagram(diagram_list)</span>
+<span class="co"># plot(model_plot)</span></code></pre></div>
+<p><strong>This works. I labeled the pathogen creation parameters sc and sa, and then realized that I have compartments Sc and Sa. So this is not good nomenclature (and I’ll likely change for final example), but I wanted to see if it works, and it does, which is good.</strong></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sc*bcc*Ic"</span>,<span class="st">"-Sc*bca*Ia"</span>,<span class="st">"-Sc*bcp*P"</span><span class="op">)</span>, 
+             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc*bcc*Ic"</span>,<span class="st">"Sc*bca*Ia"</span>,<span class="st">"Sc*bcp*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, 
+             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
+             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sa*bac*Ic"</span>,<span class="st">"-Sa*baa*Ia"</span>,<span class="st">"-Sa*bap*P"</span><span class="op">)</span>, 
+             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sa*bac*Ic"</span>,<span class="st">"Sa*baa*Ia"</span>,<span class="st">"Sa*bap*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>, 
+             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
+             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sc*Ic"</span>,<span class="st">"sa*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
+             <span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
+<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="va">model_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span></code></pre></div>
+<p><img src="A_quickstart_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<p>As you can see, while the fully automated approach gets you somewhere, it can’t produce a publication-quality diagram. Fortunately, <strong>flowdiagramr</strong> gives you ways to get you there!</p>
+</div>
 <div id="next-steps" class="section level2">
 <h2 class="hasAnchor">
 <a href="#next-steps" class="anchor"></a>Next steps</h2>
-<p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won’t be great. Sometimes, the default will actually look bad, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this. <a href="./B_modify_diagrams_simple.html">This vignette</a>, which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. You should read them later.</p>
+<p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won’t be great. For instance in the last example, the flow labels overlap somewhat with the boxes and arrows and could be posititioned better. Sometimes, the default will actually look bad, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this. <a href="./B_modify_diagrams_simple.html">This vignette</a>, which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. You should read them later.</p>
 </div>
   </div>
 

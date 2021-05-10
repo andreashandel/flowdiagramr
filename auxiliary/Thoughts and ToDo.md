@@ -1,4 +1,35 @@
 ******
+# 2021-05-10
+
+* Ok with idea to move use_varnames as a setting for prepare_diagram so box size can be adjusted. If user doesn't provide varnames but wants to use them, produce error or warning message (see next point). Update help files and vignettes accordingly.
+
+* I set 'use_varnames' to TRUE on a model that didn't have them specified (by accident). What happens is that nothing shows. Behavior should be that if no varnames argument exists, the use_varnames should be ignored and the labels plotted, maybe with a notification message to the user.
+
+* Further update of prepare_diagram help. Specifically streamline Value section so curved_edge entries are not repeat of horizontal_edge. Also make sure everything else is up-to-date and full explained in help file/header. Question: for labels on flows (i.e. labelx and labely) do those specify the start or mid-point of the text? I suggest we do start (e.g. lower left corner of text), seems easier for a user to visualize shifting around. In any case, should be specified. And why does curved_edges have labelx and labely and the other edges don't? Seems like something they should all have. One should be able to change label location for any label.
+
+* I tried the with_grid option in make_diagram, but it doesn't seem to work. I think having the ability to show a grid/coordinate system would be very helpful during the manual adjustment stages, so let's have that option. Also, I noticed the y coordinates are at times negative. Wouldn't it be more conventional to have the coordinate 0/0 point in the bottom left corner of the diagram and all x/y values are then positive? But if that would be a major recoding, then I'm ok with having the 0/0 point wherever it is (I actually don't know right now without seeing a coord system where exactly that point is).
+
+* Why do the nodes in diagram_list have x and y values, shouldn't xmin/xmax/ymin/ymax specify everything? Seems a bit confusing. Also, if there is a row entry for $nodes, should there be a column entry too? And is that a quantity the user could/should edit? I think we should in the help file specify which ones the user could touch, and which ones they should leave alone (for all entries in the diagram_list structure). 
+
+
+~All of these are related to my new example I added to the quick-start vignette, see there:~
+
+* Currently, combining flow terms doesn't work. I'm ok for now forcing the user to write them explicitly one by one. One could consider adding parsing logic that can take e.g. S1*(b11*I2 + b12*I2) and parses out the 2 terms. But low priority/not now.
+
+* prepare_diagram produces confusing error messages. Can we add some more logic checks to make sure models that are supplied are proper? Some should already be implemented in check_model in modelbuilder (and are definitely needed there), so we might want to use only a single function for this for both packages. Since we decided to make this package a dependence of modelbuilder, we can move the full check_model logic/function into here (even checks that are not needed for the purpose of drawing, but might be needed for the purpose of running).
+See the latest example in vignette A.
+
+* The resulting diagram is one long line of 7 compartments. Maybe we should have some simple logic that puts at most 4-5 compartments on a row, and then starts a 2nd row? Not sure if worth it since users will have to arrange anyway, but a thought. 
+
+* Another idea: If one could easily add some logic that tries to see if there is some stratification and then places each stratum on a separate row. Might only work if user uses e.g. S1,I1,S2,I2 or Sa1,Sa2, etc. Otherwise figuring out things seems too tricky. I'm not sure if either this or the previous point are worth it given that for those models the user will likely have to place things anyway.
+
+* I also added the new example as example 3 in the 'basic modifications'. Plot is kind of a mess :) I guess the arrow logic needs to take into account the manual placement that a user supplies.
+
+* Let's make sure we call the object that's returned from prepare_diagram and sent into make_diagram the diagram_list everywhere (with a note somewhere that it can have any name). This will make it easier to refer to it in the help files, the vignettes, etc. If you see any place where it's called something else, replace. I do call it sir_diagram_list at some point, I think that's ok so users can see it can be any name, but it's still clear that this is the diagram_list object.
+
+* If you can think of any use-cases or alternate models that should be shown in the first 3 vignettes, please add.
+
+
 # 2021-04-30
 
 ## High
