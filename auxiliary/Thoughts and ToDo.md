@@ -1,4 +1,24 @@
 ******
+# 2021-05-11
+
+* Can we rename write_diagram_code to just write_diagram? Also, help file says only either modellist or diagramlist can be provided. Needs updating. 
+And can we rename outplot to diagram or diagram_plot or something else? outplot is just a little bit weird variable name (though I know of course how you came up with it) :) ok for internal use, but since this is a script the user will work with, we should make names as intuitive for the non-coder as possible.
+
+* More comments in the created ggplot code would be good. More or less every line/bit of code should have a brief explanation so user knows what it is/does.
+
+* It seems that write_diagram does not properly process the make_diagram_settings input. See example in vignette D.
+
+* Using the apply functions is good coding style, but in my experience most novice coders are entirely confused by them. Would it be possible to write the output code without using the lapply functions? If an inefficient (but easier to understand) loop replaces it, that would be ok with me. I think a loop would also make it easier for a user to modify a specific component, e.g. if there is a loop over horizontal edges 1-5, a user could stick in something like (pseudocode) `if n==3 edge_color = orange` into the loop. Right now, it's hard to do that inside the lapply statement.
+
+* We should maybe have a setting/check for write_diagram to see if the file already exists, and if yes don't automatically overwrite? We could either do it such that if file exists, it will abort with a message asking user to pick a different file name/location. If a user knows what they are doing, they can set file_overwrite = TRUE as a flag to write_diagram. Or we could do it such that if the file exists, code stops and writes message on console that says, 'file exists, do you want to overwrite Y/N'? I think either approach is fine, whichever you think is better/easier.
+
+* Check documentation/help for all exported functions, make sure it's fully up-to-date and complete. Also have examples for each user-facing/exported function.
+
+* Document/briefly describe all functions (both exported and internal) in documentation.md inside docsfordevelopers. Big picture, i.e. what function does and how it's called is enough. More detailed explanations should be in each function. Basically anything a new person working on this package needs to know to quickly pick up on things.
+
+* Reviewer for useR suggested to put package on CRAN, which I think we should do before the conference, and asked how our package was different to others, e.g. DiagrammeR. We should maybe add a vignette that addresses how our package integrates with and is different from others. I started a shell/draft. Drop any other package names or blurbs in there if you can think of any. Right now just a dumping place, we'll write this fully at some point.
+
+******
 # 2021-05-10
 
 * Ok with idea to move use_varnames as a setting for prepare_diagram so box size can be adjusted. If user doesn't provide varnames but wants to use them, produce error or warning message (see next point). Update help files and vignettes accordingly.

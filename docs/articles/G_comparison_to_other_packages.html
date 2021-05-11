@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Other Diagrams • flowdiagramr</title>
+<title>Comparison to other R packages • flowdiagramr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Other Diagrams">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Comparison to other R packages">
 <meta property="og:description" content="flowdiagramr">
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -107,14 +107,14 @@
 
       
 
-      </header><script src="F_non_model_diagrams_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="G_comparison_to_other_packages_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Other Diagrams</h1>
+      <h1 data-toc-skip>Comparison to other R packages</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/F_non_model_diagrams.Rmd"><code>vignettes/F_non_model_diagrams.Rmd</code></a></small>
-      <div class="hidden name"><code>F_non_model_diagrams.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/G_comparison_to_other_packages.Rmd"><code>vignettes/G_comparison_to_other_packages.Rmd</code></a></small>
+      <div class="hidden name"><code>G_comparison_to_other_packages.Rmd</code></div>
 
     </div>
 
@@ -123,47 +123,21 @@
 <div id="overview" class="section level1">
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h1>
-<p>While the main reason for the existence of <strong>flowdiagramr</strong> is to create nice-looking diagrams for compartmental simulation models, it is possible to create other, more general flow charts. This vignette gives a brief illustration how this can be done.</p>
+<p>Here, we’ll provide a brief discussion how <strong>flowdiagramr</strong> differs from and can interact with other packages.</p>
 </div>
-<div id="starting-example" class="section level1">
+<div id="diagram" class="section level1">
 <h1 class="hasAnchor">
-<a href="#starting-example" class="anchor"></a>Starting Example</h1>
-<p>As of this writing, the <a href="https://en.wikipedia.org/wiki/Flowchart">Wikipedia Flowchart page</a> has the following as an example of a simple flow chart.</p>
-<div class="figure" style="text-align: center">
-<img src="lampflowchart.png" alt="[svg by Booyabazookaoriginal png by Wapcaplet](https://commons.wikimedia.org/w/index.php?curid=714537)/Wikipedia" width="40%"><p class="caption">
-<a href="https://commons.wikimedia.org/w/index.php?curid=714537">svg by Booyabazookaoriginal png by Wapcaplet</a>/Wikipedia
-</p>
+<a href="#diagram" class="anchor"></a>diagram</h1>
+<p>Most similar to ours. Not ggplot.</p>
 </div>
-<p>We’ll try to recreate a version of this.</p>
-<div id="specify-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#specify-the-model" class="anchor"></a>Specify the model</h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"P"</span>,<span class="st">"B"</span>,<span class="st">"Pl"</span>,<span class="st">"R"</span>,<span class="st">"Re"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lamp"</span>,<span class="st">"Pluggedin"</span>,<span class="st">"Bulbout"</span>,<span class="st">"Plugin"</span>,<span class="st">"Replace"</span>,<span class="st">"Repair"</span><span class="op">)</span>
-
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Lamp_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-L"</span><span class="op">)</span>, 
-             Plugged_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"-no*P"</span>,<span class="st">"-yes*P"</span><span class="op">)</span>, 
-             Bulbout_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes*P"</span>,<span class="st">"-yes*B"</span>, <span class="st">"-no*B"</span><span class="op">)</span>,
-             Plugin_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no*P"</span><span class="op">)</span>,
-             Newbulb_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes*B"</span><span class="op">)</span>,
-             Repair_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no*B"</span><span class="op">)</span>
-             <span class="op">)</span>
-<span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>, <span class="st">""</span>,
-                               <span class="st">"P"</span>, <span class="st">"Pl"</span>,
-                               <span class="st">"B"</span>, <span class="st">"R"</span>, 
-                               <span class="st">"Re"</span>,<span class="st">""</span> <span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, 
-               flows <span class="op">=</span> <span class="va">flows</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span></code></pre></div>
-<p><img src="F_non_model_diagrams_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<div id="diagrammer" class="section level1">
+<h1 class="hasAnchor">
+<a href="#diagrammer" class="anchor"></a>DiagrammeR</h1>
+<p>Can’t do loops, acyclic. Requires specifying models in Mermaid or XY, non-R syntax.</p>
 </div>
+<div id="other" class="section level1">
+<h1 class="hasAnchor">
+<a href="#other" class="anchor"></a>Other</h1>
 </div>
   </div>
 

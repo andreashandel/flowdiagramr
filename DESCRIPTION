@@ -26,6 +26,7 @@ Suggests:
     pkgdown,
     rmarkdown,
     roxygen2,
+    statebins,
     testthat 
 VignetteBuilder: knitr
 URL: https://andreashandel.github.io/flowdiagramr/
