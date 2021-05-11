@@ -29,6 +29,13 @@ See the latest example in vignette A.
 
 * If you can think of any use-cases or alternate models that should be shown in the first 3 vignettes, please add.
 
+## COMPLETED
+
+* I tried the with_grid option in make_diagram, but it doesn't seem to work. I think having the ability to show a grid/coordinate system would be very helpful during the manual adjustment stages, so let's have that option. Also, I noticed the y coordinates are at times negative. Wouldn't it be more conventional to have the coordinate 0/0 point in the bottom left corner of the diagram and all x/y values are then positive? But if that would be a major recoding, then I'm ok with having the 0/0 point wherever it is (I actually don't know right now without seeing a coord system where exactly that point is).
+    + with_grid option got accidentally shunted into the aesthetics list; is working now as a stand alone argument in make_diagram.
+    + The first node is now centered on 0,0. So the ymin will be negative. It is easiest to have the first node be the origin. But we can probably move the origin to the bottom right by shifting the entire diagram before exporting the data frames. **Take a look at the diagram with_grid now and see what you think.**
+
+
 
 # 2021-04-30
 
