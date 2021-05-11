@@ -16,6 +16,7 @@ And can we rename outplot to diagram or diagram_plot or something else? outplot 
 
 * Document/briefly describe all functions (both exported and internal) in documentation.md inside docsfordevelopers. Big picture, i.e. what function does and how it's called is enough. More detailed explanations should be in each function. Basically anything a new person working on this package needs to know to quickly pick up on things.
 
+* Reviewer for useR suggested to put package on CRAN, which I think we should do before the conference, and asked how our package was different to others, e.g. DiagrammeR. We should maybe add a vignette that addresses how our package integrates with and is different from others. I started a shell/draft. Drop any other package names or blurbs in there if you can think of any. Right now just a dumping place, we'll write this fully at some point.
 
 ******
 # 2021-05-10
