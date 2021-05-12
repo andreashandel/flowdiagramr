@@ -14,7 +14,6 @@ feedback_edges <- diagram_list$feedback_edges
 label_flows <- TRUE
 external_flows <- TRUE
 interaction_label <- TRUE
-with_grid <- FALSE
 node_outline_color <- NA
 node_fill_color <- '#6aa4c8'
 node_text_color <- 'white'

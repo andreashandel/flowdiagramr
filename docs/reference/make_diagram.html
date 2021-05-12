@@ -127,7 +127,7 @@ and other graphical options can be set by the user." />
       <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
     </li>
     <li>
-      <a href="../articles/F_non_model_diagrams.html">Other Diagrams</a>
+      <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
       <a href="../articles/G_comparison_to_other_packages.html">Comparison to other R packages</a>
@@ -170,12 +170,13 @@ and other graphical options can be set by the user.</p>
     <pre class="usage"><span class='fu'>make_diagram</span><span class='op'>(</span>
   <span class='va'>diagram_list</span>,
   diagram_settings <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>label_flows <span class='op'>=</span> <span class='cn'>TRUE</span>, external_flows <span class='op'>=</span> <span class='cn'>TRUE</span>, interaction_label
-    <span class='op'>=</span> <span class='cn'>TRUE</span>, with_grid <span class='op'>=</span> <span class='cn'>FALSE</span>, node_outline_color <span class='op'>=</span> <span class='cn'>NA</span>, node_fill_color <span class='op'>=</span> <span class='st'>"#6aa4c8"</span>,
-    node_text_color <span class='op'>=</span> <span class='st'>"white"</span>, node_text_size <span class='op'>=</span> <span class='fl'>10</span>, flow_text_color <span class='op'>=</span> <span class='st'>"black"</span>,
-    flow_text_size <span class='op'>=</span> <span class='fl'>5</span>, main_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, main_arrow_linetype <span class='op'>=</span> <span class='st'>"solid"</span>,
-    main_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span>, interaction_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, interaction_arrow_linetype
-    <span class='op'>=</span> <span class='st'>"dashed"</span>, interaction_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span><span class='op'>)</span>,
-  use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>
+    <span class='op'>=</span> <span class='cn'>TRUE</span>, node_outline_color <span class='op'>=</span> <span class='cn'>NA</span>, node_fill_color <span class='op'>=</span> <span class='st'>"#6aa4c8"</span>, node_text_color <span class='op'>=</span>
+    <span class='st'>"white"</span>, node_text_size <span class='op'>=</span> <span class='fl'>10</span>, flow_text_color <span class='op'>=</span> <span class='st'>"black"</span>, flow_text_size <span class='op'>=</span> <span class='fl'>5</span>,
+    main_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, main_arrow_linetype <span class='op'>=</span> <span class='st'>"solid"</span>, main_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span>,
+    interaction_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, interaction_arrow_linetype <span class='op'>=</span> <span class='st'>"dashed"</span>,
+    interaction_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span><span class='op'>)</span>,
+  use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  with_grid <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>

@@ -1,8 +1,8 @@
 ---
-title: Other Diagrams
+title: Making non-model based diagrams
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Other Diagrams}
+  %\VignetteIndexEntry{Making non-model based diagrams}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,12 +24,12 @@ library(pkg, character.only = TRUE)
 
 # Overview
 
-While the main reason for the existence of **`r pkg`** is to create nice-looking diagrams for compartmental simulation models, it is possible to create other, more general flow charts. This vignette gives a brief illustration how this can be done.
+While the main reason for the existence of **`r pkg`** is to create nice-looking diagrams for compartmental simulation models, it is possible to create other, more general flow charts. Basically, anything that can be drawn as a set of nodes/boxes and interactions/arrows can be created. This vignette gives a few brief examples to illustrate the use of the package for making general flow diagrams. The possibilities are of course endless, hopefully the following examples give you ideas on how to do things.
+
+We are assuming that you read through the other vignettes describing the various ways to modfiy diagrams. We'll therefore do a few modifications here but won't explain things. The main purpose is to show a few diagrams that are not based on models.
 
 
-
-
-# Starting Example
+# Example 1
 
 As of this writing, the [Wikipedia Flowchart page](https://en.wikipedia.org/wiki/Flowchart) has the following as an example of a simple flow chart.
 
@@ -38,21 +38,19 @@ As of this writing, the [Wikipedia Flowchart page](https://en.wikipedia.org/wiki
 knitr::include_graphics("lampflowchart.png")
 ```
 
-We'll try to recreate a version of this.
-
-## Specify the model
+We'll try to recreate a simplified version of this. First, we'll specify the model.
 
 
 ```{r}
 varlabels = c("L","P","B","Pl","R","Re")
-varnames = c("Lamp","Pluggedin","Bulbout","Plugin","Replace","Repair")
+varnames = c("Lamp doesn't work?","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp")
 
-flows = list(Lamp_flows = c("-L"), 
-             Plugged_flows = c("L","-no*P","-yes*P"), 
-             Bulbout_flows = c("yes*P","-yes*B", "-no*B"),
-             Plugin_flows = c("no*P"),
-             Newbulb_flows = c("yes*B"),
-             Repair_flows = c("no*B")
+flows = list(L_flows = c("-L"), 
+             P_flows = c("L","-no*P","-yes*P"), 
+             B_flows = c("yes*P","-yes*B", "-no*B"),
+             Pl_flows = c("no*P"),
+             R_flows = c("yes*B"),
+             Re_flows = c("no*B")
              )
 varlocations = matrix(data = c("L", "",
                                "P", "Pl",
@@ -62,17 +60,32 @@ mymodel = list(varlabels = varlabels, varnames = varnames,
                flows = flows, varlocations = varlocations)
 ```
 
+Note that to make the diagram logic work, we have to define actual flows. For instance we can't just label the various flows with "Yes" or "No" like in the original diagram. If we did this, **`r pkg`** wouldn't know with which boxes/variables to associate the arrows.   
+
+
+Now, it's the standard steps of preparing, making and plotting the diagram.
 
 ```{r}
-input_structure <- prepare_diagram(mymodel)
-```
-
-```{r}
-my_diagram <- make_diagram(input_structure)
-```
-
-
-```{r}
+diagram_list <- prepare_diagram(mymodel)
+my_diagram <- make_diagram(diagram_list)
 plot(my_diagram)
 ```
+
+This looks similar to the original, but of course not quite as good. We can get fairly close with a few adjustments.
+
+## Notes of things that need adressing
+
+Looking at diagram_list, some things look odd:
+
+```{r}
+print(diagram_list)
+```
+
+Why are all nodes classified as row = 1? Seems like the varlocation data is not properly processed?
+
+There are two flows classified as horizontal, even though they are vertical. They are drawn correctly, but should probably be in the vertical_edges element? Similarly, several flows are in the curved compartment that should be in horizontal or vertical.
+
+I assume the curved ones are classified as curved since they are not from adjacent variables if the variables are considered in order. However, the order/location is updated by providing the matrix. We thus need to compute adjacency differently if the matrix is there. Basically, if for a given variable, the flow goes to another variable that's a neighbor located to the left/right/above/below we should have straight horizontal/vertical edges. if connection is to a variable that is a "corner neighbor" 45 degrees away, we should probably do a straight arrow at 45 degrees. curved if the variable is not a neighbor (i.e not +/- 1 row/column).
+
+The final arrow is not labeled. I can't figure out why, label shows up ok in the diagram_list object.
 

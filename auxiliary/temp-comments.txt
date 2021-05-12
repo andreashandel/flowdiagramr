@@ -3,4 +3,9 @@ If possible, specification to ggsave or for plotting should be such that figure 
 
 Also maybe switch from print() to plot() statement at end, seems more suitable. 
 
+Thoughts on diagram_list. Would it be hard to change the to/from columns to show labels instead of numbers? I.e. instead of from 1 to 4 it would have S and R in there. Labels are unique, so we should be ok doing that. 
+If complicated inside the code, one could still convert from label to number using the $nodes info, but users would see labels in to and from edge entries, so they can more easily hone in on the ones that need adjustment.
+
+See more notes that need addressing in the "Non model diagram" vignette in the "Notes of things that need adressing" section.
+
 

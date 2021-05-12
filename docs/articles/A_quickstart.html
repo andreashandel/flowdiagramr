@@ -82,7 +82,7 @@
       <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
     </li>
     <li>
-      <a href="../articles/F_non_model_diagrams.html">Other Diagrams</a>
+      <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
       <a href="../articles/G_comparison_to_other_packages.html">Comparison to other R packages</a>
@@ -181,7 +181,7 @@
 <a href="#make-the-diagram" class="anchor"></a>Make the diagram</h3>
 <p>Now it’s time to make the diagram. This is done by sending the object you got by calling <code>prepare_diagram</code> to the <code>make_diagram</code> function, like so</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, with_grid <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><code>make_diagram</code> returns a ggplot2 object (here called <code>my_diagram</code>). You you can write this plot to a file or print to the screen, e.g. with</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">"sirdiagram.png"</span>,<span class="va">my_diagram</span><span class="op">)</span></code></pre></div>

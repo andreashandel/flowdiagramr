@@ -82,7 +82,7 @@
       <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
     </li>
     <li>
-      <a href="../articles/F_non_model_diagrams.html">Other Diagrams</a>
+      <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
       <a href="../articles/G_comparison_to_other_packages.html">Comparison to other R packages</a>
@@ -169,26 +169,26 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">sir_diagram_list</span><span class="op">)</span>
 <span class="co">#&gt; $nodes</span>
-<span class="co">#&gt;   id label        name row  x  y xmin xmax ymin ymax</span>
-<span class="co">#&gt; 1  1     S Susceptible   1  6 -2  5.5  6.5 -2.5 -1.5</span>
-<span class="co">#&gt; 2  2     I    Infected   1  9 -2  8.5  9.5 -2.5 -1.5</span>
-<span class="co">#&gt; 3  3     R   Recovered   1 12 -2 11.5 12.5 -2.5 -1.5</span>
+<span class="co">#&gt;   id label        name row x y xmin xmax ymin ymax</span>
+<span class="co">#&gt; 1  1     S Susceptible   1 3 0  2.5  3.5 -0.5  0.5</span>
+<span class="co">#&gt; 2  2     I    Infected   1 6 0  5.5  6.5 -0.5  0.5</span>
+<span class="co">#&gt; 3  3     R   Recovered   1 9 0  8.5  9.5 -0.5  0.5</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $horizontal_edges</span>
-<span class="co">#&gt;   to from label interaction xstart ystart xend yend xmid  ymid</span>
-<span class="co">#&gt; 2  2    1             FALSE    6.5     -2  8.5   -2  7.5 -1.75</span>
-<span class="co">#&gt; 3  3    2   g*I       FALSE    9.5     -2 11.5   -2 10.5 -1.75</span>
+<span class="co">#&gt;   to from label interaction xstart ystart xend yend xmid ymid</span>
+<span class="co">#&gt; 2  2    1             FALSE    3.5      0  5.5    0  4.5 0.25</span>
+<span class="co">#&gt; 3  3    2   g*I       FALSE    6.5      0  8.5    0  7.5 0.25</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $vertical_edges</span>
-<span class="co">#&gt;   to from label xstart ystart xend yend  xmid  ymid</span>
-<span class="co">#&gt; 1  1   NA     n    5.5   -1.0  6.0 -1.5  5.75 -1.00</span>
-<span class="co">#&gt; 5 NA    1   m*S    6.0   -2.5  6.5 -3.0  6.00 -2.75</span>
-<span class="co">#&gt; 6 NA    2   m*I    9.0   -2.5  9.5 -3.0  9.00 -2.75</span>
-<span class="co">#&gt; 7 NA    3   m*R   12.0   -2.5 12.5 -3.0 12.00 -2.75</span>
+<span class="co">#&gt;   to from label xstart ystart xend yend xmid  ymid</span>
+<span class="co">#&gt; 1  1   NA     n    2.5    1.0  3.0  0.5 2.75  1.00</span>
+<span class="co">#&gt; 5 NA    1   m*S    3.0   -0.5  3.5 -1.0 3.00 -0.75</span>
+<span class="co">#&gt; 6 NA    2   m*I    6.0   -0.5  6.5 -1.0 6.00 -0.75</span>
+<span class="co">#&gt; 7 NA    3   m*R    9.0   -0.5  9.5 -1.0 9.00 -0.75</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $curved_edges</span>
 <span class="co">#&gt;   to from label interaction xstart ystart xend yend curvature row labelx labely</span>
-<span class="co">#&gt; 1 NA    2 b*S*I        TRUE      9   -1.5  7.5   -2       0.4   1   8.15  -1.25</span>
+<span class="co">#&gt; 1 NA    2 b*S*I        TRUE      6    0.5  4.5    0       0.4   1   5.15   0.75</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $feedback_edges</span>
 <span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  </span>
@@ -245,9 +245,9 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
 <span class="co">#&gt; $nodes</span>
-<span class="co">#&gt;   id label name row x  y xmin xmax ymin ymax</span>
-<span class="co">#&gt; 1  1   Pat   NA   1 3 -2  2.5  3.5 -2.5 -1.5</span>
-<span class="co">#&gt; 2  2   Imm   NA   1 6 -2  5.5  6.5 -2.5 -1.5</span>
+<span class="co">#&gt;   id label name row x y xmin xmax ymin ymax</span>
+<span class="co">#&gt; 1  1   Pat   NA   1 0 0 -0.5  0.5 -0.5  0.5</span>
+<span class="co">#&gt; 2  2   Imm   NA   1 3 0  2.5  3.5 -0.5  0.5</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $horizontal_edges</span>
 <span class="co">#&gt;  [1] to          from        label       interaction xstart      ystart     </span>
@@ -255,23 +255,23 @@
 <span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $vertical_edges</span>
-<span class="co">#&gt;   to from  label xstart ystart xend yend xmid  ymid</span>
-<span class="co">#&gt; 5 NA    2 dI*Imm   6.00   -2.5 6.50   -3 6.00 -2.75</span>
-<span class="co">#&gt; 3 NA    1 dP*Pat   2.75   -2.5 3.25   -3 2.75 -2.75</span>
-<span class="co">#&gt; 4 NA    1          3.25   -2.5 3.75   -3 3.25 -2.75</span>
+<span class="co">#&gt;   to from  label xstart ystart xend yend  xmid  ymid</span>
+<span class="co">#&gt; 5 NA    2 dI*Imm   3.00   -0.5 3.50   -1  3.00 -0.75</span>
+<span class="co">#&gt; 3 NA    1 dP*Pat  -0.25   -0.5 0.25   -1 -0.25 -0.75</span>
+<span class="co">#&gt; 4 NA    1          0.25   -0.5 0.75   -1  0.25 -0.75</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $curved_edges</span>
 <span class="co">#&gt;   to from     label interaction xstart ystart xend  yend curvature row labelx</span>
-<span class="co">#&gt; 1  1    2 r*Pat*Imm        TRUE    3.5     -2 5.67 -1.25       0.1   1   5.42</span>
-<span class="co">#&gt; 2  2    1 k*Pat*Imm        TRUE    5.5     -2 3.50 -2.75       0.1   1   3.65</span>
+<span class="co">#&gt; 1  1    2 r*Pat*Imm        TRUE    0.5      0 2.67  0.75       0.1   1   2.42</span>
+<span class="co">#&gt; 2  2    1 k*Pat*Imm        TRUE    2.5      0 0.50 -0.75       0.1   1   0.65</span>
 <span class="co">#&gt;   labely</span>
-<span class="co">#&gt; 1   -1.3</span>
-<span class="co">#&gt; 2   -2.5</span>
+<span class="co">#&gt; 1    0.7</span>
+<span class="co">#&gt; 2   -0.5</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $feedback_edges</span>
-<span class="co">#&gt;   to from              label xstart ystart xend yend xmid  ymid</span>
-<span class="co">#&gt; 1  1    1 g*Pat*(1-Pat/pmax)      3     -2    3   -2    3 -1.75</span>
-<span class="co">#&gt; 2  2    2                         6     -2    6   -2    6 -1.75</span></code></pre></div>
+<span class="co">#&gt;   to from              label xstart ystart xend yend xmid ymid</span>
+<span class="co">#&gt; 1  1    1 g*Pat*(1-Pat/pmax)      0      0    0    0    0 0.25</span>
+<span class="co">#&gt; 2  2    2                         3      0    3    0    3 0.25</span></code></pre></div>
 <p><strong>Need to be able to change label location for all flows. Not currently working.</strong></p>
 <p>And here is the code that makes some changes</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">

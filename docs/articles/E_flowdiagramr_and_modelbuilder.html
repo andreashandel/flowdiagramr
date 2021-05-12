@@ -82,7 +82,7 @@
       <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
     </li>
     <li>
-      <a href="../articles/F_non_model_diagrams.html">Other Diagrams</a>
+      <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
       <a href="../articles/G_comparison_to_other_packages.html">Comparison to other R packages</a>
@@ -123,13 +123,120 @@
 <div id="overview" class="section level1">
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h1>
-<p>We have an R package called <a href=""><strong>modelbuilder</strong></a> which allows users to graphically build . The <strong>flowdiagramr</strong> package is in some sense a spin-off from <strong>modelbuilder</strong> and is used as part of <strong>modelbuilder</strong>. As such, it is important that one can use <strong>modelbuilder</strong> built models with <strong>flowdiagramr</strong>.</p>
-<p>Since <strong>modelbuilder</strong> models and <strong>flowdiagramr</strong> models are slightly different, we provide a convience function that converts one format into the other. This is a very simple process, as the following example shows.</p>
+<p>The developers of <strong>flowdiagramr</strong> have also been developing an R package called <a href="https://ahgroup.github.io/modelbuilder/"><strong>modelbuilder</strong></a> which allows users to graphically build and analyze compartmental simulation models. In fact, <strong>flowdiagramr</strong> started as a function inside <code>modelbuilder</code> to draw diagrams of user-built models. At some point, we decided to make <strong>flowdiagramr</strong> a stand-alone package. But it still works with and is used by <strong>modelbuilder</strong>.</p>
+<p>This brief vignette is for those users of <strong>modelbuilder</strong> who create and save a model and want to use <strong>flowdiagramr</strong> to generate a diagram for that model outside the auto-generated one shown inside <strong>modelbuilder</strong>.</p>
 </div>
-<div id="example" class="section level1">
+<div id="model-conversion" class="section level1">
 <h1 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h1>
-<p>Assume you built a model with <strong>modelbuilder</strong> and saved it as an <code>R</code> object inside a <code>.Rda</code> file.</p>
+<a href="#model-conversion" class="anchor"></a>Model conversion</h1>
+<p>Once a user has built a model with <strong>modelbuilder</strong>, they can save it as an <code>Rds</code> file. This file contains a single object, the user-created model specified as a list object. Since <strong>modelbuilder</strong> models and <strong>flowdiagramr</strong> models are slightly different, we provide a convenience function that converts one format into the other.</p>
+<p>This is a very simple process, and is done with the function <code>convert_from_modelbuilder</code>. This function takes as input the modelbuilder object and produces a list that conforms to the <strong>flowdiagramr</strong> model specification. The following examples illustrate this.</p>
+</div>
+<div id="example-1" class="section level1">
+<h1 class="hasAnchor">
+<a href="#example-1" class="anchor"></a>Example 1</h1>
+<p>Assume you built a basic SIR model with <strong>modelbuilder</strong> and saved it as an <code>R</code> object inside a <code>.Rds</code> file. First, we load the file and assign it to some variable.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">mbmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="st">'SIR_model.Rds'</span><span class="op">)</span></code></pre></div>
+<p>Next, we convert the object.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_from_modelbuilder.html">convert_from_modelbuilder</a></span><span class="op">(</span><span class="va">mbmodel</span><span class="op">)</span></code></pre></div>
+<p>If you print the content, you can see it has the structure needed for <strong>flowdiagramr</strong>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="co">#&gt; $varlabels</span>
+<span class="co">#&gt; [1] "S" "I" "R"</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $varnames</span>
+<span class="co">#&gt; [1] "Susceptible" "Infected"    "Recovered"  </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows</span>
+<span class="co">#&gt; $flows$S_flows</span>
+<span class="co">#&gt; [1] "-b*S*I"</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$I_flows</span>
+<span class="co">#&gt; [1] "+b*S*I" "-g*I"  </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$R_flows</span>
+<span class="co">#&gt; [1] "+g*I"</span></code></pre></div>
+<p>You can now proceed with the usual steps.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<p><img src="E_flowdiagramr_and_modelbuilder_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+</div>
+<div id="example-2" class="section level1">
+<h1 class="hasAnchor">
+<a href="#example-2" class="anchor"></a>Example 2</h1>
+<p>Just to show one more example, this is a model from the <strong>modelbuilder</strong> example library called <code>Complex ID control</code>. It is a model that includes a good number of details and allows exploration of different intervention strategies. If you are not too familiar with compartmental models yet, just consider it as an example that illustrates the work flow. You can find some more details about the model in the <a href="https://ahgroup.github.io/modelbuilder/"><strong>modelbuilder</strong></a> package, or even more details in another of our packages, <a href="https://ahgroup.github.io/DSAIDE/">DSAIDE</a>, which is targeted toward learning about such infectious disease models.</p>
+<p>First, we load the model, then convert it and print it.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">mbmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="st">'Complex_ID_Control.Rds'</span><span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_from_modelbuilder.html">convert_from_modelbuilder</a></span><span class="op">(</span><span class="va">mbmodel</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="co">#&gt; $varlabels</span>
+<span class="co">#&gt; [1] "S"  "P"  "A"  "I"  "R"  "D"  "E"  "Sv" "Iv"</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $varnames</span>
+<span class="co">#&gt; [1] "Susceptible"             "Presymptomatic"         </span>
+<span class="co">#&gt; [3] "Asymptomatic"            "Symptomatic"            </span>
+<span class="co">#&gt; [5] "Recovered"               "Dead"                   </span>
+<span class="co">#&gt; [7] "Pathogen in Environment" "Susceptible Vector"     </span>
+<span class="co">#&gt; [9] "Infected Vector"        </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows</span>
+<span class="co">#&gt; $flows$S_flows</span>
+<span class="co">#&gt; [1] "+nH"      "-S*bP*P"  "-S*bA*A"  "-S*bI*I"  "-S*bE*E"  "-S*bV*Iv" "+w*R"    </span>
+<span class="co">#&gt; [8] "-mH*S"   </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$P_flows</span>
+<span class="co">#&gt; [1] "+S*bP*P"     "+S*bA*A"     "+S*bI*I"     "+S*bE*E"     "+S*bV*Iv"   </span>
+<span class="co">#&gt; [6] "-f*gP*P"     "-(1-f)*gP*P" "-mH*P"      </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$A_flows</span>
+<span class="co">#&gt; [1] "+f*gP*P" "-gA*A"   "-mH*A"  </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$I_flows</span>
+<span class="co">#&gt; [1] "+(1-f)*gP*P" "-(1-d)*gI*I" "-d*gI*I"     "-mH*I"      </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$R_flows</span>
+<span class="co">#&gt; [1] "+gA*A"       "+(1-d)*gI*I" "-w*R"        "-mH*R"      </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$D_flows</span>
+<span class="co">#&gt; [1] "+d*gI*I"</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$E_flows</span>
+<span class="co">#&gt; [1] "+pI*I" "+pA*A" "-c*E" </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$Sv_flows</span>
+<span class="co">#&gt; [1] "+nV"      "-bH*I*Sv" "-mV*Sv"  </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $flows$Iv_flows</span>
+<span class="co">#&gt; [1] "+bH*I*Sv" "-mV*Iv"</span></code></pre></div>
+<p>As promised, this is a much more complex model. We don’t expect the default diagram for this model to look great, but let’s give it a try. Instead of directly plotting it, we are saving the diagram and loading from a file, otherwise the dimensions will look too squished.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'Complex_ID_Control.png'</span>,<span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<p><img src="Complex_ID_Control.png" width="80%" style="display: block; margin: auto;"></p>
+<p>The diagram is not ideal. But you now know how to make it better, once you have done the model conversion, you can use the usual approaches. As an example, let’s specify the layout for the variables/nodes. We can do that by adding <code>varlocations</code> to the <code>mymodel</code> object.</p>
+<p>The rationale of how to place the variables is determined by the meaning of each of them and what makes logical sense. I’m not discussing this here, if you want to learn more about the model, see the <em>Complex Control Scenarios</em> app inside <a href="https://ahgroup.github.io/DSAIDE/">DSAIDE</a>.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">mymodel</span><span class="op">$</span><span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"E"</span>,<span class="st">""</span>,<span class="st">""</span>,
+                                      <span class="st">""</span>, <span class="st">""</span>, <span class="st">"A"</span>, <span class="st">"R"</span>,
+                                      <span class="st">"S"</span>, <span class="st">"P"</span>, <span class="st">""</span>, <span class="st">""</span>,
+                                      <span class="st">""</span>, <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">"D"</span>,
+                               <span class="st">""</span>, <span class="st">"Sv"</span>, <span class="st">"Iv"</span>, <span class="st">""</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">5</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p><strong>TO DO</strong>. I’m also showing the compartment names instead of their labels to make things a bit clearer.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'Complex_ID_Control2.png'</span>,<span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<p><img src="Complex_ID_Control2.png" width="80%" style="display: block; margin: auto;"></p>
+<p>This is better, but of course still not quite good enough. Fortunately, you have learned how to use <strong>flowdiagramr</strong> to fairly easily turn this into a publication-quality diagram 😁.</p>
 </div>
   </div>
 

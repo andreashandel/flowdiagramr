@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Other Diagrams • flowdiagramr</title>
+<title>Making non-model based diagrams • flowdiagramr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Other Diagrams">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Making non-model based diagrams">
 <meta property="og:description" content="flowdiagramr">
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -82,7 +82,7 @@
       <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
     </li>
     <li>
-      <a href="../articles/F_non_model_diagrams.html">Other Diagrams</a>
+      <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
       <a href="../articles/G_comparison_to_other_packages.html">Comparison to other R packages</a>
@@ -110,7 +110,7 @@
       </header><script src="F_non_model_diagrams_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Other Diagrams</h1>
+      <h1 data-toc-skip>Making non-model based diagrams</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/F_non_model_diagrams.Rmd"><code>vignettes/F_non_model_diagrams.Rmd</code></a></small>
@@ -123,31 +123,29 @@
 <div id="overview" class="section level1">
 <h1 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h1>
-<p>While the main reason for the existence of <strong>flowdiagramr</strong> is to create nice-looking diagrams for compartmental simulation models, it is possible to create other, more general flow charts. This vignette gives a brief illustration how this can be done.</p>
+<p>While the main reason for the existence of <strong>flowdiagramr</strong> is to create nice-looking diagrams for compartmental simulation models, it is possible to create other, more general flow charts. Basically, anything that can be drawn as a set of nodes/boxes and interactions/arrows can be created. This vignette gives a few brief examples to illustrate the use of the package for making general flow diagrams. The possibilities are of course endless, hopefully the following examples give you ideas on how to do things.</p>
+<p>We are assuming that you read through the other vignettes describing the various ways to modfiy diagrams. We’ll therefore do a few modifications here but won’t explain things. The main purpose is to show a few diagrams that are not based on models.</p>
 </div>
-<div id="starting-example" class="section level1">
+<div id="example-1" class="section level1">
 <h1 class="hasAnchor">
-<a href="#starting-example" class="anchor"></a>Starting Example</h1>
+<a href="#example-1" class="anchor"></a>Example 1</h1>
 <p>As of this writing, the <a href="https://en.wikipedia.org/wiki/Flowchart">Wikipedia Flowchart page</a> has the following as an example of a simple flow chart.</p>
 <div class="figure" style="text-align: center">
 <img src="lampflowchart.png" alt="[svg by Booyabazookaoriginal png by Wapcaplet](https://commons.wikimedia.org/w/index.php?curid=714537)/Wikipedia" width="40%"><p class="caption">
 <a href="https://commons.wikimedia.org/w/index.php?curid=714537">svg by Booyabazookaoriginal png by Wapcaplet</a>/Wikipedia
 </p>
 </div>
-<p>We’ll try to recreate a version of this.</p>
-<div id="specify-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#specify-the-model" class="anchor"></a>Specify the model</h2>
+<p>We’ll try to recreate a simplified version of this. First, we’ll specify the model.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"P"</span>,<span class="st">"B"</span>,<span class="st">"Pl"</span>,<span class="st">"R"</span>,<span class="st">"Re"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lamp"</span>,<span class="st">"Pluggedin"</span>,<span class="st">"Bulbout"</span>,<span class="st">"Plugin"</span>,<span class="st">"Replace"</span>,<span class="st">"Repair"</span><span class="op">)</span>
+<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lamp doesn't work?"</span>,<span class="st">"Lamp plugged in?"</span>,<span class="st">"Bulb burned out?"</span>,<span class="st">"Plug in lamp"</span>,<span class="st">"Replace bulb"</span>,<span class="st">"Repair lamp"</span><span class="op">)</span>
 
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Lamp_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-L"</span><span class="op">)</span>, 
-             Plugged_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"-no*P"</span>,<span class="st">"-yes*P"</span><span class="op">)</span>, 
-             Bulbout_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes*P"</span>,<span class="st">"-yes*B"</span>, <span class="st">"-no*B"</span><span class="op">)</span>,
-             Plugin_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no*P"</span><span class="op">)</span>,
-             Newbulb_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes*B"</span><span class="op">)</span>,
-             Repair_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no*B"</span><span class="op">)</span>
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>L_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-L"</span><span class="op">)</span>, 
+             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"-no*P"</span>,<span class="st">"-yes*P"</span><span class="op">)</span>, 
+             B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes*P"</span>,<span class="st">"-yes*B"</span>, <span class="st">"-no*B"</span><span class="op">)</span>,
+             Pl_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no*P"</span><span class="op">)</span>,
+             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes*B"</span><span class="op">)</span>,
+             Re_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no*B"</span><span class="op">)</span>
              <span class="op">)</span>
 <span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>, <span class="st">""</span>,
                                <span class="st">"P"</span>, <span class="st">"Pl"</span>,
@@ -155,14 +153,52 @@
                                <span class="st">"Re"</span>,<span class="st">""</span> <span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, 
                flows <span class="op">=</span> <span class="va">flows</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></code></pre></div>
+<p>Note that to make the diagram logic work, we have to define actual flows. For instance we can’t just label the various flows with “Yes” or “No” like in the original diagram. If we did this, <strong>flowdiagramr</strong> wouldn’t know with which boxes/variables to associate the arrows.</p>
+<p>Now, it’s the standard steps of preparing, making and plotting the diagram.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">input_structure</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">input_structure</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span></code></pre></div>
-<p><img src="F_non_model_diagrams_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="F_non_model_diagrams_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p>This looks similar to the original, but of course not quite as good. We can get fairly close with a few adjustments.</p>
+<div id="notes-of-things-that-need-adressing" class="section level2">
+<h2 class="hasAnchor">
+<a href="#notes-of-things-that-need-adressing" class="anchor"></a>Notes of things that need adressing</h2>
+<p>Looking at diagram_list, some things look odd:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
+<span class="co">#&gt; $nodes</span>
+<span class="co">#&gt;   id label                 name row x  y xmin xmax ymin ymax</span>
+<span class="co">#&gt; 1  1     L Lamp\ndoesn't\nwork?   1 0  0 -0.5  0.5 -0.5  0.5</span>
+<span class="co">#&gt; 2  2     P   Lamp\nplugged\nin?   1 0 -2 -0.5  0.5 -2.5 -1.5</span>
+<span class="co">#&gt; 3  3     B   Bulb\nburned\nout?   1 0 -4 -0.5  0.5 -4.5 -3.5</span>
+<span class="co">#&gt; 4  4    Pl       Plug\nin\nlamp   1 3 -2  2.5  3.5 -2.5 -1.5</span>
+<span class="co">#&gt; 5  5     R        Replace\nbulb   1 3 -4  2.5  3.5 -4.5 -3.5</span>
+<span class="co">#&gt; 6  6    Re         Repair\nlamp   1 0 -6 -0.5  0.5 -6.5 -5.5</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $horizontal_edges</span>
+<span class="co">#&gt;   to from label interaction xstart ystart xend yend xmid ymid</span>
+<span class="co">#&gt; 1  2    1     L       FALSE      0   -0.5    0 -1.5 0.25   -1</span>
+<span class="co">#&gt; 2  3    2 yes*P       FALSE      0   -2.5    0 -3.5 0.25   -3</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $vertical_edges</span>
+<span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  </span>
+<span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $curved_edges</span>
+<span class="co">#&gt;   to from label interaction xstart ystart xend yend curvature row labelx labely</span>
+<span class="co">#&gt; 1  4    2  no*P       FALSE    0.5     -2  2.5   -2       0.5   1   2.25  -2.05</span>
+<span class="co">#&gt; 2  5    3 yes*B       FALSE    0.5     -4  2.5   -4       0.5   1   2.25  -4.05</span>
+<span class="co">#&gt; 3  6    3  no*B       FALSE    0.0     -4  0.0   -6       0.5   1     NA     NA</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $feedback_edges</span>
+<span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  </span>
+<span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></code></pre></div>
+<p>Why are all nodes classified as row = 1? Seems like the varlocation data is not properly processed?</p>
+<p>There are two flows classified as horizontal, even though they are vertical. They are drawn correctly, but should probably be in the vertical_edges element? Similarly, several flows are in the curved compartment that should be in horizontal or vertical.</p>
+<p>I assume the curved ones are classified as curved since they are not from adjacent variables if the variables are considered in order. However, the order/location is updated by providing the matrix. We thus need to compute adjacency differently if the matrix is there. Basically, if for a given variable, the flow goes to another variable that’s a neighbor located to the left/right/above/below we should have straight horizontal/vertical edges. if connection is to a variable that is a “corner neighbor” 45 degrees away, we should probably do a straight arrow at 45 degrees. curved if the variable is not a neighbor (i.e not +/- 1 row/column).</p>
+<p>The final arrow is not labeled. I can’t figure out why, label shows up ok in the diagram_list object.</p>
 </div>
 </div>
   </div>
