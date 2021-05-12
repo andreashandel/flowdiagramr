@@ -1,0 +1,6 @@
+Add something to write_model such that the code has a ggsave statement at the end to save model plot to png file. That could be commented out by default.
+If possible, specification to ggsave or for plotting should be such that figure is saved that doesn't contain much whitespace, i.e. cropped tight.
+
+Also maybe switch from print() to plot() statement at end, seems more suitable. 
+
+

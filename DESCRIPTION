@@ -27,7 +27,9 @@ Suggests:
     rmarkdown,
     roxygen2,
     statebins,
-    testthat 
+    testthat,
+    emo
+Additional_repositories: https://github.com/hadley/emo/    
 VignetteBuilder: knitr
 URL: https://andreashandel.github.io/flowdiagramr/
 BugReports: https://github.com/andreashandel/flowdiagramr/issues
