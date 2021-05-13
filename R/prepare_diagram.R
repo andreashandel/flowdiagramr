@@ -169,7 +169,7 @@ prepare_diagram <- function(model_list) {
   flows <- model_list$flows
 
   #add implicit + signs to make explicit before additional parsing
-  flows <- add_plus_signs(flows)
+  flows <- flowdiagramr:::add_plus_signs(flows)
 
   #turns flow list into matrix, adding NA, found it online,
   #not sure how exactly it works (from AH and modelbuilder code base)
