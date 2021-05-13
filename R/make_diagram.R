@@ -20,9 +20,6 @@
 #'     with interaction terms (typically curved arrows leading to the
 #'     mid point of another arrow) or to simply label the main flow. See
 #'     vignettes for examples.
-#' \item `with_grid`: A logical indicating whether to return the ggplot
-#'     with a grid. Default is FALSE. The grid can be helpful if you
-#'     want/need to move items around.
 #' \item `node_outline_color`: A character string or vector of character strings
 #'     specifying the color of node outlines. If a vector, the colors will be
 #'     recycled in the order of the variables in the supplied data frame.
@@ -75,9 +72,31 @@
 #'     variable abbreviations (`FALSE`; default) or to use the full names
 #'     provided in the `varnames` element of `model_list` (`TRUE`).
 #'
+#' @param with_grid A logical indicating whether to return the ggplot
+#'     with a grid. Default is FALSE. The grid can be helpful if you
+#'     want/need to move items around.
+#'
 #' @return A ggplot2 object.
 #' @import ggplot2
 #' @export
+#'
+#' @examples
+#' varlabels <- c("S","I","R")
+#' varnames <- c("Susceptible","Infected","Recovered")  # optional
+#' flows <- list(S_flows = c("-b*S*I"),
+#'               I_flows = c("b*S*I","-g*I"),
+#'               R_flows = c("g*I"))
+#' varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
+#'                         nrow = 2, ncol = 3, byrow = TRUE)
+#' mymodel <- list(varlabels = varlabels, varnames = varnames,
+#' flows = flows, varlocations = varlocations)
+#' diagram_list <- prepare_diagram(model_list = mymodel)
+#'
+#' # make diagram without grid
+#' diagram <- make_diagram(diagram_list)
+#'
+#' # make diagram with grid
+#' diagram_with_grid <- make_diagram(diagram_list, with_grid = TRUE)
 
 make_diagram <- function (diagram_list,
                           diagram_settings = list(

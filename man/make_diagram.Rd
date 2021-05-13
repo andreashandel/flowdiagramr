@@ -32,9 +32,6 @@ and out of the system (external flows). Default is TRUE (include).
 with interaction terms (typically curved arrows leading to the
 mid point of another arrow) or to simply label the main flow. See
 vignettes for examples.
-\item \code{with_grid}: A logical indicating whether to return the ggplot
-with a grid. Default is FALSE. The grid can be helpful if you
-want/need to move items around.
 \item \code{node_outline_color}: A character string or vector of character strings
 specifying the color of node outlines. If a vector, the colors will be
 recycled in the order of the variables in the supplied data frame.
@@ -86,6 +83,10 @@ the interaction arrows.
 \item{use_varnames}{A logical indicating whether to label nodes with
 variable abbreviations (\code{FALSE}; default) or to use the full names
 provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).}
+
+\item{with_grid}{A logical indicating whether to return the ggplot
+with a grid. Default is FALSE. The grid can be helpful if you
+want/need to move items around.}
 }
 \value{
 A ggplot2 object.
@@ -95,4 +96,22 @@ A ggplot2 object.
 made with \code{\link{prepare_diagram}}. The function only applies
 aesthetics that are not associated with x, y locations. Colors, linetypes,
 and other graphical options can be set by the user.
+}
+\examples{
+varlabels <- c("S","I","R")
+varnames <- c("Susceptible","Infected","Recovered")  # optional
+flows <- list(S_flows = c("-b*S*I"),
+              I_flows = c("b*S*I","-g*I"),
+              R_flows = c("g*I"))
+varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
+                        nrow = 2, ncol = 3, byrow = TRUE)
+mymodel <- list(varlabels = varlabels, varnames = varnames,
+flows = flows, varlocations = varlocations)
+diagram_list <- prepare_diagram(model_list = mymodel)
+
+# make diagram without grid
+diagram <- make_diagram(diagram_list)
+
+# make diagram with grid
+diagram_with_grid <- make_diagram(diagram_list, with_grid = TRUE)
 }

@@ -1,22 +1,26 @@
 #' Generate a reproducible R script to make the diagram.
 #'
 #' @description
-#' Generates code in the form of a stand-alone R script to reproduce a diagram,
-#' including the model inputs, the data frames from
+#' `write_diagram()` generates code in the form of a stand-alone R script to
+#' reproduce a diagram, including the model inputs, the data frames from
 #' \code{\link{prepare_diagram}}, and the **ggplot2** code. The R script
 #' is intended to run "as-is", meaning there is code to make the objects
 #' the user sends as arguments (either the `model` or the
 #' `diagram_list`).
 #'
 #' @param model_list A **flowdiagramr** input list. See
-#'     \code{\link{prepare_diagram}}. If `model_list` is provided, then
-#'     `diagram_list` cannot be provided.
+#'     \code{\link{prepare_diagram}}.
 #' @param diagram_list A **flowdiagramr** input structure, resulting from
-#'     a call to \code{\link{prepare_diagram}}. If `diagram_list` is
-#'     provided, then `model` cannot be provided.
+#'     a call to \code{\link{prepare_diagram}}.
 #' @param make_diagram_settings A named list of diagram aesthetics. See
 #'    \code{\link{make_diagram}} documentation. Default is `NULL` and the
 #'    default values from \code{\link{make_diagram}} are used.
+#' @param use_varnames A logical indicating whether to label nodes with
+#'     variable abbreviations (`FALSE`; default) or to use the full names
+#'     provided in the `varnames` element of `model_list` (`TRUE`).
+#' @param with_grid A logical indicating whether to return the ggplot
+#'     with a grid. Default is FALSE. The grid can be helpful if you
+#'     want/need to move items around.
 #' @param directory File directory in which to save the R file. Defualt
 #'     location is the current working directory.
 #' @param filename Name of the file, must end in '.R'. Default name is
@@ -24,13 +28,36 @@
 #' @return A message telling the user where the file is.
 #' @import fs
 #' @export
+#'
+#' @examples
+#' varlabels <- c("S","I","R")
+#' varnames <- c("Susceptible","Infected","Recovered")  # optional
+#' flows <- list(S_flows = c("-b*S*I"),
+#'               I_flows = c("b*S*I","-g*I"),
+#'               R_flows = c("g*I"))
+#' varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
+#'                         nrow = 2, ncol = 3, byrow = TRUE)
+#' model_list <- list(varlabels = varlabels, varnames = varnames,
+#' flows = flows, varlocations = varlocations)
+#' diagram_list <- prepare_diagram(model_list = model_list)
+#'
+#' # generate R code from model_list
+#' write_diagram(model_list = model_list)
+#'
+#' # generate R code from diagram_list
+#' write_diagram(diagram_list = diagram_list)
+#'
+#' # generate R code from both
+#' write_diagram(model_list = model_list, diagram_list = diagram_list)
 
 
-write_diagram_code <- function(model_list = NULL,
-                               diagram_list = NULL,
-                               make_diagram_settings = NULL,
-                               directory = NULL,
-                               filename = NULL)
+write_diagram <- function(model_list = NULL,
+                          diagram_list = NULL,
+                          make_diagram_settings = NULL,
+                          use_varnames = FALSE,
+                          with_grid = FALSE,
+                          directory = NULL,
+                          filename = NULL)
 {
 
   # make sure at least one of model_list or diagram_list is provided
@@ -82,16 +109,20 @@ write_diagram_code <- function(model_list = NULL,
     }
   }
 
+  # Define grid and varnames settings
+  grid_block <- paste0("with_grid <- ", with_grid)
+  varnames_block <- paste0("use_varnames <- ", use_varnames)
+
   # Collapse the aes args block with line breaks
   args_block <- paste(args_block, collapse = "\n")
-
+  args_block <- paste(args_block, grid_block, varnames_block, sep = "\n")
 
   # ggplot2 code block ---
   gg_block <- get_code()  # gets the code used by flowdiagramr
 
 
   # Printing block ---
-  print_block <- "print(outplot)"
+  print_block <- "plot(diagram_plot)"
 
 
   # Model structure block ---

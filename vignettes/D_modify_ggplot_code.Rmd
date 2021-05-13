@@ -50,7 +50,7 @@ Once you have your model, you can send it to `write_diagram`, a function that wr
 You can specify the location and name for the file. If you don't provide those, it will be stored in the current working directory under the name `diagram_code.R`. 
 
 ```{r, eval= FALSE}
-write_diagram_code(model_list = sirmodel1, directory = '.', filename = 'sirmodel1_diagram_code.R')
+write_diagram(model_list = sirmodel1, directory = '.', filename = 'sirmodel1_diagram_code.R')
 ```
 If things worked well, you should get a message telling you the location where the code was saved.
 The code that is generated is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure.
@@ -100,7 +100,7 @@ Send the model, the modified `diagram_list` and additional settings for `make_di
 ** RUNNING CODE BELOW PRODUCES AN ERROR MESSAGE. DIAGRAM CODE IS STILL GENERATED.**
 
 ```{r, eval= FALSE}
-write_diagram_code(model_list = sirmodel2, 
+write_diagram(model_list = sirmodel2, 
                    diagram_list = diagram_list,
                    make_diagram_settings = list(
                           node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
@@ -159,7 +159,7 @@ We won't do any changes to the `diagram_list` structure here, but we'll send a f
 
 ```{r}
 # make diagram with adjusted settings
-write_diagram_code(model_list = ppmodel, 
+write_diagram(model_list = ppmodel, 
                    make_diagram_settings = list(
                           node_outline_color = NA,
                           node_fill_color = c("#6aa4c8", "#eb5600"),
