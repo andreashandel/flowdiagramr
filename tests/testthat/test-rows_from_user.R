@@ -22,5 +22,5 @@ sirmodel = list(
 diagram_list <- prepare_diagram(sirmodel)
 
 test_that("y values are not all equal when 2 rows specified", {
-  expect_equal(2, length(unique(diagram_list$nodes$y)))
+  expect_equal(2, length(unique(diagram_list$nodes$ymin)))
 })

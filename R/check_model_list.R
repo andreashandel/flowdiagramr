@@ -26,6 +26,15 @@ check_model_list <- function(model_list) {
     return(list(bad = TRUE, msg = msg))
   }
 
+  # Check that there are the same number of varlabels and varnames, if
+  # varnames is provided
+  if(!is.null(model_list$varnames)) {
+    if(length(model_list$varlabels) != length(model_list$varnames)) {
+      msg <- "The varlabels and varnames elements must be the same length."
+      return(list(bad = TRUE, msg = msg))
+    }
+  }
+
   # Check that there are the same number of varlabels and X_flow entries
   if(length((model_list$varlabels)) != length(model_list$flows)) {
     msg <- "You need one flow entry for each variable, make sure the number of varlabels and X_flow entries are the same."
