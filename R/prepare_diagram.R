@@ -12,6 +12,15 @@
 #' complex diagrams will likely need user modification. This is documented
 #' in the vignettes.
 #'
+#' IMPORTANT. All variables must start with an upper case letter (e.g.,
+#' S, Si, or Aa). All parameters must start with a lower case letter (e.g.,
+#' b, bBmax, kS, ks). All variables and parameters MUST be separated by
+#' math notation (e.g., +, -, *, /).
+#'
+#' EXAMPLE. The following includes a parameter *b* and two variables, *S*
+#' and *I*: `b*S*I`. The following includes a parameter *s* and two
+#' variables, *Bg* and *Ia*: `Bg*s*Ia`.
+#'
 #' @param model_list A list of model elements. The list must contain at least
 #'     two elements with names \code{varlabels} and \code{flows}. The
 #'     \code{flows} list must contain a sub-list for each variable in
@@ -767,8 +776,14 @@ prepare_diagram <- function(model_list) {
   cdf <- update_interactions(cdf)
   fdf <- update_interactions(fdf)
 
+  # update all to and froms such that each is the variable label
+  sdf <- update_tofroms(sdf, ndf)
+  vdf <- update_tofroms(vdf, ndf)
+  cdf <- update_tofroms(cdf, ndf)
+  fdf <- update_tofroms(fdf, ndf)
+
   # rename data frames for exporting
-  nodes <- ndf
+  nodes <- subset(ndf, select = -c(x, y, row))
   horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom))
   vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto, linkfrom))
   curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))

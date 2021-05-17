@@ -64,6 +64,8 @@ The following are helper functions that are used internally but not exposed to t
 
 * `update_interactions` - sets the interaction column to `TRUE` if the direct_interaction is `TRUE` and then removes the direct_interaction column that is no longer necessary. Used in `prepare_diagram`.
 
+* `update_tofroms` - updates the to/from columns in the edges data frames to be the character label for the to/from variable rather than the numeric id.
+
 
 
 ### Materials inside the /inst folder

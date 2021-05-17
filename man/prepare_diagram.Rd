@@ -110,6 +110,15 @@ diagram. Attempts to make good decisions regarding the placement of nodes,
 flows (arrow segment), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
 in the vignettes.
+
+IMPORTANT. All variables must start with an upper case letter (e.g.,
+S, Si, or Aa). All parameters must start with a lower case letter (e.g.,
+b, bBmax, kS, ks). All variables and parameters MUST be separated by
+math notation (e.g., +, -, *, /).
+
+EXAMPLE. The following includes a parameter \emph{b} and two variables, \emph{S}
+and \emph{I}: \code{b*S*I}. The following includes a parameter \emph{s} and two
+variables, \emph{Bg} and \emph{Ia}: \code{Bg*s*Ia}.
 }
 \examples{
 varlabels <- c("S","I","R")
