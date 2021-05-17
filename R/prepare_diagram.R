@@ -783,7 +783,7 @@ prepare_diagram <- function(model_list) {
   fdf <- update_tofroms(fdf, ndf)
 
   # rename data frames for exporting
-  nodes <- subset(ndf, select = -c(x, y, row))
+  nodes <- subset(ndf, select = -c(id, x, y, row))
   horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom))
   vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto, linkfrom))
   curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
