@@ -783,11 +783,32 @@ prepare_diagram <- function(model_list) {
   fdf <- update_tofroms(fdf, ndf)
 
   # rename data frames for exporting
-  nodes <- subset(ndf, select = -c(id, x, y, row))
-  horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom))
-  vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto, linkfrom))
+  ndf$labelx <- ndf$x
+  ndf$labely <- ndf$y
+  nodes <- subset(ndf, select = -c(id, row, x, y))
+
+  sdf$labelx <- sdf$xmid
+  sdf$labely <- sdf$ymid
+  horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom, xmid, ymid))
+
+
+  vdf$labelx <- vdf$xmid
+  vdf$labely <- vdf$ymid
+  vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto,
+                                            linkfrom, xmid, ymid))
+
   curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
-  feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction))
+
+  fdf$labelx <- fdf$xmid
+  fdf$labely <- fdf$ymid
+  fdf$labely <- fdf$labely + 0.85  # this offset makes the label a little above the big curved arrow
+  # last, adjust the xs and ys to get arrow above and feeding back into the node
+  fdf$xstart <- fdf$xstart-0.25
+  fdf$ystart <- fdf$ystart+0.5
+  fdf$xend <- fdf$xend+0.25
+  fdf$yend <- fdf$yend+0.5
+  feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction,
+                                             xmid, ymid))
 
 
   return(list(nodes = nodes,

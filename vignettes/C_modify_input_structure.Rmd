@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 7
 )
 
 # avoid check where vignette filename must equal the vignette title
@@ -102,15 +103,17 @@ Let's modify this object somewhat. The following code makes the `I` box bigger, 
 #assign to a new variable so we preserve the original
 modified_diagram_list <- sir_diagram_list 
 #increase the I box a bit both on left and right 
-modified_diagram_list$nodes$xmin[2] = 8
-modified_diagram_list$nodes$xmax[2] = 10
+modified_diagram_list$nodes$xmin[2] = 5
+modified_diagram_list$nodes$xmax[2] = 7
 #modify inflow and outflow arrows to align with new box size 
-modified_diagram_list$horizontal_edges$xend[1] = 8
-modified_diagram_list$horizontal_edges$xstart[2] = 10
+modified_diagram_list$horizontal_edges$xend[1] = 5
+modified_diagram_list$horizontal_edges$xstart[2] = 7
 #move the b*S*I arrow end a bit
-modified_diagram_list$curved_edges$xend[1] = 7
+modified_diagram_list$curved_edges$xend[1] = 4.25
 #move the b*S*I label up
-modified_diagram_list$curved_edges$labely[1] = -1
+modified_diagram_list$curved_edges$labely[1] = 0.8
+#move the g*I arrow over just a bit
+modified_diagram_list$horizontal_edges$xmid[2] = 7.75
 ```
 
 With those modifications, the resulting diagram looks like this
@@ -169,12 +172,13 @@ And here is the code that makes some changes
 
 ```{r}
 #increase box
-diagram_list$nodes$xmin[2] = 5.25
-diagram_list$nodes$xmax[2] = 6.75
+diagram_list$nodes$xmin[2] = 2.25
+diagram_list$nodes$xmax[2] = 3.75
 #adjust arrow location
-diagram_list$curved_edges$xstart[2] <- 5.25
+diagram_list$curved_edges$xstart[2] <- 2.25
 #move labels
-#WANT TO MOVE LOCATION OF OTHER LABELS ASSOCIATED WITH FLOWS, e.g. g*Pat*(1-Pat/pmax) LOCATION
+diagram_list$curved_edges$labelx[1] <- 2
+diagram_list$curved_edges$labelx[2] <- 1.4
 #change label
 diagram_list$feedback_edges$label[1] <- "g*Pat*(1-Pat/Pmax)"
 ```
@@ -182,6 +186,9 @@ diagram_list$feedback_edges$label[1] <- "g*Pat*(1-Pat/Pmax)"
 Sure enough, if you plot this now, you can see all your improvements.
 
 ```{r}
-my_diagram <- make_diagram(diagram_list)
+my_diagram <- make_diagram(
+  diagram_list, 
+  diagram_settings = list(flow_text_size = 4)
+)
 plot(my_diagram)
 ```
