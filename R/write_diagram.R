@@ -209,8 +209,21 @@ write_diagram <- function(model_list = NULL,
   # create the full path output directory
   outfile <- paste0(directory, "/", filename)
 
-  # write the code to file
-  cat(outcode, file = outfile)
+  # check if file exists, if so, ask user whether to overwrite or not
+  check <- file.exists(outfile)
+  if(check == TRUE) {
+    ans <- menu(c("Yes", "No"), "Specified file already exists. Do you want to overwrite?")
+    if(ans == 1) {
+      # write the code to file
+      cat(outcode, file = outfile)
+    } else {
+      return("Code not written to file.")
+    }
+  } else {
+    # write the code to file
+    cat(outcode, file = outfile)
+  }
+
 
   # report the file location on return
   message <- paste("Your file was saved here:", fs::path_real(outfile))
