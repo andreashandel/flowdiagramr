@@ -80,26 +80,11 @@
 #'   information for, typically, two types of curved arrows: (1) interaction
 #'   arrows that point toward a horizontal arrow or (2) a physical flow
 #'   that would normally be a horizontal arrow but must bypass at least
-#'   one node. The data frame has eleven (11) columns:
+#'   one node. The data frame has eleven (10) columns. The data frame contains
+#'   the same 9 columns as the `horizontal_edges` data frame, with one addition:
 #'   \itemize{
-#'     \item{\code{to}}: The node to which the arrow will point. That is, the node
-#'     receiving the flow.
-#'     \item{\code{from}}: The node from which the arrow originate. That is, the
-#'     node donating the flow.
-#'     \item{\code{label}}: The label of the flow. Typically a mathematical expression.
-#'     \item{interaction}: A logical indicating whether the flow represents
-#'     an interaction between two or more nodes. If \code{TRUE}, the arrow
-#'     is drawn as dashed by default.
-#'     \item{\code{xstart}}: The starting horizontal position of the arrow.
-#'     \item{\code{ystart}}: The starting veritcal position of the arrow.
-#'     \item{\code{xend}}: The ending horizontal position of the arrow.
-#'     \item{\code{yend}}: The ending vertical position of the arrow.
 #'     \item{\code{curvature}}: The amount of curvature applied to arrow.
 #'     Higher numbers indicate more curvature; 0 = straight line.
-#'     \item{\code{row}}: The row on which the arrow is connecting nodes;
-#'      this is also evident from the \code{ystart} and \code{yend} values.
-#'     \item{\code{labelx}}: Horizontal position (midpoint) of label.
-#'     \item{\code{labely}}: Vertical position (midpoint) of label.
 #'   }
 #'
 #'   \item{\code{feedback_edges}}: A data frame containing name and position
@@ -795,7 +780,7 @@ prepare_diagram <- function(model_list) {
   vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto,
                                             linkfrom, xmid, ymid))
 
-  curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
+  curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid, row))
 
   fdf$labelx <- fdf$xmid
   fdf$labely <- fdf$ymid
