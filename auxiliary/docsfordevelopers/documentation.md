@@ -24,14 +24,46 @@
 The main functions that are exposed to a user are the following:
 
 * `prepare_diagram` takes as input a model list and creates the data frames that form the input for the diagram generation.
-* `make_diagram` takes as input a list of data frames as created by `prepare_diagram` and returns a ggplot2 object containing the model diagram.
-* `write_diagram_code` takes the model list and writes the full ggplot code required to generate the model to a file. the resulting code is fully stand-alone.
+* `make_diagram` takes as input a list of data frames as created by `prepare_diagram` and returns a **ggplot2** object containing the model diagram.
+* `write_diagram` takes the model list and writes the full **ggplot2** code required to generate the model to a file. The resulting code is fully stand-alone.
 * `convert_from_modelbuilder` takes a modelbuilder model object and turns it into a list object needed for this package.
 
 
 
-The following are helper functions that are used internally but not exposed to the user:
-* `add_plus_signs` - explicitly adds leading + signs to flows, e.g. turns `b*S*I` into `+b*S*I`
+The following are helper functions that are used internally but not exposed to the user:  
+
+* `add_plus_signs` - explicitly adds leading + signs to flows, e.g. turns `b*S*I` into `+b*S*I`. Used in `prepare_diagram`.
+
+* `calc_origin` - a function from StackOverflow (link in function documentation) that locates the midpoint along a curved segment. Used in `prepare_diagram` for curved edges.
+
+* `calc_control_points` - a function from StackOverflow (link in function documentation) that defines control points for interpolating a curved segment between two end points. Used in `prepare_diagram` for curved edges.  
+
+* `check_model_list` - conducts basic checks on the `model_list` argument for `prepare_diagram`. Used in `prepare_diagram`.  
+
+* `check_node_matrix` - makes sure that all the variables listed in the nodes matrix also show up in the `model_list` object. Used in `prepare_diagram`.  
+
+* `convert_from_modelbuilder` - converts a **modelbuilder** object to the `model_list` structure needed for **flowdiagramr**. Could eventually be user facing and is currently not used.  
+
+* `fix_arrow_pos` - DEPRECATED. Used to avoid overlap of arrows.  
+
+* `get_code` - returns the core **ggplot2** code needed to make a diagram. Used in `make_diagram`.  
+
+* `get_vars_pars` - extracts the variables and parameters from a flow. Assumes that variables start with UPPERCASE letters (`LETTERS`) and parameters are lowercase. Used in `prepare_diagram`.  
+
+* `make_vdf_angled` - adjusts positions of the vertical flows (typically, births and deaths) to make them enter and exit at a 45 degree angle. Used in `prepare_diagram`.
+
+* `move_interaction_label` - used in `make_diagram` to move the interaction label back to the main flow if the user specifies that no interaction arrows are drawn. Used in `make_diagram`.
+
+* `recycle_values` - recycles values of length *m* to length *n*. Used in `make_diagram` to match number of styles (colors, linetypes, etc.) to number needed.
+
+* `remove_na_rows` - removes rows from all edge and node data frames that do not have location information. These are typically placeholder nodes and edges needed to define the locations of other elements but are not plotted themselves. Used in `prepare_diagram`.
+
+* `set_curvature` - defines the amount of curvature applied to curved arrows based on their type (interaction, feedback, other) and location (spanning one or two nodes). Used in `prepare_diagram`.
+
+* `set_node_to_na` - sets location values to `NA` if the to/from nodes in the edge data frame is not present in the nodes data frame. This is part of a clean up step to remove auxiliary information that was used for location information but does not need to be plotted. Used in `prepare_diagram`.
+
+* `update_interactions` - sets the interaction column to `TRUE` if the direct_interaction is `TRUE` and then removes the direct_interaction column that is no longer necessary. Used in `prepare_diagram`.
+
 
 
 ### Materials inside the /inst folder
