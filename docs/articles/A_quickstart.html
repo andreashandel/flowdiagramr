@@ -258,7 +258,7 @@
 <span class="kw">model_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(varlabels = <span class="kw">varlabels</span>, flows = <span class="kw">flows</span>)
 <span class="kw">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span>(<span class="kw">model_list</span>)
 <span class="co">#&gt; Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include</span>
-<span class="co">#&gt; an interaction between more than three variables. Consider</span>
+<span class="co">#&gt; an interaction between more than two variables. Consider</span>
 <span class="co">#&gt; breaking flows apart.</span>
 </pre></div>
 <p>Here we have rewritten the model by taking everything out of parantheses and explicitly writing all interactions. However, while copying and pasting, we accidentally put minus (“-”) signs in front of all the <code>Ia_flows</code>. <strong>flowdiagramr</strong> throws an error suggesting where we might have gone wrong.</p>

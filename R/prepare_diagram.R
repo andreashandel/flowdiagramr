@@ -713,7 +713,12 @@ prepare_diagram <- function(model_list) {
     }
   }
 
-  # The same logic above applies to curved arrows with an interaction
+  # The same logic above applies to curved arrows with an interaction.
+  # Add offsets to straight edges. The offset depends on the variation
+  # in x and y. If xstart == xend, then this is a vertical alignment and
+  # y offsets are applied. If ystart == yend, then this is a
+  # horizontal alignment and x offsets are applied. If vertical, the midpoints
+  # are also updated to move the label to the right of the arrow.
   if(nrow(cdf) != 0) {
     for(i in 1:nrow(cdf)) {
       if(cdf[i, "interaction"] == TRUE &
@@ -729,6 +734,34 @@ prepare_diagram <- function(model_list) {
   # Set the curvature using internal function
   if(nrow(cdf) > 0) {
     cdf <- set_curvature(cdf, ndf)
+  }
+
+  # Update start and end points for curved arrows that bypass nodes,
+  # these need to start/end from the top/bottom of the nodes. If the
+  # arrow goes right to left, it will start and end on top of nodes. If
+  # the arrow goes left to right, it will start and end on the bottom of
+  # nodes. Similar logic applies if the diagram is positioned vertically
+  # rather than horizontally.
+  if(nrow(cdf) > 0) {
+    for(i in 1:nrow(cdf)) {
+      if(cdf[i, "interaction"] == FALSE &
+         cdf[i, "direct_interaction"] == FALSE) {
+        if(sign(cdf[i, "diff"]) == 1) {
+          cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
+          cdf[i, "xend"] <- cdf[i, "xend"] - xoff
+          cdf[i, "ystart"] <- cdf[i, "ystart"] + yoff
+          cdf[i, "yend"] <- cdf[i, "yend"] + yoff
+          cdf[i, "labely"] <- cdf[i, "labely"] + yoff
+        }
+        if(sign(cdf[i, "diff"]) == -1) {
+          cdf[i, "xstart"] <- cdf[i, "xstart"] - xoff
+          cdf[i, "xend"] <- cdf[i, "xend"] + xoff
+          cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
+          cdf[i, "yend"] <- cdf[i, "yend"] - yoff
+          cdf[i, "labely"] <- cdf[i, "labely"] - yoff
+        }
+      }
+    }
   }
 
   # test to make sure splits are unique and sum up to original data frame

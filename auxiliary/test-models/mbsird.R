@@ -85,5 +85,10 @@ time[[id]]$timeval = 0.1
 
 mbmodel$time = time
 
+model_list <- convert_from_modelbuilder(mbmodel)
+diagram_list <- prepare_diagram(model_list)
+make_diagram(diagram_list)
+
+
 mbsird <- mbmodel
 usethis::use_data(mbsird, overwrite = TRUE)

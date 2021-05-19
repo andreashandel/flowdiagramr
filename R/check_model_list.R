@@ -69,7 +69,7 @@ check_model_list <- function(model_list) {
     vars_in_flows <- unique(vps[which(vps %in% model_list$varlabels)])
     if(length(vars_in_flows) > 2){
       msg <- paste0("flowdiagramr cannot currently process flows that include\n",
-                    "an interaction between more than three variables. Consider\n",
+                    "an interaction between more than two variables. Consider\n",
                     "breaking flows apart.")
       return(list(bad = TRUE, msg = msg))
     }
