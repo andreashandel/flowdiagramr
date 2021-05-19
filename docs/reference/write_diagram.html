@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a ggplot2 model diagram. — make_diagram • flowdiagramr</title>
+<title>Generate a reproducible R script to make the diagram. — write_diagram • flowdiagramr</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,11 +46,13 @@
 
 
 
-<meta property="og:title" content="Make a ggplot2 model diagram. — make_diagram" />
-<meta property="og:description" content="make_diagram() generates a ggplot2 object based on the data frames
-made with prepare_diagram. The function only applies
-aesthetics that are not associated with x, y locations. Colors, linetypes,
-and other graphical options can be set by the user." />
+<meta property="og:title" content="Generate a reproducible R script to make the diagram. — write_diagram" />
+<meta property="og:description" content="write_diagram() generates code in the form of a stand-alone R script to
+reproduce a diagram, including the model inputs, the data frames from
+prepare_diagram, and the ggplot2 code. The R script
+is intended to run &quot;as-is&quot;, meaning there is code to make the objects
+the user sends as arguments (either the model or the
+diagram_list)." />
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png" />
 
 
@@ -155,98 +157,48 @@ and other graphical options can be set by the user." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a ggplot2 model diagram.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/andreashandel/flowdiagramr/blob/master/R/make_diagram.R'><code>R/make_diagram.R</code></a></small>
-    <div class="hidden name"><code>make_diagram.Rd</code></div>
+    <h1>Generate a reproducible R script to make the diagram.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/andreashandel/flowdiagramr/blob/master/R/write_diagram.R'><code>R/write_diagram.R</code></a></small>
+    <div class="hidden name"><code>write_diagram.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>make_diagram()</code> generates a <strong>ggplot2</strong> object based on the data frames
-made with <code><a href='prepare_diagram.html'>prepare_diagram</a></code>. The function only applies
-aesthetics that are not associated with x, y locations. Colors, linetypes,
-and other graphical options can be set by the user.</p>
+    <p><code>write_diagram()</code> generates code in the form of a stand-alone R script to
+reproduce a diagram, including the model inputs, the data frames from
+<code><a href='prepare_diagram.html'>prepare_diagram</a></code>, and the <strong>ggplot2</strong> code. The R script
+is intended to run "as-is", meaning there is code to make the objects
+the user sends as arguments (either the <code>model</code> or the
+<code>diagram_list</code>).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_diagram</span>(
-  <span class='kw'>diagram_list</span>,
-  diagram_settings = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(label_flows = <span class='fl'>TRUE</span>, external_flows = <span class='fl'>TRUE</span>, interaction_label
-    = <span class='fl'>TRUE</span>, node_outline_color = <span class='fl'>NA</span>, node_fill_color = <span class='st'>"#6aa4c8"</span>, node_text_color =
-    <span class='st'>"white"</span>, node_text_size = <span class='fl'>10</span>, flow_text_color = <span class='st'>"black"</span>, flow_text_size = <span class='fl'>5</span>,
-    main_arrow_color = <span class='st'>"grey25"</span>, main_arrow_linetype = <span class='st'>"solid"</span>, main_arrow_size = <span class='fl'>0.7</span>,
-    interaction_arrow_color = <span class='st'>"grey25"</span>, interaction_arrow_linetype = <span class='st'>"dashed"</span>,
-    interaction_arrow_size = <span class='fl'>0.7</span>),
+    <pre class="usage"><span class='fu'>write_diagram</span>(
+  model_list = <span class='kw'>NULL</span>,
+  diagram_list = <span class='kw'>NULL</span>,
+  make_diagram_settings = <span class='kw'>NULL</span>,
   use_varnames = <span class='fl'>FALSE</span>,
-  with_grid = <span class='fl'>FALSE</span>
+  with_grid = <span class='fl'>FALSE</span>,
+  directory = <span class='kw'>NULL</span>,
+  filename = <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>diagram_list</th>
-      <td><p>A list of data frames returned from the
-<code>prepare_diagram</code> function. See that function for details
-about this object.</p></td>
+      <th>model_list</th>
+      <td><p>A <strong>flowdiagramr</strong> input list. See
+<code><a href='prepare_diagram.html'>prepare_diagram</a></code>.</p></td>
     </tr>
     <tr>
-      <th>diagram_settings</th>
-      <td><p>A list of diagram aesthetic settings. The
-following elements are supported and default values are provided:</p><ul>
-<li><p><code>label_flows</code>: A logical indicating whether to label the flows
-(TRUE, default) or not (FALSE).</p></li>
-<li><p><code>external_flows</code>: A logical indicating whether to include flows into
-and out of the system (external flows). Default is TRUE (include).</p></li>
-<li><p><code>interaction_label</code>: A logical indicating whether to make the diagram
-with interaction terms (typically curved arrows leading to the
-mid point of another arrow) or to simply label the main flow. See
-vignettes for examples.</p></li>
-<li><p><code>node_outline_color</code>: A character string or vector of character strings
-specifying the color of node outlines. If a vector, the colors will be
-recycled in the order of the variables in the supplied data frame.</p></li>
-<li><p><code>node_fill_color</code>: A character string or vector of character strings
-specifying the fill color of nodes. If a vector, the colors will be
-recycled in the order of the variables in the supplied data frame.</p></li>
-<li><p><code>node_text_color</code>: A character string or vector of character strings
-specifying the text color for node labels. If a vector, the colors will
-be recycled in the order of the variables in the supplied data frame.</p></li>
-<li><p><code>node_text_size</code>: A numeric scalar specifying the text size for node
-labels. Default value is 8.</p></li>
-<li><p><code>flow_text_color</code>: A character string or vector of character strings
-specifying the text color for flow labels. If a vector, the colors will
-be recycled in the order of the flows in the supplied data frame.</p></li>
-<li><p><code>flow_text_size</code>: A numeric scalar specifying the text size for flow
-labels. Default value is 3.</p></li>
-<li><p><code>main_arrow_color</code>: A character string or vector of character strings
-specifying the text color for non-interaction flow arrows.
-If a vector, the colors will be recycled in the order of the flows
-in the supplied data frame.</p></li>
-<li><p><code>main_arrow_linetype</code>: Either a numeric scalar or a character scalar
-specifying the linetype for main arrows (non-interaction arrows). This
-argument is passed to the <code>linetype</code> argument in ggplot2. From
-the ggplot2 documentation: "The linetype aesthetic can be specified
-with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
-3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
-discrete variable, or a string of an even number (up to eight) of
-hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 1 (solid).</p></li>
-<li><p><code>main_arrow_size</code>: A numeric scaler specifying the line size for the
-main arrows (non-interaction arrows).</p></li>
-<li><p><code>interaction_arrow_color</code>: A character string or vector of character
-strings specifying the text color for interaction flow arrows.
-If a vector, the colors will be recycled in the order of the flows
-in the supplied data frame.</p></li>
-<li><p><code>interaction_arrow_linetype</code>: Either a numeric scalar or a character scalar
-specifying the linetype for interaction arrows. This
-argument is passed to the <code>linetype</code> argument in ggplot2. From
-the ggplot2 documentation: "The linetype aesthetic can be specified
-with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
-3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
-discrete variable, or a string of an even number (up to eight) of
-hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 2 (dashed).</p></li>
-<li><p><code>interaction_arrow_size</code>: A numeric scalar specifying the line size for
-the interaction arrows.</p></li>
-</ul></td>
+      <th>diagram_list</th>
+      <td><p>A <strong>flowdiagramr</strong> input structure, resulting from
+a call to <code><a href='prepare_diagram.html'>prepare_diagram</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>make_diagram_settings</th>
+      <td><p>A named list of diagram aesthetics. See
+<code><a href='make_diagram.html'>make_diagram</a></code> documentation. Default is <code>NULL</code> and the
+default values from <code><a href='make_diagram.html'>make_diagram</a></code> are used.</p></td>
     </tr>
     <tr>
       <th>use_varnames</th>
@@ -260,11 +212,21 @@ provided in the <code>varnames</code> element of <code>model_list</code> (<code>
 with a grid. Default is FALSE. The grid can be helpful if you
 want/need to move items around.</p></td>
     </tr>
+    <tr>
+      <th>directory</th>
+      <td><p>File directory in which to save the R file. Defualt
+location is the current working directory.</p></td>
+    </tr>
+    <tr>
+      <th>filename</th>
+      <td><p>Name of the file, must end in '.R'. Default name is
+'diagram_code.R'.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A ggplot2 object.</p>
+    <p>A message telling the user where the file is.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span>)
@@ -274,16 +236,19 @@ want/need to move items around.</p></td>
               R_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"g*I"</span>))
 <span class='kw'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(data = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> ),
                         nrow = <span class='fl'>2</span>, ncol = <span class='fl'>3</span>, byrow = <span class='fl'>TRUE</span>)
-<span class='kw'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(varlabels = <span class='kw'>varlabels</span>, varnames = <span class='kw'>varnames</span>,
+<span class='kw'>model_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(varlabels = <span class='kw'>varlabels</span>, varnames = <span class='kw'>varnames</span>,
 flows = <span class='kw'>flows</span>, varlocations = <span class='kw'>varlocations</span>)
-<span class='kw'>diagram_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_diagram.html'>prepare_diagram</a></span>(model_list = <span class='kw'>mymodel</span>)
+<span class='kw'>diagram_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_diagram.html'>prepare_diagram</a></span>(model_list = <span class='kw'>model_list</span>)
 
-<span class='co'># make diagram without grid</span>
-<span class='kw'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span>(<span class='kw'>diagram_list</span>)
-
-<span class='co'># make diagram with grid</span>
-<span class='kw'>diagram_with_grid</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span>(<span class='kw'>diagram_list</span>, with_grid = <span class='fl'>TRUE</span>)
-</div></pre>
+<span class='co'># generate R code from model_list</span>
+<span class='fu'>write_diagram</span>(model_list = <span class='kw'>model_list</span>)
+</div><div class='output co'>#&gt; <span class='error'>Error in menu(c("Yes", "No"), "Specified file already exists. Do you want to overwrite?"): menu() cannot be used non-interactively</span></div><div class='input'>
+<span class='co'># generate R code from diagram_list</span>
+<span class='fu'>write_diagram</span>(diagram_list = <span class='kw'>diagram_list</span>)
+</div><div class='output co'>#&gt; <span class='error'>Error in menu(c("Yes", "No"), "Specified file already exists. Do you want to overwrite?"): menu() cannot be used non-interactively</span></div><div class='input'>
+<span class='co'># generate R code from both</span>
+<span class='fu'>write_diagram</span>(model_list = <span class='kw'>model_list</span>, diagram_list = <span class='kw'>diagram_list</span>)
+</div><div class='output co'>#&gt; <span class='error'>Error in menu(c("Yes", "No"), "Specified file already exists. Do you want to overwrite?"): menu() cannot be used non-interactively</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -1,7 +1,7 @@
 library(ggplot2)
 library(flowdiagramr)
 
-model_list <- list(varlabels = c("S", "I", "R"), flows = list(S_flows = "-b*S*I", I_flows = c("b*S*I", "-g*I"), R_flows = "g*I"))
+model_list <- list(varlabels = c("S", "I", "R"), varnames = c("Susceptible", "Infected", "Recovered"), flows = list(S_flows = "-b*S*I", I_flows = c("b*S*I", "-g*I"), R_flows = "g*I"), varlocations = structure(c("S", "", "", "I", "R", ""), .Dim = 2:3))
 
 diagram_list <- prepare_diagram(model_list = model_list)
 

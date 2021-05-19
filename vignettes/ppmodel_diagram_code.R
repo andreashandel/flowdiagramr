@@ -65,7 +65,7 @@ diagram_plot <- diagram_plot +
 diagram_plot <- diagram_plot +
   geom_text(
     data = nodes,
-    aes(x = x, y = y, label = label),
+    aes(x = labelx, y = labely, label = label),
     size = node_text_size,
     color = node_text_color
   )
@@ -78,39 +78,42 @@ diagram_plot <- diagram_plot +
 # curved_edges dataframe. The rows of the data frame are looped over
 # so that the "interaction" value can be evaluated to determine the
 # linetype to use.
-for(i in 1:nrow(horizontal_edges)) {
-  dat <- horizontal_edges[i, ]  # get a temporary data frame for this row
+if(nrow(horizontal_edges) > 0) {
+  for(i in 1:nrow(horizontal_edges)) {
+    dat <- horizontal_edges[i, ]  # get a temporary data frame for this row
 
-  # define the temporary aesthetics for this line based on the
-  # interaction
-  this_line_type <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_arrow_linetype,
-                           main_arrow_linetype)
-  this_line_color <- ifelse(as.numeric(dat["interaction"]),
-                            interaction_arrow_color,
-                            main_arrow_color)
-  this_arrow_fill <- ifelse(as.numeric(dat["interaction"]),
-                            interaction_arrow_color,
-                            main_arrow_color)
-  this_line_size <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_arrow_size,
-                           main_arrow_size)
+    # define the temporary aesthetics for this line based on the
+    # interaction
+    this_line_type <- ifelse(as.numeric(dat["interaction"]),
+                             interaction_arrow_linetype,
+                             main_arrow_linetype)
+    this_line_color <- ifelse(as.numeric(dat["interaction"]),
+                              interaction_arrow_color,
+                              main_arrow_color)
+    this_arrow_fill <- ifelse(as.numeric(dat["interaction"]),
+                              interaction_arrow_color,
+                              main_arrow_color)
+    this_line_size <- ifelse(as.numeric(dat["interaction"]),
+                             interaction_arrow_size,
+                             main_arrow_size)
 
-  diagram_plot <- diagram_plot +
-    geom_segment(
-      data = dat,
-      aes(x = xstart,
-          y = ystart,
-          xend = xend,
-          yend = yend),
-      linetype = this_line_type,
-      arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-      color = this_line_color,
-      arrow.fill = this_arrow_fill,
-      lineend = "round",
-      size = this_line_size
-    )
+    diagram_plot <- diagram_plot +
+      geom_segment(
+        data = dat,
+        aes(x = xstart,
+            y = ystart,
+            xend = xend,
+            yend = yend),
+        linetype = this_line_type,
+        arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+        color = this_line_color,
+        arrow.fill = this_arrow_fill,
+        lineend = "round",
+        size = this_line_size
+      )
+  }
 }
+
 
 # The default is label_flows = TRUE, but the user can specify not
 # to label flows. So the text above flow arrows is wrapped in an if
@@ -122,7 +125,7 @@ if(label_flows == TRUE) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = horizontal_edges,
-      aes(x = xmid, y = ymid, label = label),
+      aes(x = labelx, y = labely, label = label),
       size = flow_text_size,
       color = flow_text_color
     )
@@ -154,7 +157,7 @@ if(external_flows == TRUE) {
     diagram_plot <- diagram_plot +
       geom_text(
         data = vertical_edges,
-        aes(x = xmid, y = ymid, label = label),
+        aes(x = labelx, y = labely, label = label),
         size = flow_text_size,
         color = flow_text_color
       )
@@ -172,7 +175,7 @@ diagram_plot <- diagram_plot +
     data = feedback_edges,
     ncp = 100,  # number of "points" over which to interpolate the curve
     curvature = -2,  # large curvature to get near circular feedback
-    aes(x = xstart-0.25, y = ystart+0.5, xend = xend+0.25, yend = yend+0.5),
+    aes(x = xstart, y = ystart, xend = xend, yend = yend),
     arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
     color = main_arrow_color,
     arrow.fill = main_arrow_color,
@@ -186,7 +189,7 @@ if(label_flows == TRUE) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = feedback_edges,
-      aes(x = xmid, y = ymid+0.85, label = label),
+      aes(x = labelx, y = labely, label = label),
       size = flow_text_size,
       color = flow_text_color
     )

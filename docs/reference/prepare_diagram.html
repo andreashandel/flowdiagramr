@@ -56,7 +56,14 @@ make_diagram, which creates a ggplot2 based
 diagram. Attempts to make good decisions regarding the placement of nodes,
 flows (arrow segment), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
-in the vignettes." />
+in the vignettes.
+IMPORTANT. All variables must start with an upper case letter (e.g.,
+S, Si, or Aa). All parameters must start with a lower case letter (e.g.,
+b, bBmax, kS, ks). All variables and parameters MUST be separated by
+math notation (e.g., +, -, *, /).
+EXAMPLE. The following includes a parameter b and two variables, S
+and I: b*S*I. The following includes a parameter s and two
+variables, Bg and Ia: Bg*s*Ia." />
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png" />
 
 
@@ -177,9 +184,16 @@ diagram. Attempts to make good decisions regarding the placement of nodes,
 flows (arrow segment), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
 in the vignettes.</p>
+<p>IMPORTANT. All variables must start with an upper case letter (e.g.,
+S, Si, or Aa). All parameters must start with a lower case letter (e.g.,
+b, bBmax, kS, ks). All variables and parameters MUST be separated by
+math notation (e.g., +, -, *, /).</p>
+<p>EXAMPLE. The following includes a parameter <em>b</em> and two variables, <em>S</em>
+and <em>I</em>: <code>b*S*I</code>. The following includes a parameter <em>s</em> and two
+variables, <em>Bg</em> and <em>Ia</em>: <code>Bg*s*Ia</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prepare_diagram</span><span class='op'>(</span><span class='va'>model_list</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>prepare_diagram</span>(<span class='kw'>model_list</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -219,19 +233,17 @@ data frames for defining connects (see below).</p></li>
 <li><p><code>horizontal_edges</code>: A data frame containing name and position
 information for straight flows from one node to an adjacent node. The
 data frame contains nine (9) columns:</p><ul>
-<li><p><code>to</code>: The node id to which the arrow will point. That is, the node
+<li><p><code>to</code>: The node to which the arrow will point. That is, the node
 receiving the flow.</p></li>
-<li><p><code>from</code>: The node id from which the arrow originate. That is, the
+<li><p><code>from</code>: The node from which the arrow originate. That is, the
 node donating the flow.</p></li>
 <li><p><code>label</code>: The label of the flow. Typically a mathematical expression.</p></li>
 <li><p><code>xstart</code>: The starting horizontal position of the arrow.</p></li>
 <li><p><code>ystart</code>: The starting veritcal position of the arrow.</p></li>
 <li><p><code>xend</code>: The ending horizontal position of the arrow.</p></li>
 <li><p><code>yend</code>: The ending vertical position of the arrow.</p></li>
-<li><p><code>xmid</code>: The horizontal midpoint of the arrow. Used for label
-placement.</p></li>
-<li><p><code>ymid</code>: The vertical midpoint of the arrow. Used for label
-placement.</p></li>
+<li><p><code>labelx</code>: Horizontal position (midpoint) of label.</p></li>
+<li><p><code>labely</code>: Vertical position (midpoint) of label.</p></li>
 </ul></li>
 <li><p><code>vertical_edges</code>: A data frame containing name and position
 information for flows that arrive from out of the system or leave the
@@ -246,25 +258,10 @@ a vertical entrance or exit.</p></li>
 information for, typically, two types of curved arrows: (1) interaction
 arrows that point toward a horizontal arrow or (2) a physical flow
 that would normally be a horizontal arrow but must bypass at least
-one node. The data frame has eleven (11) columns:</p><ul>
-<li><p><code>to</code>: The node id to which the arrow will point. That is, the node
-receiving the flow.</p></li>
-<li><p><code>from</code>: The node id from which the arrow originate. That is, the
-node donating the flow.</p></li>
-<li><p><code>label</code>: The label of the flow. Typically a mathematical expression.</p></li>
-<li><p>interaction: A logical indicating whether the flow represents
-an interaction between two or more nodes. If <code>TRUE</code>, the arrow
-is drawn as dashed by default.</p></li>
-<li><p><code>xstart</code>: The starting horizontal position of the arrow.</p></li>
-<li><p><code>ystart</code>: The starting veritcal position of the arrow.</p></li>
-<li><p><code>xend</code>: The ending horizontal position of the arrow.</p></li>
-<li><p><code>yend</code>: The ending vertical position of the arrow.</p></li>
+one node. The data frame has eleven (10) columns. The data frame contains
+the same 9 columns as the <code>horizontal_edges</code> data frame, with one addition:</p><ul>
 <li><p><code>curvature</code>: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.</p></li>
-<li><p><code>row</code>: The row on which the arrow is connecting nodes;
-this is also evident from the <code>ystart</code> and <code>yend</code> values.</p></li>
-<li><p><code>labelx</code>: Horizontal position of label.</p></li>
-<li><p><code>labely</code>: Vertical position of label.</p></li>
 </ul></li>
 <li><p><code>feedback_edges</code>: A data frame containing name and position
 information for arrows indicating a feedback into the same node. The
@@ -275,37 +272,37 @@ the same values for feedback edges.</p></li>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span><span class='op'>)</span>
-<span class='va'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span><span class='op'>)</span>  <span class='co'># optional</span>
-<span class='va'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>S_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-b*S*I"</span><span class='op'>)</span>,
-              I_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span><span class='op'>)</span>,
-              R_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"g*I"</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> <span class='op'>)</span>,
-                        nrow <span class='op'>=</span> <span class='fl'>2</span>, ncol <span class='op'>=</span> <span class='fl'>3</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varlabels <span class='op'>=</span> <span class='va'>varlabels</span>, varnames <span class='op'>=</span> <span class='va'>varnames</span>,
-flows <span class='op'>=</span> <span class='va'>flows</span>, varlocations <span class='op'>=</span> <span class='va'>varlocations</span><span class='op'>)</span>
-<span class='fu'>prepare_diagram</span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>mymodel</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='kw'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span>)
+<span class='kw'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span>)  <span class='co'># optional</span>
+<span class='kw'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(S_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"-b*S*I"</span>),
+              I_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span>),
+              R_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"g*I"</span>))
+<span class='kw'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(data = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> ),
+                        nrow = <span class='fl'>2</span>, ncol = <span class='fl'>3</span>, byrow = <span class='fl'>TRUE</span>)
+<span class='kw'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(varlabels = <span class='kw'>varlabels</span>, varnames = <span class='kw'>varnames</span>,
+flows = <span class='kw'>flows</span>, varlocations = <span class='kw'>varlocations</span>)
+<span class='fu'>prepare_diagram</span>(model_list = <span class='kw'>mymodel</span>)
 </div><div class='output co'>#&gt; $nodes
-#&gt;   id label        name row x  y xmin xmax ymin ymax
-#&gt; 1  1     S Susceptible   1 0  0 -0.5  0.5 -0.5  0.5
-#&gt; 2  2     I    Infected   1 3 -2  2.5  3.5 -2.5 -1.5
-#&gt; 3  3     R   Recovered   1 6  0  5.5  6.5 -0.5  0.5
+#&gt;   label        name xmin xmax ymin ymax labelx labely
+#&gt; 1     S Susceptible -0.5  0.5 -0.5  0.5      0      0
+#&gt; 2     I    Infected  2.5  3.5 -2.5 -1.5      3     -2
+#&gt; 3     R   Recovered  5.5  6.5 -0.5  0.5      6      0
 #&gt; 
 #&gt; $horizontal_edges
-#&gt;   to from label interaction xstart ystart xend yend xmid  ymid
-#&gt; 1  2    1             FALSE    0.5      0  2.5   -2  1.5 -0.75
-#&gt; 2  3    2   g*I       FALSE    3.5     -2  5.5    0  4.5 -0.75
+#&gt;   to from label interaction xstart ystart xend yend labelx labely
+#&gt; 1  I    S             FALSE    0.5      0  2.5   -2    1.5  -0.75
+#&gt; 2  R    I   g*I       FALSE    3.5     -2  5.5    0    4.5  -0.75
 #&gt; 
 #&gt; $vertical_edges
-#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  
+#&gt; [1] to     from   label  xstart ystart xend   yend   labelx labely
 #&gt; &lt;0 rows&gt; (or 0-length row.names)
 #&gt; 
 #&gt; $curved_edges
-#&gt;   to from label interaction xstart ystart xend yend curvature row labelx labely
-#&gt; 1 NA    2 b*S*I        TRUE      3   -1.5  1.5   -1       0.4   1   2.35  -0.75
+#&gt;   to from label interaction xstart ystart xend yend curvature labelx labely
+#&gt; 1 NA    I b*S*I        TRUE      3   -1.5  1.5   -1       0.4   2.35  -0.75
 #&gt; 
 #&gt; $feedback_edges
-#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  
+#&gt; [1] to     from   label  xstart ystart xend   yend   labelx labely
 #&gt; &lt;0 rows&gt; (or 0-length row.names)
 #&gt; </div><div class='input'>
 </div></pre>

@@ -136,65 +136,68 @@
 </p>
 </div>
 <p>We’ll try to recreate a simplified version of this. First, we’ll specify the model.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"P"</span>,<span class="st">"B"</span>,<span class="st">"Pl"</span>,<span class="st">"R"</span>,<span class="st">"Re"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lamp doesn't work?"</span>,<span class="st">"Lamp plugged in?"</span>,<span class="st">"Bulb burned out?"</span>,<span class="st">"Plug in lamp"</span>,<span class="st">"Replace bulb"</span>,<span class="st">"Repair lamp"</span><span class="op">)</span>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="kw">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L"</span>,<span class="st">"P"</span>,<span class="st">"B"</span>,<span class="st">"Pl"</span>,<span class="st">"R"</span>,<span class="st">"Re"</span>)
+<span class="kw">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Lamp doesn't work?"</span>,<span class="st">"Lamp plugged in?"</span>,<span class="st">"Bulb burned out?"</span>,<span class="st">"Plug in lamp"</span>,<span class="st">"Replace bulb"</span>,<span class="st">"Repair lamp"</span>)
 
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>L_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-L"</span><span class="op">)</span>, 
-             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"-no*P"</span>,<span class="st">"-yes*P"</span><span class="op">)</span>, 
-             B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes*P"</span>,<span class="st">"-yes*B"</span>, <span class="st">"-no*B"</span><span class="op">)</span>,
-             Pl_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no*P"</span><span class="op">)</span>,
-             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes*B"</span><span class="op">)</span>,
-             Re_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no*B"</span><span class="op">)</span>
-             <span class="op">)</span>
-<span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>, <span class="st">""</span>,
+<span class="kw">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(L_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"-L"</span>), 
+             P_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L"</span>,<span class="st">"-no*P"</span>,<span class="st">"-yes*P"</span>), 
+             B_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"yes*P"</span>,<span class="st">"-yes*B"</span>, <span class="st">"-no*B"</span>),
+             Pl_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"no*P"</span>),
+             R_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"yes*B"</span>),
+             Re_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"no*B"</span>)
+             )
+<span class="kw">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(data = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L"</span>, <span class="st">""</span>,
                                <span class="st">"P"</span>, <span class="st">"Pl"</span>,
                                <span class="st">"B"</span>, <span class="st">"R"</span>, 
-                               <span class="st">"Re"</span>,<span class="st">""</span> <span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, 
-               flows <span class="op">=</span> <span class="va">flows</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></code></pre></div>
+                               <span class="st">"Re"</span>,<span class="st">""</span> ), ncol = <span class="fl">2</span>, byrow = <span class="fl">TRUE</span>)
+<span class="kw">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(varlabels = <span class="kw">varlabels</span>, varnames = <span class="kw">varnames</span>, 
+               flows = <span class="kw">flows</span>, varlocations = <span class="kw">varlocations</span>)
+</pre></div>
 <p>Note that to make the diagram logic work, we have to define actual flows. For instance we can’t just label the various flows with “Yes” or “No” like in the original diagram. If we did this, <strong>flowdiagramr</strong> wouldn’t know with which boxes/variables to associate the arrows.</p>
 <p>Now, it’s the standard steps of preparing, making and plotting the diagram.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
-<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span>(<span class="kw">mymodel</span>)
+<span class="kw">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span>(<span class="kw">diagram_list</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">my_diagram</span>)
+<span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span>
+</pre></div>
 <p><img src="F_non_model_diagrams_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <p>This looks similar to the original, but of course not quite as good. We can get fairly close with a few adjustments.</p>
 <div id="notes-of-things-that-need-adressing" class="section level2">
 <h2 class="hasAnchor">
 <a href="#notes-of-things-that-need-adressing" class="anchor"></a>Notes of things that need adressing</h2>
 <p>Looking at diagram_list, some things look odd:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw">diagram_list</span>)
 <span class="co">#&gt; $nodes</span>
-<span class="co">#&gt;   id label                 name row x  y xmin xmax ymin ymax</span>
-<span class="co">#&gt; 1  1     L Lamp\ndoesn't\nwork?   1 0  0 -0.5  0.5 -0.5  0.5</span>
-<span class="co">#&gt; 2  2     P   Lamp\nplugged\nin?   1 0 -2 -0.5  0.5 -2.5 -1.5</span>
-<span class="co">#&gt; 3  3     B   Bulb\nburned\nout?   1 0 -4 -0.5  0.5 -4.5 -3.5</span>
-<span class="co">#&gt; 4  4    Pl       Plug\nin\nlamp   1 3 -2  2.5  3.5 -2.5 -1.5</span>
-<span class="co">#&gt; 5  5     R        Replace\nbulb   1 3 -4  2.5  3.5 -4.5 -3.5</span>
-<span class="co">#&gt; 6  6    Re         Repair\nlamp   1 0 -6 -0.5  0.5 -6.5 -5.5</span>
+<span class="co">#&gt;   label                 name xmin xmax ymin ymax labelx labely</span>
+<span class="co">#&gt; 1     L Lamp\ndoesn't\nwork? -0.5  0.5 -0.5  0.5      0      0</span>
+<span class="co">#&gt; 2     P   Lamp\nplugged\nin? -0.5  0.5 -2.5 -1.5      0     -2</span>
+<span class="co">#&gt; 3     B   Bulb\nburned\nout? -0.5  0.5 -4.5 -3.5      0     -4</span>
+<span class="co">#&gt; 4    Pl       Plug\nin\nlamp  2.5  3.5 -2.5 -1.5      3     -2</span>
+<span class="co">#&gt; 5     R        Replace\nbulb  2.5  3.5 -4.5 -3.5      3     -4</span>
+<span class="co">#&gt; 6    Re         Repair\nlamp -0.5  0.5 -6.5 -5.5      0     -6</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $horizontal_edges</span>
-<span class="co">#&gt;   to from label interaction xstart ystart xend yend xmid ymid</span>
-<span class="co">#&gt; 1  2    1     L       FALSE      0   -0.5    0 -1.5 0.25   -1</span>
-<span class="co">#&gt; 2  3    2 yes*P       FALSE      0   -2.5    0 -3.5 0.25   -3</span>
+<span class="co">#&gt;   to from label interaction xstart ystart xend yend labelx labely</span>
+<span class="co">#&gt; 1  P    L     L       FALSE      0   -0.5    0 -1.5   0.25     -1</span>
+<span class="co">#&gt; 2  B    P yes*P       FALSE      0   -2.5    0 -3.5   0.25     -3</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $vertical_edges</span>
-<span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  </span>
+<span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   labelx labely</span>
 <span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $curved_edges</span>
-<span class="co">#&gt;   to from label interaction xstart ystart xend yend curvature row labelx labely</span>
-<span class="co">#&gt; 1  4    2  no*P       FALSE    0.5     -2  2.5   -2       0.5   1   2.25  -2.05</span>
-<span class="co">#&gt; 2  5    3 yes*B       FALSE    0.5     -4  2.5   -4       0.5   1   2.25  -4.05</span>
-<span class="co">#&gt; 3  6    3  no*B       FALSE    0.0     -4  0.0   -6       0.5   1     NA     NA</span>
+<span class="co">#&gt;   to from label interaction xstart ystart xend yend curvature labelx labely</span>
+<span class="co">#&gt; 1 Pl    P  no*P       FALSE    0.5     -2  2.5   -2       0.5   2.25  -2.05</span>
+<span class="co">#&gt; 2  R    B yes*B       FALSE    0.5     -4  2.5   -4       0.5   2.25  -4.05</span>
+<span class="co">#&gt; 3 Re    B  no*B       FALSE    0.0     -4  0.0   -6       0.5     NA     NA</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $feedback_edges</span>
-<span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   xmid   ymid  </span>
-<span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></code></pre></div>
+<span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   labelx labely</span>
+<span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span>
+</pre></div>
 <p>Why are all nodes classified as row = 1? Seems like the varlocation data is not properly processed?</p>
 <p>There are two flows classified as horizontal, even though they are vertical. They are drawn correctly, but should probably be in the vertical_edges element? Similarly, several flows are in the curved compartment that should be in horizontal or vertical.</p>
 <p>I assume the curved ones are classified as curved since they are not from adjacent variables if the variables are considered in order. However, the order/location is updated by providing the matrix. We thus need to compute adjacency differently if the matrix is there. Basically, if for a given variable, the flow goes to another variable that’s a neighbor located to the left/right/above/below we should have straight horizontal/vertical edges. if connection is to a variable that is a “corner neighbor” 45 degrees away, we should probably do a straight arrow at 45 degrees. curved if the variable is not a neighbor (i.e not +/- 1 row/column).</p>
