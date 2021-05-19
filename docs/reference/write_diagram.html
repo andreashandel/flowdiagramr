@@ -229,7 +229,8 @@ location is the current working directory.</p></td>
     <p>A message telling the user where the file is.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span>)
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span>)
 <span class='kw'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span>)  <span class='co'># optional</span>
 <span class='kw'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(S_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"-b*S*I"</span>),
               I_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span>),
@@ -242,13 +243,14 @@ flows = <span class='kw'>flows</span>, varlocations = <span class='kw'>varlocati
 
 <span class='co'># generate R code from model_list</span>
 <span class='fu'>write_diagram</span>(model_list = <span class='kw'>model_list</span>)
-</div><div class='output co'>#&gt; <span class='error'>Error in menu(c("Yes", "No"), "Specified file already exists. Do you want to overwrite?"): menu() cannot be used non-interactively</span></div><div class='input'>
+
 <span class='co'># generate R code from diagram_list</span>
 <span class='fu'>write_diagram</span>(diagram_list = <span class='kw'>diagram_list</span>)
-</div><div class='output co'>#&gt; <span class='error'>Error in menu(c("Yes", "No"), "Specified file already exists. Do you want to overwrite?"): menu() cannot be used non-interactively</span></div><div class='input'>
-<span class='co'># generate R code from both</span>
+
+<span class='co'>#' # generate R code from both</span>
 <span class='fu'>write_diagram</span>(model_list = <span class='kw'>model_list</span>, diagram_list = <span class='kw'>diagram_list</span>)
-</div><div class='output co'>#&gt; <span class='error'>Error in menu(c("Yes", "No"), "Specified file already exists. Do you want to overwrite?"): menu() cannot be used non-interactively</span></div></pre>
+}
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

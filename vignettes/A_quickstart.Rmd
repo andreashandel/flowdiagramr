@@ -173,46 +173,43 @@ We'll finish with one more model, this time doing a slightly more complex one.
 
 This is an SIR model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (think e.g. Cholera in water) and susceptible can get infected that way. We also still allow direct transmission. And on top of that, we are considering 2 distinct groups (e.g. children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**). This gives us 2x3+1=7 compartments. Here is the model
 
+There are several ways to write this model, but only one way currently works for **`r pkg`**.
+Looking at several of the formulations is a good way to demonstrate some of the current limitations of **`r pkg`**.
+In the first example below, we use typical math structure to embed interactions among variables in parantheses.
+Unfortunately, **`r pkg`** cannot parse those interactions, but it does return a (hopefully) informative error message.
 
+```{r, error = TRUE}
+varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-Sc*(bcc*Ic+bca*Ia+bcp*P)"),
+             Ic_flows = c("Sc*(bcc*Ic+bca*Ia+bcp*P)","-gc*Ic"),
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*(bac*Ic+baa*Ia+bap*P)"),
+             Ia_flows = c("Sa*(bac*Ic+baa*Ia+bap*P)","-ga*Ia"),
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             )
+model_list = list(varlabels = varlabels, flows = flows)
+diagram_list <- prepare_diagram(model_list)
+```
+Here we have rewritten the model by taking everything out of parantheses and explicitly writing all interactions.
+However, while copying and pasting, we accidentally put minus ("-") signs in front of all the `Ia_flows`.
+**`r pkg`** throws an error suggesting where we might have gone wrong.
 
-**I first wrote the model like this. Then realized that having the flows together won't work.**
-
-```{r}
-# varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-# flows = list(Sc_flows = c("-Sc*(bcc*Ic+bca*Ia+bcp*P)"),
-#              Ic_flows = c("Sc*(bcc*Ic+bca*Ia+bcp*P)","-gc*Ic"),
-#              Rc_flows = c("gc*Ic"),
-#              Sa_flows = c("-Sa*(bac*Ic+baa*Ia+bap*P)"),
-#              Ia_flows = c("Sa*(bac*Ic+baa*Ia+bap*P)","-ga*Ia"),
-#              Ra_flows = c("ga*Ia"),
-#              P_flows = c("sc*Ic","sa*Ia","-d*P")
-#              )
-# mymodel = list(varlabels = varlabels, flows = flows)
-# diagram_list <- prepare_diagram(mymodel)
-# model_plot <- make_diagram(diagram_list)
-# plot(model_plot)
+```{r, error = TRUE}
+varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
+             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),
+             Ia_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P","-ga*Ia"),
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             )
+model_list = list(varlabels = varlabels, flows = flows)
+diagram_list <- prepare_diagram(model_list)
 ```
 
-
-**This model is wrong, I accidentally left the minus signs in the Ia flows. prepare_diagram produces a very confusing error message.** 
-
-```{r}
-# varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-# flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
-#              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
-#              Rc_flows = c("gc*Ic"),
-#              Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
-#              Ia_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P","-ga*Ia"), 
-#              Ra_flows = c("ga*Ia"),
-#              P_flows = c("sc*Ic","sa*Ia","-d*P")
-#              )
-# mymodel = list(varlabels = varlabels, flows = flows)
-# diagram_list <- prepare_diagram(mymodel)
-# model_plot <- make_diagram(diagram_list)
-# plot(model_plot)
-```
-
-**This works. I labeled the pathogen creation parameters sc and sa, and then realized that I have compartments Sc and Sa. So this is not good nomenclature (and I'll likely change for final example), but I wanted to see if it works, and it does, which is good.**
+We remove those minus signs **`r pkg`** successfully generates a plot.
 
 ```{r}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")

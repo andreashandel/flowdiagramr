@@ -48,10 +48,32 @@ check_model_list <- function(model_list) {
     return(list(bad = TRUE, msg = msg))
   }
 
-
   # Check that naming for varlabels is correct (all start with upper case, no blank)
   # Check that naming for parameters is correct (all start with lower case, no blank)
   # THERE IS ALREADY CODE FOR THIS IN check_model IN modelbuilder.
+
+  # Check that each flow has no more than 2 variables, current limitation
+  # of the package until we write a parser.
+  flows <- model_list$flows
+  #turns flow list into matrix, adding NA, found it online,
+  #not sure how exactly it works (from AH and modelbuilder code base)
+  #variables are along rows and flows along columns.
+  flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
+  #strip leading +/- from flows and replace with no space
+  flowmatred <- sub("\\+|-","",flowmat)
+  #convert to character vector
+  flowtext <- as.character(flowmatred)
+  for(i in 1:length(flowtext)) {
+    tmp <- flowtext[i]
+    vps <- get_vars_pars(tmp)
+    vars_in_flows <- unique(vps[which(vps %in% model_list$varlabels)])
+    if(length(vars_in_flows) > 2){
+      msg <- paste0("flowdiagramr cannot currently process flows that include\n",
+                    "an interaction between more than three variables. Consider\n",
+                    "breaking flows apart.")
+      return(list(bad = TRUE, msg = msg))
+    }
+  }
 
 
   # Make sure all variables in flows are in the varlabels

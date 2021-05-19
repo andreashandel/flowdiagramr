@@ -390,12 +390,17 @@ prepare_diagram <- function(model_list) {
   dups <- as.matrix(table(edf$label))  # tally the occurences of each flow
   dupids <- rownames(dups)[which(dups[,1] > 1)]  # grab the one with >1 occurence
   if(length(dupids) > 0) {
-    flowdups <- subset(edf, label == dupids)  # take a subset of the edge data frame
-    edf <- subset(edf, label != dupids)  # restrict edf to non-duplicate flows
+    flowdups <- subset(edf, label %in% dupids)  # take a subset of the edge data frame
+    edf <- subset(edf, !(label %in% dupids))  # restrict edf to non-duplicate flows
     flowdups <- subset(flowdups, sign(to-from) == 1)  # keep left-to-right flows
     flowdups <- subset(flowdups, interaction == FALSE &
                          out_interaction == FALSE &
                          direct_interaction == FALSE)  # drop interactions
+    if(nrow(flowdups) == 0) {
+      stop(paste0("There are duplicate flows across variables that failed to\n",
+                  "parse easily. Are there '+' signs where you intended\n",
+                  "'-' signs, or vice versa."))
+    }
     diffs <- with(flowdups, to - from)  # calc difference between nodes
     mainid <- which(diffs == min(diffs))  # keep the minimum node diff as main flow
     maindup <- flowdups[mainid, ]  # extract just the main flow for physical flow
@@ -475,6 +480,8 @@ prepare_diagram <- function(model_list) {
       }
 
       # Redefine the "from" node as the other node in this interaction.
+      # PACKAGE CURRENTLY CANNOT HANDLE MULTIPLE INTERACTIONS IN
+      # A SINGLE FLOW -- CAN ONLY HAVE TWO VARIABLES PRESENT
       ints[i, "from"] <- ids[which(ids != tmp$from)]
       ints[i, "to"] <- NA  # set NA for "to" node for all interactions
     }
