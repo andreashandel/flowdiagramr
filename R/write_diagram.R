@@ -30,6 +30,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' varlabels <- c("S","I","R")
 #' varnames <- c("Susceptible","Infected","Recovered")  # optional
 #' flows <- list(S_flows = c("-b*S*I"),
@@ -47,8 +48,9 @@
 #' # generate R code from diagram_list
 #' write_diagram(diagram_list = diagram_list)
 #'
-#' # generate R code from both
+#' #' # generate R code from both
 #' write_diagram(model_list = model_list, diagram_list = diagram_list)
+#' }
 
 
 write_diagram <- function(model_list = NULL,
