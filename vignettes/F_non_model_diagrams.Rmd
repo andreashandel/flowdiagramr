@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 7
 )
 
 # avoid check where vignette filename must equal the vignette title
@@ -46,11 +47,11 @@ varlabels = c("L","P","B","Pl","R","Re")
 varnames = c("Lamp doesn't work?","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp")
 
 flows = list(L_flows = c("-L"), 
-             P_flows = c("L","-no*P","-yes*P"), 
-             B_flows = c("yes*P","-yes*B", "-no*B"),
-             Pl_flows = c("no*P"),
-             R_flows = c("yes*B"),
-             Re_flows = c("no*B")
+             P_flows = c("L","-no_P","-yes_P"), 
+             B_flows = c("yes_P","-yes_B", "-no_B"),
+             Pl_flows = c("no_P"),
+             R_flows = c("yes_B"),
+             Re_flows = c("no_B")
              )
 varlocations = matrix(data = c("L", "",
                                "P", "Pl",
@@ -65,27 +66,28 @@ Note that to make the diagram logic work, we have to define actual flows. For in
 
 Now, it's the standard steps of preparing, making and plotting the diagram.
 
-```{r}
+```{r, fig.height = 5}
 diagram_list <- prepare_diagram(mymodel)
-my_diagram <- make_diagram(diagram_list)
+my_diagram <- make_diagram(diagram_list, use_varnames = TRUE)
 plot(my_diagram)
 ```
 
 This looks similar to the original, but of course not quite as good. We can get fairly close with a few adjustments.
 
-## Notes of things that need adressing
+```{r, fig.height = 5}
+modified_diagram_list <- diagram_list
 
-Looking at diagram_list, some things look odd:
+# update the flow labels
+modified_diagram_list$horizontal_edges$label <- c("", "Yes", "No", "Yes", "No")
 
-```{r}
-print(diagram_list)
+my_diagram <- make_diagram(
+  modified_diagram_list, 
+  use_varnames = TRUE, 
+  diagram_settings = list(node_text_size = 3,
+                          flow_text_size= 4,
+                          node_text_color = "black",
+                          node_fill_color = c("pink", "yellow", "yellow",
+                                              "green", "green", "green")))
+plot(my_diagram)
 ```
-
-Why are all nodes classified as row = 1? Seems like the varlocation data is not properly processed?
-
-There are two flows classified as horizontal, even though they are vertical. They are drawn correctly, but should probably be in the vertical_edges element? Similarly, several flows are in the curved compartment that should be in horizontal or vertical.
-
-I assume the curved ones are classified as curved since they are not from adjacent variables if the variables are considered in order. However, the order/location is updated by providing the matrix. We thus need to compute adjacency differently if the matrix is there. Basically, if for a given variable, the flow goes to another variable that's a neighbor located to the left/right/above/below we should have straight horizontal/vertical edges. if connection is to a variable that is a "corner neighbor" 45 degrees away, we should probably do a straight arrow at 45 degrees. curved if the variable is not a neighbor (i.e not +/- 1 row/column).
-
-The final arrow is not labeled. I can't figure out why, label shows up ok in the diagram_list object.
-
+Now we've done it!

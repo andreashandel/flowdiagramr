@@ -650,6 +650,21 @@ prepare_diagram <- function(model_list) {
   edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25  # label slightly above the arrrow
   edf$diff <- with(edf, abs(to-from))
 
+  if(!is.null(nodes_matrix)) {
+    xdiffs <- with(edf, abs(xstart - xend))
+    xdiffs <- ifelse(xdiffs %in% c(0, 3), 0.5, 1)
+    ydiffs <- with(edf, abs(ystart - yend))
+    ydiffs <- ifelse(ydiffs %in% c(0, 2), 0.5, 1)
+    for(i in 1:nrow(edf)) {
+      if(edf[i, "interaction"] == FALSE &
+         edf[i, "direct_interaction"] == FALSE) {
+        edf[i, "diff"] <- xdiffs[i] + ydiffs[i]
+      }
+    }
+  }
+
+
+
   # Get midpoints of in/out segments for external interactions "to" locations
   if(nrow(extints) > 0) {
     extlinks <- subset(edf, label == "")
@@ -820,7 +835,8 @@ prepare_diagram <- function(model_list) {
   vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto,
                                             linkfrom, xmid, ymid))
 
-  curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid, row))
+  cdf$row <- NULL
+  curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
 
   fdf$labelx <- fdf$xmid
   fdf$labely <- fdf$ymid
