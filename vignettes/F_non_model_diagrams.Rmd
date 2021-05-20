@@ -44,7 +44,7 @@ We'll try to recreate a simplified version of this. First, we'll specify the mod
 
 ```{r}
 varlabels = c("L","P","B","Pl","R","Re")
-varnames = c("Lamp doesn't work?","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp")
+varnames = c("Lamp doesn't work","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp")
 
 flows = list(L_flows = c("-L"), 
              P_flows = c("L","-no_P","-yes_P"), 
@@ -87,7 +87,9 @@ my_diagram <- make_diagram(
                           flow_text_size= 4,
                           node_text_color = "black",
                           node_fill_color = c("pink", "yellow", "yellow",
-                                              "green", "green", "green")))
+                                              "green", "green", "green"),
+                          node_outline_color = "black"))
 plot(my_diagram)
 ```
+
 Now we've done it!

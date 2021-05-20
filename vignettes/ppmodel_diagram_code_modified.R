@@ -23,7 +23,7 @@ node_fill_color <- '#6aa4c8'
 node_text_color <- 'white'
 node_text_size <- 10
 flow_text_color <- 'black'
-flow_text_size <- 5
+flow_text_size <- 4
 main_arrow_color <- 'grey25'
 main_arrow_linetype <- 'dotted'
 main_arrow_size <- 0.7

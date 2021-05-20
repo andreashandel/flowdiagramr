@@ -30,14 +30,16 @@ Here, we'll provide a brief discussion how **`r pkg`** differs from and can inte
 
 # diagram
 
-Most similar to ours. Not ggplot.
+The **diagram** package (https://cran.r-project.org/web/packages/diagram/index.html) is most similar to **`r pkg`**.
+The largest difference is that **`r pkg`** uses **ggplot2** as the graphing engine, rather than base R.
+This means that **`r pkg`** relies on the data frame structure of **ggplot2**, which is rapidly becoming common for most applications.
+Thus, **`r pkg`** is the "ggplot2 version" of **diagram**.
 
 
 # DiagrammeR
 
-Can't do loops, acyclic. Requires specifying models in Mermaid or XY, non-R syntax.
-
-
-# Other
+The **DiagrammeR** package (https://rich-iannone.github.io/DiagrammeR/) is the most flexible diagramming package available for R.
+However, it is primarily for acyclic diagrams (no feedbacks) and it requires specifying models in non-R syntax (DOT language).
+It also requires knowledge of Graphviz.
 
 
