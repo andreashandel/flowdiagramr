@@ -168,6 +168,14 @@ prepare_diagram <- function(model_list) {
   #variables are along rows and flows along columns.
   flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
 
+  # if there are just two variables and a single flow between them,
+  # the flowmat is oriented incorrectly (nodes across columns). this
+  # can be diagnosed by checking to see if flowmat has rownames. if not,
+  # the then matrix needs to be transposed.
+  if(is.null(rownames(flowmat))) {
+    flowmat <- t(flowmat)
+  }
+
   #strip leading +/- from flows and replace with no space
   flowmatred <- sub("\\+|-","",flowmat)
 
