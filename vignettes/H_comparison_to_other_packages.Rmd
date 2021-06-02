@@ -23,23 +23,33 @@ library(pkg, character.only = TRUE)
 ```
 
 
-# Overview
+## Overview
 
 Here, we'll provide a brief discussion how **`r pkg`** differs from and can interact with other packages. 
 
 
-# diagram
+## diagram
 
-The **diagram** package (https://cran.r-project.org/web/packages/diagram/index.html) is most similar to **`r pkg`**.
+The [**diagram** package](https://cran.r-project.org/web/packages/diagram/index.html) is - as far as we are aware - most similar to **`r pkg`**.
 The largest difference is that **`r pkg`** uses **ggplot2** as the graphing engine, rather than base R.
 This means that **`r pkg`** relies on the data frame structure of **ggplot2**, which is rapidly becoming common for most applications.
-Thus, **`r pkg`** is the "ggplot2 version" of **diagram**.
+Thus, **`r pkg`** is in some sense the "ggplot2 version" of **diagram**. 
+In addition, the way **`r pkg`** is structured means that you can start creating your diagrams with the package commands, then switch to manual edits by adding ggplot2 code if needed.
+This is not easily possible with **diagram**.
 
 
-# DiagrammeR
+## DiagrammeR
 
-The **DiagrammeR** package (https://rich-iannone.github.io/DiagrammeR/) is the most flexible diagramming package available for R.
-However, it is primarily for acyclic diagrams (no feedbacks) and it requires specifying models in non-R syntax (DOT language).
-It also requires knowledge of Graphviz.
+The [**DiagrammeR** package](https://cran.r-project.org/web/packages/DiagrammeR/index.html) is the most flexible diagramming package available for R.
+However, it is primarily for acyclic diagrams (no feedback or interaction terms) and it requires specifying models in non-R syntax (DOT language).
+It also requires knowledge of Graphviz and is not quite ggplot2 compatible. We considered using **DiagrammeR** to get the diagrams we wanted, but the fact that a lot of models have feedback loops, which are not easily supported by **DiagrammeR** made us decide that we couldn't use it and had to create a new package.
+
+## Others
+
+There are other packages available that can draw graphs, e.g. [dagitty](https://cran.r-project.org/web/packages/dagitty/index.html) for directed acyclic graphs or [igraph](https://cran.r-project.org/web/packages/igraph/index.html) for network graphs. We are not aware of any package that can easly create the kind of flow diagrams that **`r pkg`** is intended to produce (otherwise we wouldn't have written the package).
+
+If you know of other packages that are worth pointing out, please let us know.
+
+
 
 
