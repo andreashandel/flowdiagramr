@@ -12,14 +12,16 @@
 #' complex diagrams will likely need user modification. This is documented
 #' in the vignettes.
 #'
-#' IMPORTANT. All variables must start with an upper case letter (e.g.,
-#' S, Si, or Aa). All parameters must start with a lower case letter (e.g.,
-#' b, bBmax, kS, ks). All variables and parameters MUST be separated by
+#' IMPORTANT. All variables must start with an upper case letter,
+#' followed by any combination of letters and numbers (e.g.,
+#' S, Si, or Aml2). All parameters must start with a lower case letter
+#' followed by any combination of letters and numbers (e.g.,
+#' b, bBmax, kS, p21S). All variables and parameters MUST be separated by
 #' math notation (e.g., +, -, *, /).
 #'
 #' EXAMPLE. The following includes a parameter *b* and two variables, *S*
 #' and *I*: `b*S*I`. The following includes a parameter *s* and two
-#' variables, *Bg* and *Ia*: `Bg*s*Ia`.
+#' variables, *Bg* and *I2*: `Bg*s*I2`.
 #'
 #' @param model_list A list of model elements. The list must contain at least
 #'     two elements with names \code{varlabels} and \code{flows}. The

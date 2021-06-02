@@ -1,0 +1,65 @@
+---
+title: More model examples
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{More model examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7
+)
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup, include = FALSE}
+pkg = 'flowdiagramr' #so we can easily switch names
+library(pkg, character.only = TRUE)
+```
+
+# Overview
+
+The previous tutorials/vignettes showed several example models as way to illustrate how to use **`r pkg`**.
+
+This vignette is a (growing) list of further model examples, which might be helpful to illustrate further ways of using the package.
+
+
+# Example 1
+
+This is a model that describes the infection or vaccination dynamics of an acute viral infection in a simplified manner.
+The model tracks virus/antigen (H), and a few immune response components. These are the differential equations for the model.
+
+$$
+\begin{aligned}
+\textrm{Antigen} \qquad  \dot{H} & =   - kAH - c H \\ 
+\textrm{Interferon} \qquad \dot{F} & = p - m F +  q (F_{max} - F) \frac{H}{H + n}   \\
+\textrm{CD4 T-cells} \qquad \dot{T} & =  \frac{FHT}{FH + h_T} + g_TT   \\
+\textrm{B-cells} \qquad \dot{B} & =  g B(\frac{r_H HF }{s_1 + HF} + \frac{r_T TF}{s_2 + TF})    \\
+\textrm{Antibodies} \qquad \dot{A} & =   r B  - kAH - d A   \\
+\end{aligned}
+$$
+
+This is the same information formatted as a structure that can be used as input for `prepare_diagram`.
+
+
+```{r, error = TRUE}
+varlabels = c("H","F","T","B","A")
+varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")
+flows = list(H_flows = c("-kA*A*H", "- dH * H"),
+             F_flows = c("pF" ,"- dF*F", "H / (H + hH) * gF * (fmax - F)"),
+             T_flows = c("F*H*T/(F*H + hT)" ,"+ gT*T"),
+             B_flows = c("gB * B * rH*F*H/(s1+F*H)",  "gB * B *rT*F*T/(s2+F*T)" ),
+             A_flows = c("rA*B",  "- dA*A", "- kA*A*H") 
+             )
+model_list = list(varlabels = varlabels, flows = flows, varnames = varnames)
+diagram_list <- prepare_diagram(model_list)
+```
+
+
+            dBdt = gB * B * (rH*F*H/(s1+F*H) + rT*F*T/(s2+F*T) ) ; 

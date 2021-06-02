@@ -23,19 +23,18 @@ pkg = 'flowdiagramr' #so we can easily switch names
 library(pkg, character.only = TRUE)
 ```
 
-# Introduction
+## Introduction
 
-We assume you went through the [getting started vignette](./A_quickstart.html) and also the [basic modification](./B_modify_diagrams_simple.html) and the [input structure modification](./C_modify_input_structure.html) vignettes. It is possible that these two ways of adjusting diagrams described in the previous vignettes allow you to produce the diagram you need. That's great! But sometimes, you might want to make additional tweaks. 
-How that's done is the topic of this vignette.
+We assume you went through the [getting started vignette](./A_quickstart.html) and also the [basic modification](./B_modify_diagrams_simple.html) and the [input structure modification](./C_modify_input_structure.html) vignettes. These ways of adjusting diagrams described in the previous vignettes might allow you to produce the diagram you need. That's great! But sometimes, you might want to make additional tweaks. How that's done is the topic of this vignette.
 
 
-# Modifying the ggplot2 code
+## Modifying the ggplot2 code
 
 The most flexible approach to adjust diagrams is to modify the ggplot code that produces the diagram. To do this, you can retrieve the full ggplot2 code that creates the diagram and then edit it like you would any ggplot figure. This is the most flexible, but also the most time-consuming approach.
 We'll illustrate this approach with a few simple examples. It is obviously impossible to cover all options, it's fully up to you to edit the code.
 
 
-## Example 1
+### Example 1
 
 We'll start with a very basic example. First, you define your model as usual. 
 
@@ -65,7 +64,7 @@ source('sirmodel1_diagram_code.R')
 Having all the code that generates the figure also allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot. We'll show examples for this below.
 
 
-## Example 2
+### Example 2
 
 It is possible, and advisable, to first do modifications using the previously explained approaches. Those can be combined with this approach for editing the code. To that end, you can supply the `write_diagram` function all settings that you can send to `make_diagram`, and you can also supply your own modification of the `diagram_list` object. In the latter case, providing the model as input to `write_diagram` is not needed. You can still do so, the diagram will be stored inside the R code, but it will not be processed, instead your supplied `diagram_list` will be used.
 
@@ -144,7 +143,7 @@ diagram_plot +
 If you run the script with these modifications, here is the figure.
 
 
-## Example 3
+### Example 3
 
 Let's look at one more example. We'll use the predator-prey model again.
 
@@ -193,7 +192,7 @@ source('ppmodel_diagram_code_modified.R')
 ```
 
 
-# General suggestions
+## General suggestions
 
 I think with those examples, you got the idea. At this point, the options are endless and you can change the code to get exactly what you want - at the expense of having to write/edit code yourself.
 
@@ -203,7 +202,7 @@ Of course, once you have started manual editing of the code, things are not reve
 
 
 
-# Next steps
+## Next steps
 
 This concludes the main tutorials for the package. If you happen to be a user of our [modelbuilder package](https://ahgroup.github.io/modelbuilder/), there is another short vignette [explaining how the two connect.](./E_flowdiagramr_and_modelbuilder.html). There is also a vignette that explains how you can use **`r pkg`** to create flow diagrams that are not based on compartmental models. Basically, anything for which you want to make a diagram consisting of nodes/boxes and flows/arrows can be created with **`r pkg`**. [This vignette](./F_non_model_diagrams.html) gives some examples.
 

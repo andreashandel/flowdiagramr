@@ -39,7 +39,7 @@ The last example of the [getting started vignette](./A_quickstart.html) showed a
 help('make_diagram')
 ```
 
-Let's explore some of those options and what they do. 
+We are not showing all the options here (you'll see them when you call the help file), but let's explore some of those options and what they do. 
 
 
 ### Example 1
@@ -73,32 +73,31 @@ default_diagram <- make_diagram(sir_diagram_list)
 plot(default_diagram)
 ```
 
-This looks ok, but probably not quite at the level what you want for a publication or presentation.
-So let's provide some inputs to the `make_diagram` function to improve the look.
+This looks ok, but maybe you want to make some adjustments. You can adjust several parts of the diagram fairly easily using the input options to the `make_diagram` function to change the look.
 
 ```{r}
 # make a diagram with adjusted settings
-nice_diagram <- make_diagram(
+new_diagram <- make_diagram(
   diagram_list = sir_diagram_list,
   diagram_settings = list(
-    node_outline_color = NA,
+    node_outline_color = "black",
     node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "white",
-    node_text_size = 10,
+    node_text_color = "black",
+    node_text_size = 14,
     flow_text_color = "black",
-    flow_text_size = 5,
-    main_arrow_color = "grey25",
+    flow_text_size = 8,
+    main_arrow_color = "blue",
     main_arrow_linetype = "solid",
-    main_arrow_size = 0.7,
-    interaction_arrow_color = "grey25",
+    main_arrow_size = 1,
+    interaction_arrow_color = "red",
     interaction_arrow_linetype = "dashed",
     interaction_arrow_size = 0.7
   )
 )
-plot(nice_diagram)
+plot(new_diagram)
 ```
 
-As you can see, it is possible to change the look of the diagram considerably by changing settings.
+As you can see, it is possible to change the look of the diagram considerably by simply providing custom values to the `make_diagram` input options.
 
 Let's look at a few more options that you can configure. By default, **`r pkg`** shows all flows and labels them all. 
 While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. 
@@ -110,13 +109,12 @@ simpler_diagram_1 <- make_diagram(
   diagram_list = sir_diagram_list,
   diagram_settings = list(
     label_flows = FALSE,
-    external_flows = TRUE,
     interaction_label = TRUE,
     node_outline_color = NA,
     node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
     node_text_color = "white",
     node_text_size = 10,
-    flow_text_color = "black",
+    flow_text_color = "blue",
     flow_text_size = 5,
     main_arrow_color = "grey25",
     main_arrow_linetype = 1,
@@ -281,7 +279,7 @@ Note that we also provided the `make_diagram` function with an option that speci
 
 ### Example 2
 
-Let's do one more example that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by adjusting the `varlocations` matrix as follows (for completeness, the code shows the whole model setup again):
+Let's do another example, one that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by adjusting the `varlocations` matrix as follows (for completeness, the code shows the whole model setup again):
 
 ```{r, fig.height=5}
 varlabels = c("S","I","R")
@@ -299,7 +297,7 @@ plot(sir_diagram2)
 
 ### Example 3
 
-The ability to adjust the layout becomes especially important once the model gets bigger. Let's look at this for the last model shown in the _Getting Started_ vignette. Here is the model again, this time with locations specified. We place the 2 *SIR* compartments on the top and the bottom, and the **P** compartment in the middle.
+The ability to adjust the layout becomes especially important once the model gets bigger. Let's look at this for the somewhat large model with 7 compartments shown in the _Getting Started_ vignette. Here is the model again, this time with locations specified. We place the 2 *SIR* compartments on the top and the bottom, and the **P** compartment in the middle.
 
 ```{r}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
@@ -320,7 +318,7 @@ model_plot <- make_diagram(diagram_list)
 plot(model_plot)
 ```
 
-
+This starts to look better, though the placement of the labels is clearly not ideal and needs some more tweaking.
 
 
 ## Next steps

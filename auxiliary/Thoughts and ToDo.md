@@ -1,4 +1,27 @@
 ******
+# 2021-06-02
+
+* Should we try to write a manuscript describing the package?
+
+* The quickstart vignette shows an error message "Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables". Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new 'more model examples' vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be.
+
+* inputs to make_diagram should be changed. Each type of flow (main and interaction) should have their own settings for an on/off flag to show arrows and labels, as well as text size/color settings. Also, let's reorder diagram_settings inputs such that the node related one comes first, then all main flow related, then all interaction related. 
+
+* why are use_varnames and show_grid not part of diagram_settings? If we only wanted graphical bits in diagram_settings, then we might need to remove show_flows/label_flows flags and make them separate too? Maybe we can do that, have all on/off settings follow right after diagram_list, and then diagram_settings (maybe rename to diagram_styling?) only does colors/sizes/linetypes/etc? 
+
+* I think we should try to avoid flipping between 'variable' and 'node', it might confuse people. While node is in some sense more general, since our starting point is models with variables and flows, I think it's best if we use those two words throughout. That means renaming all input options to make_diagram should be var_XX instead of node_XX. It would also mean renaming the nodes entry in the object that prepare_diagram returns to vars. Could do that in a last step, and then at beginning of make_diagram code, rename again internally to nodes so that you won't have to change a ton of internal code, but the user still sees var/vars/variable/variables instead of node terminology. This also means nodes (or edges) should not show up inside the ggplot2 code given to the user, just the vars/flows terminology.
+
+* Last model in vignette B doesn't look quite right, it seems that the d*P arrow goes from P to Ia instead of from P to nowhere (and to nowhere flows usually go at a slanted angle). Not sure what's happening there. Also several interaction arrows start at the center of the variables instead of the edges.
+
+* In the return object from make_diagram, the naming of horizontal_edges and vertical_edges is not ideal. Users will think those are how they look graphically. Can we rename those data frames to say "vars, main_flows, interaction_flows, external_flows, feedback_flows". And would it maybe be useful for future development to have all flows have all attributes? E.g. all have the interaction attribute, it's either TRUE or FALSE. And all have a curvature setting, it's sometimes 0 for straight flows. Doing so one could even go from 5 data frames to 2, one for variables, one for flows, and there is an extra column for flows that specifies the type of flow. Not sure if that would be better than as list structure, but an option.  
+
+* Vignette C still has comment from me that says "Need to be able to change label location for all flows. Not currently working." Is that now implemented? Seems like it is, just checking since the comment is still there.
+
+* Can you format the help file for prepare_diagram such that the model_list explanation is easier readable, e.g., each list element explained by itself.
+
+* write_diagram, when file exists, only gives a Y/N but doesn't tell the user what the question is (at least I don't see a question).
+
+******
 # 2021-05-11
 
 * Can we rename write_diagram_code to just write_diagram? Also, help file says only either modellist or diagramlist can be provided. Needs updating. 

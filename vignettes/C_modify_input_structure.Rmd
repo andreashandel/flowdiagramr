@@ -24,7 +24,7 @@ pkg = 'flowdiagramr' #so we can easily switch names
 library(pkg, character.only = TRUE)
 ```
 
-# Introduction
+## Introduction
 
 We assume you went through the [getting started vignette](./A_quickstart.html) and also the [basic modification vignette](./B_modify_diagrams_simple.html). 
 
@@ -37,7 +37,7 @@ The advantage of this 2-step process is that you can make modifications to the `
 
 
 
-# Explanation of the `diagram_list` object
+## Explanation of the `diagram_list` object
 
 To modify the object returned from `prepare_diagram` and used as input for `make_diagram`, it is important to learn a bit about it.
 You can learn the details from the help file for the `prepare_diagram` function, which you can call like this
@@ -56,9 +56,9 @@ This allows you to impact the look of the diagram you get once you send your mod
 It is easiest to understand this approach by showing a few examples, so this is what we'll do next.
 
 
-# Modifying the `make_diagram` input object 
+## Modifying the `make_diagram` input object 
 
-## Example 1
+### Example 1
 
 Let's revisit the SIR model from the [basic modification vignette](./B_modify_diagrams_simple.html). 
 First we set up the model.
@@ -82,12 +82,11 @@ sir_diagram_list <- prepare_diagram(sirmodel)
 
 If we send this input structure to `make_diagram`, we get the following plot
 ```{r}
-#plot1 <- make_diagram(sir_diagram_list, with_grid = TRUE)
-plot1 <- make_diagram(sir_diagram_list)
+plot1 <- make_diagram(sir_diagram_list, with_grid = TRUE)
 plot(plot1)
 ```
 
-**NOT WORKING** For this plot, we also turned on the grid. This is useful in figuring out by how much to shift things around.
+For this plot, we also turned on the grid. This is useful in figuring out by how much to shift things around.
 
 
 Next, instead of sending this structure to the `make_diagram` function right away, we'll take a look at it and modify it.
@@ -109,11 +108,12 @@ modified_diagram_list$nodes$xmax[2] = 7
 modified_diagram_list$horizontal_edges$xend[1] = 5
 modified_diagram_list$horizontal_edges$xstart[2] = 7
 #move the b*S*I arrow end a bit
-modified_diagram_list$curved_edges$xend[1] = 4.25
-#move the b*S*I label up
-modified_diagram_list$curved_edges$labely[1] = 0.8
+modified_diagram_list$curved_edges$xend[1] = 4
+#move the b*S*I label 
+modified_diagram_list$curved_edges$labely[1] = 0.2
+modified_diagram_list$curved_edges$labelx[1] = 4.6
 #move the g*I arrow over just a bit
-modified_diagram_list$horizontal_edges$xmid[2] = 7.75
+modified_diagram_list$horizontal_edges$labelx[2] = 7.75
 ```
 
 With those modifications, the resulting diagram looks like this
@@ -138,7 +138,7 @@ plot(plot3)
 
 
 
-# Example 2
+### Example 2
 
 Here is another example, the predator prey model you saw in earlier vignettes.
 

@@ -99,7 +99,7 @@ The `diagram_list` object returned by this function contains a list of data fram
 Now it's time to make the diagram. This is done by sending the object you got by calling `prepare_diagram` to the `make_diagram` function, like so
 
 ```{r}
-my_diagram <- make_diagram(diagram_list, with_grid = TRUE)
+my_diagram <- make_diagram(diagram_list)
 ```
 
 `make_diagram` returns a ggplot2 object (here called `my_diagram`). You you can write this plot to a file or print to the screen, e.g. with
@@ -169,14 +169,14 @@ $$
 
 ## One more example
 
-We'll finish with one more model, this time doing a slightly more complex one.
+We'll finish with one more model, this time doing a more complex one.
 
-This is an SIR model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (think e.g. Cholera in water) and susceptible can get infected that way. We also still allow direct transmission. And on top of that, we are considering 2 distinct groups (e.g. children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**). This gives us 2x3+1=7 compartments. Here is the model
+This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible can get infected that way. We also still allow direct transmission. And on top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**). This gives us 2x3+1=7 compartments. Here is the model
 
 There are several ways to write this model, but only one way currently works for **`r pkg`**.
 Looking at several of the formulations is a good way to demonstrate some of the current limitations of **`r pkg`**.
-In the first example below, we use typical math structure to embed interactions among variables in parantheses.
-Unfortunately, **`r pkg`** cannot parse those interactions, but it does return a (hopefully) informative error message.
+In the first example below, we use typical math structure to embed interactions among variables in parentheses.
+Unfortunately, **`r pkg`** currently cannot parse those interactions (we expect that a future version will), but it does return a (hopefully) informative error message.
 
 ```{r, error = TRUE}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
