@@ -25,6 +25,8 @@
 
 * I still think producing ggplot2 code that uses loops would be easier for users to modify. Instead of efficiently/vectorized adding of components (vars/flows), I would do a loop over each, i.e. a loop over all vars, over all flows, etc. Then one can more easily intervene manually for a specific one and change it.
 
+* Need a function that checks that all model_list conventions are adhered to (see vignette A). (might already exist?)
+
 ******
 # 2021-05-11
 

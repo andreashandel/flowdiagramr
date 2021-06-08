@@ -26,9 +26,7 @@ library(pkg, character.only = TRUE)
 ## Introduction
 
 We assume you went through the [getting started vignette](./A_quickstart.html) and know the basics of using **`r pkg`**. 
-In this vignette, you will learn the simplest ways of customizing diagrams. Further vignettes show more advanced ways of customizing diagrams.
-
-
+In this vignette, you will learn the simplest ways of customizing diagrams. Further vignettes show more advanced approaches.
 
 
 ## Setting arguments in `make_diagram`
@@ -75,11 +73,11 @@ plot(default_diagram)
 
 This looks ok, but maybe you want to make some adjustments. You can adjust several parts of the diagram fairly easily using the input options to the `make_diagram` function to change the look.
 
+**CHANGE NAMES OF INPUTS TO DIAGRAM_SETTINGS AS DESCRIBED IN TODO**
+
 ```{r}
-# make a diagram with adjusted settings
-new_diagram <- make_diagram(
-  diagram_list = sir_diagram_list,
-  diagram_settings = list(
+#define settings that change the look of the diagram
+sir_diagram_settings <- list(
     node_outline_color = "black",
     node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
     node_text_color = "black",
@@ -91,9 +89,13 @@ new_diagram <- make_diagram(
     main_arrow_size = 1,
     interaction_arrow_color = "red",
     interaction_arrow_linetype = "dashed",
-    interaction_arrow_size = 0.7
+    interaction_arrow_size = 0.7)
+
+# make a diagram with adjusted settings
+new_diagram <- make_diagram(
+  diagram_list = sir_diagram_list,
+  diagram_settings = sir_diagram_settings 
   )
-)
 plot(new_diagram)
 ```
 

@@ -25,17 +25,19 @@ library(pkg, character.only = TRUE)
 
 ## Overview
 
-**`r pkg`** is designed to create nice-looking diagrams for compartmental simulation models and other kinds of scenarios where a model with compartments/nodes and flows/connections is needed. The user provides the compartments and the flows, and gets as return a model diagram in ggplot format, as well as code that created the diagram and can be further modified.
+**`r pkg`** is designed to create nice-looking diagrams for compartmental simulation models and other kinds of scenarios where a model with compartments/variables/nodes and flows/connections/edges is needed. The user provides the compartments and the flows, and gets as return a model diagram in ggplot format, as well as code that created the diagram. This allows potentially complete customization of the diagram.
 
 
 ## Terminology
 
-The kinds of models and diagrams we are discussing here are used in many different areas of science. That also means there are many different ways and words to describe these models. What we mainly refer to as _compartments_ or _variables_ is also known as _stocks_ or _nodes_. Similarly, what we mainly refer to as _flows_ or _processes_ is also known as _connections_ or ... We hope by showing examples it will be clear.
+The kinds of models and diagrams we are discussing here are used in many different areas of science. That also means there are many different ways and words to describe these models. What we mainly refer to as _compartments_ or _variables_ is also known as _stocks_ or _nodes_. Similarly, what we mainly refer to as _flows_ or _processes_ is also known as _connections_ or _edges_. Other terminology exists. While we try to use **variables** and **flows** as consistently as possible, we might occasionally accidentally use one of the other terms. We hope by showing examples it will be clear.
 
 
 ## Starting Example
 
-Here is a simple example to illustrate the process. This is the [Susceptible-Infected-Recovered (SIR) model](https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology) which forms the basis of many models used in infectious disease epidemiology. For this model, we have 3 compartments/variables, name susceptible individuals, **S**, infected/infectious individuals, **I**, and recovered/removed individuals, **R**. We also have 2 processes/flows, one process by which susceptible individuals become infected at some rate after contact with infectious individuals, __b\*S\*I__ and a process by which infected individuals recover at some rate, __g\*I.__
+Here is a simple example to illustrate what **`r pkg`** does. 
+
+Consider the [Susceptible-Infected-Recovered (SIR) model](https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology) which forms the basis of many models used in infectious disease epidemiology. For this model, we have 3 compartments/variables, name susceptible individuals, **S**, infected/infectious individuals, **I**, and recovered/removed individuals, **R**. We also have 2 processes/flows, one process by which susceptible individuals become infected at some rate after contact with infectious individuals, __b\*S\*I__ and a process by which infected individuals recover at some rate, __g\*I.__
 
 Written out as differential equations, the model looks like this
 
@@ -50,14 +52,14 @@ $$
 A diagram for the model looks as follows
 
 ```{r sirdiagram,  fig.cap='',  echo=FALSE, out.width = "70%"}
-knitr::include_graphics('sirdiagram.png')
+knitr::include_graphics("sirdiagram.png")
 ```
 
 The purpose of **`r pkg`** is to automatically create this diagram for you if you supply the model specification. Here is how.
 
 ### Specify the model
 
-**`r pkg`** wants the model input as a simple list structure. This list needs to have a minimum of 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this structure would look as follows:
+**`r pkg`** requires that the model is specified as a simple list structure. This list needs to have a minimum of 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this looks as follows:
 
 ```{r}
 varlabels = c("S","I","R")
@@ -67,23 +69,24 @@ flows = list(S_flows = c("-b*S*I"),
 mymodel = list(varlabels = varlabels, flows = flows)
 ```
 
-**Model conventions and requirements:**
+**Model specification conventions and requirements:**
 
 * The main list (called `mymodel` above) can have any name. 
 * The elements inside the list need to be called `varlabels` and `flows`. 
+* A model consists of variables and parameters, combined by basic mathematical expressions. Currently allowed are `+, -, *, (),/,^`. Mathematical operations such as `log`, `sin`, etc. are currently not supported. 
 * All variable labels need to start with an upper-case letter and can be any combination of letters and numbers.
 * All parameters need to start with a lower-case letter and can be any combination of letters and numbers.
 * The flows for each variable need to be named `NN_flows` where NN corresponds to the variable label. 
 * Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write `b*S*I`, writing it as `bSI` will not work.
 * Minus signs for outflows are required, plus signs for inflows are optional.
 
-In addition to the required two list elements, you can specify a few optional list elements, which we'll discuss later. 
+In addition to the required two list elements, `varlables` and `flows`, you can specify a few optional list elements, which we'll discuss later. 
 
-
+**CHECK THAT ABOVE IS CORRECT AND CORRESPONDS TO CHECKS IN THE FUNCTION THAT CHECKS VALIDITY OF MODEL**
 
 ### Create elements needed for diagram generation
 
-Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which as the advantage of easier manual modification. You'll learn more about that in subsequent vignettes. For now, we just show the steps, then revisit them later. 
+Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which has the advantage of easier diagram modification. You'll learn more about that in subsequent vignettes. For now, we just show the steps, then revisit them later. 
 
 To get ready for diagram generation, you send your model to the `prepare_diagram` function.
 
@@ -91,7 +94,7 @@ To get ready for diagram generation, you send your model to the `prepare_diagram
 diagram_list <- prepare_diagram(mymodel)
 ```
 
-The `diagram_list` object returned by this function contains a list of data frames used to make the diagram. We'll skip over this for now and revisit it in a later vignette.
+The `diagram_list` object returned by this function contains a list of data frames that is used to make the diagram. We'll skip over this for now and revisit it in a later vignette.
 
 
 ### Make the diagram 
@@ -102,22 +105,25 @@ Now it's time to make the diagram. This is done by sending the object you got by
 my_diagram <- make_diagram(diagram_list)
 ```
 
-`make_diagram` returns a ggplot2 object (here called `my_diagram`). You you can write this plot to a file or print to the screen, e.g. with
+`make_diagram` returns a ggplot2 object (here called `my_diagram`). 
 
-```{r, eval = FALSE}
-ggplot2::ggsave("sirdiagram.png",my_diagram)
-```
-
-and
+You you can plot the object with 
 
 ```{r}
 plot(my_diagram)
 ```
 
+or save it into a file, e.g. with
+
+```{r, eval = FALSE}
+ggplot2::ggsave("sirdiagram.png",my_diagram)
+```
+
+
 
 ## Another example
 
-Here is one more example, the classical [predator-prey model (also known as Lotka-Volterra model)](https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations). This model has two compartments/variables. The model is also used in immunology to model pathogen and immune response.  In the context of immunology, the immune response is the predator, and the pathogens are the prey. We'll label them **Imm** and **Pat**, just to show that one can use labels that are longer than a single letter. 
+Here is another example, the classical [predator-prey model (also known as Lotka-Volterra model)](https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations). This model has two compartments/variables. The model is widely used in Ecology. It can also used in Immunology to model pathogen and immune response.  In the context of immunology, the immune response is the predator, and the pathogens are the prey. We'll label them **Imm** and **Pat**, just to show that one can use labels that are longer than a single letter. 
 We will also include the following processes/flows: 
 
 1. Bacteria grow/divide at some maximum rate (which we label _g_) and saturate as they approach some maximum carrying capacity, _p~max~_. 
@@ -145,10 +151,10 @@ diagram_list <- prepare_diagram(mymodel)
 
 my_diagram <- make_diagram(
   diagram_list, 
-  diagram_settings = list(
-    node_fill_color = c('blue','red'),
-    main_arrow_linetype = "dashed",
-    interaction_arrow_linetype = "solid")
+  diagram_settings = list(node_fill_color = c('blue','red'),
+                          main_arrow_linetype = "dashed",
+                          interaction_arrow_linetype = "solid"
+                          )
 )
 
 plot(my_diagram)
@@ -157,7 +163,9 @@ plot(my_diagram)
 In this example, we added some optional inputs to the `make_diagram` function to start customizing the model. 
 You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html).
 
-As a reminder, for the purpose of generating the diagram, it is not required to write down differential equations for the model. In fact, you can make diagrams for any model that consists of compartments and flows. We'll show some examples of such diagrams that are not based on simulation models [in this vignette](./F_non_model_diagrams.html). But for completeness, here are the equations for the model we just plotted.
+As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models, as we discuss [in this vignette](./F_non_model_diagrams.html). 
+
+But for completeness, here are the ODE equations for the model we just plotted.
 
 $$
 \begin{aligned}
@@ -169,14 +177,29 @@ $$
 
 ## One more example
 
-We'll finish with one more model, this time doing a more complex one.
+We'll finish with one more model, this time a more complex one.
 
-This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible can get infected that way. We also still allow direct transmission. And on top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**). This gives us 2x3+1=7 compartments. Here is the model
+This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible individuals can get infected that way. We still allow for direct transmission. And on top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**). This gives us 3 SIR compartments each for adults and children, i.e., 6, and 1 environmental compartment, for a total of 7 compartments. 
 
-There are several ways to write this model, but only one way currently works for **`r pkg`**.
-Looking at several of the formulations is a good way to demonstrate some of the current limitations of **`r pkg`**.
-In the first example below, we use typical math structure to embed interactions among variables in parentheses.
-Unfortunately, **`r pkg`** currently cannot parse those interactions (we expect that a future version will), but it does return a (hopefully) informative error message.
+Here is the model specified in the format needed for **`r pkg`**.
+
+```{r}
+varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
+             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
+             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             )
+mymodel = list(varlabels = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+```
+
+Before we make the diagram and look at it, it's worth pointing out some current limitations of **`r pkg`**.
+You might have noticed that each flow term above is defined separately. If you were to write down the model in math formulation, you would likely not do that.
+Instead, you would probably write something like this, with flow terms combined using parentheses:
 
 ```{r, error = TRUE}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
@@ -188,12 +211,20 @@ flows = list(Sc_flows = c("-Sc*(bcc*Ic+bca*Ia+bcp*P)"),
              Ra_flows = c("ga*Ia"),
              P_flows = c("sc*Ic","sa*Ia","-d*P")
              )
-model_list = list(varlabels = varlabels, flows = flows)
-diagram_list <- prepare_diagram(model_list)
+model_list_wrong = list(varlabels = varlabels, flows = flows)
 ```
-Here we have rewritten the model by taking everything out of parantheses and explicitly writing all interactions.
-However, while copying and pasting, we accidentally put minus ("-") signs in front of all the `Ia_flows`.
-**`r pkg`** throws an error suggesting where we might have gone wrong.
+
+Unfortunately, **`r pkg`** currently cannot parse flows that are grouped like this (we expect that a future version will). If you try to use this model list
+to prepare the diagram, you will receive a (hopefully informative) error message.
+
+```{r, error = TRUE}
+diagram_list <- prepare_diagram(model_list_wrong)
+```
+
+
+In general, `prepare_diagram` checks your `model_list` object and tries to determine if everything is ok. 
+As an example, here is the model with some typos. We accidentally put minus ("-") signs in front of all the `Ia_flows`.
+This means the model is not properly specified. **`r pkg`** throws an error suggesting where you might have gone wrong.
 
 ```{r, error = TRUE}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
@@ -209,30 +240,20 @@ model_list = list(varlabels = varlabels, flows = flows)
 diagram_list <- prepare_diagram(model_list)
 ```
 
-We remove those minus signs **`r pkg`** successfully generates a plot.
+Note that not all errors will receive nice messages. There are likely instances where you have typos or other mistakes in your model, or parts that **`r pkg`** currently can't handle, for which you won't get a great error message. 
+
+Now, let's go back to the first, proper model specification, make the diagram, and plot it.
 
 ```{r}
-varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
-             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
-             Rc_flows = c("gc*Ic"),
-             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
-             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
-             Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
-             )
-mymodel = list(varlabels = varlabels, flows = flows)
-diagram_list <- prepare_diagram(mymodel)
 model_plot <- make_diagram(diagram_list)
 plot(model_plot)
 ```
 
-As you can see, while the fully automated approach gets you somewhere, it can't produce a publication-quality diagram. Fortunately, **`r pkg`** gives you ways to get you there!
+As you can see, while the most basic approach of using **`r pkg`** gets you _somewhere_, you usually can't produce a publication-quality diagram this way. Fortunately, **`r pkg`** gives you ways to customize things - some of them fairly easily - to give you a great-looking diagram!
 
 
 ## Next steps
 
-You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won't be great. For instance in the last example, the flow labels overlap somewhat with the boxes and arrows and could be posititioned better.
-Sometimes, the default will actually look bad, especially if you have a complicated model. Therefore, most of the time you will likely want to make further modifications to get a diagram that looks exactly the way you want. There are different ways to do this. [This vignette](./B_modify_diagrams_simple.html), which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. You should read them later. 
+You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won't be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. [This vignette](./B_modify_diagrams_simple.html), which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. 
 
 

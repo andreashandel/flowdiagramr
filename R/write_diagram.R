@@ -32,6 +32,7 @@
 #' resulting R file, but it is not used. Including it can be good just so
 #' you have the complete model specification in one script.
 #' @import fs
+#' @importFrom utils menu
 #' @export
 #'
 #' @examples
