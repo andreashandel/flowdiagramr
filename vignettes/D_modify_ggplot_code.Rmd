@@ -224,7 +224,7 @@ ppmodel = list(varlabels = varlabels, flows = flows)
 
 We won't do any changes to the `diagram_list` structure here, but we'll send a few custom `make_diagram` settings to the `write_diagram` code.
 
-Here is first the plot using the `prepare_diagram` and make_diagram` functions.
+Here is first the plot using the `prepare_diagram` and make_diagram` functions. It produces as customized (somewhat ugly) diagram.
 
 ```{r}
 diagram_list = prepare_diagram(ppmodel)
@@ -266,6 +266,7 @@ Finally, find the `geom_rect` bit in your code (close to the top) and replace it
 
 ```{r}
 source('ppmodel_diagram_code_modified.R')
+plot(diagram_plot)
 ```
 
 
@@ -281,7 +282,7 @@ Of course, once you have started manual editing of the code, things are not reve
 
 ## Next steps
 
-This concludes the main tutorials for the package. If you happen to be a user of our [modelbuilder package](https://ahgroup.github.io/modelbuilder/), there is another short vignette [explaining how the two connect.](./E_flowdiagramr_and_modelbuilder.html). There is also a vignette that explains how you can use **`r pkg`** to create flow diagrams that are not based on compartmental models. Basically, anything for which you want to make a diagram consisting of nodes/boxes and flows/arrows can be created with **`r pkg`**. [This vignette](./F_non_model_diagrams.html) gives some examples.
+This concludes the main tutorials for the package. If you happen to be a user of our [modelbuilder package](https://ahgroup.github.io/modelbuilder/), there is another short vignette [explaining how the two connect.](./E_flowdiagramr_and_modelbuilder.html). There is also a vignette that explains how you can use **`r pkg`** to create flow diagrams that are not based on compartmental models. Basically, anything for which you want to make a diagram consisting of nodes/boxes and flows/arrows can be created with **`r pkg`**. [This vignette](./F_non_model_diagrams.html) gives some examples. Another vignette [provides some more model examples](./G_flowdiagramr_and_modelbuilder.html), and another one [compares **`r pkg`** to other R packages](./H_comparison_to_other_packages.html).
 
 
 

@@ -271,7 +271,7 @@
              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+r*B*I"</span>, <span class="st">"-dI*I"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">ppmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>We won’t do any changes to the <code>diagram_list</code> structure here, but we’ll send a few custom <code>make_diagram</code> settings to the <code>write_diagram</code> code.</p>
-<p>Here is first the plot using the <code>prepare_diagram</code> and make_diagram` functions.</p>
+<p>Here is first the plot using the <code>prepare_diagram</code> and make_diagram` functions. It produces as customized (somewhat ugly) diagram.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span>
 <span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
@@ -301,7 +301,9 @@
 <p>Let’s say that for some reason, you want the rectangles with rounded corners. I didn’t know how to do that, but a quick online search <a href="https://stackoverflow.com/questions/52820756/roundrectgrob-equivalent-for-geom-rect-in-ggplot">provided this solution</a>. Note that this is somewhat advanced and hacky, but I figured I show it as an example to illustrate that at this point, you can do anything you like with the code to make whatever you want.</p>
 <p>It’s actually not much code editing. First, you need to install the <a href="https://github.com/hrbrmstr/statebins"><code>statebins</code> R package</a>. The version on CRAN works fine, so you can just use <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages('statebins')</a></code>. Then add <code><a href="https://gitlab.com/hrbrmstr/statebins">library('statebins')</a></code> at the top of your code file, underneath the other <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> commands. Finally, find the <code>geom_rect</code> bit in your code (close to the top) and replace it with <code>statebins:::geom_rrect</code> (yes, you need the ::: in there since <code>geom_rrect</code> is not an exported function. If you have no idea what that means, that’s ok.) Everything else you can keep unchanged. Save your code (I recommend using a different name so you don’t accidentally overwrite it if you run your <code>write_diagram</code> code again). Now, if you run the code, it should produce this diagram.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">'ppmodel_diagram_code_modified.R'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">'ppmodel_diagram_code_modified.R'</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
+<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
 </div>
 </div>
 <div id="general-suggestions" class="section level2">
@@ -314,7 +316,7 @@
 <div id="next-steps" class="section level2">
 <h2 class="hasAnchor">
 <a href="#next-steps" class="anchor"></a>Next steps</h2>
-<p>This concludes the main tutorials for the package. If you happen to be a user of our <a href="https://ahgroup.github.io/modelbuilder/">modelbuilder package</a>, there is another short vignette <a href="./E_flowdiagramr_and_modelbuilder.html">explaining how the two connect.</a>. There is also a vignette that explains how you can use <strong>flowdiagramr</strong> to create flow diagrams that are not based on compartmental models. Basically, anything for which you want to make a diagram consisting of nodes/boxes and flows/arrows can be created with <strong>flowdiagramr</strong>. <a href="./F_non_model_diagrams.html">This vignette</a> gives some examples.</p>
+<p>This concludes the main tutorials for the package. If you happen to be a user of our <a href="https://ahgroup.github.io/modelbuilder/">modelbuilder package</a>, there is another short vignette <a href="./E_flowdiagramr_and_modelbuilder.html">explaining how the two connect.</a>. There is also a vignette that explains how you can use <strong>flowdiagramr</strong> to create flow diagrams that are not based on compartmental models. Basically, anything for which you want to make a diagram consisting of nodes/boxes and flows/arrows can be created with <strong>flowdiagramr</strong>. <a href="./F_non_model_diagrams.html">This vignette</a> gives some examples. Another vignette <a href="./G_flowdiagramr_and_modelbuilder.html">provides some more model examples</a>, and another one <a href="./H_comparison_to_other_packages.html">compares <strong>flowdiagramr</strong> to other R packages</a>.</p>
 </div>
   </div>
 

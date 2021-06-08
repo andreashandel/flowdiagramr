@@ -40,7 +40,9 @@ knitr::include_graphics("lampflowchart.png")
 ```
 
 We'll try to recreate a simplified version of this. First, we'll specify the model.
+The model here is not a dynamical systems model like the ones we have looked at so far. Nevertheless, as long as it can be represented as a combination of variables/compartments/nodes, and flows/transitions between those, we can use `r pkg` to draw the diagram.
 
+Here is how you can implement this model.
 
 ```{r}
 varlabels = c("L","P","B","Pl","R","Re")
@@ -61,7 +63,7 @@ mymodel = list(varlabels = varlabels, varnames = varnames,
                flows = flows, varlocations = varlocations)
 ```
 
-Note that to make the diagram logic work, we have to define actual flows. For instance we can't just label the various flows with "Yes" or "No" like in the original diagram. If we did this, **`r pkg`** wouldn't know with which boxes/variables to associate the arrows.   
+Note that to make the diagram logic work, we have to define actual flows. For instance we can't just label the various flows with "Yes" or "No" like in the original diagram. If we did this, **`r pkg`** wouldn't know with which boxes/variables to associate the arrows with.   
 
 
 Now, it's the standard steps of preparing, making and plotting the diagram.
@@ -72,7 +74,7 @@ my_diagram <- make_diagram(diagram_list, use_varnames = TRUE)
 plot(my_diagram)
 ```
 
-This looks similar to the original, but of course not quite as good. We can get fairly close with a few adjustments.
+This looks somewhat similar to the original, but of course not quite as good. We can get fairly close with a few adjustments.
 
 ```{r, fig.height = 5}
 modified_diagram_list <- diagram_list
@@ -92,4 +94,12 @@ my_diagram <- make_diagram(
 plot(my_diagram)
 ```
 
-Now we've done it!
+That looks pretty good. If you want to change the shapes of the boxes, you'll need to adjust the ggplot code, following the instructions of the []().
+
+
+# Example 2
+
+
+
+
+

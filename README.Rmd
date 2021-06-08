@@ -49,7 +49,7 @@ We wrote several tutorials/vignettes that explain all features of `flowdiagramr`
 
 *Read them based on interest, in any order*
 
-*  [More model examples](https://andreashandel.github.io/flowdiagramr/articles/F_non_model_diagrams.html)
+*  [More model examples](https://andreashandel.github.io/flowdiagramr/articles/E_more_model_examples.html)
 *  [Making non-model based diagrams](https://andreashandel.github.io/flowdiagramr/articles/F_non_model_diagrams.html)
 *  [Using modelbuilder models with flowdiagramr](https://andreashandel.github.io/flowdiagramr/articles/G_flowdiagramr_and_modelbuilder.html)
 *  [Comparison to other R packages](https://andreashandel.github.io/flowdiagramr/articles/H_comparison_to_other_packages.html)

@@ -192,3 +192,12 @@ my_diagram <- make_diagram(
 )
 plot(my_diagram)
 ```
+
+
+## Next steps
+
+You now learned two ways that allow you to customize the diagram in a fairly easy way. The first approach is [through optional arguments to `make_diagram`](./B_modify_diagrams_simple.html), and the second approach is the one we just discussed. 
+
+We expect that this is often enough to give you a diagram that's good enough for what you want. However, at times you might want to make further changes. For instance you might want to change specific elements, add text to the diagram, or perform other fine tuning. **`r pkg`** gives you a way of doing this, which is described in the [modifying the ggplot2 code vignette](./D_modify_ggplot_code.html), which you should read next. 
+
+
