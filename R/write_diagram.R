@@ -2,17 +2,14 @@
 #'
 #' @description
 #' `write_diagram()` generates code in the form of a stand-alone R script to
-#' reproduce a diagram, including the model inputs, the data frames from
-#' \code{\link{prepare_diagram}}, and the **ggplot2** code. The R script
-#' is intended to run "as-is", meaning there is code to make the objects
-#' the user sends as arguments (either the `model` or the
-#' `diagram_list`).
+#' produce a diagram. By editing the generated code, the user can
+#' make manual adjustments to the diagram.
 #'
 #' @param model_list A **flowdiagramr** input list. See
-#'     \code{\link{prepare_diagram}}.
+#'     \code{\link{prepare_diagram}}. Also see `Details` below.
 #' @param diagram_list A **flowdiagramr** input structure, resulting from
-#'     a call to \code{\link{prepare_diagram}}.
-#' @param make_diagram_settings A named list of diagram aesthetics. See
+#'     a call to \code{\link{prepare_diagram}}. See `Details` below.
+#' @param diagram_settings A named list of diagram aesthetics. See
 #'    \code{\link{make_diagram}} documentation. Default is `NULL` and the
 #'    default values from \code{\link{make_diagram}} are used.
 #' @param use_varnames A logical indicating whether to label nodes with
@@ -21,11 +18,19 @@
 #' @param with_grid A logical indicating whether to return the ggplot
 #'     with a grid. Default is FALSE. The grid can be helpful if you
 #'     want/need to move items around.
-#' @param directory File directory in which to save the R file. Defualt
-#'     location is the current working directory.
+#' @param directory File directory in which to save the produced R file.
+#'     Default location is the current working directory.
 #' @param filename Name of the file, must end in '.R'. Default name is
 #'     'diagram_code.R'.
-#' @return A message telling the user where the file is.
+#' @param always_overwrite A logical indicating if you want to skip being asked
+#' if you want to overwrite an already existing file.
+#' Default is FALSE. Change to TRUE at own risk.
+#' @return R code written to a file as specified by settings.
+#' Also, a message is returned telling the user where the file is.
+#' @details You need to supply at least one of `model_list`
+#' or `diagram_list`. If you supply both, `model_list` is included in the
+#' resulting R file, but it is not used. Including it can be good just so
+#' you have the complete model specification in one script.
 #' @import fs
 #' @export
 #'
@@ -55,11 +60,13 @@
 
 write_diagram <- function(model_list = NULL,
                           diagram_list = NULL,
-                          make_diagram_settings = NULL,
+                          diagram_settings = NULL,
                           use_varnames = FALSE,
                           with_grid = FALSE,
                           directory = NULL,
-                          filename = NULL)
+                          filename = 'diagram_code.R',
+                          always_overwrite = FALSE
+                          )
 {
 
   # make sure at least one of model_list or diagram_list is provided
@@ -73,9 +80,9 @@ write_diagram <- function(model_list = NULL,
   }
 
   # give the file a generic name
-  if(is.null(filename)) {
-    filename <- "diagram_code.R"
-  }
+  #if(is.null(filename)) {
+  #  filename <- "diagram_code.R"
+  #}
 
   # The R script for writing out is built as a series of blocks
   # that are concatenated at the very end of the function.
@@ -93,8 +100,8 @@ write_diagram <- function(model_list = NULL,
   # Get graphing arguments
   defaults <- eval(formals(make_diagram)$diagram_settings)
 
-  if(!is.null(make_diagram_settings)) {
-    defaults[names(make_diagram_settings)] <- make_diagram_settings
+  if(!is.null(diagram_settings)) {
+    defaults[names(diagram_settings)] <- diagram_settings
   }
   args <- defaults
 
@@ -120,12 +127,10 @@ write_diagram <- function(model_list = NULL,
   args_block <- paste(args_block, grid_block, varnames_block, sep = "\n")
 
   # ggplot2 code block ---
-  gg_block <- get_code()  # gets the code used by flowdiagramr
+  gg_block <- flowdiagramr:::get_code()  # gets the code used by flowdiagramr
 
-
-  # Printing block ---
-  print_block <- "plot(diagram_plot)"
-
+  # Plotting and saving block ---
+  plot_save_block <- "# These lines plot or save the generated diagram. \n# Uncomment them if you want to perform either action. \n# plot(diagram_plot) \n# ggsave('diagram_plot.png',diagram_plot)"
 
   # Model structure block ---
   # If model is provided, we simply deparse the list and then make
@@ -186,14 +191,16 @@ write_diagram <- function(model_list = NULL,
                      unlist_block,
                      args_block,
                      gg_block,
-                     print_block, sep = "\n\n")
+                     plot_save_block,
+                     sep = "\n\n")
   } else if(is.null(model_list) & !is.null(diagram_list)) {
     # If just the diagram_list is provided, just include the data frames blocks
     outcode <- paste(lib_block,
                      df_block,
                      args_block,
                      gg_block,
-                     print_block, sep = "\n\n")
+                     plot_save_block,
+                     sep = "\n\n")
   } else {
     # If both are provided, return all blocks
     outcode <- paste(lib_block,
@@ -203,7 +210,8 @@ write_diagram <- function(model_list = NULL,
                      df_block,
                      args_block,
                      gg_block,
-                     print_block, sep = "\n\n")
+                     plot_save_block,
+                     sep = "\n\n")
   }
 
 
@@ -212,9 +220,10 @@ write_diagram <- function(model_list = NULL,
   outfile <- paste0(directory, "/", filename)
 
   # check if file exists, if so, ask user whether to overwrite or not
+  # if user set always_overwrite to TRUE, ignore the check
   check <- file.exists(outfile)
-  if(check == TRUE) {
-    ans <- menu(c("Yes", "No"), "Specified file already exists. Do you want to overwrite?")
+  if(check == TRUE & always_overwrite != TRUE) {
+    ans <- menu(c("Yes", "No"), title = "Specified file already exists. Do you want to overwrite?")
     if(ans == 1) {
       # write the code to file
       cat(outcode, file = outfile)

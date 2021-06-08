@@ -1,4 +1,4 @@
-pandoc: '2.13'
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
@@ -6,10 +6,11 @@ articles:
   B_modify_diagrams_simple: B_modify_diagrams_simple.html
   C_modify_input_structure: C_modify_input_structure.html
   D_modify_ggplot_code: D_modify_ggplot_code.html
-  E_flowdiagramr_and_modelbuilder: E_flowdiagramr_and_modelbuilder.html
+  E_more_model_examples: E_more_model_examples.html
   F_non_model_diagrams: F_non_model_diagrams.html
-  G_comparison_to_other_packages: G_comparison_to_other_packages.html
-last_built: 2021-05-20T17:34Z
+  G_flowdiagramr_and_modelbuilder: G_flowdiagramr_and_modelbuilder.html
+  H_comparison_to_other_packages: H_comparison_to_other_packages.html
+last_built: 2021-06-08T13:40Z
 urls:
   reference: https://andreashandel.github.io/flowdiagramr/index.html/reference
   article: https://andreashandel.github.io/flowdiagramr/index.html/articles

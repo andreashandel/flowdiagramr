@@ -94,14 +94,16 @@ flows (arrow segment), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
 in the vignettes.
 
-IMPORTANT. All variables must start with an upper case letter (e.g.,
-S, Si, or Aa). All parameters must start with a lower case letter (e.g.,
-b, bBmax, kS, ks). All variables and parameters MUST be separated by
+IMPORTANT. All variables must start with an upper case letter,
+followed by any combination of letters and numbers (e.g.,
+S, Si, or Aml2). All parameters must start with a lower case letter
+followed by any combination of letters and numbers (e.g.,
+b, bBmax, kS, p21S). All variables and parameters MUST be separated by
 math notation (e.g., +, -, *, /).
 
 EXAMPLE. The following includes a parameter \emph{b} and two variables, \emph{S}
 and \emph{I}: \code{b*S*I}. The following includes a parameter \emph{s} and two
-variables, \emph{Bg} and \emph{Ia}: \code{Bg*s*Ia}.
+variables, \emph{Bg} and \emph{I2}: \code{Bg*s*I2}.
 }
 \examples{
 varlabels <- c("S","I","R")

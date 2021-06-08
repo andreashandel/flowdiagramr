@@ -124,13 +124,16 @@ and other graphical options can be set by the user." />
       <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
-      <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+      <a href="../articles/E_more_model_examples.html">More model examples</a>
     </li>
     <li>
       <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
-      <a href="../articles/G_comparison_to_other_packages.html">Comparison to other R packages</a>
+      <a href="../articles/G_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+    </li>
+    <li>
+      <a href="../articles/H_comparison_to_other_packages.html">Comparison to other R packages</a>
     </li>
   </ul>
 </li>
@@ -167,17 +170,17 @@ aesthetics that are not associated with x, y locations. Colors, linetypes,
 and other graphical options can be set by the user.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_diagram</span>(
-  <span class='kw'>diagram_list</span>,
-  diagram_settings = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(label_flows = <span class='fl'>TRUE</span>, external_flows = <span class='fl'>TRUE</span>, interaction_label
-    = <span class='fl'>TRUE</span>, node_outline_color = <span class='fl'>NA</span>, node_fill_color = <span class='st'>"#6aa4c8"</span>, node_text_color =
-    <span class='st'>"white"</span>, node_text_size = <span class='fl'>10</span>, flow_text_color = <span class='st'>"black"</span>, flow_text_size = <span class='fl'>5</span>,
-    main_arrow_color = <span class='st'>"grey25"</span>, main_arrow_linetype = <span class='st'>"solid"</span>, main_arrow_size = <span class='fl'>0.7</span>,
-    interaction_arrow_color = <span class='st'>"grey25"</span>, interaction_arrow_linetype = <span class='st'>"dashed"</span>,
-    interaction_arrow_size = <span class='fl'>0.7</span>),
-  use_varnames = <span class='fl'>FALSE</span>,
-  with_grid = <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>make_diagram</span><span class='op'>(</span>
+  <span class='va'>diagram_list</span>,
+  diagram_settings <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>label_flows <span class='op'>=</span> <span class='cn'>TRUE</span>, external_flows <span class='op'>=</span> <span class='cn'>TRUE</span>, interaction_label
+    <span class='op'>=</span> <span class='cn'>TRUE</span>, node_outline_color <span class='op'>=</span> <span class='cn'>NA</span>, node_fill_color <span class='op'>=</span> <span class='st'>"#6aa4c8"</span>, node_text_color <span class='op'>=</span>
+    <span class='st'>"white"</span>, node_text_size <span class='op'>=</span> <span class='fl'>10</span>, flow_text_color <span class='op'>=</span> <span class='st'>"black"</span>, flow_text_size <span class='op'>=</span> <span class='fl'>5</span>,
+    main_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, main_arrow_linetype <span class='op'>=</span> <span class='st'>"solid"</span>, main_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span>,
+    interaction_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, interaction_arrow_linetype <span class='op'>=</span> <span class='st'>"dashed"</span>,
+    interaction_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span><span class='op'>)</span>,
+  use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  with_grid <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -267,22 +270,22 @@ want/need to move items around.</p></td>
     <p>A ggplot2 object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span>)
-<span class='kw'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span>)  <span class='co'># optional</span>
-<span class='kw'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(S_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"-b*S*I"</span>),
-              I_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span>),
-              R_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"g*I"</span>))
-<span class='kw'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(data = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> ),
-                        nrow = <span class='fl'>2</span>, ncol = <span class='fl'>3</span>, byrow = <span class='fl'>TRUE</span>)
-<span class='kw'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(varlabels = <span class='kw'>varlabels</span>, varnames = <span class='kw'>varnames</span>,
-flows = <span class='kw'>flows</span>, varlocations = <span class='kw'>varlocations</span>)
-<span class='kw'>diagram_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_diagram.html'>prepare_diagram</a></span>(model_list = <span class='kw'>mymodel</span>)
+    <pre class="examples"><div class='input'><span class='va'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span><span class='op'>)</span>
+<span class='va'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span><span class='op'>)</span>  <span class='co'># optional</span>
+<span class='va'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>S_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-b*S*I"</span><span class='op'>)</span>,
+              I_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span><span class='op'>)</span>,
+              R_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"g*I"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> <span class='op'>)</span>,
+                        nrow <span class='op'>=</span> <span class='fl'>2</span>, ncol <span class='op'>=</span> <span class='fl'>3</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varlabels <span class='op'>=</span> <span class='va'>varlabels</span>, varnames <span class='op'>=</span> <span class='va'>varnames</span>,
+flows <span class='op'>=</span> <span class='va'>flows</span>, varlocations <span class='op'>=</span> <span class='va'>varlocations</span><span class='op'>)</span>
+<span class='va'>diagram_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_diagram.html'>prepare_diagram</a></span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>mymodel</span><span class='op'>)</span>
 
 <span class='co'># make diagram without grid</span>
-<span class='kw'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span>(<span class='kw'>diagram_list</span>)
+<span class='va'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span><span class='op'>(</span><span class='va'>diagram_list</span><span class='op'>)</span>
 
 <span class='co'># make diagram with grid</span>
-<span class='kw'>diagram_with_grid</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span>(<span class='kw'>diagram_list</span>, with_grid = <span class='fl'>TRUE</span>)
+<span class='va'>diagram_with_grid</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span><span class='op'>(</span><span class='va'>diagram_list</span>, with_grid <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

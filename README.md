@@ -11,7 +11,7 @@
 coverage](https://codecov.io/gh/andreashandel/flowdiagramr/branch/main/graph/badge.svg)](https://codecov.io/gh/andreashandel/flowdiagramr?branch=main)
 <!-- badges: end -->
 
-**This package is still under early, active development. If you see this
+**This package is still under active development. If you see this
 message, assume that several parts of the package don’t quite work
 yet.**
 
@@ -29,6 +29,10 @@ package [see the *Quick Start* tutorial
 (vignette)](https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html).
 
 ## Further information
+
+The package website (if you are not already on it) is
+[here.](https://andreashandel.github.io/flowdiagramr/) It contains
+several tutorials that explain all the features of the pacakge.
 
 ## Citation and Contributors
 

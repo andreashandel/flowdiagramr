@@ -1,31 +1,95 @@
 library(ggplot2)
 library(flowdiagramr)
 
-model_list <- list(varlabels = c("B", "I"), flows = list(B_flows = c("+g*B*(1-B/bmax)", "-dB*B", "-k*B*I"), I_flows = c("+r*B*I", "-dI*I")))
+model_list <- list(varlabels = c("S", "I", "R"), flows = list(S_flows = "-b*S*I", I_flows = c("+b*S*I", "-g*I"), R_flows = "+g*I"), varnames = c("Susceptible", "Infected", "Recovered"), varlocations = structure(c("S", "", "", "I", "R", ""), .Dim = 2:3))
 
-diagram_list <- prepare_diagram(model_list = model_list)
+# Since a user-supplied diagram_list is provided,
+# the default one created by prepare_diagram() is not used
+# diagram_list <- prepare_diagram(model_list = model_list)
 
-nodes <- diagram_list$nodes
-horizontal_edges <- diagram_list$horizontal_edges
-vertical_edges <- diagram_list$vertical_edges
-curved_edges <- diagram_list$curved_edges
-feedback_edges <- diagram_list$feedback_edges
+# nodes <- diagram_list$nodes
+# horizontal_edges <- diagram_list$horizontal_edges
+# vertical_edges <- diagram_list$vertical_edges
+# curved_edges <- diagram_list$curved_edges
+# feedback_edges <- diagram_list$feedback_edges
+
+nodes <- data.frame(
+  label = c("S", "I", "R"),
+  name = c("Susceptible", "Infected", "Recovered"),
+  xmin = c(-0.5, 2.5, 5.5),
+  xmax = c(0.5, 3.5, 6.5),
+  ymin = c(-0.5, -2.5, -0.5),
+  ymax = c(0.5, -1.5, 0.5),
+  labelx = c(0, 3, 6),
+  labely = c(0, -2, 0)
+)
+
+horizontal_edges <- data.frame(
+  to = c("I", "R"),
+  from = c("S", "I"),
+  label = c("", "g*I"),
+  interaction = c(FALSE, FALSE),
+  xstart = c(0.5, 3.5),
+  ystart = c(0, -2),
+  xend = c(2.5, 5.5),
+  yend = c(-2, 0),
+  labelx = c(1.5, 4.5),
+  labely = c(-0.75, -0.75)
+)
+
+vertical_edges <- data.frame(
+  to = numeric(0),
+  from = integer(0),
+  label = character(0),
+  xstart = numeric(0),
+  ystart = numeric(0),
+  xend = numeric(0),
+  yend = numeric(0),
+  labelx = numeric(0),
+  labely = numeric(0)
+)
+
+curved_edges <- data.frame(
+  to = NA_real_,
+  from = "I",
+  label = "b*S*I",
+  interaction = TRUE,
+  xstart = 3,
+  ystart = -2.5,
+  xend = 1.5,
+  yend = -1,
+  curvature = -0.7,
+  labelx = 1.2,
+  labely = -2
+)
+
+feedback_edges <- data.frame(
+  to = numeric(0),
+  from = integer(0),
+  label = character(0),
+  xstart = numeric(0),
+  ystart = numeric(0),
+  xend = numeric(0),
+  yend = numeric(0),
+  labelx = numeric(0),
+  labely = numeric(0)
+)
 
 label_flows <- TRUE
 external_flows <- TRUE
 interaction_label <- TRUE
-node_outline_color <- 'red'
+node_outline_color <- NA
 node_fill_color <- '#6aa4c8'
-node_text_color <- 'red'
-node_text_size <- 10
+node_text_color <- 'white'
+node_text_size <- 14
 flow_text_color <- 'black'
-flow_text_size <- 4
-main_arrow_color <- 'green'
+flow_text_size <- 5
+main_arrow_color <- 'blue'
 main_arrow_linetype <- 'dotted'
 main_arrow_size <- 0.7
 interaction_arrow_color <- 'grey25'
 interaction_arrow_linetype <- 'dashed'
-interaction_arrow_size <- 2
+interaction_arrow_size <- 0.7
 with_grid <- FALSE
 use_varnames <- FALSE
 
@@ -271,7 +335,7 @@ if(with_grid == FALSE) {
 }
 
 
-# These lines plot or save the generated diagram. 
- # Uncomment them if you want to perform either action. 
- # plot(diagram_plot) 
+# These lines plot or save the generated diagram.
+ # Uncomment them if you want to perform either action.
+ # plot(diagram_plot)
  # ggsave('diagram_plot.png',diagram_plot)

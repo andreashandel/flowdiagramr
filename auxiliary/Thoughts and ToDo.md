@@ -1,15 +1,15 @@
 ******
-# 2021-06-02
+# 2021-06-02 and 2021-06-07
 
 * Should we try to write a manuscript describing the package?
 
-* The quickstart vignette shows an error message "Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables". Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new 'more model examples' vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be.
+* The quickstart vignette shows an error message "Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables". Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new 'more model examples' vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be. (and first address the other points).
 
-* inputs to make_diagram should be changed. Each type of flow (main and interaction) should have their own settings for an on/off flag to show arrows and labels, as well as text size/color settings. Also, let's reorder diagram_settings inputs such that the node related one comes first, then all main flow related, then all interaction related. 
+* inputs to make_diagram should be changed. Each type of flow (main and interaction) should have their own settings for an on/off flag to show arrows and labels, as well as text size/color settings. Also, let's reorder diagram_settings inputs such that the node related one comes first, then all main flow related, then all interaction related. See also next point.
 
-* why are use_varnames and show_grid not part of diagram_settings? If we only wanted graphical bits in diagram_settings, then we might need to remove show_flows/label_flows flags and make them separate too? Maybe we can do that, have all on/off settings follow right after diagram_list, and then diagram_settings (maybe rename to diagram_styling?) only does colors/sizes/linetypes/etc? 
+* why are use_varnames and show_grid not part of diagram_settings? If we only wanted graphical bits in diagram_settings, then we might need to remove show_flows/label_flows flags and make them separate too? Overall, it seems to me it might be better to supply all settings as one list, this makes it easier to keep things together. So I suggest make_diagram only has 2 inputs, diagram_list and diagram_settings, the latter containing ALL optional inputs. I suggest having the list such that it structures by type (vars/main flows/interactions/etc.) and for each one there is on/off and styling (the latter ignored if it's turned off).
 
-* I think we should try to avoid flipping between 'variable' and 'node', it might confuse people. While node is in some sense more general, since our starting point is models with variables and flows, I think it's best if we use those two words throughout. That means renaming all input options to make_diagram should be var_XX instead of node_XX. It would also mean renaming the nodes entry in the object that prepare_diagram returns to vars. Could do that in a last step, and then at beginning of make_diagram code, rename again internally to nodes so that you won't have to change a ton of internal code, but the user still sees var/vars/variable/variables instead of node terminology. This also means nodes (or edges) should not show up inside the ggplot2 code given to the user, just the vars/flows terminology.
+* I think we should try to avoid flipping between 'variable' and 'node', it might confuse people. While node is in some sense more general, since our starting point is models with variables and flows, I think it's best if we use those two words throughout. That means renaming all input options to make_diagram should be var_XX instead of node_XX. It would also mean renaming the nodes entry in the object that prepare_diagram returns to vars. Could do that in a last step, and then at beginning of make_diagram code, rename again internally to nodes so that you won't have to change a ton of internal code, but the user still sees var/vars/variable/variables instead of node terminology. This also means nodes (or edges) should not show up inside the ggplot2 code given to the user, just the vars/flows terminology. Maybe a search and replace over all code, changing node -> var and nodes -> vars will do the trick? And edge -> flow, edges -> flows. (I use a (windows) progam called Find and Replace for such stuff).
 
 * Last model in vignette B doesn't look quite right, it seems that the d*P arrow goes from P to Ia instead of from P to nowhere (and to nowhere flows usually go at a slanted angle). Not sure what's happening there. Also several interaction arrows start at the center of the variables instead of the edges.
 
@@ -19,21 +19,19 @@
 
 * Can you format the help file for prepare_diagram such that the model_list explanation is easier readable, e.g., each list element explained by itself.
 
-* write_diagram, when file exists, only gives a Y/N but doesn't tell the user what the question is (at least I don't see a question).
+* The 2nd example in vignette D is not working. see comment there.
+
+* Shouldn't default settings in a function call be what's described? E.g. right now in write_diagram, the default for directory is NULL but that equates to the current working directory. Shouldn't the default then be set to '.' or something like that? Same for filename, if the default is 'diagram_code.R' then I think that's what should be shown in the function call (I did that one, wasn't sure how to do directory best).
+
+* I still think producing ggplot2 code that uses loops would be easier for users to modify. Instead of efficiently/vectorized adding of components (vars/flows), I would do a loop over each, i.e. a loop over all vars, over all flows, etc. Then one can more easily intervene manually for a specific one and change it.
 
 ******
 # 2021-05-11
 
-* Can we rename write_diagram_code to just write_diagram? Also, help file says only either modellist or diagramlist can be provided. Needs updating. 
-And can we rename outplot to diagram or diagram_plot or something else? outplot is just a little bit weird variable name (though I know of course how you came up with it) :) ok for internal use, but since this is a script the user will work with, we should make names as intuitive for the non-coder as possible.
 
 * More comments in the created ggplot code would be good. More or less every line/bit of code should have a brief explanation so user knows what it is/does.
 
-* It seems that write_diagram does not properly process the make_diagram_settings input. See example in vignette D.
-
 * Using the apply functions is good coding style, but in my experience most novice coders are entirely confused by them. Would it be possible to write the output code without using the lapply functions? If an inefficient (but easier to understand) loop replaces it, that would be ok with me. I think a loop would also make it easier for a user to modify a specific component, e.g. if there is a loop over horizontal edges 1-5, a user could stick in something like (pseudocode) `if n==3 edge_color = orange` into the loop. Right now, it's hard to do that inside the lapply statement.
-
-* We should maybe have a setting/check for write_diagram to see if the file already exists, and if yes don't automatically overwrite? We could either do it such that if file exists, it will abort with a message asking user to pick a different file name/location. If a user knows what they are doing, they can set file_overwrite = TRUE as a flag to write_diagram. Or we could do it such that if the file exists, code stops and writes message on console that says, 'file exists, do you want to overwrite Y/N'? I think either approach is fine, whichever you think is better/easier.
 
 * Check documentation/help for all exported functions, make sure it's fully up-to-date and complete. Also have examples for each user-facing/exported function.
 

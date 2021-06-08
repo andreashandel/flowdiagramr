@@ -50,18 +50,66 @@ Once you have your model, you can send it to `write_diagram`, a function that wr
 You can specify the location and name for the file. If you don't provide those, it will be stored in the current working directory under the name `diagram_code.R`. 
 
 ```{r, eval= FALSE}
-write_diagram(model_list = sirmodel1, directory = '.', filename = 'sirmodel1_diagram_code.R')
+write_diagram(model_list = sirmodel1, filename = 'sirmodel1_diagram_code.R')
 ```
 If things worked well, you should get a message telling you the location where the code was saved.
 The code that is generated is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure.
 
-For this example, if you run the code that is generated, you should see a figure like this
+If you run the code that is generated, it will create the diagram structure as an object called `diagram_plot`. 
+You can then plot or save that object (there is code at the bottom of the generated file for that).
 
+For this example, here is what you get. 
 ```{r}
 source('sirmodel1_diagram_code.R')
+plot(diagram_plot)
 ```
 
-Having all the code that generates the figure also allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot. We'll show examples for this below.
+Having all the code that generates the figure also allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot. 
+
+Let's assume for this example that you want to add some text below the `I` compartment. 
+In this case, you don't need to modify any of the existing code, just add a some code at the end. 
+The following lines of code appended to the bottom of `sirmodel1_diagram_code.R`, just before the final `plot` statement, will do the trick:
+
+```{r, eval=FALSE}
+#######################
+### LAST PART OF THE GENERATED CODE BEFORE ADDITION
+#######################
+if(with_grid == FALSE) {
+  diagram_plot <- diagram_plot +
+    theme_void()
+} else {
+  # The else here may seem silly, but otherwise the returned plot is NULL
+  diagram_plot <- diagram_plot
+}
+
+#######################
+### YOUR NEW ADDITION
+#######################
+# make a new data frame of text
+text_df <- data.frame(  x = 3,  y = -1,
+  lab = "Infected and Infectious"
+)
+diagram_plot <- diagram_plot +
+  geom_text(data = text_df, aes(x = x, y = y, label = lab), size = 8)
+
+#######################
+### PART OF THE GENERATED CODE AFTER ADDITION
+#######################
+# These lines plot or save the generated diagram. 
+# Uncomment them if you want to perform either action. 
+# plot(diagram_plot) 
+# ggsave('diagram_plot.png',diagram_plot)
+```
+
+Then save the new code, let's call it `sirmodel1_diagram_code_modified.R`.
+Running the new code will add the wanted text to the diagram plot
+
+
+```{r}
+source('sirmodel1_diagram_code_modified.R')
+plot(diagram_plot)
+```
+
 
 
 ### Example 2
@@ -94,53 +142,72 @@ diagram_list$curved_edges$labely[1] = -2
 diagram_list$curved_edges$curvature[1] = -0.7
 ```
 
+Create the diagram the usual way using `make_diagram`, while also supplying additional settings.
 
-Send the model, the modified `diagram_list` and additional settings for `make_diagram` to the `write_diagram` function.
+
+```{r}
+#specify the settings separately so we can re-use them below
+diagram_settings = list(
+                          node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                          node_text_size = 14,
+                          main_arrow_color = "blue",
+                          main_arrow_linetype = "dotted")
+sir2_diagram <- make_diagram(diagram_list, diagram_settings)
+plot(sir2_diagram)
+```
+
+Alternatively, you can generate the full code that produces this plot as follows
+
 
 ```{r, eval= FALSE}
 write_diagram(model_list = sirmodel2, 
-                   diagram_list = diagram_list,
-                   make_diagram_settings = list(
-                          node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                          node_text_size = 10,
-                          main_arrow_color = "grey25",
-                          main_arrow_linetype = "dotted"),
-                   directory = '.', 
-                   filename = 'sirmodel2_diagram_code.R')
+              diagram_list = diagram_list,
+              diagram_settings = diagram_settings,
+              filename = 'sirmodel2_diagram_code.R')
 ```
+
+**NOT WORKING, some of THE SUPPLIED make_diagram_settings ARE IGNORED.**
 
 If you run the code that is generated, you should see a figure like this
 
 ```{r}
 source('sirmodel2_diagram_code.R')
+plot(diagram_plot)
 ```
 
 All of this you can get by using the previous methods of modification we explained. 
 
 Let's assume that you are mostly happy with this figure, but you want to make another tweak.
-Namely, you want to add some text to the diagram. 
-Below is an example where we modify the code we produced above to fine tune some components. 
-Because **ggplot2** objects can be added to, we can simply store the plot object and then add on our modifications.
-Sourcing the generated R script prints the plot but it also creates the object `diagram_plot` that can be modified
+This time, you want to (for some reason) turn the shape of the `I` box into a circle.
 
+Here is how you modify the `sirmodel2_diagram_code.R` code to achieve this.
+
+**Doing a circle for I is hard to do in the current vectorized way the code is written. I still think loops might be easier to manipulate.**
 
 ```{r, eval = FALSE}
-source('sirmodel2_diagram_code.R')  # puts the diagram_plot object in memory
+#######################
+### LAST PART OF THE GENERATED CODE BEFORE ADDITION
+#######################
+#to come
+
+#######################
+### YOUR NEW ADDITION
+#######################
+#to come
+
+#######################
+### PART OF THE GENERATED CODE AFTER ADDITION
+#######################
+#to come
 ```
+
+
+Now save the modified script (here We call it `sirmodel2_diagram_code_modified.R`), source it and plot the generated `diagram_plot` object to get this figure:
 
 ```{r}
-# make a new data frame of text
-text_df <- data.frame(
-  x = 5.5,
-  y = -2,
-  lab = "Basic susceptible-infected-recovered\ndisease transmission model."
-)
-
-diagram_plot +
-  geom_text(data = text_df, aes(x = x, y = y, label = lab), size = 3)
+source('sirmodel2_diagram_code_modified.R')
+plot(diagram_plot)
 ```
-
-If you run the script with these modifications, here is the figure.
 
 
 ### Example 3
@@ -157,20 +224,29 @@ ppmodel = list(varlabels = varlabels, flows = flows)
 
 We won't do any changes to the `diagram_list` structure here, but we'll send a few custom `make_diagram` settings to the `write_diagram` code.
 
+Here is first the plot using the `prepare_diagram` and make_diagram` functions.
+
+```{r}
+diagram_list = prepare_diagram(ppmodel)
+diagram_settings = list(
+                          node_outline_color = "red",
+                          node_fill_color = c("#6aa4c8", "green"),
+                          node_text_color = "red",
+                          node_text_size = 10,
+                          flow_text_size = 4,
+                          interaction_arrow_size = 2,
+                          main_arrow_color = "green",
+                          main_arrow_linetype = "dotted")
+pp_diagram <- make_diagram(diagram_list, diagram_settings)
+plot(pp_diagram)
+```
+
+Now let's generate the code for this figure.
 
 ```{r, eval = FALSE}
 # make diagram with adjusted settings
 write_diagram(model_list = ppmodel, 
-                   make_diagram_settings = list(
-                          node_outline_color = NA,
-                          node_fill_color = c("#6aa4c8", "#eb5600"),
-                          node_text_color = "white",
-                          node_text_size = 10,
-                          flow_text_size = 4,
-                          interaction_arrow_size = 0.7,
-                          main_arrow_color = "grey25",
-                          main_arrow_linetype = "dotted"),
-                   directory = '.', 
+              diagram_settings = diagram_settings,
                    filename = 'ppmodel_diagram_code.R'
                    )
 ```
@@ -179,13 +255,14 @@ Running the resulting code produces this diagram.
 
 ```{r}
 source('ppmodel_diagram_code.R')
+plot(diagram_plot)
 ```
 
 
-Let's say that for some reason, you want the rectangles with rounded corners. I didn't know how to do that, but a quick online search [provided this solution](https://stackoverflow.com/questions/52820756/roundrectgrob-equivalent-for-geom-rect-in-ggplot). Note that this is somewhat advanced/hacky, but I figured I show it as an example to illustrate that at this point, you can do anything you like with the code to make whatever you want.
+Let's say that for some reason, you want the rectangles with rounded corners. I didn't know how to do that, but a quick online search [provided this solution](https://stackoverflow.com/questions/52820756/roundrectgrob-equivalent-for-geom-rect-in-ggplot). Note that this is somewhat advanced and hacky, but I figured I show it as an example to illustrate that at this point, you can do anything you like with the code to make whatever you want.
 
-It's actually not much code editing. First, you need to install the [`statebins` R package](https://github.com/hrbrmstr/statebins). The version on CRAN works fine, so you can just use `install.packages('statebins')`. Then add `library('statebins')` at the top of your code file. 
-Finally, find the `geom_rect` bit in your code (close to the top) and replace it with `statebins:::geom_rrect` (yes, you need the ::: in there since geom_rrect is not an exported function. If you have no idea what that means, just ignore.) Everything else you can keep unchanged. Save your code (I recommend using a different name so you don't accidentally overwrite it if you run your `write_diagram` code again). Now, if you run the code, it should produce this diagram.
+It's actually not much code editing. First, you need to install the [`statebins` R package](https://github.com/hrbrmstr/statebins). The version on CRAN works fine, so you can just use `install.packages('statebins')`. Then add `library('statebins')` at the top of your code file, underneath the other `library()` commands. 
+Finally, find the `geom_rect` bit in your code (close to the top) and replace it with `statebins:::geom_rrect` (yes, you need the ::: in there since `geom_rrect` is not an exported function. If you have no idea what that means, that's ok.) Everything else you can keep unchanged. Save your code (I recommend using a different name so you don't accidentally overwrite it if you run your `write_diagram` code again). Now, if you run the code, it should produce this diagram.
 
 ```{r}
 source('ppmodel_diagram_code_modified.R')
@@ -194,7 +271,7 @@ source('ppmodel_diagram_code_modified.R')
 
 ## General suggestions
 
-I think with those examples, you got the idea. At this point, the options are endless and you can change the code to get exactly what you want - at the expense of having to write/edit code yourself.
+I think with those examples, you get the idea. At this point, the options are endless and you can change the code to get exactly what you want - at the expense of having to write/edit code yourself.
 
 In general, we recommend implementing the easiest modifications first, even if you know you'll be editing the ggplot code at the end. Thus, first use the options described in the [basic modification vignette](./B_modify_diagrams_simple.html). Then make further adjustments by editing the `diagram_list` structure as described in the [input structure modification](./C_modify_input_structure.html) vignette. Once you have gotten as far as you can with these approaches, and still want to make further edits, write the ggplot code to a file and change the code.
 

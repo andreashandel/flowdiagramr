@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 [![Codecov coverage](https://codecov.io/gh/andreashandel/flowdiagramr/branch/main/graph/badge.svg)](https://codecov.io/gh/andreashandel/flowdiagramr?branch=main)
 <!-- badges: end -->
 
-**This package is still under early, active development. If you see this message, assume that several parts of the package don't quite work yet.**
+**This package is still under active development. If you see this message, assume that several parts of the package don't quite work yet.**
 
 ## Description
 This package allows automated creation of flow diagrams for compartmental simulation models using ggplot. Other types of flow charts are also supported.
@@ -33,6 +33,26 @@ For an introduction to the package, step-by-step instructions on getting started
 
 
 ## Further information
+
+The package website (if you are not already on it) is [here.](https://andreashandel.github.io/flowdiagramr/) It contains several tutorials that explain all the features of the package. 
+
+**Main tutorials/vignettes**
+
+*You should go through them in this order*
+
+1. [Quick start guide](https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html)
+2. [Basic modification of diagrams](https://andreashandel.github.io/flowdiagramr/articles/B_modify_diagrams_simple.html) 
+3. [Modifying the input structure]((https://andreashandel.github.io/flowdiagramr/articles/C_modify_input_structure.html)
+4. [Modifying the ggplot2 code]((https://andreashandel.github.io/flowdiagramr/articles/D_modify_ggplot_code.html)
+
+**Additional tutorials/vignettes**
+
+*Read them based on interest, in any order*
+
+*  [More model examples](https://andreashandel.github.io/flowdiagramr/articles/F_non_model_diagrams.html)
+*  [Making non-model based diagrams](https://andreashandel.github.io/flowdiagramr/articles/F_non_model_diagrams.html)
+*  [Using modelbuilder models with flowdiagramr](https://andreashandel.github.io/flowdiagramr/articles/G_flowdiagramr_and_modelbuilder.html)
+*  [Comparison to other R packages](https://andreashandel.github.io/flowdiagramr/articles/H_comparison_to_other_packages.html)
  
 
 ## Citation and Contributors

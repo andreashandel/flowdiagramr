@@ -271,4 +271,7 @@ if(with_grid == FALSE) {
 }
 
 
-plot(diagram_plot)
+# These lines plot or save the generated diagram. 
+ # Uncomment them if you want to perform either action. 
+ # plot(diagram_plot) 
+ # ggsave('diagram_plot.png',diagram_plot)

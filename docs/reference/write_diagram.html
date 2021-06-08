@@ -48,11 +48,8 @@
 
 <meta property="og:title" content="Generate a reproducible R script to make the diagram. — write_diagram" />
 <meta property="og:description" content="write_diagram() generates code in the form of a stand-alone R script to
-reproduce a diagram, including the model inputs, the data frames from
-prepare_diagram, and the ggplot2 code. The R script
-is intended to run &quot;as-is&quot;, meaning there is code to make the objects
-the user sends as arguments (either the model or the
-diagram_list)." />
+produce a diagram. By editing the generated code, the user can
+make manual adjustments to the diagram." />
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png" />
 
 
@@ -126,13 +123,16 @@ diagram_list)." />
       <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
-      <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+      <a href="../articles/E_more_model_examples.html">More model examples</a>
     </li>
     <li>
       <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
-      <a href="../articles/G_comparison_to_other_packages.html">Comparison to other R packages</a>
+      <a href="../articles/G_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+    </li>
+    <li>
+      <a href="../articles/H_comparison_to_other_packages.html">Comparison to other R packages</a>
     </li>
   </ul>
 </li>
@@ -164,22 +164,20 @@ diagram_list)." />
 
     <div class="ref-description">
     <p><code>write_diagram()</code> generates code in the form of a stand-alone R script to
-reproduce a diagram, including the model inputs, the data frames from
-<code><a href='prepare_diagram.html'>prepare_diagram</a></code>, and the <strong>ggplot2</strong> code. The R script
-is intended to run "as-is", meaning there is code to make the objects
-the user sends as arguments (either the <code>model</code> or the
-<code>diagram_list</code>).</p>
+produce a diagram. By editing the generated code, the user can
+make manual adjustments to the diagram.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>write_diagram</span>(
-  model_list = <span class='kw'>NULL</span>,
-  diagram_list = <span class='kw'>NULL</span>,
-  make_diagram_settings = <span class='kw'>NULL</span>,
-  use_varnames = <span class='fl'>FALSE</span>,
-  with_grid = <span class='fl'>FALSE</span>,
-  directory = <span class='kw'>NULL</span>,
-  filename = <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>write_diagram</span><span class='op'>(</span>
+  model_list <span class='op'>=</span> <span class='cn'>NULL</span>,
+  diagram_list <span class='op'>=</span> <span class='cn'>NULL</span>,
+  diagram_settings <span class='op'>=</span> <span class='cn'>NULL</span>,
+  use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  with_grid <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  directory <span class='op'>=</span> <span class='cn'>NULL</span>,
+  filename <span class='op'>=</span> <span class='st'>"diagram_code.R"</span>,
+  always_overwrite <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -187,15 +185,15 @@ the user sends as arguments (either the <code>model</code> or the
     <tr>
       <th>model_list</th>
       <td><p>A <strong>flowdiagramr</strong> input list. See
-<code><a href='prepare_diagram.html'>prepare_diagram</a></code>.</p></td>
+<code><a href='prepare_diagram.html'>prepare_diagram</a></code>. Also see <code>Details</code> below.</p></td>
     </tr>
     <tr>
       <th>diagram_list</th>
       <td><p>A <strong>flowdiagramr</strong> input structure, resulting from
-a call to <code><a href='prepare_diagram.html'>prepare_diagram</a></code>.</p></td>
+a call to <code><a href='prepare_diagram.html'>prepare_diagram</a></code>. See <code>Details</code> below.</p></td>
     </tr>
     <tr>
-      <th>make_diagram_settings</th>
+      <th>diagram_settings</th>
       <td><p>A named list of diagram aesthetics. See
 <code><a href='make_diagram.html'>make_diagram</a></code> documentation. Default is <code>NULL</code> and the
 default values from <code><a href='make_diagram.html'>make_diagram</a></code> are used.</p></td>
@@ -214,42 +212,55 @@ want/need to move items around.</p></td>
     </tr>
     <tr>
       <th>directory</th>
-      <td><p>File directory in which to save the R file. Defualt
-location is the current working directory.</p></td>
+      <td><p>File directory in which to save the produced R file.
+Default location is the current working directory.</p></td>
     </tr>
     <tr>
       <th>filename</th>
       <td><p>Name of the file, must end in '.R'. Default name is
 'diagram_code.R'.</p></td>
     </tr>
+    <tr>
+      <th>always_overwrite</th>
+      <td><p>A logical indicating if you want to skip being asked
+if you want to overwrite an already existing file.
+Default is FALSE. Change to TRUE at own risk.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A message telling the user where the file is.</p>
+    <p>R code written to a file as specified by settings.
+Also, a message is returned telling the user where the file is.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>You need to supply at least one of <code>model_list</code>
+or <code>diagram_list</code>. If you supply both, <code>model_list</code> is included in the
+resulting R file, but it is not used. Including it can be good just so
+you have the complete model specification in one script.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='kw'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span>)
-<span class='kw'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span>)  <span class='co'># optional</span>
-<span class='kw'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(S_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"-b*S*I"</span>),
-              I_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span>),
-              R_flows = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"g*I"</span>))
-<span class='kw'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(data = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> ),
-                        nrow = <span class='fl'>2</span>, ncol = <span class='fl'>3</span>, byrow = <span class='fl'>TRUE</span>)
-<span class='kw'>model_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(varlabels = <span class='kw'>varlabels</span>, varnames = <span class='kw'>varnames</span>,
-flows = <span class='kw'>flows</span>, varlocations = <span class='kw'>varlocations</span>)
-<span class='kw'>diagram_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_diagram.html'>prepare_diagram</a></span>(model_list = <span class='kw'>model_list</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span><span class='op'>)</span>
+<span class='va'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span><span class='op'>)</span>  <span class='co'># optional</span>
+<span class='va'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>S_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-b*S*I"</span><span class='op'>)</span>,
+              I_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span><span class='op'>)</span>,
+              R_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"g*I"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> <span class='op'>)</span>,
+                        nrow <span class='op'>=</span> <span class='fl'>2</span>, ncol <span class='op'>=</span> <span class='fl'>3</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>model_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varlabels <span class='op'>=</span> <span class='va'>varlabels</span>, varnames <span class='op'>=</span> <span class='va'>varnames</span>,
+flows <span class='op'>=</span> <span class='va'>flows</span>, varlocations <span class='op'>=</span> <span class='va'>varlocations</span><span class='op'>)</span>
+<span class='va'>diagram_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_diagram.html'>prepare_diagram</a></span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>model_list</span><span class='op'>)</span>
 
 <span class='co'># generate R code from model_list</span>
-<span class='fu'>write_diagram</span>(model_list = <span class='kw'>model_list</span>)
+<span class='fu'>write_diagram</span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>model_list</span><span class='op'>)</span>
 
 <span class='co'># generate R code from diagram_list</span>
-<span class='fu'>write_diagram</span>(diagram_list = <span class='kw'>diagram_list</span>)
+<span class='fu'>write_diagram</span><span class='op'>(</span>diagram_list <span class='op'>=</span> <span class='va'>diagram_list</span><span class='op'>)</span>
 
 <span class='co'>#' # generate R code from both</span>
-<span class='fu'>write_diagram</span>(model_list = <span class='kw'>model_list</span>, diagram_list = <span class='kw'>diagram_list</span>)
-}
+<span class='fu'>write_diagram</span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>model_list</span>, diagram_list <span class='op'>=</span> <span class='va'>diagram_list</span><span class='op'>)</span>
+<span class='op'>}</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -1,8 +1,7 @@
 library(ggplot2)
 library(flowdiagramr)
-library('statebins')
 
-model_list <- list(varlabels = c("B", "I"), flows = list(B_flows = c("+g*B*(1-B/bmax)", "-dB*B", "-k*B*I"), I_flows = c("+r*B*I", "-dI*I")))
+model_list <- list(varlabels = c("S", "I", "R"), flows = list(S_flows = "-b*S*I", I_flows = c("b*S*I", "-g*I"), R_flows = "g*I"))
 
 diagram_list <- prepare_diagram(model_list = model_list)
 
@@ -22,7 +21,7 @@ node_text_size <- 10
 flow_text_color <- 'black'
 flow_text_size <- 5
 main_arrow_color <- 'grey25'
-main_arrow_linetype <- 'dotted'
+main_arrow_linetype <- 'solid'
 main_arrow_size <- 0.7
 interaction_arrow_color <- 'grey25'
 interaction_arrow_linetype <- 'dashed'
@@ -51,7 +50,7 @@ diagram_plot <- ggplot() +
 # color and fill vectors must have a length that is equal to the number
 # of rows in the nodes data frame (one value for each row).
 diagram_plot <- diagram_plot +
-  statebins:::geom_rrect(
+  geom_rect(
     data = nodes,
     aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
     color = node_outline_color,
@@ -212,49 +211,51 @@ if(label_flows == TRUE) {
 # the horizontal_edges, we loop over the curved_edges data frame rows
 # to apply row-specific aesthetics that are difficult to apply via
 # ggplot2 mapping in the normal way.
-for(i in 1:nrow(curved_edges)) {
-  dat <- curved_edges[i, ]  # get a temporary data frame for this row
+if(nrow(curved_edges) != 0) {
+  for(i in 1:nrow(curved_edges)) {
+    dat <- curved_edges[i, ]  # get a temporary data frame for this row
 
-  # define the temporary aesthetics for this line based on the
-  # interaction
-  this_line_type <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_arrow_linetype,
-                           main_arrow_linetype)
-  this_line_color <- ifelse(as.numeric(dat["interaction"]),
-                            interaction_arrow_color,
-                            main_arrow_color)
-  this_arrow_fill <- ifelse(as.numeric(dat["interaction"]),
-                            interaction_arrow_color,
-                            main_arrow_color)
-  this_line_size <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_arrow_size,
-                           main_arrow_size)
+    # define the temporary aesthetics for this line based on the
+    # interaction
+    this_line_type <- ifelse(as.numeric(dat["interaction"]),
+                             interaction_arrow_linetype,
+                             main_arrow_linetype)
+    this_line_color <- ifelse(as.numeric(dat["interaction"]),
+                              interaction_arrow_color,
+                              main_arrow_color)
+    this_arrow_fill <- ifelse(as.numeric(dat["interaction"]),
+                              interaction_arrow_color,
+                              main_arrow_color)
+    this_line_size <- ifelse(as.numeric(dat["interaction"]),
+                             interaction_arrow_size,
+                             main_arrow_size)
 
-  diagram_plot <- diagram_plot +
-    geom_curve(
-      data = dat,
-      aes(x = xstart,
-          y = ystart,
-          xend = xend,
-          yend = yend),
-      linetype = this_line_type,
-      curvature = dat["curvature"],
-      arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-      color = this_line_color,
-      arrow.fill = this_arrow_fill,
-      lineend = "round",
-      size = this_line_size
-    )
-}
+    diagram_plot <- diagram_plot +
+      geom_curve(
+        data = dat,
+        aes(x = xstart,
+            y = ystart,
+            xend = xend,
+            yend = yend),
+        linetype = this_line_type,
+        curvature = dat["curvature"],
+        arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+        color = this_line_color,
+        arrow.fill = this_arrow_fill,
+        lineend = "round",
+        size = this_line_size
+      )
+  }
 
-# As ever, if the label_flows is not true, then no labels need to be printed
-if(label_flows == TRUE) {
-  diagram_plot <- diagram_plot +
-    geom_text(
-      data = curved_edges,
-      aes(x = labelx, y = labely, label = label),
-      size = flow_text_size,
-      color = flow_text_color)
+  # As ever, if the label_flows is not true, then no labels need to be printed
+  if(label_flows == TRUE) {
+    diagram_plot <- diagram_plot +
+      geom_text(
+        data = curved_edges,
+        aes(x = labelx, y = labely, label = label),
+        size = flow_text_size,
+        color = flow_text_color)
+  }
 }
 
 
@@ -270,4 +271,17 @@ if(with_grid == FALSE) {
 }
 
 
-plot(diagram_plot)
+# make a new data frame of text
+text_df <- data.frame(
+  x = 3,
+  y = -1,
+  lab = "Infected and Infectious"
+)
+
+diagram_plot <- diagram_plot +
+  geom_text(data = text_df, aes(x = x, y = y, label = lab), size = 8)
+
+# These lines plot or save the generated diagram.
+# Uncomment them if you want to perform either action.
+# plot(diagram_plot)
+# ggsave('diagram_plot.png',diagram_plot)

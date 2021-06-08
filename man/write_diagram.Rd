@@ -7,21 +7,22 @@
 write_diagram(
   model_list = NULL,
   diagram_list = NULL,
-  make_diagram_settings = NULL,
+  diagram_settings = NULL,
   use_varnames = FALSE,
   with_grid = FALSE,
   directory = NULL,
-  filename = NULL
+  filename = "diagram_code.R",
+  always_overwrite = FALSE
 )
 }
 \arguments{
 \item{model_list}{A \strong{flowdiagramr} input list. See
-\code{\link{prepare_diagram}}.}
+\code{\link{prepare_diagram}}. Also see \code{Details} below.}
 
 \item{diagram_list}{A \strong{flowdiagramr} input structure, resulting from
-a call to \code{\link{prepare_diagram}}.}
+a call to \code{\link{prepare_diagram}}. See \code{Details} below.}
 
-\item{make_diagram_settings}{A named list of diagram aesthetics. See
+\item{diagram_settings}{A named list of diagram aesthetics. See
 \code{\link{make_diagram}} documentation. Default is \code{NULL} and the
 default values from \code{\link{make_diagram}} are used.}
 
@@ -33,22 +34,30 @@ provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).}
 with a grid. Default is FALSE. The grid can be helpful if you
 want/need to move items around.}
 
-\item{directory}{File directory in which to save the R file. Defualt
-location is the current working directory.}
+\item{directory}{File directory in which to save the produced R file.
+Default location is the current working directory.}
 
 \item{filename}{Name of the file, must end in '.R'. Default name is
 'diagram_code.R'.}
+
+\item{always_overwrite}{A logical indicating if you want to skip being asked
+if you want to overwrite an already existing file.
+Default is FALSE. Change to TRUE at own risk.}
 }
 \value{
-A message telling the user where the file is.
+R code written to a file as specified by settings.
+Also, a message is returned telling the user where the file is.
 }
 \description{
 \code{write_diagram()} generates code in the form of a stand-alone R script to
-reproduce a diagram, including the model inputs, the data frames from
-\code{\link{prepare_diagram}}, and the \strong{ggplot2} code. The R script
-is intended to run "as-is", meaning there is code to make the objects
-the user sends as arguments (either the \code{model} or the
-\code{diagram_list}).
+produce a diagram. By editing the generated code, the user can
+make manual adjustments to the diagram.
+}
+\details{
+You need to supply at least one of \code{model_list}
+or \code{diagram_list}. If you supply both, \code{model_list} is included in the
+resulting R file, but it is not used. Including it can be good just so
+you have the complete model specification in one script.
 }
 \examples{
 \dontrun{

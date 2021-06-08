@@ -79,13 +79,16 @@
       <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
-      <a href="../articles/E_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+      <a href="../articles/E_more_model_examples.html">More model examples</a>
     </li>
     <li>
       <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
-      <a href="../articles/G_comparison_to_other_packages.html">Comparison to other R packages</a>
+      <a href="../articles/G_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+    </li>
+    <li>
+      <a href="../articles/H_comparison_to_other_packages.html">Comparison to other R packages</a>
     </li>
   </ul>
 </li>
@@ -136,50 +139,47 @@
 </p>
 </div>
 <p>We’ll try to recreate a simplified version of this. First, we’ll specify the model.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L"</span>,<span class="st">"P"</span>,<span class="st">"B"</span>,<span class="st">"Pl"</span>,<span class="st">"R"</span>,<span class="st">"Re"</span>)
-<span class="kw">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Lamp doesn't work"</span>,<span class="st">"Lamp plugged in?"</span>,<span class="st">"Bulb burned out?"</span>,<span class="st">"Plug in lamp"</span>,<span class="st">"Replace bulb"</span>,<span class="st">"Repair lamp"</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"P"</span>,<span class="st">"B"</span>,<span class="st">"Pl"</span>,<span class="st">"R"</span>,<span class="st">"Re"</span><span class="op">)</span>
+<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lamp doesn't work"</span>,<span class="st">"Lamp plugged in?"</span>,<span class="st">"Bulb burned out?"</span>,<span class="st">"Plug in lamp"</span>,<span class="st">"Replace bulb"</span>,<span class="st">"Repair lamp"</span><span class="op">)</span>
 
-<span class="kw">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(L_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"-L"</span>), 
-             P_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L"</span>,<span class="st">"-no_P"</span>,<span class="st">"-yes_P"</span>), 
-             B_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"yes_P"</span>,<span class="st">"-yes_B"</span>, <span class="st">"-no_B"</span>),
-             Pl_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"no_P"</span>),
-             R_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"yes_B"</span>),
-             Re_flows = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"no_B"</span>)
-             )
-<span class="kw">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(data = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L"</span>, <span class="st">""</span>,
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>L_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-L"</span><span class="op">)</span>, 
+             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>,<span class="st">"-no_P"</span>,<span class="st">"-yes_P"</span><span class="op">)</span>, 
+             B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes_P"</span>,<span class="st">"-yes_B"</span>, <span class="st">"-no_B"</span><span class="op">)</span>,
+             Pl_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no_P"</span><span class="op">)</span>,
+             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yes_B"</span><span class="op">)</span>,
+             Re_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"no_B"</span><span class="op">)</span>
+             <span class="op">)</span>
+<span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>, <span class="st">""</span>,
                                <span class="st">"P"</span>, <span class="st">"Pl"</span>,
                                <span class="st">"B"</span>, <span class="st">"R"</span>, 
-                               <span class="st">"Re"</span>,<span class="st">""</span> ), ncol = <span class="fl">2</span>, byrow = <span class="fl">TRUE</span>)
-<span class="kw">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(varlabels = <span class="kw">varlabels</span>, varnames = <span class="kw">varnames</span>, 
-               flows = <span class="kw">flows</span>, varlocations = <span class="kw">varlocations</span>)
-</pre></div>
+                               <span class="st">"Re"</span>,<span class="st">""</span> <span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, 
+               flows <span class="op">=</span> <span class="va">flows</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></code></pre></div>
 <p>Note that to make the diagram logic work, we have to define actual flows. For instance we can’t just label the various flows with “Yes” or “No” like in the original diagram. If we did this, <strong>flowdiagramr</strong> wouldn’t know with which boxes/variables to associate the arrows.</p>
 <p>Now, it’s the standard steps of preparing, making and plotting the diagram.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span>(<span class="kw">mymodel</span>)
-<span class="kw">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span>(<span class="kw">diagram_list</span>, use_varnames = <span class="fl">TRUE</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">my_diagram</span>)
-</pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, use_varnames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="F_non_model_diagrams_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
 <p>This looks similar to the original, but of course not quite as good. We can get fairly close with a few adjustments.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">modified_diagram_list</span> <span class="op">&lt;-</span> <span class="kw">diagram_list</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">modified_diagram_list</span> <span class="op">&lt;-</span> <span class="va">diagram_list</span>
 
 <span class="co"># update the flow labels</span>
-<span class="kw">modified_diagram_list</span><span class="op">$</span><span class="kw">horizontal_edges</span><span class="op">$</span><span class="kw">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">""</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>)
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">horizontal_edges</span><span class="op">$</span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>
 
-<span class="kw">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span>(
-  <span class="kw">modified_diagram_list</span>, 
-  use_varnames = <span class="fl">TRUE</span>, 
-  diagram_settings = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(node_text_size = <span class="fl">3</span>,
-                          flow_text_size= <span class="fl">4</span>,
-                          node_text_color = <span class="st">"black"</span>,
-                          node_fill_color = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"pink"</span>, <span class="st">"yellow"</span>, <span class="st">"yellow"</span>,
-                                              <span class="st">"green"</span>, <span class="st">"green"</span>, <span class="st">"green"</span>),
-                          node_outline_color = <span class="st">"black"</span>))
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">my_diagram</span>)
-</pre></div>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
+  <span class="va">modified_diagram_list</span>, 
+  use_varnames <span class="op">=</span> <span class="cn">TRUE</span>, 
+  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>node_text_size <span class="op">=</span> <span class="fl">3</span>,
+                          flow_text_size<span class="op">=</span> <span class="fl">4</span>,
+                          node_text_color <span class="op">=</span> <span class="st">"black"</span>,
+                          node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pink"</span>, <span class="st">"yellow"</span>, <span class="st">"yellow"</span>,
+                                              <span class="st">"green"</span>, <span class="st">"green"</span>, <span class="st">"green"</span><span class="op">)</span>,
+                          node_outline_color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="F_non_model_diagrams_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 <p>Now we’ve done it!</p>
 </div>
