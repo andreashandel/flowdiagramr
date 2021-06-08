@@ -106,7 +106,6 @@ https://pkgdown.r-lib.org/reference/build_home.html#package-logo
 * in RStudio, use the functions in the 'build' tab to test and build the package.
 * Run clean and rebuild, then build and reload using menu, or devtools::load_all()
 * Run the check, fix any errors 
-* Run the processing-script.R file
 
 ### To-do for CRAN release  
 * "by hand" edit the DESCRIPTION file to make sure it's up to date

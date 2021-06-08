@@ -30,9 +30,38 @@ package [see the *Quick Start* tutorial
 
 ## Further information
 
+We wrote several tutorials/vignettes that explain all features of
+`flowdiagramr`. Here they are listed for convenience.
+
+**Main tutorials/vignettes**
+
+*You should go through them in this order*
+
+1.  [Quick start
+    guide](https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html)
+2.  [Basic modification of
+    diagrams](https://andreashandel.github.io/flowdiagramr/articles/B_modify_diagrams_simple.html)
+3.  [Modifying the input
+    structure](https://andreashandel.github.io/flowdiagramr/articles/C_modify_input_structure.html)
+4.  [Modifying the ggplot2
+    code](https://andreashandel.github.io/flowdiagramr/articles/D_modify_ggplot_code.html)
+
+**Additional tutorials/vignettes**
+
+*Read them based on interest, in any order*
+
+-   [More model
+    examples](https://andreashandel.github.io/flowdiagramr/articles/F_non_model_diagrams.html)
+-   [Making non-model based
+    diagrams](https://andreashandel.github.io/flowdiagramr/articles/F_non_model_diagrams.html)
+-   [Using modelbuilder models with
+    flowdiagramr](https://andreashandel.github.io/flowdiagramr/articles/G_flowdiagramr_and_modelbuilder.html)
+-   [Comparison to other R
+    packages](https://andreashandel.github.io/flowdiagramr/articles/H_comparison_to_other_packages.html)
+
 The package website (if you are not already on it) is
-[here.](https://andreashandel.github.io/flowdiagramr/) It contains
-several tutorials that explain all the features of the pacakge.
+[here.](https://andreashandel.github.io/flowdiagramr/) You can access
+all the tutorials from there, as well as some additional information.
 
 ## Citation and Contributors
 
