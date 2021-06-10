@@ -1,13 +1,13 @@
 ******
-# 2021-06-02 and 2021-06-07
+# 2021-06-02 and 2021-06-07 and 2021-06-10
 
 * Should we try to write a manuscript describing the package?
 
+* I'm currently confused about the use_varnames implementation. I thought in the latest discussion, this needed to happen in prepare_diagram, but looks like it's now in the make_diagram phase? Just need clarification on that.
+
+* It seems to me it might be better to supply all settings for make_diagram as one list, this makes it easier to keep things together. To that end, I moved use_varnames and show_grid into diagram_settings. I hope this didn't break too much. I think we should also rename/reorder/add listelements such that it structures by type (vars/main flows/interactions/etc.) and for each one there is on/off and styling (the latter ignored if it's turned off).  Each type of flow (main and interaction) should have their own settings for an on/off flag to show arrows and labels, as well as text size/color settings. Also, let's reorder diagram_settings inputs such that the node related one comes first, then all main flow related, then all interaction related. 
+
 * The quickstart vignette shows an error message "Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables". Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new 'more model examples' vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be. (and first address the other points).
-
-* inputs to make_diagram should be changed. Each type of flow (main and interaction) should have their own settings for an on/off flag to show arrows and labels, as well as text size/color settings. Also, let's reorder diagram_settings inputs such that the node related one comes first, then all main flow related, then all interaction related. See also next point.
-
-* why are use_varnames and show_grid not part of diagram_settings? If we only wanted graphical bits in diagram_settings, then we might need to remove show_flows/label_flows flags and make them separate too? Overall, it seems to me it might be better to supply all settings as one list, this makes it easier to keep things together. So I suggest make_diagram only has 2 inputs, diagram_list and diagram_settings, the latter containing ALL optional inputs. I suggest having the list such that it structures by type (vars/main flows/interactions/etc.) and for each one there is on/off and styling (the latter ignored if it's turned off).
 
 * I think we should try to avoid flipping between 'variable' and 'node', it might confuse people. While node is in some sense more general, since our starting point is models with variables and flows, I think it's best if we use those two words throughout. That means renaming all input options to make_diagram should be var_XX instead of node_XX. It would also mean renaming the nodes entry in the object that prepare_diagram returns to vars. Could do that in a last step, and then at beginning of make_diagram code, rename again internally to nodes so that you won't have to change a ton of internal code, but the user still sees var/vars/variable/variables instead of node terminology. This also means nodes (or edges) should not show up inside the ggplot2 code given to the user, just the vars/flows terminology. Maybe a search and replace over all code, changing node -> var and nodes -> vars will do the trick? And edge -> flow, edges -> flows. (I use a (windows) progam called Find and Replace for such stuff).
 

@@ -70,7 +70,7 @@ Now, it's the standard steps of preparing, making and plotting the diagram.
 
 ```{r, fig.height = 5}
 diagram_list <- prepare_diagram(mymodel)
-my_diagram <- make_diagram(diagram_list, use_varnames = TRUE)
+my_diagram <- make_diagram(diagram_list, diagram_settings = list(use_varnames = TRUE))
 plot(my_diagram)
 ```
 
@@ -82,15 +82,18 @@ modified_diagram_list <- diagram_list
 # update the flow labels
 modified_diagram_list$horizontal_edges$label <- c("", "Yes", "No", "Yes", "No")
 
-my_diagram <- make_diagram(
-  modified_diagram_list, 
-  use_varnames = TRUE, 
-  diagram_settings = list(node_text_size = 3,
+# apply some styling
+diagram_settings <- list(node_text_size = 3,
                           flow_text_size= 4,
                           node_text_color = "black",
                           node_fill_color = c("pink", "yellow", "yellow",
                                               "green", "green", "green"),
-                          node_outline_color = "black"))
+                          node_outline_color = "black",
+                           use_varnames = TRUE)
+# make and plot diagram
+my_diagram <- make_diagram(
+  modified_diagram_list, 
+   diagram_settings = diagram_settings)
 plot(my_diagram)
 ```
 
@@ -99,6 +102,7 @@ That looks pretty good. If you want to change the shapes of the boxes, you'll ne
 
 # Example 2
 
+TO COME. WANT TO SHOW SOME COMPLEX ONE WITH FEEDBACK LOOPS. IDEAS? MAYBE A (SIMPLE) FOOD WEB FROM ECOLOGY?
 
 
 

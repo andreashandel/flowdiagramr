@@ -11,9 +11,7 @@ make_diagram(
     "white", node_text_size = 10, flow_text_color = "black", flow_text_size = 5,
     main_arrow_color = "grey25", main_arrow_linetype = "solid", main_arrow_size = 0.7,
     interaction_arrow_color = "grey25", interaction_arrow_linetype = "dashed",
-    interaction_arrow_size = 0.7),
-  use_varnames = FALSE,
-  with_grid = FALSE
+    interaction_arrow_size = 0.7, use_varnames = FALSE, with_grid = FALSE)
 )
 }
 \arguments{
@@ -78,15 +76,13 @@ hexadecimal digits which give the lengths in consecutive positions in
 the string." Default is 2 (dashed).
 \item \code{interaction_arrow_size}: A numeric scalar specifying the line size for
 the interaction arrows.
-}}
-
-\item{use_varnames}{A logical indicating whether to label nodes with
+\item \code{use_varnames} A logical indicating whether to label nodes with
 variable abbreviations (\code{FALSE}; default) or to use the full names
-provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).}
-
-\item{with_grid}{A logical indicating whether to return the ggplot
+provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).
+\item \code{with_grid} A logical indicating whether to return the ggplot
 with a grid. Default is FALSE. The grid can be helpful if you
-want/need to move items around.}
+want/need to move items around.
+}}
 }
 \value{
 A ggplot2 object.
@@ -113,5 +109,5 @@ diagram_list <- prepare_diagram(model_list = mymodel)
 diagram <- make_diagram(diagram_list)
 
 # make diagram with grid
-diagram_with_grid <- make_diagram(diagram_list, with_grid = TRUE)
+diagram_with_grid <- make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
 }

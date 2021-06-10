@@ -66,15 +66,14 @@
 #'     the string." Default is 2 (dashed).
 #' \item `interaction_arrow_size`: A numeric scalar specifying the line size for
 #'     the interaction arrows.
-#' }
-#'
-#' @param use_varnames A logical indicating whether to label nodes with
+#' \item `use_varnames` A logical indicating whether to label nodes with
 #'     variable abbreviations (`FALSE`; default) or to use the full names
 #'     provided in the `varnames` element of `model_list` (`TRUE`).
-#'
-#' @param with_grid A logical indicating whether to return the ggplot
+#' \item `with_grid` A logical indicating whether to return the ggplot
 #'     with a grid. Default is FALSE. The grid can be helpful if you
 #'     want/need to move items around.
+#' }
+#'
 #'
 #' @return A ggplot2 object.
 #' @import ggplot2
@@ -96,7 +95,7 @@
 #' diagram <- make_diagram(diagram_list)
 #'
 #' # make diagram with grid
-#' diagram_with_grid <- make_diagram(diagram_list, with_grid = TRUE)
+#' diagram_with_grid <- make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
 
 make_diagram <- function (diagram_list,
                           diagram_settings = list(
@@ -114,9 +113,9 @@ make_diagram <- function (diagram_list,
                             main_arrow_size = 0.7,
                             interaction_arrow_color = "grey25",
                             interaction_arrow_linetype = "dashed",
-                            interaction_arrow_size = 0.7),
-                          use_varnames = FALSE,
-                          with_grid = FALSE
+                            interaction_arrow_size = 0.7,
+                            use_varnames = FALSE,
+                            with_grid = FALSE)
                           ) {
   # TODO error checking
 

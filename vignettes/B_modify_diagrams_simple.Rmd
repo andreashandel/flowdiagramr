@@ -39,10 +39,7 @@ help('make_diagram')
 
 We are not showing all the options here (you'll see them when you call the help file), but let's explore some of those options and what they do. 
 
-
-### Example 1
-
-We'll first play with an extension of the SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
+To illustrate this approach, we'll play with an extension of the SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
 
 ```{r}
 # specify the model
@@ -75,6 +72,8 @@ This looks ok, but maybe you want to make some adjustments. You can adjust sever
 
 **CHANGE NAMES OF INPUTS TO DIAGRAM_SETTINGS AS DESCRIBED IN TODO**
 
+**IN ALL EXAMPLES SHOWN, ONLY LIST THOSE INPUTS THAT ARE DIFFERENT THAN DEFAULT**
+
 ```{r}
 #define settings that change the look of the diagram
 sir_diagram_settings <- list(
@@ -103,141 +102,38 @@ As you can see, it is possible to change the look of the diagram considerably by
 
 Let's look at a few more options that you can configure. By default, **`r pkg`** shows all flows and labels them all. 
 While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. 
-You can easily turn on and off several components. The following code shows an example where we turned off labeling of the flows.
+
+You can easily turn on and off several components. The following code shows an example where we turned off labeling of the flows. We also turned off plotting of the flows that come into or go out of the system from the outside. In this example, those are births and deaths.
+
+Note that if you turn off certain components, any settings that apply styling to those settings will be ignored. You can see that in this example, where we kept some settings for the styling, but since flow labels and external flows are not plotted, any styling applied to them is ignored.
+
 
 ```{r}
-# Diagram without labeling of flows
-simpler_diagram_1 <- make_diagram(
-  diagram_list = sir_diagram_list,
-  diagram_settings = list(
+#define settings that remove plotting of all flow labels and inflows/outflows
+simpler_diagram_settings <- list(
+    node_outline_color = "black",
+    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    node_text_color = "black",
+    node_text_size = 14,
     label_flows = FALSE,
-    interaction_label = TRUE,
-    node_outline_color = NA,
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "white",
-    node_text_size = 10,
-    flow_text_color = "blue",
-    flow_text_size = 5,
-    main_arrow_color = "grey25",
-    main_arrow_linetype = 1,
-    main_arrow_size = 0.7,
-    interaction_arrow_color = "grey25",
-    interaction_arrow_linetype = 2,
-    interaction_arrow_size = 0.7
-  )
-)
-
-plot(simpler_diagram_1)
-```
-
-
-In the following example, we are also turning off plotting of the flows that come into or go out of the system from the outside. In this example, those are births and deaths.
-
-
-```{r}
-# Diagram without external flows
-simpler_diagram_2 <- make_diagram(
-  diagram_list = sir_diagram_list,
-  diagram_settings = list(
-    label_flows = TRUE,
     external_flows = FALSE,
-    interaction_label = TRUE,
-    node_outline_color = NA,
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "white",
-    node_text_size = 10,
     flow_text_color = "black",
-    flow_text_size = 5,
-    main_arrow_color = "grey25",
-    main_arrow_linetype = 1,
-    main_arrow_size = 0.7,
-    interaction_arrow_color = "grey25",
-    interaction_arrow_linetype = 2,
-    interaction_arrow_size = 0.7
+    flow_text_size = 8,
+    main_arrow_color = "blue",
+    main_arrow_linetype = "solid",
+    main_arrow_size = 1,
+    interaction_arrow_color = "red",
+    interaction_arrow_linetype = "dashed",
+    interaction_arrow_size = 0.7)
+
+# make a diagram with adjusted settings
+simpler_diagram <- make_diagram(
+  diagram_list = sir_diagram_list,
+  diagram_settings = simpler_diagram_settings 
   )
-)
-
-plot(simpler_diagram_2)
+plot(simpler_diagram)
 ```
 
-
-Note that if you turn off some component, other options that apply to that component will be ignored. For instance if you turn off labeling of the flows, it does of course not matter what color and font size you give those labels. You can leave those specifications in the code, as we have done above. They will just be ignored. 
-
-
-
-### Example 2
-
-Let's use the second example from the [Getting started vignette](./A_quickstart.html), the predator prey model, to explore some more options.
-
-First, we specify the model again. We did a bit of renaming here, what we called pathogen before is now called bacteria and labeled **B** and the Immune response is abbreviated as **I**. Parameter names have been adjusted accordingly, but otherwise it is the same model you already saw.
-
-```{r}
-# specify the model
-varlabels = c("B","I")
-flows = list(B_flows = c("+g*B*(1-B/bmax)", "-dB*B", "-k*B*I"),
-             I_flows = c("+r*B*I", "-dI*I"))
-ppmodel = list(varlabels = varlabels, flows = flows)
-```
-
-Next, we prepare the input list of data frames
-
-```{r}
-# prepare inputs 
-pp_diagram_list <- prepare_diagram(ppmodel)
-```
-
-Finally, we can make a diagram with settings adjusted to our liking.
-
-```{r}
-# make diagram with adjusted settings
-diag1 <- make_diagram(
-  diagram_list = pp_diagram_list,
-  diagram_settings = list(
-    node_outline_color = NA,
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "white",
-    node_text_size = 10,
-    flow_text_color = "black",
-    flow_text_size = 5,
-    main_arrow_color = "grey25",
-    main_arrow_linetype = 1,
-    main_arrow_size = 0.7,
-    interaction_arrow_color = "grey25",
-    interaction_arrow_linetype = 2,
-    interaction_arrow_size = 0.7
-  )
-)
-
-plot(diag1)
-```
-
-For the next diagram, we are turning off the interactions and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.
-
-```{r}
-# make another diagram with adjusted settings
-diag2 <- make_diagram(
-  diagram_list = pp_diagram_list,
-  diagram_settings = list(
-    node_outline_color = NA,
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "white",
-    node_text_size = 10,
-    flow_text_color = "black",
-    flow_text_size = 5,
-    main_arrow_color = "grey25",
-    main_arrow_linetype = 1,
-    main_arrow_size = 0.7,
-    interaction_label = FALSE,
-    interaction_arrow_color = "grey25",
-    interaction_arrow_linetype = 2,
-    interaction_arrow_size = 0.7
-  )
-)
-
-plot(diag2)
-```
-
-As you can see, not showing the interactions doesn't produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.
 
 
 
@@ -246,15 +142,16 @@ As you can see, not showing the interactions doesn't produce a very useful diagr
 There is another simple, but likely often quite useful way you can make adjustments to the model plot.
 You previously learned that to specify a model, you need to set up a list that contains at minimum the elements `varlabels` and `flows`. That's what we used so far. It is possible to supply a few additional elements, namely the element `varnames` which contains the full names for each variable/compartment and an element `varlocations`, which contains a matrix showing the grid-based arrangement of the compartment boxes. Let's see it in action.
 
+
 ### Example 1
 
-Here is an example for the SIR model you saw previously, now with the additional two arguments just introduced.
+Let's look at the SIR model again we just explored. We now specify it with the additional two arguments just introduced.
 
 ```{r}
 varlabels = c("S","I","R")
-flows = list(S_flows = c("-b*S*I"), 
-             I_flows = c("+b*S*I","-g*I"), 
-             R_flows = c("+g*I"))
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
+             I_flows = c("+b*S*I","-g*I", "-m*I"), 
+             R_flows = c("g*I", "-m*R"))
 varnames = c("Susceptible","Infected","Recovered")
 varlocations = matrix(data = c("S", "", "R",
                                "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
@@ -263,17 +160,18 @@ sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames, varlo
 
 The `varnames` argument is self-explanatory. If you supply this argument, you can have the variable names be shown in the plot by setting `use_varnames = TRUE` when calling the `make_diagram` function.
 
-The `varlocations` argument needs some explanation. What this allows you to do is to define a grid and place the compartments at specific locations. This is often necessary when you create more complicated models since the automated placement of the variables/nodes by `make_diagram` is likely not ideal. In the above example, we defined a grid with 2 rows and 3 columns and placed the **S** and **R** compartments in the left and right corner of the top row and the **I** compartment in the middle of the bottom row. All other slots are empty. 
-
+The `varlocations` argument needs some explanation. What this allows you to do is to define a grid and place the compartments at specific locations. This is often necessary when you create more complicated models since the automated placement of the variables/nodes by `make_diagram` is likely not ideal. For this simple model, having all compartments along a single row is ok. But to illustrate the use of `varlocations`,  we defined a grid with 2 rows and 3 columns and placed the **S** and **R** compartments in the left and right corner of the top row and the **I** compartment in the middle of the bottom row. All other slots are empty. 
 You can take this extended specification of the model and feed it to the diagram preparation and generation functions, like so.
 
 ```{r}
 # prepare inputs 
 sir_diagram_list <- prepare_diagram(sirmodel)
+# specify a few settings to show variable names 
+diagram_settings = list(node_text_size = 4,
+                            use_varnames = TRUE)
 # make  diagram
 sir_diagram <- make_diagram(diagram_list = sir_diagram_list,
-                            diagram_settings = list(node_text_size = 4),
-                            use_varnames = TRUE)
+                            diagram_settings = diagram_settings)
 plot(sir_diagram)
 ```
 
@@ -281,28 +179,35 @@ Note that we also provided the `make_diagram` function with an option that speci
 
 ### Example 2
 
-Let's do another example, one that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by adjusting the `varlocations` matrix as follows (for completeness, the code shows the whole model setup again):
+Let's do another example, one that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by adjusting the `varlocations` matrix and replacing the new structure in the model specification
+
+```{r}
+varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE)
+sirmodel$varlocations <- varlocations
+```
+
+With this setup, the diagram looks like this
+
+**DIAGRAM NOT LOOKING GOOD**
 
 ```{r, fig.height=5}
-varlabels = c("S","I","R")
-flows = list(S_flows = c("-b*S*I"), 
-             I_flows = c("+b*S*I","-g*I"), 
-             R_flows = c("+g*I"))
-varnames = c("Susceptible","Infected","Recovered")
-varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE)
-sirmodel2 = list(varlabels = varlabels, flows = flows, varnames = varnames, varlocations = varlocations)
-sir2_diagram_list <- prepare_diagram(sirmodel2)
-sir_diagram2 <- make_diagram(sir2_diagram_list)
-plot(sir_diagram2)
+sir_diagram_list <- prepare_diagram(sirmodel)
+sir_diagram <- make_diagram(sir_diagram_list)
+plot(sir_diagram)
 ```
 
 
-### Example 3
+## Combining the two approaches
 
-The ability to adjust the layout becomes especially important once the model gets bigger. Let's look at this for the somewhat large model with 7 compartments shown in the _Getting Started_ vignette. Here is the model again, this time with locations specified. We place the 2 *SIR* compartments on the top and the bottom, and the **P** compartment in the middle.
+It is of course possible to adjust the look of the diagram by combining the two approaches we just described.
+
+Let's look at this for the somewhat large model with 7 compartments shown in the _Getting Started_ vignette. 
+
+Here is the model again, this time with locations specified. We place the 2 *SIR* compartments on the top and the bottom, and the **P** compartment in the middle.
 
 ```{r}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+varnames = c("Susceptible Children","Infected Children","Recovered Children","Susceptible adults","Infected adults","Recovered adults","Pathogen in Environment")
 flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
              Rc_flows = c("gc*Ic"),
@@ -314,13 +219,28 @@ flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
 varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-mymodel = list(varlabels = varlabels, flows = flows, varlocations = varlocations)
+mymodel = list(varlabels = varlabels, flows = flows, varlocations = varlocations, varnames = varnames)
 diagram_list <- prepare_diagram(mymodel)
-model_plot <- make_diagram(diagram_list)
+```
+
+In a next step, we apply different styling to the diagram
+
+```{r}
+diagram_settings <- list(
+       node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
+                          node_text_size = 4,
+                          use_varnames = TRUE
+                        )
+model_plot <- make_diagram(diagram_list, diagram_settings)
 plot(model_plot)
 ```
 
+**SOME ARROWS SEEM TO START/END IN MIDDLE OF BOXES INSTEAD OF EDGES**
+
+**IF USER SETS use_Varnames = TRUE BUT THERE ARE NONE, SHOULD PRINT A WARNING MESSAGE**
+
 This starts to look better, though the placement of the labels is clearly not ideal and needs some more tweaking.
+
 
 
 ## Next steps

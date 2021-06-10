@@ -80,17 +80,19 @@ Next, we send the model to the `prepare_diagram` function.
 sir_diagram_list <- prepare_diagram(sirmodel)
 ```
 
-If we send this input structure to `make_diagram`, we get the following plot
+Now, let's make and plot the diagram. For this plot, we also turned on the grid. This is useful in figuring out by how much to shift things around.
+
 ```{r}
-plot1 <- make_diagram(sir_diagram_list, with_grid = TRUE)
+plot1 <- make_diagram(sir_diagram_list, diagram_settings = list(with_grid = TRUE))
 plot(plot1)
 ```
 
-For this plot, we also turned on the grid. This is useful in figuring out by how much to shift things around.
+So far, nothing really new, apart from showing the grid in the plot.
 
-
-Next, instead of sending this structure to the `make_diagram` function right away, we'll take a look at it and modify it.
+Now, instead of sending the object produced by `prepare_diagram` (here called `sir_diagram_list`) to the `make_diagram` function right away, we'll take a look at it and modify it.
 Here are the details contained in this object
+
+**RENAME AS DESCRIBED IN TODO**
 
 ```{r}
 print(sir_diagram_list)
@@ -159,7 +161,7 @@ ppplot <- make_diagram(diagram_list)
 plot(ppplot)
 ```
 
-There are a few things we might want to adjust. Let's make the `Imm` box larger, adjust the location of some of the flow labels and let's also assume that you want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called `Pmax`, not `pmax`. You can't do that when you specify the model since `r pkg` requires that parameters start with a lower case letter. Not a big deal, you can fix this now by replacing the label.
+Let's modify this. We'll make the `Imm` box larger, adjust the location of some of the flow labels and let's also assume that you want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called `Pmax`, not `pmax`. You can't do that when you specify the model since **`r pkg`** requires that parameters start with a lower case letter. Not a big deal, you can fix this now by replacing the label.
 
 First, we'll look at the `diagram_list` structure to see which elements we need to change.
 ```{r}
@@ -192,6 +194,64 @@ my_diagram <- make_diagram(
 )
 plot(my_diagram)
 ```
+
+### Example 3
+
+Finally, let's briefly revisit our 7-compartment model and see if we can make some further tweaks to get it to something that might be suitable for public use.
+
+Here is the model specification again
+
+```{r}
+varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+varnames = c("Susceptible children","Infected children","Recovered children","Susceptible adults","Infected adults","Recovered adults","Pathogen in Environment")
+flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
+             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
+             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             )
+varlocations = matrix(data = c("Sc", "Ic", "Rc",
+                               "",   "P",   "",
+                               "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
+mymodel = list(varlabels = varlabels, flows = flows, varlocations = varlocations, varnames = varnames)
+diagram_list <- prepare_diagram(mymodel)
+```
+
+If you print the resulting `diagram_list`, you can see details for each box/variable and arrow/flow. Since this is big, we are not showing it here. But we'll go ahead and make some modifications. 
+
+We'll increase the box for the pathogen and change the text for all variables by including both the full name and the label (this could of course also be done by just renaming `varnames` above, but we want to show a different way). We'll also move some of the flow labels so they don't overlap with the arrows. 
+
+**BELOW IS WRONG SETTINGS, WILL BE DOING THAT ONE LATER ONCE ARROW ISSUE IS FIXED.**
+
+```{r}
+# change labeling of variables
+diagram_list$nodes$name = paste0(diagram_list$nodes$name,", ",diagram_list$nodes$label)
+#increase box
+diagram_list$nodes$xmin[7] = 2.25
+diagram_list$nodes$xmax[7] = 3.75
+#adjust arrow location
+diagram_list$curved_edges$xstart[2] <- 2.25
+#move labels
+diagram_list$curved_edges$labelx[1] <- 2
+diagram_list$curved_edges$labelx[2] <- 1.4
+```
+
+
+Finally, we make the diagram, and also apply different styling as previously
+
+```{r}
+diagram_settings <- list(
+       node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
+                          node_text_size = 4,
+                          use_varnames = TRUE
+                        )
+model_plot <- make_diagram(diagram_list, diagram_settings)
+plot(model_plot)
+```
+
+
 
 
 ## Next steps

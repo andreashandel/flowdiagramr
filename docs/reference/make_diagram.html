@@ -177,9 +177,7 @@ and other graphical options can be set by the user.</p>
     <span class='st'>"white"</span>, node_text_size <span class='op'>=</span> <span class='fl'>10</span>, flow_text_color <span class='op'>=</span> <span class='st'>"black"</span>, flow_text_size <span class='op'>=</span> <span class='fl'>5</span>,
     main_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, main_arrow_linetype <span class='op'>=</span> <span class='st'>"solid"</span>, main_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span>,
     interaction_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, interaction_arrow_linetype <span class='op'>=</span> <span class='st'>"dashed"</span>,
-    interaction_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span><span class='op'>)</span>,
-  use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  with_grid <span class='op'>=</span> <span class='cn'>FALSE</span>
+    interaction_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span>, use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>, with_grid <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -249,19 +247,13 @@ hexadecimal digits which give the lengths in consecutive positions in
 the string." Default is 2 (dashed).</p></li>
 <li><p><code>interaction_arrow_size</code>: A numeric scalar specifying the line size for
 the interaction arrows.</p></li>
-</ul></td>
-    </tr>
-    <tr>
-      <th>use_varnames</th>
-      <td><p>A logical indicating whether to label nodes with
+<li><p><code>use_varnames</code> A logical indicating whether to label nodes with
 variable abbreviations (<code>FALSE</code>; default) or to use the full names
-provided in the <code>varnames</code> element of <code>model_list</code> (<code>TRUE</code>).</p></td>
-    </tr>
-    <tr>
-      <th>with_grid</th>
-      <td><p>A logical indicating whether to return the ggplot
+provided in the <code>varnames</code> element of <code>model_list</code> (<code>TRUE</code>).</p></li>
+<li><p><code>with_grid</code> A logical indicating whether to return the ggplot
 with a grid. Default is FALSE. The grid can be helpful if you
-want/need to move items around.</p></td>
+want/need to move items around.</p></li>
+</ul></td>
     </tr>
     </table>
 
@@ -285,7 +277,7 @@ flows <span class='op'>=</span> <span class='va'>flows</span>, varlocations <spa
 <span class='va'>diagram</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span><span class='op'>(</span><span class='va'>diagram_list</span><span class='op'>)</span>
 
 <span class='co'># make diagram with grid</span>
-<span class='va'>diagram_with_grid</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span><span class='op'>(</span><span class='va'>diagram_list</span>, with_grid <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>diagram_with_grid</span> <span class='op'>&lt;-</span> <span class='fu'>make_diagram</span><span class='op'>(</span><span class='va'>diagram_list</span>, diagram_settings <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>with_grid <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
