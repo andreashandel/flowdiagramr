@@ -21,6 +21,8 @@
 
 * The 2nd example in vignette D is not working. see comment there.
 
+* Is it possible to add some code at the end of a plot generation that trims all the white space? I know something like theme(plot.margin=unit(c(-2,-2,0,0), "null")) or such can work, the tricky bit is how to figure out automatically how the cropping should happen.
+
 * Shouldn't default settings in a function call be what's described? E.g. right now in write_diagram, the default for directory is NULL but that equates to the current working directory. Shouldn't the default then be set to '.' or something like that? Same for filename, if the default is 'diagram_code.R' then I think that's what should be shown in the function call (I did that one, wasn't sure how to do directory best).
 
 * I still think producing ggplot2 code that uses loops would be easier for users to modify. Instead of efficiently/vectorized adding of components (vars/flows), I would do a loop over each, i.e. a loop over all vars, over all flows, etc. Then one can more easily intervene manually for a specific one and change it.
@@ -61,12 +63,6 @@
 
 * prepare_diagram produces confusing error messages. Can we add some more logic checks to make sure models that are supplied are proper? Some should already be implemented in check_model in modelbuilder (and are definitely needed there), so we might want to use only a single function for this for both packages. Since we decided to make this package a dependence of modelbuilder, we can move the full check_model logic/function into here (even checks that are not needed for the purpose of drawing, but might be needed for the purpose of running).
 See the latest example in vignette A.
-
-* The resulting diagram is one long line of 7 compartments. Maybe we should have some simple logic that puts at most 4-5 compartments on a row, and then starts a 2nd row? Not sure if worth it since users will have to arrange anyway, but a thought. 
-
-* Another idea: If one could easily add some logic that tries to see if there is some stratification and then places each stratum on a separate row. Might only work if user uses e.g. S1,I1,S2,I2 or Sa1,Sa2, etc. Otherwise figuring out things seems too tricky. I'm not sure if either this or the previous point are worth it given that for those models the user will likely have to place things anyway.
-
-* I also added the new example as example 3 in the 'basic modifications'. Plot is kind of a mess :) I guess the arrow logic needs to take into account the manual placement that a user supplies.
 
 * Let's make sure we call the object that's returned from prepare_diagram and sent into make_diagram the diagram_list everywhere (with a note somewhere that it can have any name). This will make it easier to refer to it in the help files, the vignettes, etc. If you see any place where it's called something else, replace. I do call it sir_diagram_list at some point, I think that's ok so users can see it can be any name, but it's still clear that this is the diagram_list object.
 
