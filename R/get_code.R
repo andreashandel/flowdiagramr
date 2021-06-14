@@ -15,223 +15,82 @@ diagram_plot <- ggplot() +
 # LAYER 1: STATE VARIABLES
 # plot the states variable nodes as rectangles
 
-# The nodes data frame is used to create rectangles, with size determined
+# The variables data frame is used to create rectangles, with size determined
 # by the xmin, xmax, ymin, and ymax values in the nodes data frame. The
-# outline color of the rectangles is defined by node_outline_color; the
-# inside color (fill) of the rectangles is defined by node_fill_color.
+# outline color of the rectangles is defined by var_outline_color; the
+# inside color (fill) of the rectangles is defined by var_fill_color.
 # The color variables can be a single value or a vector, giving different
 # colors to different rectangles/nodes/state variables. If a vector, the
 # color and fill vectors must have a length that is equal to the number
 # of rows in the nodes data frame (one value for each row).
-diagram_plot <- diagram_plot +
-  geom_rect(
-    data = nodes,
-    aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-    color = node_outline_color,
-    fill = node_fill_color
-  )
-
-# The same nodes data frame contains the label for each rectangle, which
-# is either a one letter abbreviation or the full name for the node. The
-# size of each label is determined by node_text_size and the colors by
-# node_text_color; each can be a single value or a vector the length
-# of the number of rows in the nodes data frame (one value for each row).
-diagram_plot <- diagram_plot +
-  geom_text(
-    data = nodes,
-    aes(x = labelx, y = labely, label = label),
-    size = node_text_size,
-    color = node_text_color
-  )
-
-
-# LAYER 2: PHYSICAL FLOWS TO NEIGHBORING STATE VARIABLES
-# add the physical flows from one node to another
-# these are the flows that go from one node to the next without
-# by-passing a node. flows that by-pass nodes are added using the
-# curved_edges dataframe. The rows of the data frame are looped over
-# so that the "interaction" value can be evaluated to determine the
-# linetype to use.
-if(nrow(horizontal_edges) > 0) {
-  for(i in 1:nrow(horizontal_edges)) {
-    dat <- horizontal_edges[i, ]  # get a temporary data frame for this row
-
-    # define the temporary aesthetics for this line based on the
-    # interaction
-    this_line_type <- ifelse(as.numeric(dat["interaction"]),
-                             interaction_arrow_linetype,
-                             main_arrow_linetype)
-    this_line_color <- ifelse(as.numeric(dat["interaction"]),
-                              interaction_arrow_color,
-                              main_arrow_color)
-    this_arrow_fill <- ifelse(as.numeric(dat["interaction"]),
-                              interaction_arrow_color,
-                              main_arrow_color)
-    this_line_size <- ifelse(as.numeric(dat["interaction"]),
-                             interaction_arrow_size,
-                             main_arrow_size)
-
-    diagram_plot <- diagram_plot +
-      geom_segment(
-        data = dat,
-        aes(x = xstart,
-            y = ystart,
-            xend = xend,
-            yend = yend),
-        linetype = this_line_type,
-        arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-        color = this_line_color,
-        arrow.fill = this_arrow_fill,
-        lineend = "round",
-        size = this_line_size
-      )
-  }
-}
-
-
-# The default is label_flows = TRUE, but the user can specify not
-# to label flows. So the text above flow arrows is wrapped in an if
-# statement. Like the nodes and arrows, colors and sizes  can be specific
-# to each label. Thus, the size and color variables must either be of
-# length 1 or the length must be the number of rows in the horizontal_edges
-# data frame.
-if(label_flows == TRUE) {
+for(i in 1:nrow(variables)) {
   diagram_plot <- diagram_plot +
-    geom_text(
-      data = horizontal_edges,
-      aes(x = labelx, y = labely, label = label),
-      size = flow_text_size,
-      color = flow_text_color
+    geom_rect(
+      data = variables[i, ],
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+      color = var_outline_color[i],
+      fill = var_fill_color[i]
     )
 }
 
-
-
-# LAYER 3: PHYSICAL FLOWS INTO AND OUT OF THE SYSTEM
-# these are the flows that enter or leave single state variables
-# as opposed to flows that connect state variables. The user can opt
-# not to include these via the external_flows argument, so this
-# whole layer is wrapped in an if statement.
-if(external_flows == TRUE) {
+for(i in 1:nrow(variables)) {
   diagram_plot <- diagram_plot +
-    geom_segment(
-      data = vertical_edges,
-      aes(x = xstart, y = ystart, xend = xend, yend = yend),
+    geom_text(
+      data = variables[i, ],
+      aes(x = labelx, y = labely, label = plot_label),
+      size = variables[i, "plot_label_size"],
+      color = var_text_color[i]
+    )
+}
+
+for(i in 1:nrow(flows)) {
+  dat <- flows[i, ]  # get a temporary data frame for this row
+
+  # define the temporary aesthetics for this line based on the
+  # interaction
+  this_line_type <- ifelse(as.numeric(dat["interaction"]),
+                           interaction_arrow_linetype,
+                           main_arrow_linetype)
+  this_line_color <- ifelse(as.numeric(dat["interaction"]),
+                            interaction_arrow_color,
+                            main_arrow_color)
+  this_arrow_fill <- ifelse(as.numeric(dat["interaction"]),
+                            interaction_arrow_color,
+                            main_arrow_color)
+  this_line_size <- ifelse(as.numeric(dat["interaction"]),
+                           interaction_arrow_size,
+                           main_arrow_size)
+
+  diagram_plot <- diagram_plot +
+    geom_curve(
+      data = dat,
+      aes(x = xstart,
+          y = ystart,
+          xend = xend,
+          yend = yend),
+      linetype = this_line_type,
       arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-      color = main_arrow_color,
-      arrow.fill = main_arrow_color,
+      color = this_line_color,
+      arrow.fill = this_arrow_fill,
       lineend = "round",
-      linejoin = "mitre",
-      linetype = main_arrow_linetype,
-      size = main_arrow_size
+      size = this_line_size,
+      curvature = dat["curvature"],
+      ncp = 1000
     )
-
-  # Labels are also optional, like above
-  if(label_flows == TRUE) {
-    diagram_plot <- diagram_plot +
-      geom_text(
-        data = vertical_edges,
-        aes(x = labelx, y = labely, label = label),
-        size = flow_text_size,
-        color = flow_text_color
-      )
-  }
 }
 
-
-
-# LAYER 4: FEEDBACK FLOWS INTO AND OUT OF THE SAME STATE VARIABLE
-# these are flows that interact with single state variable and
-# represent positive or negative feedbacks. these are represented
-# with curves.
-diagram_plot <- diagram_plot +
-  geom_curve(
-    data = feedback_edges,
-    ncp = 100,  # number of "points" over which to interpolate the curve
-    curvature = -2,  # large curvature to get near circular feedback
-    aes(x = xstart, y = ystart, xend = xend, yend = yend),
-    arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-    color = main_arrow_color,
-    arrow.fill = main_arrow_color,
-    lineend = "round",
-    linetype = main_arrow_linetype,
-    size = main_arrow_size
-  )
-
-# As ever, if the label_flows is not true, then no labels need to be printed
 if(label_flows == TRUE) {
-  diagram_plot <- diagram_plot +
-    geom_text(
-      data = feedback_edges,
-      aes(x = labelx, y = labely, label = label),
-      size = flow_text_size,
-      color = flow_text_color
-    )
-}
+  for(i in 1:nrow(flows)) {
+    dat <- flows[i, ]
 
-
-
-# LAYER 5: FLOWS THAT BYPASS STATE VARIABLES OR THAT ARE INTERACTIONS
-# this layer adds physical flows from one state variable to another
-# when another state variable is bypassed. this requires a curved
-# connection to avoid crossing over a state variable node. the layer
-# also adds interaction arrows that go from a state variable to the
-# middle of a physical flow arrow. these are also curved because they go
-# from the top/bottom of a node to middle of an arrow. these curves
-# are added via the lapply statement so that the "interaction" flag and
-# the "curvature" variable can be interpreted and applied correctly.
-# the interaction flag in the data frame dictates the linetype; the
-# curvature variable in the data frame dictates the curvature. Like
-# the horizontal_edges, we loop over the curved_edges data frame rows
-# to apply row-specific aesthetics that are difficult to apply via
-# ggplot2 mapping in the normal way.
-if(nrow(curved_edges) != 0) {
-  for(i in 1:nrow(curved_edges)) {
-    dat <- curved_edges[i, ]  # get a temporary data frame for this row
-
-    # define the temporary aesthetics for this line based on the
-    # interaction
-    this_line_type <- ifelse(as.numeric(dat["interaction"]),
-                             interaction_arrow_linetype,
-                             main_arrow_linetype)
-    this_line_color <- ifelse(as.numeric(dat["interaction"]),
-                              interaction_arrow_color,
-                              main_arrow_color)
-    this_arrow_fill <- ifelse(as.numeric(dat["interaction"]),
-                              interaction_arrow_color,
-                              main_arrow_color)
-    this_line_size <- ifelse(as.numeric(dat["interaction"]),
-                             interaction_arrow_size,
-                             main_arrow_size)
-
-    diagram_plot <- diagram_plot +
-      geom_curve(
-        data = dat,
-        aes(x = xstart,
-            y = ystart,
-            xend = xend,
-            yend = yend),
-        linetype = this_line_type,
-        curvature = dat["curvature"],
-        arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-        color = this_line_color,
-        arrow.fill = this_arrow_fill,
-        lineend = "round",
-        size = this_line_size
-      )
-  }
-
-  # As ever, if the label_flows is not true, then no labels need to be printed
-  if(label_flows == TRUE) {
     diagram_plot <- diagram_plot +
       geom_text(
-        data = curved_edges,
+        data = dat,
         aes(x = labelx, y = labely, label = label),
-        size = flow_text_size,
-        color = flow_text_color)
+        size = flow_text_size[i],
+        color = flow_text_color[i])
   }
 }
-
 
 # If with_grid == FALSE (default) then void out the theme
 # otherwise keep the grey background with grid

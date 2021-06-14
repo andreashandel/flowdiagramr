@@ -24,77 +24,58 @@
 #' variables, *Bg* and *I2*: `Bg*s*I2`.
 #'
 #' @param model_list A list of model elements. The list must contain at least
-#'     two elements with names \code{varlabels} and \code{flows}. The
-#'     \code{flows} list must contain a sub-list for each variable in
-#'     the \code{varlabels} vector. For example, if the user specifies
-#'     two variables in \code{model_list$varlabels}, then
-#'     \code{model_list$flows} must contain two sub-lists, each containing
-#'     a character vector of flows into and out of the node. Currently,
-#'     this function assumes that the \code{model_list$varlabels} sub-lists
-#'     are in the same order as the \code{model_list$varlabels} vector. See
-#'     examples. The \code{model_list} can contain the optional argument
-#'     \code{varnames} which can contain the full text for each
-#'     compartment/variable and \code{varlocations} which contains a matrix
-#'     that specifies the locations of the compartments/variables on an x-y
-#'     grid with their desired x (columns) and y (row) locations. See examples
-#'     for more.
-#'
-#' @return A list of five data frames:
+#'     two elements:
 #' \itemize{
-#'   \item \code{nodes}: A data frame containing the node (state variable) ids,
-#'   labels, and positions. Position is defined with the \code{x} and
-#'   \code{y} columns, which define the center of the node squares. The
-#'   ggplot2 function \code{geom_tile} is used for placement of nodes and
-#'   the height and width are set to 1 to generate a perfect square centered
-#'   on \code{x} and \code{y}. The \code{row} column indicates which row
-#'   the node is placed on; this is also evident from the \code{y} values.
-#'   \code{id} is a numeric id for the node, which shows up in the edge
-#'   data frames for defining connects (see below).
+#' \item `varlabels`: A character vector with labels for each variable.
+#' \item `flows`: A list that is the same length as `varlabels`. Each sub-list
+#'     element is a character vector of any length specifying the flows into
+#'     and out of the variable. Note that **flowdiagramr** assumes that the
+#'     order of `flows` and `varlabels` match. See examples.
+#' }
 #'
-#'   \item \code{horizontal_edges}: A data frame containing name and position
-#'   information for straight flows from one node to an adjacent node. The
-#'   data frame contains nine (9) columns:
+#' @param model_settings A list of optional model settings. The following
+#'     elements are supported and default values are provided:
+#' \itemize{
+#' \item `use_varnames`: A logical indicating whether to label variables with
+#'     variable abbreviations (`FALSE`; default) or to use the full names
+#'     provided in the `varnames` element of `model_list` (`TRUE`).
+#' \item `plot_label_size`: A numeric defining the size of the variable
+#'     labels in the plot. This is necessary because the the box sizes will
+#'     (eventually) be determined by the size of the text within. Default is
+#'     8.
+#' \item `varnames`: The full text for each variable. Default is "none", which
+#'     sets the labels to the `varlabels` provided in `model_list`.
+#' \item `varlocations`: A matrix that specifies the locations of the
+#'     variables on an x-y grid with their desired x (columns) and y (row)
+#'     locations. See examples and vignettes. Default is `NULL`, which
+#'     results in a left-to-right diagram.
+#' }
+#'
+#' @return A list of two data frames:
+#' \itemize{
+#'   \item `variables`: A data frame containing the state variable names,
+#'   labels, and positions.
+#'
+#'   \item `flows`: A data fram containing the name and position information
+#'   for all the flows. The data frame contains eleven (11) columns:
 #'   \itemize{
-#'     \item{\code{to}}: The node to which the arrow will point. That is, the node
-#'     receiving the flow.
-#'     \item{\code{from}}: The node from which the arrow originate. That is, the
-#'     node donating the flow.
-#'     \item{\code{label}}: The label of the flow. Typically a mathematical expression.
-#'     \item{\code{xstart}}: The starting horizontal position of the arrow.
-#'     \item{\code{ystart}}: The starting veritcal position of the arrow.
-#'     \item{\code{xend}}: The ending horizontal position of the arrow.
-#'     \item{\code{yend}}: The ending vertical position of the arrow.
-#'     \item{\code{labelx}}: Horizontal position (midpoint) of label.
-#'     \item{\code{labely}}: Vertical position (midpoint) of label.
-#'   }
-#'
-#'   \item \code{vertical_edges}: A data frame containing name and position
-#'   information for flows that arrive from out of the system or leave the
-#'   system. That is, flows that either (1) do not come from a node specified
-#'   in the nodes data frame or (2) exit the system without connecting to
-#'   another node. The data frame contains the same columns as
-#'   \code{horizontal_edges}. Note that either the \code{to} or \code{from}
-#'   value will be NA in each row (if rows are present). These flows arrive
-#'   or leave at 45 degree angles, despite the name of the data frame implying
-#'   a vertical entrance or exit.
-#'
-#'   \item \code{curved_edges}: A data frame containing name and position
-#'   information for, typically, two types of curved arrows: (1) interaction
-#'   arrows that point toward a horizontal arrow or (2) a physical flow
-#'   that would normally be a horizontal arrow but must bypass at least
-#'   one node. The data frame has eleven (10) columns. The data frame contains
-#'   the same 9 columns as the `horizontal_edges` data frame, with one addition:
-#'   \itemize{
-#'     \item{\code{curvature}}: The amount of curvature applied to arrow.
+#'     \item `to`: The variable to which the arrow will point. That is, the
+#'     variable receiving the flow.
+#'     \item `from`: The variable from which the arrow originate. That is, the
+#'     variable donating the flow.
+#'     \item `label`: The label of the flow. Typically a mathematical expression.
+#'     \item `interaction`: A logical flag indicating whether the flow
+#'     represents an interaction between two (or more) variables (TRUE) or
+#'     not (FALSE).
+#'     \item `xstart`: The starting horizontal position of the arrow.
+#'     \item `ystart`: The starting vertical position of the arrow.
+#'     \item `xend`: The ending horizontal position of the arrow.
+#'     \item `yend`: The ending vertical position of the arrow.
+#'     \item `labelx`: Horizontal position (midpoint) of label.
+#'     \item `labely`: Vertical position (midpoint) of label.
+#'     \item `curvature`: The amount of curvature applied to arrow.
 #'     Higher numbers indicate more curvature; 0 = straight line.
 #'   }
-#'
-#'   \item{\code{feedback_edges}}: A data frame containing name and position
-#'   information for arrows indicating a feedback into the same node. The
-#'   data frame contains the same columns as the \code{horizontal_edges}
-#'   data frame. Note that the \code{to} and \code{from} columns should have
-#'   the same values for feedback edges.
-#'
 #' }
 #'
 #' @examples
@@ -112,7 +93,13 @@
 #' @export
 
 
-prepare_diagram <- function(model_list) {
+prepare_diagram <- function(model_list,
+                            model_settings = list(
+                              use_varnames = FALSE,
+                              plot_label_size = 8,
+                              varnames = "none",
+                              varlocations = NULL)
+                            ) {
 
   # check user inputs for necessary elements
   check <- check_model_list(model_list)
@@ -121,7 +108,7 @@ prepare_diagram <- function(model_list) {
   }
 
   # assign the nodes matrix if provided
-  if(!is.null(model_list$varlocations)) {
+  if(!is.null(model_settings$varlocations)) {
     nodes_matrix <- model_list$varlocations
   } else {
     nodes_matrix <- NULL
@@ -147,7 +134,7 @@ prepare_diagram <- function(model_list) {
 
   #set longvarnames to the full length names, if provided, otherwise
   #set to NA for  storage in data frame
-  if(!is.null(model_list$varnames)) {
+  if(model_settings$varnames != "none") {
     longvarnames <- model_list$varnames
 
     # replace spaces with line breaks to create two (or more) lined
@@ -834,16 +821,31 @@ prepare_diagram <- function(model_list) {
   ndf$labelx <- ndf$x
   ndf$labely <- ndf$y
   nodes <- subset(ndf, select = -c(id, row, x, y))
+  nodes$plot_label_size <- model_settings$plot_label_size
+
+  # change the label to full name, if requested
+  # this will be move farther up once code to adjust box size to text is
+  # implemented
+  if(model_settings$use_varnames) {
+    nodes$plot_label <- nodes$name
+  } else {
+    nodes$plot_label <- nodes$label
+  }
 
   sdf$labelx <- sdf$xmid
   sdf$labely <- sdf$ymid
   horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom, xmid, ymid))
-
+  if(nrow(horizontal_edges) > 0) {
+    horizontal_edges$curvature <- 0
+  }
 
   vdf$labelx <- vdf$xmid
   vdf$labely <- vdf$ymid
   vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto,
                                             linkfrom, xmid, ymid))
+  if(nrow(vertical_edges) > 0) {
+    vertical_edges$curvature <- 0
+  }
 
   cdf$row <- NULL
   curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
@@ -858,11 +860,18 @@ prepare_diagram <- function(model_list) {
   fdf$yend <- fdf$yend+0.5
   feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction,
                                              xmid, ymid))
+  if(nrow(feedback_edges) > 0) {
+    feedback_edges$curvature <- -2
+  }
 
 
-  return(list(nodes = nodes,
-              horizontal_edges = horizontal_edges,
-              vertical_edges = vertical_edges,
-              curved_edges = curved_edges,
-              feedback_edges = feedback_edges))
+  # combine all the edge data frames
+  flows <- rbind(horizontal_edges,
+                 vertical_edges,
+                 curved_edges,
+                 feedback_edges)
+
+
+  return(list(variables = nodes,
+              flows = flows))
 }

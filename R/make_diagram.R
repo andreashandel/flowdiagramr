@@ -66,9 +66,6 @@
 #'     the string." Default is 2 (dashed).
 #' \item `interaction_arrow_size`: A numeric scalar specifying the line size for
 #'     the interaction arrows.
-#' \item `use_varnames` A logical indicating whether to label nodes with
-#'     variable abbreviations (`FALSE`; default) or to use the full names
-#'     provided in the `varnames` element of `model_list` (`TRUE`).
 #' \item `with_grid` A logical indicating whether to return the ggplot
 #'     with a grid. Default is FALSE. The grid can be helpful if you
 #'     want/need to move items around.
@@ -102,10 +99,10 @@ make_diagram <- function (diagram_list,
                             label_flows = TRUE,
                             external_flows = TRUE,
                             interaction_label = TRUE,
-                            node_outline_color = NA,
-                            node_fill_color = "#6aa4c8",
-                            node_text_color = "white",
-                            node_text_size = 10,
+                            var_outline_color = NA,
+                            var_fill_color = "#6aa4c8",
+                            var_text_color = "white",
+                            var_text_size = 10,
                             flow_text_color = "black",
                             flow_text_size = 5,
                             main_arrow_color = "grey25",
@@ -114,7 +111,6 @@ make_diagram <- function (diagram_list,
                             interaction_arrow_color = "grey25",
                             interaction_arrow_linetype = "dashed",
                             interaction_arrow_size = 0.7,
-                            use_varnames = FALSE,
                             with_grid = FALSE)
                           ) {
   # TODO error checking
@@ -137,21 +133,15 @@ make_diagram <- function (diagram_list,
   }
 
   # unlist the data frames to objects
-  nodes <- diagram_list$nodes
-  horizontal_edges <- diagram_list$horizontal_edges
-  vertical_edges <- diagram_list$vertical_edges
-  curved_edges <- diagram_list$curved_edges
-  feedback_edges <- diagram_list$feedback_edges
-
-  # change the label to full name, if requested
-  if(use_varnames) {
-    nodes$label <- nodes$name
-  }
+  variables <- diagram_list$variables
+  flows <- diagram_list$flows
 
   # recycle colors as needed
-  node_outline_color <- recycle_values(node_outline_color, nrow(nodes))
-  node_fill_color <- recycle_values(node_fill_color, nrow(nodes))
-  node_text_color <- recycle_values(node_text_color, nrow(nodes))
+  var_outline_color <- recycle_values(var_outline_color, nrow(variables))
+  var_fill_color <- recycle_values(var_fill_color, nrow(variables))
+  var_text_color <- recycle_values(var_text_color, nrow(variables))
+  flow_text_color <- recycle_values(flow_text_color, nrow(flows))
+  flow_text_size <- recycle_values(flow_text_size, nrow(flows))
 
   # get the ggplot2 code as text
   code <- get_code()
