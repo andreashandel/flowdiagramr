@@ -15,21 +15,13 @@ make_diagram(
 )
 }
 \arguments{
-\item{diagram_list}{A list of data frames returned from the
+\item{diagram_list}{A required list of data frames returned from the
 \code{prepare_diagram} function. See that function for details
 about this object.}
 
-\item{diagram_settings}{A list of diagram aesthetic settings. The
+\item{diagram_settings}{An optional list of diagram aesthetic settings. The
 following elements are supported and default values are provided:
 \itemize{
-\item \code{label_flows}: A logical indicating whether to label the flows
-(TRUE, default) or not (FALSE).
-\item \code{external_flows}: A logical indicating whether to include flows into
-and out of the system (external flows). Default is TRUE (include).
-\item \code{interaction_label}: A logical indicating whether to make the diagram
-with interaction terms (typically curved flows leading to the
-mid point of another flow) or to simply label the main flow. See
-vignettes for examples.
 \item \code{var_outline_color}: A character string or vector of character strings
 specifying the color of variable outlines. If a vector, the colors will be
 recycled in the order of the variables in the supplied data frame.
@@ -44,14 +36,8 @@ labels. Default value is NA and the values in the \code{variables} data frame
 returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
 supplied here, the values in the \code{variables} data frame are not used and
 are replaced by the value specified here.
-\item \code{flow_text_color}: A character string or vector of character strings
-specifying the text color for flow labels. If a vector, the colors will
-be recycled in the order of the flows in the supplied data frame.
-\item \code{flow_text_size}: A numeric scalar specifying the text size for flow
-labels. Default value is NA and the values in the \code{flows} data frame
-returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
-supplied here, the values in the \code{flows} data frame are not used and
-are replaced by the value specified here.
+
+\item \code{main_flow_on}: A logical indicating if the main flow arrows should be plotted.
 \item \code{main_flow_color}: A character string or vector of character strings
 specifying the text color for non-interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows
@@ -65,8 +51,29 @@ with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
 the string." Default is 1 (solid).
-\item \code{main_flow_size}: A numeric scaler specifying the line size for the
+\item \code{main_flow_size}: A numeric scalar specifying the line size for the
 main flows (non-interaction flows).
+\item \code{main_flow_label_on}: A logical indicating if the labels for the main flows should be plotted.
+\item \code{main_flow_label_color}:
+\item \code{main_flow_label_size}:
+\item \code{external_flow_on}: A logical indicating if the main flow arrows should be plotted.
+\item \code{interaction_flow_on}: A logical indicating if the main flow arrows should be plotted.
+#' \item \code{label_flows}: A logical indicating whether to label the flows
+(TRUE, default) or not (FALSE).
+\item \code{external_flows}: A logical indicating whether to include flows into
+and out of the system (external flows). Default is TRUE (include).
+\item \code{interaction_label}: A logical indicating whether to make the diagram
+with interaction terms (typically curved flows leading to the
+mid point of another flow) or to simply label the main flow. See
+vignettes for examples.#'
+\item \code{flow_text_color}: A character string or vector of character strings
+specifying the text color for flow labels. If a vector, the colors will
+be recycled in the order of the flows in the supplied data frame.
+\item \code{flow_text_size}: A numeric scalar specifying the text size for flow
+labels. Default value is NA and the values in the \code{flows} data frame
+returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
+supplied here, the values in the \code{flows} data frame are not used and
+are replaced by the value specified here.
 \item \code{interaction_flow_color}: A character string or vector of character
 strings specifying the text color for interaction flow arrows.
 If a vector, the colors will be recycled in the order of the flows

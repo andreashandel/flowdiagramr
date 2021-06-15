@@ -6,50 +6,49 @@
 #' and creates a list of data frames with label and
 #' position information for plotting a flow diagram.
 #' The resulting object is used as an input to
-#' \code{\link{make_diagram}}, which creates a **ggplot2** based
-#' diagram. Attempts to make good decisions regarding the placement of nodes,
-#' flows (arrow segment), and labels are made. However, complex models with
+#' \code{\link{make_diagram}}, which creates a **ggplot2** based diagram.
+#' Attempts to make decent decisions regarding the placement of nodes (boxes),
+#' flows (arrows), and labels are made. However, complex models with
 #' complex diagrams will likely need user modification. This is documented
 #' in the vignettes.
 #'
-#' IMPORTANT. All variables must start with an upper case letter,
-#' followed by any combination of letters and numbers (e.g.,
-#' S, Si, or Aml2). All parameters must start with a lower case letter
-#' followed by any combination of letters and numbers (e.g.,
-#' b, bBmax, kS, p21S). All variables and parameters MUST be separated by
-#' math notation (e.g., +, -, *, /).
-#'
-#' EXAMPLE. The following includes a parameter *b* and two variables, *S*
-#' and *I*: `b*S*I`. The following includes a parameter *s* and two
-#' variables, *Bg* and *I2*: `Bg*s*I2`.
-#'
-#' @param model_list A list of model elements. The list must contain at least
-#'     two elements:
+#' @param model_list A list of model elements. This list is required and
+#' must contain these two elements:
 #' \itemize{
 #' \item `varlabels`: A character vector with labels for each variable.
 #' \item `flows`: A list that is the same length as `varlabels`. Each sub-list
 #'     element is a character vector of any length specifying the flows into
 #'     and out of the variable. Note that **flowdiagramr** assumes that the
-#'     order of `flows` and `varlabels` match. See examples.
+#'     order of `flows` and `varlabels` match.
+#' \item IMPORTANT: All varlabel entries must start with an upper case letter,
+#' followed by any combination of letters and numbers (e.g.,
+#' S, Si, or Aml2). All parameters contained in the flows
+#' must start with a lower case letter
+#' followed by any combination of letters and numbers (e.g.,
+#' b, bBmax, kS, p21S). All variables and parameters MUST be separated by
+#' math notation (e.g., +, -, *, /).
+#' \item See examples and details below and vignettes.
 #' }
 #'
 #' @param model_settings A list of optional model settings. The following
 #'     elements are supported and default values are provided:
 #' \itemize{
-#' \item `use_varnames`: A logical indicating whether to label variables with
-#'     variable abbreviations (`FALSE`; default) or to use the full names
-#'     provided in the `varnames` element of `model_list` (`TRUE`).
+#' \item `varnames`: Vector of strings containing labels, one  for each variable.
+#'                   Default is `NULL`.
+#' \item `use_varnames`: A logical. If `FALSE` (default)  variable boxes will be labeled with
+#'     the `varlabels` entry from `model_list`. If `TRUE` variable boxes will be
+#'     labeled using the text provided in the `varnames` element.
+#'     If `varnames` is missing, an error occurs.
+#'     Note that labeling can be turned off through a setting in `make_diagram`.
 #' \item `plot_varlabel_size`: A numeric defining the size of the variable
 #'     labels in the plot. This is necessary because the the box sizes will
 #'     (eventually) be determined by the size of the text within. Default is
 #'     10.
 #' \item `plot_flowlabel_size`: A numeric defining the size of the flow
 #'     labels in the plot. Default is 5.
-#' \item `varnames`: The full text for each variable. Default is "none", which
-#'     sets the labels to the `varlabels` provided in `model_list`.
 #' \item `varlocations`: A numeric matrix that specifies the locations of the
 #'     variables on an x-y grid with their desired x (columns) and y (row)
-#'     locations. See examples and vignettes. Default is "ltr", which
+#'     locations. See examples and vignettes. Default is `NULL`, which
 #'     results in a left-to-right diagram.
 #' }
 #'
@@ -79,29 +78,46 @@
 #'     Higher numbers indicate more curvature; 0 = straight line.
 #'   }
 #' }
+#' @details `varlabels` needs to be specified as a vector of model variables,
+#' e.g., varlabels <- c("Pred","Prey").
+#' `flows` need to be specified as a list, with each list entry containing the
+#' flows/processes for each variable in the order in which the variables appear.
+#' Flows need to be named according to VARLABEL_flows.
+#' Example: flows <- list(Pred_flows = c(`r*Pred`, `-k1*Pred*Prey`),
+#'                        Prey_flows = c(`g*Prey`, `-k2*Pred*Prey`) )
+#' Each flow, i.e. each entry in the flow vector, needs to be a valid
+#' mathematical expression made up of varlabels and parameters.
+#' The rules are as described above.
+#' As an example, the following includes a parameter *b* and two variables, *S*
+#' and *I*: `b*S*I`. The following includes a parameter *s* and two
+#' variables, *Bg* and *I2*: `Bg*s*I2`.
+#' See more examples below and in the vignettes.
+#'
 #'
 #' @examples
 #' varlabels <- c("S","I","R")
-#' varnames <- c("Susceptible","Infected","Recovered")  # optional
 #' flows <- list(S_flows = c("-b*S*I"),
 #'               I_flows = c("b*S*I","-g*I"),
 #'               R_flows = c("g*I"))
-#' varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
+#' varnames <- c("Susceptible","Infected","Recovered")  # optional
+#' varlocations <-  matrix(data = c("S", "", "R",
+#'                                  "", "I", "" ),
 #'                         nrow = 2, ncol = 3, byrow = TRUE)
-#' mymodel <- list(varlabels = varlabels, varnames = varnames,
-#' flows = flows, varlocations = varlocations)
-#' prepare_diagram(model_list = mymodel)
+#' mymodel <- list(varlabels = varlabels, flows = flows)
+#' mysettings <- list(varnames = varnames, use_varnames = TRUE,
+#'                    plot_varlable_size = 12,varlocations = varlocations)
+#' prepare_diagram(model_list = mymodel, model_settings = mysettings)
 #'
 #' @export
 
 
 prepare_diagram <- function(model_list,
                             model_settings = list(
+                              varnames = NULL,
                               use_varnames = FALSE,
                               plot_varlabel_size = 10,
                               plot_flowlabel_size = 5,
-                              varnames = "none",
-                              varlocations = "ltr")
+                              varlocations = NULL)
                             ) {
 
   # check user inputs for necessary elements
@@ -835,6 +851,13 @@ prepare_diagram <- function(model_list,
   # change the label to full name, if requested
   # this will be move farther up once code to adjust box size to text is
   # implemented
+
+  # first check that varnames are provided, if not cause error
+  if(model_settings$use_varnames & is.null(model_settings$varnames)) {
+    stop("If you want to use `varnames` you need to specify them.")
+  }
+
+  # SHOULD CHECK HERE TO MAKE SURE VARNAMES HAS THE RIGHT LENGTH - MAYBE ALREADY DONE ABOVE?
   if(model_settings$use_varnames) {
     nodes$plot_label <- nodes$name
   } else {

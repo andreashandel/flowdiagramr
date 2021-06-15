@@ -1,4 +1,19 @@
 ******
+# 2021-06-15
+
+* Optional arguments to make_diagram not yet what I have in mind. See documentation header of function for a sketched out setup.
+
+
+* In `prepare_diagram`, unclear how this block throws an error message that leads to exit out of the main function:
+if(!is.null(nodes_matrix)) {
+    # returns fatal error if variables do not match
+    check_nodes_matrix(model_list, nodes_matrix)
+  }
+
+  
+  
+
+******
 # 2021-06-02 and 2021-06-07 and 2021-06-10
 
 * Should we try to write a manuscript describing the package?

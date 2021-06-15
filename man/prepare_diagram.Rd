@@ -6,38 +6,48 @@
 \usage{
 prepare_diagram(
   model_list,
-  model_settings = list(use_varnames = FALSE, plot_varlabel_size = 10,
-    plot_flowlabel_size = 5, varnames = "none", varlocations = "ltr")
+  model_settings = list(varnames = NULL, use_varnames = FALSE, plot_varlabel_size = 10,
+    plot_flowlabel_size = 5, varlocations = NULL)
 )
 }
 \arguments{
-\item{model_list}{A list of model elements. The list must contain at least
-two elements:
+\item{model_list}{A list of model elements. This list is required and
+must contain these two elements:
 \itemize{
 \item \code{varlabels}: A character vector with labels for each variable.
 \item \code{flows}: A list that is the same length as \code{varlabels}. Each sub-list
 element is a character vector of any length specifying the flows into
 and out of the variable. Note that \strong{flowdiagramr} assumes that the
-order of \code{flows} and \code{varlabels} match. See examples.
+order of \code{flows} and \code{varlabels} match.
+\item IMPORTANT: All varlabel entries must start with an upper case letter,
+followed by any combination of letters and numbers (e.g.,
+S, Si, or Aml2). All parameters contained in the flows
+must start with a lower case letter
+followed by any combination of letters and numbers (e.g.,
+b, bBmax, kS, p21S). All variables and parameters MUST be separated by
+math notation (e.g., +, -, *, /).
+\item See examples and details below and vignettes.
 }}
 
 \item{model_settings}{A list of optional model settings. The following
 elements are supported and default values are provided:
 \itemize{
-\item \code{use_varnames}: A logical indicating whether to label variables with
-variable abbreviations (\code{FALSE}; default) or to use the full names
-provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).
+\item \code{varnames}: Vector of strings containing labels, one  for each variable.
+Default is \code{NULL}.
+\item \code{use_varnames}: A logical. If \code{FALSE} (default)  variable boxes will be labeled with
+the \code{varlabels} entry from \code{model_list}. If \code{TRUE} variable boxes will be
+labeled using the text provided in the \code{varnames} element.
+If \code{varnames} is missing, an error occurs.
+Note that labeling can be turned off through a setting in \code{make_diagram}.
 \item \code{plot_varlabel_size}: A numeric defining the size of the variable
 labels in the plot. This is necessary because the the box sizes will
 (eventually) be determined by the size of the text within. Default is
 10.
 \item \code{plot_flowlabel_size}: A numeric defining the size of the flow
 labels in the plot. Default is 5.
-\item \code{varnames}: The full text for each variable. Default is "none", which
-sets the labels to the \code{varlabels} provided in \code{model_list}.
 \item \code{varlocations}: A numeric matrix that specifies the locations of the
 variables on an x-y grid with their desired x (columns) and y (row)
-locations. See examples and vignettes. Default is "ltr", which
+locations. See examples and vignettes. Default is \code{NULL}, which
 results in a left-to-right diagram.
 }}
 }
@@ -75,33 +85,40 @@ consisting of variables/compartments and flows
 and creates a list of data frames with label and
 position information for plotting a flow diagram.
 The resulting object is used as an input to
-\code{\link{make_diagram}}, which creates a \strong{ggplot2} based
-diagram. Attempts to make good decisions regarding the placement of nodes,
-flows (arrow segment), and labels are made. However, complex models with
+\code{\link{make_diagram}}, which creates a \strong{ggplot2} based diagram.
+Attempts to make decent decisions regarding the placement of nodes (boxes),
+flows (arrows), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
 in the vignettes.
-
-IMPORTANT. All variables must start with an upper case letter,
-followed by any combination of letters and numbers (e.g.,
-S, Si, or Aml2). All parameters must start with a lower case letter
-followed by any combination of letters and numbers (e.g.,
-b, bBmax, kS, p21S). All variables and parameters MUST be separated by
-math notation (e.g., +, -, *, /).
-
-EXAMPLE. The following includes a parameter \emph{b} and two variables, \emph{S}
+}
+\details{
+\code{varlabels} needs to be specified as a vector of model variables,
+e.g., varlabels <- c("Pred","Prey").
+\code{flows} need to be specified as a list, with each list entry containing the
+flows/processes for each variable in the order in which the variables appear.
+Flows need to be named according to VARLABEL_flows.
+Example: flows <- list(Pred_flows = c(\code{r*Pred}, \code{-k1*Pred*Prey}),
+Prey_flows = c(\code{g*Prey}, \code{-k2*Pred*Prey}) )
+Each flow, i.e. each entry in the flow vector, needs to be a valid
+mathematical expression made up of varlabels and parameters.
+The rules are as described above.
+As an example, the following includes a parameter \emph{b} and two variables, \emph{S}
 and \emph{I}: \code{b*S*I}. The following includes a parameter \emph{s} and two
 variables, \emph{Bg} and \emph{I2}: \code{Bg*s*I2}.
+See more examples below and in the vignettes.
 }
 \examples{
 varlabels <- c("S","I","R")
-varnames <- c("Susceptible","Infected","Recovered")  # optional
 flows <- list(S_flows = c("-b*S*I"),
               I_flows = c("b*S*I","-g*I"),
               R_flows = c("g*I"))
-varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
+varnames <- c("Susceptible","Infected","Recovered")  # optional
+varlocations <-  matrix(data = c("S", "", "R",
+                                 "", "I", "" ),
                         nrow = 2, ncol = 3, byrow = TRUE)
-mymodel <- list(varlabels = varlabels, varnames = varnames,
-flows = flows, varlocations = varlocations)
-prepare_diagram(model_list = mymodel)
+mymodel <- list(varlabels = varlabels, flows = flows)
+mysettings <- list(varnames = varnames, use_varnames = TRUE,
+                   plot_varlable_size = 12,varlocations = varlocations)
+prepare_diagram(model_list = mymodel, model_settings = mysettings)
 
 }
