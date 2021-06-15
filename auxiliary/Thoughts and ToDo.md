@@ -11,6 +11,7 @@ if(!is.null(nodes_matrix)) {
   }
 
   
+* Would it be useful to include a `box_scaling` argument in the optional prepare_diagram list, which would scale all boxes by a factor (i.e. default is 1, if a user says 2 then boxes would be increased in size by a factor of 2.) That could allow for flexible adjustment of boxes. Not sure if good idea, we can discuss.  
   
 
 ******
