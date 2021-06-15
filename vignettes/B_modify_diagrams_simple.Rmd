@@ -70,25 +70,18 @@ plot(default_diagram)
 
 This looks ok, but maybe you want to make some adjustments. You can adjust several parts of the diagram fairly easily using the input options to the `make_diagram` function to change the look.
 
-**CHANGE NAMES OF INPUTS TO DIAGRAM_SETTINGS AS DESCRIBED IN TODO**
-
-**IN ALL EXAMPLES SHOWN, ONLY LIST THOSE INPUTS THAT ARE DIFFERENT THAN DEFAULT**
-
 ```{r}
 #define settings that change the look of the diagram
 sir_diagram_settings <- list(
-    node_outline_color = "black",
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "black",
-    node_text_size = 14,
-    flow_text_color = "black",
+    var_outline_color = "black",
+    var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    var_text_color = "black",
+    var_text_size = 14,
     flow_text_size = 8,
-    main_arrow_color = "blue",
-    main_arrow_linetype = "solid",
-    main_arrow_size = 1,
-    interaction_arrow_color = "red",
-    interaction_arrow_linetype = "dashed",
-    interaction_arrow_size = 0.7)
+    main_flow_color = "blue",
+    main_flow_linetype = "solid",
+    main_flow_size = 1,
+    interaction_flow_color = "red")
 
 # make a diagram with adjusted settings
 new_diagram <- make_diagram(
@@ -99,6 +92,7 @@ plot(new_diagram)
 ```
 
 As you can see, it is possible to change the look of the diagram considerably by simply providing custom values to the `make_diagram` input options.
+Note that providing values for `var_text_size` and `flow_text_size` overwrites the values that were provided in `prepare_diagram` and stored in the output data frames (see `plot_label_size` column in the output data frames).
 
 Let's look at a few more options that you can configure. By default, **`r pkg`** shows all flows and labels them all. 
 While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. 
@@ -111,20 +105,16 @@ Note that if you turn off certain components, any settings that apply styling to
 ```{r}
 #define settings that remove plotting of all flow labels and inflows/outflows
 simpler_diagram_settings <- list(
-    node_outline_color = "black",
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "black",
-    node_text_size = 14,
-    label_flows = FALSE,
-    external_flows = FALSE,
-    flow_text_color = "black",
-    flow_text_size = 8,
-    main_arrow_color = "blue",
-    main_arrow_linetype = "solid",
-    main_arrow_size = 1,
-    interaction_arrow_color = "red",
-    interaction_arrow_linetype = "dashed",
-    interaction_arrow_size = 0.7)
+  label_flows = FALSE,
+  var_outline_color = "black",
+  var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+  var_text_color = "black",
+  var_text_size = 14,
+  flow_text_size = 8,
+  main_flow_color = "blue",
+  main_flow_linetype = "solid",
+  main_flow_size = 1,
+  interaction_flow_color = "red")
 
 # make a diagram with adjusted settings
 simpler_diagram <- make_diagram(
@@ -140,7 +130,7 @@ plot(simpler_diagram)
 ## Providing additional input when specifying the model
 
 There is another simple, but likely often quite useful way you can make adjustments to the model plot.
-You previously learned that to specify a model, you need to set up a list that contains at minimum the elements `varlabels` and `flows`. That's what we used so far. It is possible to supply a few additional elements, namely the element `varnames` which contains the full names for each variable/compartment and an element `varlocations`, which contains a matrix showing the grid-based arrangement of the compartment boxes. Let's see it in action.
+You previously learned that to specify a model you need to set up a list that contains at minimum the elements `varlabels` and `flows`. That's what we used so far. It is possible to supply a few additional elements, namely the element `varnames` which contains the full names for each variable/compartment and an element `varlocations`, which contains a matrix showing the grid-based arrangement of the compartment boxes. Let's see it in action.
 
 
 ### Example 1
@@ -155,7 +145,8 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
 varnames = c("Susceptible","Infected","Recovered")
 varlocations = matrix(data = c("S", "", "R",
                                "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
-sirmodel = list(varlabels = varlabels, flows = flows, varnames = varnames, varlocations = varlocations)
+sirmodel = list(varlabels = varlabels, flows = flows)
+sirsettings = list(varnames = varnames, varlocations = varlocations, use_varnames = TRUE)
 ```
 
 The `varnames` argument is self-explanatory. If you supply this argument, you can have the variable names be shown in the plot by setting `use_varnames = TRUE` when calling the `make_diagram` function.
@@ -165,10 +156,9 @@ You can take this extended specification of the model and feed it to the diagram
 
 ```{r}
 # prepare inputs 
-sir_diagram_list <- prepare_diagram(sirmodel)
+sir_diagram_list <- prepare_diagram(model_list = sirmodel, model_settings = sirsettings)
 # specify a few settings to show variable names 
-diagram_settings = list(node_text_size = 4,
-                            use_varnames = TRUE)
+diagram_settings = list(var_text_size = 4)
 # make  diagram
 sir_diagram <- make_diagram(diagram_list = sir_diagram_list,
                             diagram_settings = diagram_settings)
@@ -183,7 +173,8 @@ Let's do another example, one that might come up somewhat often, where you need 
 
 ```{r}
 varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE)
-sirmodel$varlocations <- varlocations
+sirsettings$varlocations = varlocations
+sirsettings$use_varnames = FALSE
 ```
 
 With this setup, the diagram looks like this
@@ -191,8 +182,9 @@ With this setup, the diagram looks like this
 **DIAGRAM NOT LOOKING GOOD**
 
 ```{r, fig.height=5}
-sir_diagram_list <- prepare_diagram(sirmodel)
-sir_diagram <- make_diagram(sir_diagram_list)
+sir_diagram_list <- prepare_diagram(sirmodel, sirsettings)
+diagram_settings$var_text_size <- 8
+sir_diagram <- make_diagram(sir_diagram_list, diagram_settings)
 plot(sir_diagram)
 ```
 
@@ -219,17 +211,17 @@ flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
 varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-mymodel = list(varlabels = varlabels, flows = flows, varlocations = varlocations, varnames = varnames)
-diagram_list <- prepare_diagram(mymodel)
+mymodel = list(varlabels = varlabels, flows = flows)
+mysettings = list(varlocations = varlocations, varnames = varnames, use_varnames = TRUE)
+diagram_list <- prepare_diagram(mymodel, mysettings)
 ```
 
 In a next step, we apply different styling to the diagram
 
 ```{r}
 diagram_settings <- list(
-       node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
-                          node_text_size = 4,
-                          use_varnames = TRUE
+       var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
+                          var_text_size = 4
                         )
 model_plot <- make_diagram(diagram_list, diagram_settings)
 plot(model_plot)

@@ -4,82 +4,69 @@
 \alias{prepare_diagram}
 \title{Create data frames for plotting from model elements.}
 \usage{
-prepare_diagram(model_list)
+prepare_diagram(
+  model_list,
+  model_settings = list(use_varnames = FALSE, plot_varlabel_size = 10,
+    plot_flowlabel_size = 5, varnames = "none", varlocations = "ltr")
+)
 }
 \arguments{
 \item{model_list}{A list of model elements. The list must contain at least
-two elements with names \code{varlabels} and \code{flows}. The
-\code{flows} list must contain a sub-list for each variable in
-the \code{varlabels} vector. For example, if the user specifies
-two variables in \code{model_list$varlabels}, then
-\code{model_list$flows} must contain two sub-lists, each containing
-a character vector of flows into and out of the node. Currently,
-this function assumes that the \code{model_list$varlabels} sub-lists
-are in the same order as the \code{model_list$varlabels} vector. See
-examples. The \code{model_list} can contain the optional argument
-\code{varnames} which can contain the full text for each
-compartment/variable and \code{varlocations} which contains a matrix
-that specifies the locations of the compartments/variables on an x-y
-grid with their desired x (columns) and y (row) locations. See examples
-for more.}
+two elements:
+\itemize{
+\item \code{varlabels}: A character vector with labels for each variable.
+\item \code{flows}: A list that is the same length as \code{varlabels}. Each sub-list
+element is a character vector of any length specifying the flows into
+and out of the variable. Note that \strong{flowdiagramr} assumes that the
+order of \code{flows} and \code{varlabels} match. See examples.
+}}
+
+\item{model_settings}{A list of optional model settings. The following
+elements are supported and default values are provided:
+\itemize{
+\item \code{use_varnames}: A logical indicating whether to label variables with
+variable abbreviations (\code{FALSE}; default) or to use the full names
+provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).
+\item \code{plot_varlabel_size}: A numeric defining the size of the variable
+labels in the plot. This is necessary because the the box sizes will
+(eventually) be determined by the size of the text within. Default is
+10.
+\item \code{plot_flowlabel_size}: A numeric defining the size of the flow
+labels in the plot. Default is 5.
+\item \code{varnames}: The full text for each variable. Default is "none", which
+sets the labels to the \code{varlabels} provided in \code{model_list}.
+\item \code{varlocations}: A numeric matrix that specifies the locations of the
+variables on an x-y grid with their desired x (columns) and y (row)
+locations. See examples and vignettes. Default is "ltr", which
+results in a left-to-right diagram.
+}}
 }
 \value{
-A list of five data frames:
+A list of two data frames:
 \itemize{
-\item \code{nodes}: A data frame containing the node (state variable) ids,
-labels, and positions. Position is defined with the \code{x} and
-\code{y} columns, which define the center of the node squares. The
-ggplot2 function \code{geom_tile} is used for placement of nodes and
-the height and width are set to 1 to generate a perfect square centered
-on \code{x} and \code{y}. The \code{row} column indicates which row
-the node is placed on; this is also evident from the \code{y} values.
-\code{id} is a numeric id for the node, which shows up in the edge
-data frames for defining connects (see below).
+\item \code{variables}: A data frame containing the state variable names,
+labels, and positions.
 
-\item \code{horizontal_edges}: A data frame containing name and position
-information for straight flows from one node to an adjacent node. The
-data frame contains nine (9) columns:
+\item \code{flows}: A data fram containing the name and position information
+for all the flows. The data frame contains eleven (11) columns:
 \itemize{
-\item{\code{to}}: The node to which the arrow will point. That is, the node
-receiving the flow.
-\item{\code{from}}: The node from which the arrow originate. That is, the
-node donating the flow.
-\item{\code{label}}: The label of the flow. Typically a mathematical expression.
-\item{\code{xstart}}: The starting horizontal position of the arrow.
-\item{\code{ystart}}: The starting veritcal position of the arrow.
-\item{\code{xend}}: The ending horizontal position of the arrow.
-\item{\code{yend}}: The ending vertical position of the arrow.
-\item{\code{labelx}}: Horizontal position (midpoint) of label.
-\item{\code{labely}}: Vertical position (midpoint) of label.
-}
-
-\item \code{vertical_edges}: A data frame containing name and position
-information for flows that arrive from out of the system or leave the
-system. That is, flows that either (1) do not come from a node specified
-in the nodes data frame or (2) exit the system without connecting to
-another node. The data frame contains the same columns as
-\code{horizontal_edges}. Note that either the \code{to} or \code{from}
-value will be NA in each row (if rows are present). These flows arrive
-or leave at 45 degree angles, despite the name of the data frame implying
-a vertical entrance or exit.
-
-\item \code{curved_edges}: A data frame containing name and position
-information for, typically, two types of curved arrows: (1) interaction
-arrows that point toward a horizontal arrow or (2) a physical flow
-that would normally be a horizontal arrow but must bypass at least
-one node. The data frame has eleven (10) columns. The data frame contains
-the same 9 columns as the \code{horizontal_edges} data frame, with one addition:
-\itemize{
-\item{\code{curvature}}: The amount of curvature applied to arrow.
+\item \code{to}: The variable to which the arrow will point. That is, the
+variable receiving the flow.
+\item \code{from}: The variable from which the arrow originate. That is, the
+variable donating the flow.
+\item \code{label}: The label of the flow. Typically a mathematical expression.
+\item \code{interaction}: A logical flag indicating whether the flow
+represents an interaction between two (or more) variables (TRUE) or
+not (FALSE).
+\item \code{xstart}: The starting horizontal position of the arrow.
+\item \code{ystart}: The starting vertical position of the arrow.
+\item \code{xend}: The ending horizontal position of the arrow.
+\item \code{yend}: The ending vertical position of the arrow.
+\item \code{labelx}: Horizontal position (midpoint) of label.
+\item \code{labely}: Vertical position (midpoint) of label.
+\item \code{curvature}: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.
 }
-
-\item{\code{feedback_edges}}: A data frame containing name and position
-information for arrows indicating a feedback into the same node. The
-data frame contains the same columns as the \code{horizontal_edges}
-data frame. Note that the \code{to} and \code{from} columns should have
-the same values for feedback edges.
-
 }
 }
 \description{

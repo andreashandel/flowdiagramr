@@ -7,17 +7,13 @@
 #'
 #' @param model_list A **flowdiagramr** input list. See
 #'     \code{\link{prepare_diagram}}. Also see `Details` below.
+#' @param model_settings A named list of model settings.  See
+#'     \code{\link{prepare_diagram}}. Also see `Details` below.
 #' @param diagram_list A **flowdiagramr** input structure, resulting from
 #'     a call to \code{\link{prepare_diagram}}. See `Details` below.
 #' @param diagram_settings A named list of diagram aesthetics. See
 #'    \code{\link{make_diagram}} documentation. Default is `NULL` and the
 #'    default values from \code{\link{make_diagram}} are used.
-#' @param use_varnames A logical indicating whether to label nodes with
-#'     variable abbreviations (`FALSE`; default) or to use the full names
-#'     provided in the `varnames` element of `model_list` (`TRUE`).
-#' @param with_grid A logical indicating whether to return the ggplot
-#'     with a grid. Default is FALSE. The grid can be helpful if you
-#'     want/need to move items around.
 #' @param directory File directory in which to save the produced R file.
 #'     Default location is the current working directory.
 #' @param filename Name of the file, must end in '.R'. Default name is
@@ -60,11 +56,10 @@
 
 
 write_diagram <- function(model_list = NULL,
+                          model_settings = NULL,
                           diagram_list = NULL,
                           diagram_settings = NULL,
-                          use_varnames = FALSE,
-                          with_grid = FALSE,
-                          directory = NULL,
+                          directory = "./",
                           filename = 'diagram_code.R',
                           always_overwrite = FALSE
                           )
@@ -74,16 +69,6 @@ write_diagram <- function(model_list = NULL,
   if(is.null(model_list) & is.null(diagram_list)) {
     stop("Please provide at least one of the model list or the diagram list as input")
   }
-
-  # save to current working directory if the not specified
-  if(is.null(directory)) {
-    directory <- getwd()
-  }
-
-  # give the file a generic name
-  #if(is.null(filename)) {
-  #  filename <- "diagram_code.R"
-  #}
 
   # The R script for writing out is built as a series of blocks
   # that are concatenated at the very end of the function.
@@ -110,22 +95,37 @@ write_diagram <- function(model_list = NULL,
   args_block <- character(length(args))
   for(i in 1:length(args_block)) {
     argtext <- args[[i]]
-    if(is.logical(argtext) | is.numeric(argtext)) {
-      # if logical or numeric, does not need quotes
-      args_block[i] <- paste0(names(args)[[i]], " <- ", args[[i]])
+    if(length(argtext) > 1) {
+      if(is.character(argtext[1])) {
+        argtext <- paste0("c('", paste(argtext, collapse = "', '"), "')")
+      } else {
+        argtext <- paste0("c(", paste(argtext, collapse = ", "), ")")
+      }
+
+      args_block[i] <- paste0(names(args)[[i]], " <- ", argtext)
+
     } else {
-      # otherwise the argument is a string and needs quotes
-      args_block[i] <- paste0(names(args)[[i]], " <- '", args[[i]], "'")
+      if(is.logical(argtext) | is.numeric(argtext)) {
+          # if logical or numeric, does not need quotes
+          args_block[i] <- paste0(names(args)[[i]], " <- ", argtext)
+        } else {
+          # otherwise the argument is a string and needs quotes
+          args_block[i] <- paste0(names(args)[[i]], " <- '", argtext, "'")
+        }
     }
   }
 
-  # Define grid and varnames settings
-  grid_block <- paste0("with_grid <- ", with_grid)
-  varnames_block <- paste0("use_varnames <- ", use_varnames)
-
   # Collapse the aes args block with line breaks
   args_block <- paste(args_block, collapse = "\n")
-  args_block <- paste(args_block, grid_block, varnames_block, sep = "\n")
+
+  # Recycle aesthetics as needed
+  rec_block <- paste(
+    "var_outline_color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))",
+    "var_fill_color <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))",
+    "var_text_color <- flowdiagramr:::recycle_values(var_text_color, nrow(variables))",
+    "flow_text_color <- flowdiagramr:::recycle_values(flow_text_color, nrow(flows))",
+    sep = "\n"
+    )
 
   # ggplot2 code block ---
   gg_block <- flowdiagramr:::get_code()  # gets the code used by flowdiagramr
@@ -140,26 +140,21 @@ write_diagram <- function(model_list = NULL,
 
   if(!is.null(model_list)) {
     input_block <- paste("model_list <-", deparse1(model_list))
+    input_settings_block <- paste("model_settings <-", deparse1(model_settings))
 
     if(is.null(diagram_list)) {
-      prep_block <- "diagram_list <- prepare_diagram(model_list = model_list)"
-      unlist_block <- paste("nodes <- diagram_list$nodes",
-                            "horizontal_edges <- diagram_list$horizontal_edges",
-                            "vertical_edges <- diagram_list$vertical_edges",
-                            "curved_edges <- diagram_list$curved_edges",
-                            "feedback_edges <- diagram_list$feedback_edges",
+      prep_block <- "diagram_list <- prepare_diagram(model_list = model_list, model_settings = model_settings)"
+      unlist_block <- paste("variables <- diagram_list$variables",
+                            "flows <- diagram_list$flows",
                             sep = "\n")
     } else {
       msg <- paste0("# Since a user-supplied diagram_list is provided,\n",
                     "# the default one created by prepare_diagram() is not used")
       prep_block <- paste(msg,
-                          "# diagram_list <- prepare_diagram(model_list = model_list)",
+                          "# diagram_list <- prepare_diagram(model_list = model_list, model_settings = model_settings)",
                           sep = "\n")
-      unlist_block <- paste("# nodes <- diagram_list$nodes",
-                            "# horizontal_edges <- diagram_list$horizontal_edges",
-                            "# vertical_edges <- diagram_list$vertical_edges",
-                            "# curved_edges <- diagram_list$curved_edges",
-                            "# feedback_edges <- diagram_list$feedback_edges",
+      unlist_block <- paste("# variables <- diagram_list$variables",
+                            "# flows <- diagram_list$flows",
                             sep = "\n")
     }
   }
@@ -188,9 +183,11 @@ write_diagram <- function(model_list = NULL,
     # if just the model_list is provided, include the list prepping blocks
     outcode <- paste(lib_block,
                      input_block,
+                     input_settings_block,
                      prep_block,
                      unlist_block,
                      args_block,
+                     rec_block,
                      gg_block,
                      plot_save_block,
                      sep = "\n\n")
@@ -199,6 +196,7 @@ write_diagram <- function(model_list = NULL,
     outcode <- paste(lib_block,
                      df_block,
                      args_block,
+                     rec_block,
                      gg_block,
                      plot_save_block,
                      sep = "\n\n")
@@ -206,10 +204,12 @@ write_diagram <- function(model_list = NULL,
     # If both are provided, return all blocks
     outcode <- paste(lib_block,
                      input_block,
+                     input_settings_block,
                      prep_block,
                      unlist_block,
                      df_block,
                      args_block,
+                     rec_block,
                      gg_block,
                      plot_save_block,
                      sep = "\n\n")

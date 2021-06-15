@@ -1,30 +1,25 @@
 #' Moves interaction label to main flow label.
 #'
-#' @param dfs The data frames.
-#' @return dfs The data frames.
+#' @param flows The flows data frame.
+#' @return The flows data frame.
 #' @noRd
 
-move_interaction_label <- function(dfs) {
-  hdf <- dfs$horizontal_edges
-  cdf <- dfs$curved_edges
+move_interaction_label <- function(flows) {
 
-  ints <- subset(cdf, interaction == TRUE)
-  ints$to <- ints$from
-  ints$from <- ints$link
+  ints <- subset(flows, interaction == TRUE)
 
   for(i in 1:nrow(ints)) {
+    vps <- get_vars_pars(ints[i, "label"])
+    vars <- vps[which(vps %in% LETTERS)]
+    ints[i, "to"] <- ints[i, "from"]
+    ints[i, "from"] <- vars[which(vars != ints[i, "to"])]
+
     to <- ints[i, "to"]
     from <- ints[i, "from"]
-    id <- which(hdf$to == to & hdf$from == from)
-    hdf[id, "label"] <- ints[i, "label"]
+    id <- which(flows$to == to & flows$from == from)
+    flows[id, "label"] <- ints[i, "label"]
   }
 
-  cdf <- subset(cdf, interaction == FALSE)
-
-  dfs <- list("nodes" = dfs$nodes,
-              "horizontal_edges" = hdf,
-              "vertical_edges" = dfs$vertical_edges,
-              "curved_edges" = cdf,
-              "feedback_edges" = dfs$feedback_edges)
-  return(dfs)
+  flows <- subset(flows, interaction == FALSE)
+  return(flows)
 }

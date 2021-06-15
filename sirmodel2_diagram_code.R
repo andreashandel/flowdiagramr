@@ -1,14 +1,44 @@
 library(ggplot2)
 library(flowdiagramr)
 
-model_list <- list(varlabels = c("S", "I", "R"), flows = list(S_flows = "-b*S*I", I_flows = c("b*S*I", "-g*I"), R_flows = "g*I"))
+model_list <- list(varlabels = c("S", "I", "R"), flows = list(S_flows = "-b*S*I", I_flows = c("+b*S*I", "-g*I"), R_flows = "+g*I"))
 
-model_settings <- NULL
+model_settings <- list(varnames = c("Susceptible", "Infected", "Recovered"), varlocations = structure(c("S", "", "", "I", "R", ""), .Dim = 2:3))
 
-diagram_list <- prepare_diagram(model_list = model_list, model_settings = model_settings)
+# Since a user-supplied diagram_list is provided,
+# the default one created by prepare_diagram() is not used
+# diagram_list <- prepare_diagram(model_list = model_list, model_settings = model_settings)
 
-variables <- diagram_list$variables
-flows <- diagram_list$flows
+# variables <- diagram_list$variables
+# flows <- diagram_list$flows
+
+variables <- data.frame(
+  label = c("S", "I", "R"),
+  name = c("Susceptible", "Infected", "Recovered"),
+  xmin = c(-0.5, 2.5, 5.5),
+  xmax = c(0.5, 3.5, 6.5),
+  ymin = c(-0.5, -2.5, -0.5),
+  ymax = c(0.5, -1.5, 0.5),
+  labelx = c(0, 3, 6),
+  labely = c(0, -2, 0),
+  plot_label = c("S", "I", "R"),
+  plot_label_size = c(10, 10, 10)
+)
+
+flows <- data.frame(
+  to = c("I", "R", NA),
+  from = c("S", "I", "I"),
+  label = c("", "g*I", "b*S*I"),
+  interaction = c(FALSE, FALSE, TRUE),
+  xstart = c(0.5, 3.5, 3),
+  ystart = c(0, -2, -2.5),
+  xend = c(2.5, 5.5, 1.5),
+  yend = c(-2, 0, -1),
+  labelx = c(1.5, 4.5, 1.2),
+  labely = c(-0.75, -0.75, -2),
+  curvature = c(0, 0, -0.7),
+  plot_label_size = c(5, 5, 5)
+)
 
 label_flows <- TRUE
 external_flows <- TRUE
@@ -16,11 +46,11 @@ interaction_label <- TRUE
 var_outline_color <- NA
 var_fill_color <- '#6aa4c8'
 var_text_color <- 'white'
-var_text_size <- NA
+var_text_size <- 14
 flow_text_color <- 'black'
 flow_text_size <- NA
-main_flow_color <- 'grey25'
-main_flow_linetype <- 'solid'
+main_flow_color <- 'blue'
+main_flow_linetype <- 'dotted'
 main_flow_size <- 0.7
 interaction_flow_color <- 'grey25'
 interaction_flow_linetype <- 'dashed'
@@ -84,8 +114,8 @@ for(i in 1:nrow(flows)) {
                             interaction_flow_color,
                             main_flow_color)
   this_flow_fill <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_flow_color,
-                           main_flow_color)
+                            interaction_flow_color,
+                            main_flow_color)
   this_line_size <- ifelse(as.numeric(dat["interaction"]),
                            interaction_flow_size,
                            main_flow_size)
@@ -133,17 +163,7 @@ if(with_grid == FALSE) {
 }
 
 
-# make a new data frame of text
-text_df <- data.frame(
-  x = 3,
-  y = -1,
-  lab = "Infected and Infectious"
-)
-
-diagram_plot <- diagram_plot +
-  geom_text(data = text_df, aes(x = x, y = y, label = lab), size = 8)
-
-# These lines plot or save the generated diagram.
-# Uncomment them if you want to perform either action.
-# plot(diagram_plot)
+# These lines plot or save the generated diagram. 
+# Uncomment them if you want to perform either action. 
+# plot(diagram_plot) 
 # ggsave('diagram_plot.png',diagram_plot)
