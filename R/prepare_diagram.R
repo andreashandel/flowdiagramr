@@ -39,15 +39,17 @@
 #' \item `use_varnames`: A logical indicating whether to label variables with
 #'     variable abbreviations (`FALSE`; default) or to use the full names
 #'     provided in the `varnames` element of `model_list` (`TRUE`).
-#' \item `plot_label_size`: A numeric defining the size of the variable
+#' \item `plot_varlabel_size`: A numeric defining the size of the variable
 #'     labels in the plot. This is necessary because the the box sizes will
 #'     (eventually) be determined by the size of the text within. Default is
-#'     8.
+#'     10.
+#' \item `plot_flowlabel_size`: A numeric defining the size of the flow
+#'     labels in the plot. Default is 5.
 #' \item `varnames`: The full text for each variable. Default is "none", which
 #'     sets the labels to the `varlabels` provided in `model_list`.
-#' \item `varlocations`: A matrix that specifies the locations of the
+#' \item `varlocations`: A numeric matrix that specifies the locations of the
 #'     variables on an x-y grid with their desired x (columns) and y (row)
-#'     locations. See examples and vignettes. Default is `NULL`, which
+#'     locations. See examples and vignettes. Default is "ltr", which
 #'     results in a left-to-right diagram.
 #' }
 #'
@@ -96,9 +98,10 @@
 prepare_diagram <- function(model_list,
                             model_settings = list(
                               use_varnames = FALSE,
-                              plot_label_size = 8,
+                              plot_varlabel_size = 10,
+                              plot_flowlabel_size = 5,
                               varnames = "none",
-                              varlocations = NULL)
+                              varlocations = "ltr")
                             ) {
 
   # check user inputs for necessary elements
@@ -108,7 +111,7 @@ prepare_diagram <- function(model_list,
   }
 
   # assign the nodes matrix if provided
-  if(!is.null(model_settings$varlocations)) {
+  if(model_settings$varlocations != "ltr") {
     nodes_matrix <- model_list$varlocations
   } else {
     nodes_matrix <- NULL
@@ -701,8 +704,8 @@ prepare_diagram <- function(model_list,
   # - feedback segments (curved back onto same node)
   cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from) | interaction == TRUE)
   sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
-  vdf <- subset(sdf, abs(diff) >= 9990)
-  sdf <- subset(sdf, abs(diff) < 9990)
+  vdf <- subset(sdf, abs(diff) >= 9900)
+  sdf <- subset(sdf, abs(diff) < 9900)
   fdf <- subset(sdf, to == from)
   sdf <- subset(sdf, to != from)
 
@@ -821,7 +824,6 @@ prepare_diagram <- function(model_list,
   ndf$labelx <- ndf$x
   ndf$labely <- ndf$y
   nodes <- subset(ndf, select = -c(id, row, x, y))
-  nodes$plot_label_size <- model_settings$plot_label_size
 
   # change the label to full name, if requested
   # this will be move farther up once code to adjust box size to text is
@@ -837,6 +839,8 @@ prepare_diagram <- function(model_list,
   horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom, xmid, ymid))
   if(nrow(horizontal_edges) > 0) {
     horizontal_edges$curvature <- 0
+  } else {
+    horizontal_edges$curvature <- numeric()
   }
 
   vdf$labelx <- vdf$xmid
@@ -845,6 +849,10 @@ prepare_diagram <- function(model_list,
                                             linkfrom, xmid, ymid))
   if(nrow(vertical_edges) > 0) {
     vertical_edges$curvature <- 0
+    vertical_edges$interaction <- FALSE
+  } else {
+    vertical_edges$curvature <- numeric()
+    vertical_edges$interaction <- logical()
   }
 
   cdf$row <- NULL
@@ -862,6 +870,10 @@ prepare_diagram <- function(model_list,
                                              xmid, ymid))
   if(nrow(feedback_edges) > 0) {
     feedback_edges$curvature <- -2
+    feedback_edges$interaction <- FALSE
+  } else {
+    feedback_edges$curvature <- numeric()
+    feedback_edges$interaction <- logical()
   }
 
 
@@ -870,6 +882,10 @@ prepare_diagram <- function(model_list,
                  vertical_edges,
                  curved_edges,
                  feedback_edges)
+
+  # add text size arguments
+  nodes$plot_label_size <- model_settings$plot_varlabel_size
+  flows$plot_label_size <- model_settings$plot_flowlabel_size
 
 
   return(list(variables = nodes,

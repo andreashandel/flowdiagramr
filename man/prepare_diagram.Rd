@@ -6,7 +6,8 @@
 \usage{
 prepare_diagram(
   model_list,
-  model_settings = list(use_varnames = FALSE, plot_label_size = 8)
+  model_settings = list(use_varnames = FALSE, plot_varlabel_size = 10,
+    plot_flowlabel_size = 5, varnames = "none", varlocations = "ltr")
 )
 }
 \arguments{
@@ -18,14 +19,6 @@ two elements:
 element is a character vector of any length specifying the flows into
 and out of the variable. Note that \strong{flowdiagramr} assumes that the
 order of \code{flows} and \code{varlabels} match. See examples.
-}
-
-The model list may also contain two more optional elements:
-\itemize{
-\item \code{varnames}: The full text for each variable.
-\item \code{varlocations}: A matrix that specifies the locations of the
-variables on an x-y grid with their desired x (columns) and y (row)
-locations. See examples and vignettes.
 }}
 
 \item{model_settings}{A list of optional model settings. The following
@@ -34,10 +27,18 @@ elements are supported and default values are provided:
 \item \code{use_varnames}: A logical indicating whether to label variables with
 variable abbreviations (\code{FALSE}; default) or to use the full names
 provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).
-\item \code{plot_label_size}: A numeric defining the size of the variable
+\item \code{plot_varlabel_size}: A numeric defining the size of the variable
 labels in the plot. This is necessary because the the box sizes will
 (eventually) be determined by the size of the text within. Default is
-8.
+10.
+\item \code{plot_flowlabel_size}: A numeric defining the size of the flow
+labels in the plot. Default is 5.
+\item \code{varnames}: The full text for each variable. Default is "none", which
+sets the labels to the \code{varlabels} provided in \code{model_list}.
+\item \code{varlocations}: A numeric matrix that specifies the locations of the
+variables on an x-y grid with their desired x (columns) and y (row)
+locations. See examples and vignettes. Default is "ltr", which
+results in a left-to-right diagram.
 }}
 }
 \value{

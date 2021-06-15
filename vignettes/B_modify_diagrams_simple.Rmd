@@ -70,7 +70,6 @@ plot(default_diagram)
 
 This looks ok, but maybe you want to make some adjustments. You can adjust several parts of the diagram fairly easily using the input options to the `make_diagram` function to change the look.
 
-**CHANGE NAMES OF INPUTS TO DIAGRAM_SETTINGS AS DESCRIBED IN TODO**
 
 **IN ALL EXAMPLES SHOWN, ONLY LIST THOSE INPUTS THAT ARE DIFFERENT THAN DEFAULT**
 
