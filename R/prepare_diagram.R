@@ -110,9 +110,16 @@ prepare_diagram <- function(model_list,
     stop(check$msg)
   }
 
+  # assign default settings to be updated by user
+  defaults <- eval(formals(prepare_diagram)$model_settings)
+
+  # update defaults with user settings
+  defaults[names(model_settings)] <- model_settings
+  model_settings <- defaults  # reassign
+
   # assign the nodes matrix if provided
-  if(model_settings$varlocations != "ltr") {
-    nodes_matrix <- model_list$varlocations
+  if(is.matrix(model_settings$varlocations)) {
+    nodes_matrix <- model_settings$varlocations
   } else {
     nodes_matrix <- NULL
   }
@@ -137,8 +144,8 @@ prepare_diagram <- function(model_list,
 
   #set longvarnames to the full length names, if provided, otherwise
   #set to NA for  storage in data frame
-  if(model_settings$varnames != "none") {
-    longvarnames <- model_list$varnames
+  if(length(model_settings$varnames) > 1) {
+    longvarnames <- model_settings$varnames
 
     # replace spaces with line breaks to create two (or more) lined
     # names that are centered in the box

@@ -71,13 +71,14 @@ varnames = c("Susceptible","Infected","Recovered")
 flows = list(S_flows = c("+n", "-b*S*I", "-m*S"), 
              I_flows = c("+b*S*I","-g*I", "-m*I"), 
              R_flows = c("+g*I", "-m*R"))
-sirmodel = list(varlabels = varlabels, varnames = varnames, flows = flows)
+sirmodel = list(varlabels = varlabels, flows = flows)
+sirsettings = list(varnames = varnames)
 ```
 
 Next, we send the model to the `prepare_diagram` function.
 
 ```{r}
-sir_diagram_list <- prepare_diagram(sirmodel)
+sir_diagram_list <- prepare_diagram(sirmodel, sirsettings)
 ```
 
 Now, let's make and plot the diagram. For this plot, we also turned on the grid. This is useful in figuring out by how much to shift things around.
@@ -92,8 +93,6 @@ So far, nothing really new, apart from showing the grid in the plot.
 Now, instead of sending the object produced by `prepare_diagram` (here called `sir_diagram_list`) to the `make_diagram` function right away, we'll take a look at it and modify it.
 Here are the details contained in this object
 
-**RENAME AS DESCRIBED IN TODO**
-
 ```{r}
 print(sir_diagram_list)
 ```
@@ -104,18 +103,18 @@ Let's modify this object somewhat. The following code makes the `I` box bigger, 
 #assign to a new variable so we preserve the original
 modified_diagram_list <- sir_diagram_list 
 #increase the I box a bit both on left and right 
-modified_diagram_list$nodes$xmin[2] = 5
-modified_diagram_list$nodes$xmax[2] = 7
+modified_diagram_list$variables$xmin[2] = 5
+modified_diagram_list$variables$xmax[2] = 7
 #modify inflow and outflow arrows to align with new box size 
-modified_diagram_list$horizontal_edges$xend[1] = 5
-modified_diagram_list$horizontal_edges$xstart[2] = 7
+modified_diagram_list$flows$xend[1] = 5
+modified_diagram_list$flows$xstart[2] = 7
 #move the b*S*I arrow end a bit
-modified_diagram_list$curved_edges$xend[1] = 4
+modified_diagram_list$flows$xend[7] = 4
 #move the b*S*I label 
-modified_diagram_list$curved_edges$labely[1] = 0.2
-modified_diagram_list$curved_edges$labelx[1] = 4.6
+modified_diagram_list$flows$labely[7] = 0.2
+modified_diagram_list$flows$labelx[7] = 4.6
 #move the g*I arrow over just a bit
-modified_diagram_list$horizontal_edges$labelx[2] = 7.75
+modified_diagram_list$flows$labelx[2] = 7.75
 ```
 
 With those modifications, the resulting diagram looks like this
@@ -129,12 +128,13 @@ plot(plot2)
 It is possible to combine the modification of the diagram with modifications made through settings in `make_diagram`, e.g., we can add some color like this
 
 ```{r}
-plot3 <- make_diagram(modified_diagram_list,
-                      diagram_settings = list(flow_text_color = "blue",
-                                              node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                                              node_text_color = "white"
-                                              )
-                     )
+plot3 <- make_diagram(
+  modified_diagram_list,
+  diagram_settings = list(flow_text_color = "blue",
+                          var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                          var_text_color = "white")
+)
+
 plot(plot3)
 ```
 
@@ -174,15 +174,15 @@ And here is the code that makes some changes
 
 ```{r}
 #increase box
-diagram_list$nodes$xmin[2] = 2.25
-diagram_list$nodes$xmax[2] = 3.75
+diagram_list$variables$xmin[2] = 2.25
+diagram_list$variables$xmax[2] = 3.75
 #adjust arrow location
-diagram_list$curved_edges$xstart[2] <- 2.25
+diagram_list$flows$xstart[5] <- 2.25
 #move labels
-diagram_list$curved_edges$labelx[1] <- 2
-diagram_list$curved_edges$labelx[2] <- 1.4
+diagram_list$flows$labelx[4] <- 2
+diagram_list$flows$labelx[5] <- 1.4
 #change label
-diagram_list$feedback_edges$label[1] <- "g*Pat*(1-Pat/Pmax)"
+diagram_list$flows$label[6] <- "g*Pat*(1-Pat/Pmax)"
 ```
 
 Sure enough, if you plot this now, you can see all your improvements.
@@ -195,61 +195,62 @@ my_diagram <- make_diagram(
 plot(my_diagram)
 ```
 
-### Example 3
+<!-- ### Example 3 -->
 
-Finally, let's briefly revisit our 7-compartment model and see if we can make some further tweaks to get it to something that might be suitable for public use.
+<!-- Finally, let's briefly revisit our 7-compartment model and see if we can make some further tweaks to get it to something that might be suitable for public use. -->
 
-Here is the model specification again
+<!-- Here is the model specification again -->
 
-```{r}
-varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-varnames = c("Susceptible children","Infected children","Recovered children","Susceptible adults","Infected adults","Recovered adults","Pathogen in Environment")
-flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
-             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
-             Rc_flows = c("gc*Ic"),
-             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
-             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
-             Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
-             )
-varlocations = matrix(data = c("Sc", "Ic", "Rc",
-                               "",   "P",   "",
-                               "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-mymodel = list(varlabels = varlabels, flows = flows, varlocations = varlocations, varnames = varnames)
-diagram_list <- prepare_diagram(mymodel)
-```
+<!-- ```{r} -->
+<!-- varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P") -->
+<!-- varnames = c("Susceptible children","Infected children","Recovered children","Susceptible adults","Infected adults","Recovered adults","Pathogen in Environment") -->
+<!-- flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),  -->
+<!--              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),  -->
+<!--              Rc_flows = c("gc*Ic"), -->
+<!--              Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),  -->
+<!--              Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"),  -->
+<!--              Ra_flows = c("ga*Ia"), -->
+<!--              P_flows = c("sc*Ic","sa*Ia","-d*P") -->
+<!--              ) -->
+<!-- varlocations = matrix(data = c("Sc", "Ic", "Rc", -->
+<!--                                "",   "P",   "", -->
+<!--                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE) -->
+<!-- mymodel = list(varlabels = varlabels, flows = flows) -->
+<!-- mysettings = list(varlocations = varlocations, varnames = varnames) -->
+<!-- diagram_list <- prepare_diagram(mymodel, mysettings) -->
+<!-- ``` -->
 
-If you print the resulting `diagram_list`, you can see details for each box/variable and arrow/flow. Since this is big, we are not showing it here. But we'll go ahead and make some modifications. 
+<!-- If you print the resulting `diagram_list`, you can see details for each box/variable and arrow/flow. Since this is big, we are not showing it here. But we'll go ahead and make some modifications.  -->
 
-We'll increase the box for the pathogen and change the text for all variables by including both the full name and the label (this could of course also be done by just renaming `varnames` above, but we want to show a different way). We'll also move some of the flow labels so they don't overlap with the arrows. 
+<!-- We'll increase the box for the pathogen and change the text for all variables by including both the full name and the label (this could of course also be done by just renaming `varnames` above, but we want to show a different way). We'll also move some of the flow labels so they don't overlap with the arrows.  -->
 
-**BELOW IS WRONG SETTINGS, WILL BE DOING THAT ONE LATER ONCE ARROW ISSUE IS FIXED.**
+<!-- **BELOW IS WRONG SETTINGS, WILL BE DOING THAT ONE LATER ONCE ARROW ISSUE IS FIXED.** -->
 
-```{r}
-# change labeling of variables
-diagram_list$nodes$name = paste0(diagram_list$nodes$name,", ",diagram_list$nodes$label)
-#increase box
-diagram_list$nodes$xmin[7] = 2.25
-diagram_list$nodes$xmax[7] = 3.75
-#adjust arrow location
-diagram_list$curved_edges$xstart[2] <- 2.25
-#move labels
-diagram_list$curved_edges$labelx[1] <- 2
-diagram_list$curved_edges$labelx[2] <- 1.4
-```
+<!-- ```{r} -->
+<!-- # change labeling of variables -->
+<!-- diagram_list$nodes$name = paste0(diagram_list$nodes$name,", ",diagram_list$nodes$label) -->
+<!-- #increase box -->
+<!-- diagram_list$nodes$xmin[7] = 2.25 -->
+<!-- diagram_list$nodes$xmax[7] = 3.75 -->
+<!-- #adjust arrow location -->
+<!-- diagram_list$curved_edges$xstart[2] <- 2.25 -->
+<!-- #move labels -->
+<!-- diagram_list$curved_edges$labelx[1] <- 2 -->
+<!-- diagram_list$curved_edges$labelx[2] <- 1.4 -->
+<!-- ``` -->
 
 
-Finally, we make the diagram, and also apply different styling as previously
+<!-- Finally, we make the diagram, and also apply different styling as previously -->
 
-```{r}
-diagram_settings <- list(
-       node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
-                          node_text_size = 4,
-                          use_varnames = TRUE
-                        )
-model_plot <- make_diagram(diagram_list, diagram_settings)
-plot(model_plot)
-```
+<!-- ```{r} -->
+<!-- diagram_settings <- list( -->
+<!--        node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"), -->
+<!--                           node_text_size = 4, -->
+<!--                           use_varnames = TRUE -->
+<!--                         ) -->
+<!-- model_plot <- make_diagram(diagram_list, diagram_settings) -->
+<!-- plot(model_plot) -->
+<!-- ``` -->
 
 
 

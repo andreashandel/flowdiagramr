@@ -38,7 +38,7 @@ for(i in 1:nrow(variables)) {
     geom_text(
       data = variables[i, ],
       aes(x = labelx, y = labely, label = plot_label),
-      size = variables[i, "plot_label_size"],
+      size = var_text_size[i],
       color = var_text_color[i]
     )
 }
@@ -49,17 +49,17 @@ for(i in 1:nrow(flows)) {
   # define the temporary aesthetics for this line based on the
   # interaction
   this_line_type <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_arrow_linetype,
-                           main_arrow_linetype)
+                           interaction_flow_linetype,
+                           main_flow_linetype)
   this_line_color <- ifelse(as.numeric(dat["interaction"]),
-                            interaction_arrow_color,
-                            main_arrow_color)
-  this_arrow_fill <- ifelse(as.numeric(dat["interaction"]),
-                            interaction_arrow_color,
-                            main_arrow_color)
+                            interaction_flow_color,
+                            main_flow_color)
+  this_flow_fill <- ifelse(as.numeric(dat["interaction"]),
+                            interaction_flow_color,
+                            main_flow_color)
   this_line_size <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_arrow_size,
-                           main_arrow_size)
+                           interaction_flow_size,
+                           main_flow_size)
 
   diagram_plot <- diagram_plot +
     geom_curve(
@@ -71,7 +71,7 @@ for(i in 1:nrow(flows)) {
       linetype = this_line_type,
       arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
       color = this_line_color,
-      arrow.fill = this_arrow_fill,
+      arrow.fill = this_flow_fill,
       lineend = "round",
       size = this_line_size,
       curvature = dat["curvature"],
