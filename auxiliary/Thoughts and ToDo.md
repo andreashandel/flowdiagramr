@@ -3,29 +3,9 @@
 
 * Should we try to write a manuscript describing the package?
 
-* I'm currently confused about the use_varnames implementation. I thought in the latest discussion, this needed to happen in prepare_diagram, but looks like it's now in the make_diagram phase? Just need clarification on that.
-
-* It seems to me it might be better to supply all settings for make_diagram as one list, this makes it easier to keep things together. To that end, I moved use_varnames and show_grid into diagram_settings. I hope this didn't break too much. I think we should also rename/reorder/add listelements such that it structures by type (vars/main flows/interactions/etc.) and for each one there is on/off and styling (the latter ignored if it's turned off).  Each type of flow (main and interaction) should have their own settings for an on/off flag to show arrows and labels, as well as text size/color settings. Also, let's reorder diagram_settings inputs such that the node related one comes first, then all main flow related, then all interaction related. 
-
 * The quickstart vignette shows an error message "Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables". Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new 'more model examples' vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be. (and first address the other points).
 
-* I think we should try to avoid flipping between 'variable' and 'node', it might confuse people. While node is in some sense more general, since our starting point is models with variables and flows, I think it's best if we use those two words throughout. That means renaming all input options to make_diagram should be var_XX instead of node_XX. It would also mean renaming the nodes entry in the object that prepare_diagram returns to vars. Could do that in a last step, and then at beginning of make_diagram code, rename again internally to nodes so that you won't have to change a ton of internal code, but the user still sees var/vars/variable/variables instead of node terminology. This also means nodes (or edges) should not show up inside the ggplot2 code given to the user, just the vars/flows terminology. Maybe a search and replace over all code, changing node -> var and nodes -> vars will do the trick? And edge -> flow, edges -> flows. (I use a (windows) progam called Find and Replace for such stuff).
-
-* Last model in vignette B doesn't look quite right, it seems that the d*P arrow goes from P to Ia instead of from P to nowhere (and to nowhere flows usually go at a slanted angle). Not sure what's happening there. Also several interaction arrows start at the center of the variables instead of the edges.
-
-* In the return object from make_diagram, the naming of horizontal_edges and vertical_edges is not ideal. Users will think those are how they look graphically. Can we rename those data frames to say "vars, main_flows, interaction_flows, external_flows, feedback_flows". And would it maybe be useful for future development to have all flows have all attributes? E.g. all have the interaction attribute, it's either TRUE or FALSE. And all have a curvature setting, it's sometimes 0 for straight flows. Doing so one could even go from 5 data frames to 2, one for variables, one for flows, and there is an extra column for flows that specifies the type of flow. Not sure if that would be better than as list structure, but an option.  
-
-* Vignette C still has comment from me that says "Need to be able to change label location for all flows. Not currently working." Is that now implemented? Seems like it is, just checking since the comment is still there.
-
-* Can you format the help file for prepare_diagram such that the model_list explanation is easier readable, e.g., each list element explained by itself.
-
-* The 2nd example in vignette D is not working. see comment there.
-
 * Is it possible to add some code at the end of a plot generation that trims all the white space? I know something like theme(plot.margin=unit(c(-2,-2,0,0), "null")) or such can work, the tricky bit is how to figure out automatically how the cropping should happen.
-
-* Shouldn't default settings in a function call be what's described? E.g. right now in write_diagram, the default for directory is NULL but that equates to the current working directory. Shouldn't the default then be set to '.' or something like that? Same for filename, if the default is 'diagram_code.R' then I think that's what should be shown in the function call (I did that one, wasn't sure how to do directory best).
-
-* I still think producing ggplot2 code that uses loops would be easier for users to modify. Instead of efficiently/vectorized adding of components (vars/flows), I would do a loop over each, i.e. a loop over all vars, over all flows, etc. Then one can more easily intervene manually for a specific one and change it.
 
 * Need a function that checks that all model_list conventions are adhered to (see vignette A). (might already exist?)
 
@@ -34,10 +14,6 @@
 
 
 * More comments in the created ggplot code would be good. More or less every line/bit of code should have a brief explanation so user knows what it is/does.
-
-* Using the apply functions is good coding style, but in my experience most novice coders are entirely confused by them. Would it be possible to write the output code without using the lapply functions? If an inefficient (but easier to understand) loop replaces it, that would be ok with me. I think a loop would also make it easier for a user to modify a specific component, e.g. if there is a loop over horizontal edges 1-5, a user could stick in something like (pseudocode) `if n==3 edge_color = orange` into the loop. Right now, it's hard to do that inside the lapply statement.
-
-* Check documentation/help for all exported functions, make sure it's fully up-to-date and complete. Also have examples for each user-facing/exported function.
 
 * Document/briefly describe all functions (both exported and internal) in documentation.md inside docsfordevelopers. Big picture, i.e. what function does and how it's called is enough. More detailed explanations should be in each function. Basically anything a new person working on this package needs to know to quickly pick up on things.
 
