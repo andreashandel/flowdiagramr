@@ -31,7 +31,7 @@
 #'     be recycled in the order of the variables in the supplied data frame.
 #' \item `var_text_size`: A numeric scalar specifying the text size for variable
 #'     labels. Default value is NA and the values in the `variables` data frame
-#'     returned by \link{`prepare_diagram`} are used. If a non-NA value is
+#'     returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
 #'     supplied here, the values in the `variables` data frame are not used and
 #'     are replaced by the value specified here.
 #' \item `flow_text_color`: A character string or vector of character strings
@@ -39,7 +39,7 @@
 #'     be recycled in the order of the flows in the supplied data frame.
 #' \item `flow_text_size`: A numeric scalar specifying the text size for flow
 #'     labels. Default value is NA and the values in the `flows` data frame
-#'     returned by \link{`prepare_diagram`} are used. If a non-NA value is
+#'     returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
 #'     supplied here, the values in the `flows` data frame are not used and
 #'     are replaced by the value specified here.
 #' \item `main_flow_color`: A character string or vector of character strings

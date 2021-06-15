@@ -14,13 +14,15 @@ varlocations = matrix(
 )
 sirmodel = list(
   varlabels = varlabels,
-  flows = flows,
+  flows = flows)
+
+sirsettings <- list(
   varnames = varnames,
   varlocations = varlocations
 )
 
-diagram_list <- prepare_diagram(sirmodel)
+diagram_list <- prepare_diagram(sirmodel, sirsettings)
 
 test_that("y values are not all equal when 2 rows specified", {
-  expect_equal(2, length(unique(diagram_list$nodes$ymin)))
+  expect_equal(2, length(unique(diagram_list$variables$ymin)))
 })

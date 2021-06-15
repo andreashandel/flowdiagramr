@@ -41,7 +41,7 @@ specifying the text color for variable labels. If a vector, the colors will
 be recycled in the order of the variables in the supplied data frame.
 \item \code{var_text_size}: A numeric scalar specifying the text size for variable
 labels. Default value is NA and the values in the \code{variables} data frame
-returned by \link{`prepare_diagram`} are used. If a non-NA value is
+returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
 supplied here, the values in the \code{variables} data frame are not used and
 are replaced by the value specified here.
 \item \code{flow_text_color}: A character string or vector of character strings
@@ -49,7 +49,7 @@ specifying the text color for flow labels. If a vector, the colors will
 be recycled in the order of the flows in the supplied data frame.
 \item \code{flow_text_size}: A numeric scalar specifying the text size for flow
 labels. Default value is NA and the values in the \code{flows} data frame
-returned by \link{`prepare_diagram`} are used. If a non-NA value is
+returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
 supplied here, the values in the \code{flows} data frame are not used and
 are replaced by the value specified here.
 \item \code{main_flow_color}: A character string or vector of character strings

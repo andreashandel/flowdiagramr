@@ -13,7 +13,8 @@ model_list <- mymodel
 diagram_list = prepare_diagram(mymodel)
 # make_diagram(diagram_list)
 
+externals <- subset(diagram_list$flows, interaction == FALSE & (is.na(to) | is.na(from)))
 
-test_that("right number of vertical edges", {
-  expect_equal(5, nrow(diagram_list$vertical_edges))
+test_that("right number of external flows", {
+  expect_equal(5, nrow(externals))
 })

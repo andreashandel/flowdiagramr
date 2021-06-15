@@ -6,11 +6,10 @@
 \usage{
 write_diagram(
   model_list = NULL,
+  model_settings = NULL,
   diagram_list = NULL,
   diagram_settings = NULL,
-  use_varnames = FALSE,
-  with_grid = FALSE,
-  directory = NULL,
+  directory = "./",
   filename = "diagram_code.R",
   always_overwrite = FALSE
 )
@@ -19,20 +18,15 @@ write_diagram(
 \item{model_list}{A \strong{flowdiagramr} input list. See
 \code{\link{prepare_diagram}}. Also see \code{Details} below.}
 
+\item{model_settings}{A named list of model settings.  See
+\code{\link{prepare_diagram}}. Also see \code{Details} below.}
+
 \item{diagram_list}{A \strong{flowdiagramr} input structure, resulting from
 a call to \code{\link{prepare_diagram}}. See \code{Details} below.}
 
 \item{diagram_settings}{A named list of diagram aesthetics. See
 \code{\link{make_diagram}} documentation. Default is \code{NULL} and the
 default values from \code{\link{make_diagram}} are used.}
-
-\item{use_varnames}{A logical indicating whether to label nodes with
-variable abbreviations (\code{FALSE}; default) or to use the full names
-provided in the \code{varnames} element of \code{model_list} (\code{TRUE}).}
-
-\item{with_grid}{A logical indicating whether to return the ggplot
-with a grid. Default is FALSE. The grid can be helpful if you
-want/need to move items around.}
 
 \item{directory}{File directory in which to save the produced R file.
 Default location is the current working directory.}

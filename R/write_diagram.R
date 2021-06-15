@@ -95,12 +95,23 @@ write_diagram <- function(model_list = NULL,
   args_block <- character(length(args))
   for(i in 1:length(args_block)) {
     argtext <- args[[i]]
-    if(is.logical(argtext) | is.numeric(argtext)) {
-      # if logical or numeric, does not need quotes
-      args_block[i] <- paste0(names(args)[[i]], " <- ", args[[i]])
+    if(length(argtext) > 1) {
+      if(is.character(argtext[1])) {
+        argtext <- paste0("c('", paste(argtext, collapse = "', '"), "')")
+      } else {
+        argtext <- paste0("c(", paste(argtext, collapse = ", "), ")")
+      }
+
+      args_block[i] <- paste0(names(args)[[i]], " <- ", argtext)
+
     } else {
-      # otherwise the argument is a string and needs quotes
-      args_block[i] <- paste0(names(args)[[i]], " <- '", args[[i]], "'")
+      if(is.logical(argtext) | is.numeric(argtext)) {
+          # if logical or numeric, does not need quotes
+          args_block[i] <- paste0(names(args)[[i]], " <- ", argtext)
+        } else {
+          # otherwise the argument is a string and needs quotes
+          args_block[i] <- paste0(names(args)[[i]], " <- '", argtext, "'")
+        }
     }
   }
 
