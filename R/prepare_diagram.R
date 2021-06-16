@@ -114,7 +114,6 @@ prepare_diagram <- function(model_list,
                               varnames = NULL,
                               use_varnames = FALSE,
                               plot_varlabel_size = 10,
-                              plot_flowlabel_size = 5,
                               varlocations = NULL)
                             ) {
 

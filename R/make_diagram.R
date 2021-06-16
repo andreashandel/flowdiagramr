@@ -27,13 +27,12 @@
 #'     supplied here, the values in the `variables` data frame are not used and
 #'     are replaced by the value specified here.
 #'
-#'
 #' \item `main_flow_on`: A logical indicating if the main flow arrows should be plotted.
 #' \item `main_flow_color`: A character string or vector of character strings
 #'     specifying the text color for non-interaction flow arrows.
-#'     If a vector, the colors will be recycled in the order of the flows
+#'     If a vector, the values will be recycled in the order of the flows
 #'     in the supplied data frame.
-#' \item `main_flow_linetype`: Either a numeric scalar or a character scalar
+#' \item `main_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
 #'     specifying the linetype for main flows (non-interaction flows). This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
@@ -41,39 +40,26 @@
 #'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 #'     discrete variable, or a string of an even number (up to eight) of
 #'     hexadecimal digits which give the lengths in consecutive positions in
-#'     the string." Default is 1 (solid).
-#' \item `main_flow_size`: A numeric scalar specifying the line size for the
-#'     main flows (non-interaction flows).
-#' \item `main_flow_label_on`: A logical indicating if the labels for the main flows should be plotted.
-#' \item `main_flow_label_color`:
-#' \item `main_flow_label_size`:
-#' \item `external_flow_on`: A logical indicating if the main flow arrows should be plotted.
-#` SAME ENTRIES ABOVE
-#' \item `interaction_flow_on`: A logical indicating if the main flow arrows should be plotted.
-#` SAME ENTRIES ABOVE
-#`
-#` OLD ENTRIES BELOW
-#'     #' \item `label_flows`: A logical indicating whether to label the flows
-#'     (TRUE, default) or not (FALSE).
-#' \item `external_flows`: A logical indicating whether to include flows into
-#'     and out of the system (external flows). Default is TRUE (include).
-#' \item `interaction_label`: A logical indicating whether to make the diagram
-#'     with interaction terms (typically curved flows leading to the
-#'     mid point of another flow) or to simply label the main flow. See
-#'     vignettes for examples.#'
-#' \item `flow_text_color`: A character string or vector of character strings
-#'     specifying the text color for flow labels. If a vector, the colors will
+#'     the string." Default is 1 (solid). If a vector, the values will
 #'     be recycled in the order of the flows in the supplied data frame.
-#' \item `flow_text_size`: A numeric scalar specifying the text size for flow
-#'     labels. Default value is NA and the values in the `flows` data frame
-#'     returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
-#'     supplied here, the values in the `flows` data frame are not used and
-#'     are replaced by the value specified here.
-#' \item `interaction_flow_color`: A character string or vector of character
-#'     strings specifying the text color for interaction flow arrows.
-#'     If a vector, the colors will be recycled in the order of the flows
+#' \item `main_flow_size`: A numeric scalar or vector specifying the line size for the
+#'     main flows (non-interaction flows). If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' \item `main_flow_label_on`: A logical indicating if the labels for the main
+#'     flows should be plotted.
+#' \item `main_flow_label_color`: A character string or vector of character strings
+#'     specifying the text color for main flow labels. If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' \item `main_flow_label_size`: A scalar or numeric vector
+#'     specifying the text size for main flow labels. If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#'
+#' \item `interaction_flow_on`: A logical indicating if the interaction flow arrows should be plotted.
+#' \item `interaction_flow_color`: A character string or vector of character strings
+#'     specifying the text color for non-interaction flow arrows.
+#'     If a vector, the values will be recycled in the order of the flows
 #'     in the supplied data frame.
-#' \item `interaction_flow_linetype`: Either a numeric scalar or a character scalar
+#' \item `interaction_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
 #'     specifying the linetype for interaction flows. This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
@@ -81,9 +67,47 @@
 #'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 #'     discrete variable, or a string of an even number (up to eight) of
 #'     hexadecimal digits which give the lengths in consecutive positions in
-#'     the string." Default is 2 (dashed).
-#' \item `interaction_flow_size`: A numeric scalar specifying the line size for
-#'     the interaction flows.
+#'     the string." Default is 1 (solid). If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' \item `interaction_flow_size`: A numeric scalar or vector specifying the line size for the
+#'     interaction flows (non-interaction flows). If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' \item `interaction_flow_label_on`: A logical indicating if the labels for the interaction
+#'     flows should be plotted.
+#' \item `interaction_flow_label_color`: A character string or vector of character strings
+#'     specifying the text color for interaction flow labels. If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' \item `interaction_flow_label_size`: A scalar or numeric vector
+#'     specifying the text size for interaction flow labels. If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#'
+#' \item `external_flow_on`: A logical indicating if the external flow arrows should be plotted.
+#' \item `external_flow_color`: A character string or vector of character strings
+#'     specifying the text color for non-interaction flow arrows.
+#'     If a vector, the values will be recycled in the order of the flows
+#'     in the supplied data frame.
+#' \item `external_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
+#'     specifying the linetype for external flows. This
+#'     argument is passed to the \code{linetype} argument in ggplot2. From
+#'     the ggplot2 documentation: "The linetype aesthetic can be specified
+#'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
+#'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
+#'     discrete variable, or a string of an even number (up to eight) of
+#'     hexadecimal digits which give the lengths in consecutive positions in
+#'     the string." Default is 1 (solid). If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' \item `external_flow_size`: A numeric scalar or vector specifying the line size for the
+#'     external flows (non-interaction flows). If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' \item `external_flow_label_on`: A logical indicating if the labels for the external
+#'     flows should be plotted.
+#' \item `external_flow_label_color`: A character string or vector of character strings
+#'     specifying the text color for external flow labels. If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#' \item `external_flow_label_size`: A scalar or numeric vector
+#'     specifying the text size for external flow labels. If a vector, the values will
+#'     be recycled in the order of the flows in the supplied data frame.
+#`
 #' \item `with_grid` A logical indicating whether to return the ggplot
 #'     with a grid. Default is FALSE. The grid can be helpful if you
 #'     want/need to move items around.
@@ -202,16 +226,20 @@ make_diagram <- function (diagram_list,
 
   # recombine flows data frame with aesthetics as columns
   flows <- rbind(mains, ints, exts)
+  flows$arrowsize <- 0.25  # default arrow size
 
   # turn off flows completely by setting linetype to blank as needed
   if(main_flow_on == FALSE) {
     flows[flows$type == "main", "linetype"] <- "blank"
+    flows[flows$type == "main", "arrowsize"] <- 0
   }
   if(interaction_flow_on == FALSE) {
     flows[flows$type == "interaction", "linetype"] <- "blank"
+    flows[flows$type == "interaction", "arrowsize"] <- 0
   }
   if(external_flow_on == FALSE) {
     flows[flows$type == "external", "linetype"] <- "blank"
+    flows[flows$type == "external", "arrowsize"] <- 0
   }
 
   # set label to "" to suppress label if requested

@@ -52,7 +52,7 @@ for(i in 1:nrow(flows)) {
           xend = xend,
           yend = yend),
       linetype = flows[i, "linetype"],
-      arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
+      arrow = arrow(length = unit(flows[i, "arrowsize"],"cm"), type = "closed"),
       color = flows[i, "color"],
       arrow.fill = flows[i, "color"],
       lineend = "round",

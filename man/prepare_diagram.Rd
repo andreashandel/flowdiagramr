@@ -7,7 +7,7 @@
 prepare_diagram(
   model_list,
   model_settings = list(varnames = NULL, use_varnames = FALSE, plot_varlabel_size = 10,
-    plot_flowlabel_size = 5, varlocations = NULL)
+    varlocations = NULL)
 )
 }
 \arguments{
@@ -43,8 +43,6 @@ Note that labeling can be turned off through a setting in \code{make_diagram}.
 labels in the plot. This is necessary because the the box sizes will
 (eventually) be determined by the size of the text within. Default is
 10.
-\item \code{plot_flowlabel_size}: A numeric defining the size of the flow
-labels in the plot. Default is 5.
 \item \code{varlocations}: A numeric matrix that specifies the locations of the
 variables on an x-y grid with their desired x (columns) and y (row)
 locations. See examples and vignettes. Default is \code{NULL}, which
