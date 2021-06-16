@@ -44,8 +44,6 @@
 #'     labels in the plot. This is necessary because the the box sizes will
 #'     (eventually) be determined by the size of the text within. Default is
 #'     10.
-#' \item `plot_flowlabel_size`: A numeric defining the size of the flow
-#'     labels in the plot. Default is 5.
 #' \item `varlocations`: A numeric matrix that specifies the locations of the
 #'     variables on an x-y grid with their desired x (columns) and y (row)
 #'     locations. See examples and vignettes. Default is `NULL`, which
@@ -913,9 +911,16 @@ prepare_diagram <- function(model_list,
                  curved_edges,
                  feedback_edges)
 
+  # update interaction column to be type column, one of
+  # main, interaction, or external.
+  flows$type <- "main"
+  flows$type <- ifelse(flows$interaction == TRUE, "interaction", flows$type)
+  flows$type <- ifelse(flows$interaction == FALSE & (is.na(flows$to) | is.na(flows$from)),
+                       "external", flows$type)
+  flows$interaction <- NULL
+
   # add text size arguments
   nodes$plot_label_size <- model_settings$plot_varlabel_size
-  flows$plot_label_size <- model_settings$plot_flowlabel_size
 
 
   return(list(variables = nodes,

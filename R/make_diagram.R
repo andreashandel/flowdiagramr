@@ -114,21 +114,31 @@
 
 make_diagram <- function (diagram_list,
                           diagram_settings = list(
-                            label_flows = TRUE,
-                            external_flows = TRUE,
-                            interaction_label = TRUE,
                             var_outline_color = NA,
                             var_fill_color = "#6aa4c8",
                             var_text_color = "white",
                             var_text_size = NA,
-                            flow_text_color = "black",
-                            flow_text_size = NA,
+                            main_flow_on = TRUE,
                             main_flow_color = "grey25",
                             main_flow_linetype = "solid",
                             main_flow_size = 0.7,
+                            main_flow_label_on = TRUE,
+                            main_flow_label_color = "black",
+                            main_flow_label_size = 5,
+                            interaction_flow_on = TRUE,
                             interaction_flow_color = "grey25",
                             interaction_flow_linetype = "dashed",
                             interaction_flow_size = 0.7,
+                            interaction_flow_label_on = TRUE,
+                            interaction_flow_label_color = "black",
+                            interaction_flow_label_size = 5,
+                            external_flow_on = TRUE,
+                            external_flow_color = "grey25",
+                            external_flow_linetype = "solid",
+                            external_flow_size = 0.7,
+                            external_flow_label_on = TRUE,
+                            external_flow_label_color = "black",
+                            external_flow_label_size = 5,
                             with_grid = FALSE)
                           ) {
   # TODO error checking
@@ -148,18 +158,11 @@ make_diagram <- function (diagram_list,
   variables <- diagram_list$variables
   flows <- diagram_list$flows
 
-  if(interaction_label == FALSE) {
+  if(interaction_flow_label_on == FALSE) {
     # This removes interaction segments and puts the flow label
     # back with the physical flow.
     flows <- move_interaction_label(flows)
   }
-
-
-  # recycle colors as needed
-  var_outline_color <- recycle_values(var_outline_color, nrow(variables))
-  var_fill_color <- recycle_values(var_fill_color, nrow(variables))
-  var_text_color <- recycle_values(var_text_color, nrow(variables))
-  flow_text_color <- recycle_values(flow_text_color, nrow(flows))
 
   # if text size is not provided (NA), then use text sizes in the data
   # frames. otherwise, override and use the provided sizes for all.
@@ -169,11 +172,60 @@ make_diagram <- function (diagram_list,
     var_text_size <- recycle_values(var_text_size, nrow(variables))
   }
 
-  if(is.na(flow_text_size)) {
-    flow_text_size <- flows$plot_label_size
-  } else {
-    flow_text_size <- recycle_values(flow_text_size, nrow(flows))
+  # recycle values as needed
+  variables$color <- recycle_values(var_outline_color, nrow(variables))
+  variables$fill <- recycle_values(var_fill_color, nrow(variables))
+  variables$label_color <- recycle_values(var_text_color, nrow(variables))
+  variables$label_size <- recycle_values(var_text_size, nrow(variables))
+  variables$plot_label_size <- NULL
+
+  mains <- subset(flows, type == "main")
+  mains$color <- recycle_values(main_flow_color, nrow(mains))
+  mains$linetype <- recycle_values(main_flow_linetype, nrow(mains))
+  mains$size <- recycle_values(main_flow_size, nrow(mains))
+  mains$label_color <- recycle_values(main_flow_label_color, nrow(mains))
+  mains$label_size <- recycle_values(main_flow_label_size, nrow(mains))
+
+  ints <- subset(flows, type == "interaction")
+  ints$color <- recycle_values(interaction_flow_color, nrow(ints))
+  ints$linetype <- recycle_values(interaction_flow_linetype, nrow(ints))
+  ints$size <- recycle_values(interaction_flow_size, nrow(ints))
+  ints$label_color <- recycle_values(interaction_flow_label_color, nrow(ints))
+  ints$label_size <- recycle_values(interaction_flow_label_size, nrow(ints))
+
+  exts <- subset(flows, type == "external")
+  exts$color <- recycle_values(external_flow_color, nrow(exts))
+  exts$linetype <- recycle_values(external_flow_linetype, nrow(exts))
+  exts$size <- recycle_values(external_flow_size, nrow(exts))
+  exts$label_color <- recycle_values(external_flow_label_color, nrow(exts))
+  exts$label_size <- recycle_values(external_flow_label_size, nrow(exts))
+
+  # recombine flows data frame with aesthetics as columns
+  flows <- rbind(mains, ints, exts)
+
+  # turn off flows completely by setting linetype to blank as needed
+  if(main_flow_on == FALSE) {
+    flows[flows$type == "main", "linetype"] <- "blank"
   }
+  if(interaction_flow_on == FALSE) {
+    flows[flows$type == "interaction", "linetype"] <- "blank"
+  }
+  if(external_flow_on == FALSE) {
+    flows[flows$type == "external", "linetype"] <- "blank"
+  }
+
+  # set label to "" to suppress label if requested
+  flows$math <- flows$label
+  if(main_flow_label_on == FALSE) {
+    flows[flows$type == "main", "label"] <- ""
+  }
+  if(interaction_flow_label_on == FALSE) {
+    flows[flows$type == "interaction", "label"] <- ""
+  }
+  if(external_flow_label_on == FALSE) {
+    flows[flows$type == "external", "label"] <- ""
+  }
+
 
   # get the ggplot2 code as text
   code <- get_code()

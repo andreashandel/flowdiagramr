@@ -28,8 +28,8 @@ for(i in 1:nrow(variables)) {
     geom_rect(
       data = variables[i, ],
       aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-      color = var_outline_color[i],
-      fill = var_fill_color[i]
+      color = variables[i, "color"],
+      fill = variables[i, "fill"]
     )
 }
 
@@ -38,58 +38,37 @@ for(i in 1:nrow(variables)) {
     geom_text(
       data = variables[i, ],
       aes(x = labelx, y = labely, label = plot_label),
-      size = var_text_size[i],
-      color = var_text_color[i]
+      size = variables[i, "label_size"],
+      color = variables[i, "label_color"]
     )
 }
 
 for(i in 1:nrow(flows)) {
-  dat <- flows[i, ]  # get a temporary data frame for this row
-
-  # define the temporary aesthetics for this line based on the
-  # interaction
-  this_line_type <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_flow_linetype,
-                           main_flow_linetype)
-  this_line_color <- ifelse(as.numeric(dat["interaction"]),
-                            interaction_flow_color,
-                            main_flow_color)
-  this_flow_fill <- ifelse(as.numeric(dat["interaction"]),
-                            interaction_flow_color,
-                            main_flow_color)
-  this_line_size <- ifelse(as.numeric(dat["interaction"]),
-                           interaction_flow_size,
-                           main_flow_size)
-
   diagram_plot <- diagram_plot +
     geom_curve(
-      data = dat,
+      data = flows[i, ],
       aes(x = xstart,
           y = ystart,
           xend = xend,
           yend = yend),
-      linetype = this_line_type,
+      linetype = flows[i, "linetype"],
       arrow = arrow(length = unit(0.25,"cm"), type = "closed"),
-      color = this_line_color,
-      arrow.fill = this_flow_fill,
+      color = flows[i, "color"],
+      arrow.fill = flows[i, "color"],
       lineend = "round",
-      size = this_line_size,
-      curvature = dat["curvature"],
+      size = flows[i, "size"],
+      curvature = flows[i, "curvature"],
       ncp = 1000
     )
 }
 
-if(label_flows == TRUE) {
-  for(i in 1:nrow(flows)) {
-    dat <- flows[i, ]
-
-    diagram_plot <- diagram_plot +
-      geom_text(
-        data = dat,
-        aes(x = labelx, y = labely, label = label),
-        size = flow_text_size[i],
-        color = flow_text_color[i])
-  }
+for(i in 1:nrow(flows)) {
+  diagram_plot <- diagram_plot +
+    geom_text(
+      data = flows[i, ],
+      aes(x = labelx, y = labely, label = label),
+      size = flows[i, "label_size"],
+      color = flows[i, "label_color"])
 }
 
 # If with_grid == FALSE (default) then void out the theme

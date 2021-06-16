@@ -6,7 +6,7 @@
 
 move_interaction_label <- function(flows) {
 
-  ints <- subset(flows, interaction == TRUE)
+  ints <- subset(flows, type == "interaction")
 
   for(i in 1:nrow(ints)) {
     vps <- get_vars_pars(ints[i, "label"])
@@ -20,6 +20,6 @@ move_interaction_label <- function(flows) {
     flows[id, "label"] <- ints[i, "label"]
   }
 
-  flows <- subset(flows, interaction == FALSE)
+  flows <- subset(flows, type != "interaction")
   return(flows)
 }
