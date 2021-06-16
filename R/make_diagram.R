@@ -243,14 +243,15 @@ make_diagram <- function (diagram_list,
   }
 
   # set label to "" to suppress label if requested
+  # also don't show label if the flow itself is turned off
   flows$math <- flows$label
-  if(main_flow_label_on == FALSE) {
+  if(main_flow_on == FALSE || main_flow_label_on == FALSE) {
     flows[flows$type == "main", "label"] <- ""
   }
-  if(interaction_flow_label_on == FALSE) {
+  if(interaction_flow_on == FALSE || interaction_flow_label_on == FALSE) {
     flows[flows$type == "interaction", "label"] <- ""
   }
-  if(external_flow_label_on == FALSE) {
+  if(external_flow_on == FALSE || external_flow_label_on == FALSE) {
     flows[flows$type == "external", "label"] <- ""
   }
 

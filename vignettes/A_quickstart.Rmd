@@ -147,19 +147,16 @@ Next, you use the same steps as above to create the model diagram.
 ```{r}
 diagram_list <- prepare_diagram(mymodel)
 
-my_diagram <- make_diagram(
-  diagram_list, 
-  diagram_settings = list(var_fill_color = c('blue','red'),
-                          main_flow_linetype = "dashed",
-                          interaction_flow_linetype = "solid"
+my_diagram <- make_diagram(diagram_list, 
+                            diagram_settings = list(var_fill_color = c('blue','red'),
+                                      main_flow_linetype = "dashed",
+                                      interaction_flow_size = 1.5)
                           )
-)
 
 plot(my_diagram)
 ```
 
-In this example, we added some optional inputs to the `make_diagram` function to start customizing the model. 
-You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html).
+In this example, we also added the optional list `diagram_settings` to the call of `make_diagram`. Those some settings allow you to customize the model. You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html).
 
 As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models, as we discuss [in this vignette](./F_non_model_diagrams.html). 
 
