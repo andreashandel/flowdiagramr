@@ -51,15 +51,15 @@ $$
 
 A diagram for the model looks as follows
 
-```{r sirdiagram,  fig.cap='',  echo=FALSE, out.width = "70%"}
-knitr::include_graphics("sirdiagram.png")
+```{r sirdiagram,  fig.cap='Flow diagram for basic SIR model',  echo=FALSE, out.width = "90%", fig.align = 'center'}
+knitr::include_graphics(knitr::plot_crop("sirdiagram.png"))
 ```
 
 The purpose of **`r pkg`** is to automatically create this diagram for you if you supply the model specification. Here is how.
 
 ### Specify the model
 
-**`r pkg`** requires that the model is specified as a simple list structure. This list needs to have a minimum of 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this looks as follows:
+**`r pkg`** requires that the model is specified as a simple list structure. This list needs to have 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this looks as follows:
 
 ```{r}
 varlabels = c("S","I","R")
@@ -80,9 +80,7 @@ mymodel = list(varlabels = varlabels, flows = flows)
 * Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write `b*S*I`, writing it as `bSI` will not work.
 * Minus signs for outflows are required, plus signs for inflows are optional.
 
-In addition to the required two list elements, `varlables` and `flows`, you can specify a few optional list elements, which we'll discuss later. 
-
-**CHECK THAT ABOVE IS CORRECT AND CORRESPONDS TO CHECKS IN THE FUNCTION THAT CHECKS VALIDITY OF MODEL**
+**CHECK THAT ABOVE IS CORRECT AND CORRESPONDS TO CHECKS IN THE FUNCTION THAT CHECKS VALIDITY OF MODEL. ALSO, ONCE CHECKED, LET'S MAKE prepare_diagram HELP FILE AND THIS TEXT CONSISTENT SO BOTH PLACES EXPLAIN ALL.**
 
 ### Create elements needed for diagram generation
 
@@ -151,9 +149,9 @@ diagram_list <- prepare_diagram(mymodel)
 
 my_diagram <- make_diagram(
   diagram_list, 
-  diagram_settings = list(node_fill_color = c('blue','red'),
-                          main_arrow_linetype = "dashed",
-                          interaction_arrow_linetype = "solid"
+  diagram_settings = list(var_fill_color = c('blue','red'),
+                          main_flow_linetype = "dashed",
+                          interaction_flow_linetype = "solid"
                           )
 )
 
@@ -249,11 +247,11 @@ model_plot <- make_diagram(diagram_list)
 plot(model_plot)
 ```
 
-As you can see, while the most basic approach of using **`r pkg`** gets you _somewhere_, you usually can't produce a publication-quality diagram this way. Fortunately, **`r pkg`** gives you ways to customize things - some of them fairly easily - to give you a great-looking diagram!
+As you can see, while the most basic approach of using **`r pkg`** that we just explained gets you _somewhere_, you might not be able to produce a publication-quality diagram this way. Fortunately, **`r pkg`** gives you ways to (easily) customize things to give you a great-looking diagram!
 
 
 ## Next steps
 
-You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won't be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. [This vignette](./B_modify_diagrams_simple.html), which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. 
+You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way might look ok (most of the time), but it likely won't be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. [The _Basic Modifications_ vignette](./B_modify_diagrams_simple.html), which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. 
 
 

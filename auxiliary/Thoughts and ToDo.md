@@ -1,7 +1,22 @@
 ******
 # 2021-06-15
 
+
+
+
 * Optional arguments to make_diagram not yet what I have in mind. See documentation header of function for a sketched out setup.
+
+* Thoughts on 'auto-crop' plots. I found some stuff. 
+1. The answer provided here seems to be a way to calculate the size of the plot and then using that when calling ggsave()
+https://stackoverflow.com/questions/45731238/autocrop-faceted-plots-made-by-ggplot
+This seems general and doesn't require other packages, but some coding/fiddling to work for us.
+
+2. The magick package allows for automated trimming of a file. E.g., after saving the plot with ggsave, this is how one can trim:
+image_write(image_trim(image_read('test.png'),'test2.png'))
+This seems easier to use, but would require another package dependency (and dependency on those packages)
+
+Maybe we should use the 2nd approach, but add magick as a suggest package, then describe in a vignette how one can use it to crop plots, but not make it part of the standard workflow?
+This reduces package dependencies, at it seems simple enough for a user to do themselves.
 
 
 * In `prepare_diagram`, unclear how this block throws an error message that leads to exit out of the main function:
@@ -10,9 +25,12 @@ if(!is.null(nodes_matrix)) {
     check_nodes_matrix(model_list, nodes_matrix)
   }
 
-  
 * Would it be useful to include a `box_scaling` argument in the optional prepare_diagram list, which would scale all boxes by a factor (i.e. default is 1, if a user says 2 then boxes would be increased in size by a factor of 2.) That could allow for flexible adjustment of boxes. Not sure if good idea, we can discuss.  
-  
+
+* Minor: In general, if I were to manually label diagrams, I would try to place the text for interaction flows close to the tip of the arrow, i.e., where the interaction happens. E.g. in the basic SIR diagram, I would move it down to where the bSI arrow meets the S->I arrow. Not sure if placement could be changed to be generally close to interaction, and if that would produce worse looking diagrams?
+
+* The vignette A still had node_fill_color, which led to no change. Seems right now if the user specifies any input that the function doesn't understand, it is silently ignored. Not sure if that's ideal, users might have typos and wonder why nothing works. maybe we can have a check at the beginning of prepare_diagram that looks for all user-supplied input and if the user specifies something that's not part of the recognized input (e.g. sets node_fill_color, which doesn't exist), a warning message is produced. E.g. "you supplied input argument xxx, which is not a recognized input for make_diagram". Or something like that. And might want to have the same check/warning for prepare_diagram?
+
 
 ******
 # 2021-06-02 and 2021-06-07 and 2021-06-10
