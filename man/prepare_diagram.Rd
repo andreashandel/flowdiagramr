@@ -65,7 +65,10 @@ The data frame contains these columns:
 \item \code{labelx}: Horizontal position (midpoint) of label.
 \item \code{labely}: Vertical position (midpoint) of label.
 \item \code{plot_label}: The text to be written into the box.
-\item \code{plot_label_size}: Size of text to be written into the box.
+\item \code{color}: Default outline color for the box.
+\item \code{fill}: Default fill color for the box.
+\item \verb{label color}: Default color for text label.
+\item \code{label_size}: Size of text to be written into the box.
 }
 
 \item \code{flows}: A data frame containing information for all flows.
@@ -76,9 +79,6 @@ variable receiving the flow.
 \item \code{from}: The variable from which the arrow originate. That is, the
 variable donating the flow.
 \item \code{label}: The label of the flow. Typically a mathematical expression.
-\item \code{interaction}: A logical flag indicating whether the flow
-represents an interaction between two (or more) variables (TRUE) or
-not (FALSE).
 \item \code{xstart}: The starting horizontal position of the arrow.
 \item \code{xend}: The ending horizontal position of the arrow.
 \item \code{ystart}: The starting vertical position of the arrow.
@@ -87,6 +87,16 @@ not (FALSE).
 \item \code{labely}: Vertical position (midpoint) of label.
 \item \code{curvature}: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.
+\item \code{type}: Type of flow. One of main, interaction, or external.
+\item \code{color}: Default color of the lines/arrows.
+\item \code{linetype}: Default linetype.
+\item \code{size}: Default size of the lines.
+\item \code{label_color}: Default label color.
+\item \code{label_size}: Default text size for label.
+\item \code{arrowsize}: Default arrow size.
+\item \code{math}: The math from the flows specified by the user. Is a
+duplicate of \code{label} so that user can update \code{label} as desired but
+retain the original math for reference.
 }
 }
 }

@@ -65,7 +65,10 @@
 #'     \item `labelx`: Horizontal position (midpoint) of label.
 #'     \item `labely`: Vertical position (midpoint) of label.
 #'     \item `plot_label`: The text to be written into the box.
-#'     \item `plot_label_size`: Size of text to be written into the box.
+#'     \item `color`: Default outline color for the box.
+#'     \item `fill`: Default fill color for the box.
+#'     \item `label color`: Default color for text label.
+#'     \item `label_size`: Size of text to be written into the box.
 #'   }
 #'
 #'   \item `flows`: A data frame containing information for all flows.
@@ -76,9 +79,6 @@
 #'     \item `from`: The variable from which the arrow originate. That is, the
 #'     variable donating the flow.
 #'     \item `label`: The label of the flow. Typically a mathematical expression.
-#'     \item `interaction`: A logical flag indicating whether the flow
-#'     represents an interaction between two (or more) variables (TRUE) or
-#'     not (FALSE).
 #'     \item `xstart`: The starting horizontal position of the arrow.
 #'     \item `xend`: The ending horizontal position of the arrow.
 #'     \item `ystart`: The starting vertical position of the arrow.
@@ -87,6 +87,16 @@
 #'     \item `labely`: Vertical position (midpoint) of label.
 #'     \item `curvature`: The amount of curvature applied to arrow.
 #'     Higher numbers indicate more curvature; 0 = straight line.
+#'     \item `type`: Type of flow. One of main, interaction, or external.
+#'     \item `color`: Default color of the lines/arrows.
+#'     \item `linetype`: Default linetype.
+#'     \item `size`: Default size of the lines.
+#'     \item `label_color`: Default label color.
+#'     \item `label_size`: Default text size for label.
+#'     \item `arrowsize`: Default arrow size.
+#'     \item `math`: The math from the flows specified by the user. Is a
+#'     duplicate of `label` so that user can update `label` as desired but
+#'     retain the original math for reference.
 #'   }
 #' }
 #' @details `varlabels` needs to be specified as a vector of model variables,
@@ -697,7 +707,9 @@ prepare_diagram <- function(model_list,
     ydiffs <- ifelse(ydiffs %in% c(0, 2), 0.5, 1)
     for(i in 1:nrow(edf)) {
       if(edf[i, "interaction"] == FALSE &
-         edf[i, "direct_interaction"] == FALSE) {
+         edf[i, "direct_interaction"] == FALSE &
+         edf[i, "to"] < 9900 &
+         edf[i, "from"] > -9900) {
         edf[i, "diff"] <- xdiffs[i] + ydiffs[i]
       }
     }
@@ -940,8 +952,15 @@ prepare_diagram <- function(model_list,
 
   # add text size arguments
   nodes$plot_label_size <- model_settings$var_label_size
+  variables <- nodes  # rename for user facing data frame
 
+  # update flows column ordering
+  flows <- flows[, c("to", "from", "label", "xstart", "xend", "ystart", "yend",
+                     "labelx", "labely", "curvature", "type")]
 
-  return(list(variables = nodes,
-              flows = flows))
+  # apply default aesthetics
+  dflist <- apply_default_aesthetics(list(variables = variables,
+                                          flows = flows))
+
+  return(dflist)
 }

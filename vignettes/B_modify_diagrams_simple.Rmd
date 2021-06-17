@@ -122,8 +122,6 @@ simpler_diagram <- make_diagram(
 plot(simpler_diagram)
 ```
 
-**DIAGRAM NOT RIGHT. THE INTERACTION FLOW SHOULD BE SHOWN, ONLY THE LABEL SHOULD BE TURNED OFF.**
-
 
 ## Providing additional input when specifying the model
 
@@ -150,7 +148,7 @@ sirmodel = list(varlabels = c("S","I","R"),
 #optional list of settings
 sirsettings = list(varnames = c("Susceptible","Infected","Recovered"),
                    use_varnames = TRUE,
-                   var_label_size = 10,
+                   var_label_size = 4,
                    varlocations = matrix(data = c("S", "", "R",
                                                   "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
                   )
@@ -169,8 +167,6 @@ sir_diagram_list <- prepare_diagram(model_list = sirmodel, model_settings = sirs
 sir_diagram <- make_diagram(diagram_list = sir_diagram_list)
 plot(sir_diagram)
 ```
-
-**BOX SIZING NOT WORKING RIGHT.**
 
 Note that we also provided the `make_diagram` function with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations. 
 
@@ -218,7 +214,7 @@ varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
 mymodel = list(varlabels = varlabels, flows = flows)
-mysettings = list(varlocations = varlocations, varnames = varnames, use_varnames = TRUE)
+mysettings = list(varlocations = varlocations, varnames = varnames, use_varnames = TRUE, var_label_size = 4)
 diagram_list <- prepare_diagram(mymodel, mysettings)
 ```
 

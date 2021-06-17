@@ -1,12 +1,6 @@
 ******
 # 2021-06-15 & 16
 
-* If one specifies flow linetype in make_diagram as number, it throws an error message. See vignette E.
-
-* Can you re-order flow columns from xstart ystart xend yend to xstart xend ystart yend to make consistent with ordering for variables (couldn't quickly figure out where in code that happens.)
-
-* Optional arguments to make_diagram not yet what I have in mind. See documentation header of function for a sketched out setup.
-
 * Thoughts on 'auto-crop' plots. I found some stuff. 
 1. The answer provided here seems to be a way to calculate the size of the plot and then using that when calling ggsave()
 https://stackoverflow.com/questions/45731238/autocrop-faceted-plots-made-by-ggplot

@@ -12,6 +12,7 @@ diagram_list <- prepare_diagram(model_list, model_settings)
 
 ?make_diagram()
 
+make_diagram(diagram_list)
 make_diagram(diagram_list, diagram_settings = list(main_flow_on = FALSE))
 make_diagram(diagram_list, diagram_settings = list(external_flow_on = FALSE))
 make_diagram(diagram_list, diagram_settings = list(interaction_flow_on = FALSE))
@@ -28,4 +29,19 @@ make_diagram(diagram_list, diagram_settings = list(main_flow_color = "blue",
                                                    var_fill_color = c("salmon", "cyan"),
                                                    var_outline_color = "dodgerblue",
                                                    main_flow_size = 5))
+
+
+make_diagram(diagram_list, diagram_settings = list(main_flow_color = "blue",
+                                                   interaction_flow_color = "red",
+                                                   external_flow_color = "orange",
+                                                   external_flow_linetype = 6,
+                                                   var_fill_color = c("salmon", "cyan"),
+                                                   var_outline_color = "dodgerblue",
+                                                   main_flow_size = 5))
+
+
+
+
+write_diagram(model_list = model_list, model_settings = model_settings)
+
 

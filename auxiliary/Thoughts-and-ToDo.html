@@ -169,20 +169,41 @@ pre code {
 
 <hr />
 <div id="section" class="section level1">
+<h1>2021-06-15 &amp; 16</h1>
+<ul>
+<li>Thoughts on ‘auto-crop’ plots. I found some stuff.</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><p>The answer provided here seems to be a way to calculate the size of the plot and then using that when calling ggsave() <a href="https://stackoverflow.com/questions/45731238/autocrop-faceted-plots-made-by-ggplot" class="uri">https://stackoverflow.com/questions/45731238/autocrop-faceted-plots-made-by-ggplot</a> This seems general and doesn’t require other packages, but some coding/fiddling to work for us.</p></li>
+<li><p>The magick package allows for automated trimming of a file. E.g., after saving the plot with ggsave, this is how one can trim: image_write(image_trim(image_read(‘test.png’),‘test2.png’)) This seems easier to use, but would require another package dependency (and dependency on those packages)</p></li>
+</ol>
+<p>Maybe we should use the 2nd approach, but add magick as a suggest package, then describe in a vignette how one can use it to crop plots, but not make it part of the standard workflow? This reduces package dependencies, at it seems simple enough for a user to do themselves.</p>
+<ul>
+<li><p>In <code>prepare_diagram</code>, unclear how this block throws an error message that leads to exit out of the main function: if(!is.null(nodes_matrix)) { # returns fatal error if variables do not match check_nodes_matrix(model_list, nodes_matrix) }</p></li>
+<li><p>Would it be useful to include a <code>box_scaling</code> argument in the optional prepare_diagram list, which would scale all boxes by a factor (i.e. default is 1, if a user says 2 then boxes would be increased in size by a factor of 2.) That could allow for flexible adjustment of boxes. Not sure if good idea, we can discuss.</p></li>
+<li><p>Minor: In general, if I were to manually label diagrams, I would try to place the text for interaction flows close to the tip of the arrow, i.e., where the interaction happens. E.g. in the basic SIR diagram, I would move it down to where the bSI arrow meets the S-&gt;I arrow. Not sure if placement could be changed to be generally close to interaction, and if that would produce worse looking diagrams?</p></li>
+</ul>
+<hr />
+</div>
+<div id="and-2021-06-07-and-2021-06-10" class="section level1">
+<h1>2021-06-02 and 2021-06-07 and 2021-06-10</h1>
+<ul>
+<li><p>Should we try to write a manuscript describing the package?</p></li>
+<li><p>The quickstart vignette shows an error message “Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables”. Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new ‘more model examples’ vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be. (and first address the other points).</p></li>
+<li><p>Need a function that checks that all model_list conventions are adhered to (see vignette A). (might already exist?)</p></li>
+</ul>
+<hr />
+</div>
+<div id="section-1" class="section level1">
 <h1>2021-05-11</h1>
 <ul>
-<li><p>Can we rename write_diagram_code to just write_diagram? Also, help file says only either modellist or diagramlist can be provided. Needs updating. And can we rename outplot to diagram or diagram_plot or something else? outplot is just a little bit weird variable name (though I know of course how you came up with it) :) ok for internal use, but since this is a script the user will work with, we should make names as intuitive for the non-coder as possible.</p></li>
 <li><p>More comments in the created ggplot code would be good. More or less every line/bit of code should have a brief explanation so user knows what it is/does.</p></li>
-<li><p>It seems that write_diagram does not properly process the make_diagram_settings input. See example in vignette D.</p></li>
-<li><p>Using the apply functions is good coding style, but in my experience most novice coders are entirely confused by them. Would it be possible to write the output code without using the lapply functions? If an inefficient (but easier to understand) loop replaces it, that would be ok with me. I think a loop would also make it easier for a user to modify a specific component, e.g. if there is a loop over horizontal edges 1-5, a user could stick in something like (pseudocode) <code>if n==3 edge_color = orange</code> into the loop. Right now, it’s hard to do that inside the lapply statement.</p></li>
-<li><p>We should maybe have a setting/check for write_diagram to see if the file already exists, and if yes don’t automatically overwrite? We could either do it such that if file exists, it will abort with a message asking user to pick a different file name/location. If a user knows what they are doing, they can set file_overwrite = TRUE as a flag to write_diagram. Or we could do it such that if the file exists, code stops and writes message on console that says, ‘file exists, do you want to overwrite Y/N’? I think either approach is fine, whichever you think is better/easier.</p></li>
-<li><p>Check documentation/help for all exported functions, make sure it’s fully up-to-date and complete. Also have examples for each user-facing/exported function.</p></li>
 <li><p>Document/briefly describe all functions (both exported and internal) in documentation.md inside docsfordevelopers. Big picture, i.e. what function does and how it’s called is enough. More detailed explanations should be in each function. Basically anything a new person working on this package needs to know to quickly pick up on things.</p></li>
 <li><p>Reviewer for useR suggested to put package on CRAN, which I think we should do before the conference, and asked how our package was different to others, e.g. DiagrammeR. We should maybe add a vignette that addresses how our package integrates with and is different from others. I started a shell/draft. Drop any other package names or blurbs in there if you can think of any. Right now just a dumping place, we’ll write this fully at some point.</p></li>
 </ul>
 <hr />
 </div>
-<div id="section-1" class="section level1">
+<div id="section-2" class="section level1">
 <h1>2021-05-10</h1>
 <ul>
 <li><p>Ok with idea to move use_varnames as a setting for prepare_diagram so box size can be adjusted. If user doesn’t provide varnames but wants to use them, produce error or warning message (see next point). Update help files and vignettes accordingly.</p></li>
@@ -195,9 +216,6 @@ pre code {
 <ul>
 <li><p>Currently, combining flow terms doesn’t work. I’m ok for now forcing the user to write them explicitly one by one. One could consider adding parsing logic that can take e.g. S1<em>(b11</em>I2 + b12*I2) and parses out the 2 terms. But low priority/not now.</p></li>
 <li><p>prepare_diagram produces confusing error messages. Can we add some more logic checks to make sure models that are supplied are proper? Some should already be implemented in check_model in modelbuilder (and are definitely needed there), so we might want to use only a single function for this for both packages. Since we decided to make this package a dependence of modelbuilder, we can move the full check_model logic/function into here (even checks that are not needed for the purpose of drawing, but might be needed for the purpose of running). See the latest example in vignette A.</p></li>
-<li><p>The resulting diagram is one long line of 7 compartments. Maybe we should have some simple logic that puts at most 4-5 compartments on a row, and then starts a 2nd row? Not sure if worth it since users will have to arrange anyway, but a thought.</p></li>
-<li><p>Another idea: If one could easily add some logic that tries to see if there is some stratification and then places each stratum on a separate row. Might only work if user uses e.g. S1,I1,S2,I2 or Sa1,Sa2, etc. Otherwise figuring out things seems too tricky. I’m not sure if either this or the previous point are worth it given that for those models the user will likely have to place things anyway.</p></li>
-<li><p>I also added the new example as example 3 in the ‘basic modifications’. Plot is kind of a mess :) I guess the arrow logic needs to take into account the manual placement that a user supplies.</p></li>
 <li><p>Let’s make sure we call the object that’s returned from prepare_diagram and sent into make_diagram the diagram_list everywhere (with a note somewhere that it can have any name). This will make it easier to refer to it in the help files, the vignettes, etc. If you see any place where it’s called something else, replace. I do call it sir_diagram_list at some point, I think that’s ok so users can see it can be any name, but it’s still clear that this is the diagram_list object.</p></li>
 <li><p>If you can think of any use-cases or alternate models that should be shown in the first 3 vignettes, please add.</p></li>
 </ul>
@@ -212,7 +230,7 @@ pre code {
 </ul>
 </div>
 </div>
-<div id="section-2" class="section level1">
+<div id="section-3" class="section level1">
 <h1>2021-04-30</h1>
 <div id="high" class="section level2">
 <h2>High</h2>

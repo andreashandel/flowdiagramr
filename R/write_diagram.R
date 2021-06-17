@@ -60,7 +60,7 @@ write_diagram <- function(model_list = NULL,
                           diagram_list = NULL,
                           diagram_settings = NULL,
                           directory = "./",
-                          filename = 'diagram_code.R',
+                          filename = "diagram_code.R",
                           always_overwrite = FALSE
                           )
 {
