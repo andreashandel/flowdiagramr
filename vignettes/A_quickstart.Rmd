@@ -80,8 +80,6 @@ mymodel = list(varlabels = varlabels, flows = flows)
 * Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write `b*S*I`, writing it as `bSI` will not work.
 * Minus signs for outflows are required, plus signs for inflows are optional.
 
-**CHECK THAT ABOVE IS CORRECT AND CORRESPONDS TO CHECKS IN THE FUNCTION THAT CHECKS VALIDITY OF MODEL. ALSO, ONCE CHECKED, LET'S MAKE prepare_diagram HELP FILE AND THIS TEXT CONSISTENT SO BOTH PLACES EXPLAIN ALL.**
-
 ### Create elements needed for diagram generation
 
 Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which has the advantage of easier diagram modification. You'll learn more about that in subsequent vignettes. For now, we just show the steps, then revisit them later. 

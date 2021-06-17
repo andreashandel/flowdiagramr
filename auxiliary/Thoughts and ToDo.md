@@ -1,6 +1,11 @@
 ******
 # 2021-06-15 & 16
 
+* Later: Moved this from vignette A: **NEED TO CHECK THAT DESCRIPTION REGARDING MODEL_LIST SPECIFICATION IS 1) CORRECT, 2) AGREES WITH HELP CONTENT 3) CHECK_MODEL_LIST CHECKS VALIDITY OF ALL THAT.** As discussed, should be combined with modelbuilder to not duplicate checking code.
+
+* Later: Need to make sure convert_from_modelbuilder function is updated to provide the new output as model_list and model_settings (with varnames placed in model_Settings)
+
+
 * Thoughts on 'auto-crop' plots. I found some stuff. 
 1. The answer provided here seems to be a way to calculate the size of the plot and then using that when calling ggsave()
 https://stackoverflow.com/questions/45731238/autocrop-faceted-plots-made-by-ggplot

@@ -76,13 +76,13 @@
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
     </li>
     <li>
-      <a href="../articles/E_more_model_examples.html">More model examples</a>
+      <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
-      <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
+      <a href="../articles/F_more_model_examples.html">More model examples</a>
     </li>
     <li>
-      <a href="../articles/G_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+      <a href="../articles/G_additional_topics.html">Additional topics</a>
     </li>
     <li>
       <a href="../articles/H_comparison_to_other_packages.html">Comparison to other R packages</a>
@@ -195,7 +195,6 @@
   <span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">simpler_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
-<p><strong>DIAGRAM NOT RIGHT. THE INTERACTION FLOW SHOULD BE SHOWN, ONLY THE LABEL SHOULD BE TURNED OFF.</strong></p>
 </div>
 <div id="providing-additional-input-when-specifying-the-model" class="section level2">
 <h2 class="hasAnchor">
@@ -218,7 +217,7 @@
 <span class="co">#optional list of settings</span>
 <span class="va">sirsettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Susceptible"</span>,<span class="st">"Infected"</span>,<span class="st">"Recovered"</span><span class="op">)</span>,
                    use_varnames <span class="op">=</span> <span class="cn">TRUE</span>,
-                   var_label_size <span class="op">=</span> <span class="fl">10</span>,
+                   var_label_size <span class="op">=</span> <span class="fl">4</span>,
                    varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>,
                                                   <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span> <span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
                   <span class="op">)</span></code></pre></div>
@@ -232,7 +231,6 @@
 <span class="va">sir_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">sir_diagram_list</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sir_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="B_modify_diagrams_simple_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
-<p><strong>BOX SIZING NOT WORKING RIGHT.</strong></p>
 <p>Note that we also provided the <code>make_diagram</code> function with an option that specified that we wanted to use the variable names to label the boxes instead of the labels/abbreviations.</p>
 </div>
 <div id="example-2" class="section level3">
@@ -273,7 +271,7 @@
                                <span class="st">""</span>,   <span class="st">"P"</span>,   <span class="st">""</span>,
                                <span class="st">"Sa"</span>, <span class="st">"Ia"</span>, <span class="st">"Ra"</span><span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
-<span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, use_varnames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, use_varnames <span class="op">=</span> <span class="cn">TRUE</span>, var_label_size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, <span class="va">mysettings</span><span class="op">)</span></code></pre></div>
 <p>In a next step, we apply different styling to the diagram</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">

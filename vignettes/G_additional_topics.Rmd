@@ -1,8 +1,8 @@
 ---
-title: Using modelbuilder models with flowdiagramr
+title: Additional topics
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using modelbuilder models with flowdiagramr}
+  %\VignetteIndexEntry{Additional topics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -23,24 +23,24 @@ library(pkg, character.only = TRUE)
 ```
 
 
-# Overview
+## Overview
 
-The developers of **`r pkg`** have also been developing an R package called [**modelbuilder**](https://ahgroup.github.io/modelbuilder/) which allows users to graphically build and analyze compartmental simulation models. In fact, **`r pkg`** started as a function inside `modelbuilder` to draw diagrams of user-built models. At some point, we decided to make **`r pkg`** a stand-alone package. But it still works with and is used by **modelbuilder**. 
-
-This brief vignette is for those users of **modelbuilder** who create and save a model and want to use **`r pkg`** to generate a diagram for that model outside the auto-generated one shown inside **modelbuilder**.
+In this vignette, we discuss a few additional topics that might be of interest to some, but likely not all users.
 
 
-# Model conversion
+## Using modelbuilder models with flowdiagramr
 
-Once a user has built a model with **modelbuilder**, they can save it as an `Rds` file. This file contains a single object, the user-created model specified as a list object.
+The developers of **`r pkg`** have also been developing an R package called [**modelbuilder**](https://ahgroup.github.io/modelbuilder/) which allows users to graphically build and analyze compartmental simulation models. In fact, **`r pkg`** started as a function inside `modelbuilder` to draw diagrams of user-built models. At some point, we decided to make **`r pkg`** a stand-alone package. But it still works with and is used by **modelbuilder**. If you use **modelbuilder** and want to use **`r pkg`** to generate a diagram for that model outside the auto-generated one shown inside **modelbuilder**, here are the steps.
+
+
+### Model conversion
+
+Once you built a model with **modelbuilder**, you can save it as an `Rds` file. This file contains a single object, the user-created model specified as a list object.
 Since **modelbuilder** models and **`r pkg`** models are slightly different, we provide a convenience function that converts one format into the other. 
-
 
 This is a very simple process, and is done with the function `convert_from_modelbuilder`. This function takes as input the modelbuilder object and produces a list that conforms to the **`r pkg`** model specification. The following examples illustrate this.
 
-
-
-# Example 1
+### Example 1
 
 Assume you built a basic SIR model with **modelbuilder** and saved it as an `R` object inside a `.Rds` file. 
 First, we load the file and assign it to some variable.
@@ -69,7 +69,7 @@ my_diagram <- make_diagram(diagram_list)
 plot(my_diagram)
 ```
 
-# Example 2
+### Example 2
 
 Just to show one more example, this is a model from the **modelbuilder** example library called `Complex ID control`. It is a model that includes a good number of details and allows exploration of different intervention strategies. If you are not too familiar with compartmental models yet, just consider it as an example that illustrates the work flow. You can find some more details about the model in the [**modelbuilder**](https://ahgroup.github.io/modelbuilder/) package, or even more details in another of our packages, [DSAIDE](https://ahgroup.github.io/DSAIDE/), which is targeted toward learning about such infectious disease models.
 
@@ -105,11 +105,12 @@ As an example, let's specify the layout for the variables/nodes. We can do that 
 The rationale of how to place the variables is determined by the meaning of each of them and what makes logical sense. I'm not discussing this here, if you want to learn more about the model, see the _Complex Control Scenarios_ app inside [DSAIDE](https://ahgroup.github.io/DSAIDE/).
 
 ```{r}
-mymodel$varlocations = matrix(data = c("","E","","",
+model_settings = list(varlocations = matrix(data = c("","E","","",
                                       "", "", "A", "R",
                                       "S", "P", "", "",
                                       "", "", "I", "D",
                                "", "Sv", "Iv", ""), nrow = 5, byrow = TRUE)
+                      )
 ```
 
 **TO DO**. I'm also showing the compartment names instead of their labels to make things a bit clearer.
@@ -127,5 +128,18 @@ ggplot2::ggsave('Complex_ID_Control2.png',my_diagram)
 knitr::include_graphics("Complex_ID_Control2.png")
 ```
 
-This is better, but of course still not quite good enough. Fortunately, you have learned how to use **`r pkg`** to fairly easily turn this into a publication-quality diagram `r emo::ji('grin')`.
+This is better, but of course still not quite good enough. Fortunately, you have learned how to use **`r pkg`** to fairly easily turn this into a publication-quality diagram :).
+
+
+## Cropping white-space from diagram plots
+
+It is quite likely that the diagram you get back from `make_diagram` contains a good bit of white space. This is often a problem when trying to use the figure in publications.
+
+There are different options you can use to change the white space.
+
+
+
+
+
+
 

@@ -127,13 +127,13 @@ in the vignettes." />
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
     </li>
     <li>
-      <a href="../articles/E_more_model_examples.html">More model examples</a>
+      <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
-      <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
+      <a href="../articles/F_more_model_examples.html">More model examples</a>
     </li>
     <li>
-      <a href="../articles/G_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+      <a href="../articles/G_additional_topics.html">Additional topics</a>
     </li>
     <li>
       <a href="../articles/H_comparison_to_other_packages.html">Comparison to other R packages</a>
@@ -245,7 +245,10 @@ The data frame contains these columns:</p>
 <li><p><code>labelx</code>: Horizontal position (midpoint) of label.</p></li>
 <li><p><code>labely</code>: Vertical position (midpoint) of label.</p></li>
 <li><p><code>plot_label</code>: The text to be written into the box.</p></li>
-<li><p><code>plot_label_size</code>: Size of text to be written into the box.</p></li>
+<li><p><code>color</code>: Default outline color for the box.</p></li>
+<li><p><code>fill</code>: Default fill color for the box.</p></li>
+<li><p><code>label color</code>: Default color for text label.</p></li>
+<li><p><code>label_size</code>: Size of text to be written into the box.</p></li>
 </ul></li>
 <li><p><code>flows</code>: A data frame containing information for all flows.
 The data frame contains these columns:</p><ul>
@@ -254,9 +257,6 @@ variable receiving the flow.</p></li>
 <li><p><code>from</code>: The variable from which the arrow originate. That is, the
 variable donating the flow.</p></li>
 <li><p><code>label</code>: The label of the flow. Typically a mathematical expression.</p></li>
-<li><p><code>interaction</code>: A logical flag indicating whether the flow
-represents an interaction between two (or more) variables (TRUE) or
-not (FALSE).</p></li>
 <li><p><code>xstart</code>: The starting horizontal position of the arrow.</p></li>
 <li><p><code>xend</code>: The ending horizontal position of the arrow.</p></li>
 <li><p><code>ystart</code>: The starting vertical position of the arrow.</p></li>
@@ -265,6 +265,16 @@ not (FALSE).</p></li>
 <li><p><code>labely</code>: Vertical position (midpoint) of label.</p></li>
 <li><p><code>curvature</code>: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.</p></li>
+<li><p><code>type</code>: Type of flow. One of main, interaction, or external.</p></li>
+<li><p><code>color</code>: Default color of the lines/arrows.</p></li>
+<li><p><code>linetype</code>: Default linetype.</p></li>
+<li><p><code>size</code>: Default size of the lines.</p></li>
+<li><p><code>label_color</code>: Default label color.</p></li>
+<li><p><code>label_size</code>: Default text size for label.</p></li>
+<li><p><code>arrowsize</code>: Default arrow size.</p></li>
+<li><p><code>math</code>: The math from the flows specified by the user. Is a
+duplicate of <code>label</code> so that user can update <code>label</code> as desired but
+retain the original math for reference.</p></li>
 </ul></li>
 </ul>
 
@@ -299,20 +309,24 @@ See more examples below and in the vignettes.</p>
                    var_label_size <span class='op'>=</span> <span class='fl'>12</span>,varlocations <span class='op'>=</span> <span class='va'>varlocations</span><span class='op'>)</span>
 <span class='fu'>prepare_diagram</span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>mymodel</span>, model_settings <span class='op'>=</span> <span class='va'>mysettings</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; $variables
-#&gt;   label        name xmin xmax ymin ymax labelx labely  plot_label
-#&gt; 1     S Susceptible -0.5  0.5 -0.5  0.5      0      0 Susceptible
-#&gt; 2     I    Infected  2.5  3.5 -2.5 -1.5      3     -2    Infected
-#&gt; 3     R   Recovered  5.5  6.5 -0.5  0.5      6      0   Recovered
-#&gt;   plot_label_size
-#&gt; 1              12
-#&gt; 2              12
-#&gt; 3              12
+#&gt;   label        name xmin xmax ymin ymax labelx labely  plot_label color    fill
+#&gt; 1     S Susceptible -0.5  0.5 -0.5  0.5      0      0 Susceptible    NA #6aa4c8
+#&gt; 2     I    Infected  2.5  3.5 -2.5 -1.5      3     -2    Infected    NA #6aa4c8
+#&gt; 3     R   Recovered  5.5  6.5 -0.5  0.5      6      0   Recovered    NA #6aa4c8
+#&gt;   label_color label_size
+#&gt; 1       white         12
+#&gt; 2       white         12
+#&gt; 3       white         12
 #&gt; 
 #&gt; $flows
-#&gt;     to from label xstart ystart xend yend labelx labely curvature        type
-#&gt; 1    I    S          0.5    0.0  2.5   -2   1.50  -0.75       0.0        main
-#&gt; 2    R    I   g*I    3.5   -2.0  5.5    0   4.50  -0.75       0.0        main
-#&gt; 3 &lt;NA&gt;    I b*S*I    3.0   -1.5  1.5   -1   2.35  -0.75       0.4 interaction
+#&gt;     to from label xstart xend ystart yend labelx labely curvature        type
+#&gt; 1    I    S          0.5  2.5    0.0   -2   1.50  -0.75       0.0        main
+#&gt; 2    R    I   g*I    3.5  5.5   -2.0    0   4.50  -0.75       0.0        main
+#&gt; 3 &lt;NA&gt;    I b*S*I    3.0  1.5   -1.5   -1   2.35  -0.75       0.4 interaction
+#&gt;    color linetype size label_color label_size arrowsize  math
+#&gt; 1 grey25    solid  0.7       black          5      0.25      
+#&gt; 2 grey25    solid  0.7       black          5      0.25   g*I
+#&gt; 3 grey25   dashed  0.7       black          5      0.25 b*S*I
 #&gt; </div><div class='input'>
 </div></pre>
   </div>
