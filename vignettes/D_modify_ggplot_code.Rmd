@@ -50,7 +50,7 @@ Once you have your model, you can send it to `write_diagram`, a function that wr
 You can specify the location and name for the file. If you don't provide those, it will be stored in the current working directory under the name `diagram_code.R`. 
 
 ```{r, eval= FALSE}
-write_diagram(model_list = sirmodel1, filename = 'sirmodel1_diagram_code.R')
+write_diagram(model_list = sirmodel1, filename = 'sirmodel1_diagram_code.R', always_overwrite = TRUE)
 ```
 If things worked well, you should get a message telling you the location where the code was saved.
 The code that is generated is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure.

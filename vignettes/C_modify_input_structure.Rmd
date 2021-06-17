@@ -28,9 +28,9 @@ library(pkg, character.only = TRUE)
 
 We assume you went through the [getting started vignette](./A_quickstart.html) and also the [basic modification vignette](./B_modify_diagrams_simple.html). 
 
-If the basic modifications you can achieve by providing different options to `make_diagram`, then you do not need to go any further, and there is no need to understand in more detail how **`r pkg`** works. However, it is quite likely that at some point, you want to further tweak your diagram. To do so successfully, it is useful to learn some more details about how the package works. 
+If the modifications you can achieve by providing optional settings to `prepare_diagram` and `make_diagram`, then you do not need to go any further, and there is no need to understand in more detail how **`r pkg`** works. However, it is quite likely that at some point, you want to further tweak your diagram. To do so successfully, it is useful to learn some more details about how the package works. 
 
-As you learned, producing a diagram with **`r pkg`** involves two steps. After you have defined your model, there is a first step that takes your model and creates a list of data frames (which we called the `input_structure` in the prior vignettes). These data frames are used by `make_diagram` to produce the ggplot code and figure. 
+As you learned, producing a diagram with **`r pkg`** involves two steps. After you have defined your model, there is a first step in which you call `prepare_diagram`, which takes your model and creates a list of data frames (which we called the `input_structure` in the prior vignettes). These data frames are used by `make_diagram` to produce the ggplot code and figure. 
 
 The advantage of this 2-step process is that you can make modifications to the `input_structure` object before sending it into the `make_diagram` function, and thus modify the layout of the diagram beyond what you can through the`make_diagram` options, while still being fairly easy to do. 
 
@@ -46,14 +46,14 @@ You can learn the details from the help file for the `prepare_diagram` function,
 help('prepare_diagram')
 ```
 
-As the help file explains, what `prepare_diagram` does is to produce a list (which we call `diagram_list`, but can assign it any name) that contains 5 elements, one for the node/variable placement information, and 4 others with information for different types of edges. Depending on the model, some of the edge data frames might be empty. This information about the location of the nodes/variables, and the different types of edges is used by `make_diagram` to create the plot. 
+As the help file explains, what `prepare_diagram` does is to produce a list (which we call `diagram_list`, but you can assign it any name) that contains 2 data frames, one with variable related information and one with flow related information. This information is used by `make_diagram` to create the plot. 
 
-`prepare_diagram` attempts to make reasonable choices on node location and classification and location of flows. For example, flows into or out of the system with only one node intersection are typically drawn at a 45 degree angle. Flows that bypass a node are typically curved.
+`prepare_diagram` attempts to make reasonable choices on location and sizing for variables and flows. For example, flows into or out of the system with only one node intersection are typically drawn at a 45 degree angle. Flows that bypass a node are typically curved.
  
 Once you understand the components of the input object and what the different parts mean, you can modify them.
 This allows you to impact the look of the diagram you get once you send your modified object into the `make_diagram` function.
 
-It is easiest to understand this approach by showing a few examples, so this is what we'll do next.
+It is easiest to understand this approach by showing a few examples, so let's do that.
 
 
 ## Modifying the `make_diagram` input object 
@@ -66,19 +66,16 @@ First we set up the model.
 ```{r}
 #Set up model
 varlabels = c("S","I","R")
-varnames = c("Susceptible","Infected","Recovered")
-# currently only works with trailing + signs
-flows = list(S_flows = c("+n", "-b*S*I", "-m*S"), 
-             I_flows = c("+b*S*I","-g*I", "-m*I"), 
-             R_flows = c("+g*I", "-m*R"))
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
+             I_flows = c("b*S*I","-g*I", "-m*I"), 
+             R_flows = c("g*I", "-m*R"))
 sirmodel = list(varlabels = varlabels, flows = flows)
-sirsettings = list(varnames = varnames)
 ```
 
 Next, we send the model to the `prepare_diagram` function.
 
 ```{r}
-sir_diagram_list <- prepare_diagram(sirmodel, sirsettings)
+sir_diagram_list <- prepare_diagram(sirmodel)
 ```
 
 Now, let's make and plot the diagram. For this plot, we also turned on the grid. This is useful in figuring out by how much to shift things around.
@@ -130,11 +127,11 @@ It is possible to combine the modification of the diagram with modifications mad
 ```{r}
 plot3 <- make_diagram(
   modified_diagram_list,
-  diagram_settings = list(flow_text_color = "blue",
-                          var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                          var_text_color = "white")
+  diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                          var_text_color = "black",
+                          main_flow_label_color = "blue",
+                          interaction_flow_color = "red")
 )
-
 plot(plot3)
 ```
 
@@ -161,14 +158,13 @@ ppplot <- make_diagram(diagram_list)
 plot(ppplot)
 ```
 
-Let's modify this. We'll make the `Imm` box larger, adjust the location of some of the flow labels and let's also assume that you want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called `Pmax`, not `pmax`. You can't do that when you specify the model since **`r pkg`** requires that parameters start with a lower case letter. Not a big deal, you can fix this now by replacing the label.
+Let's modify this. We'll make the `Imm` box larger, relabel it, adjust the location of some of the flows to work with the different box sizes. 
+We'll also move some flow labels around and let's also assume that you want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called `Pmax`, not `pmax`. You can't do that when you specify the model since **`r pkg`** requires that parameters start with a lower case letter. Not a big deal, you can fix this now by replacing the label.
 
 First, we'll look at the `diagram_list` structure to see which elements we need to change.
 ```{r}
 print(diagram_list)
 ```
-
-**Need to be able to change label location for all flows. Not currently working.**
 
 And here is the code that makes some changes
 
@@ -176,6 +172,8 @@ And here is the code that makes some changes
 #increase box
 diagram_list$variables$xmin[2] = 2.25
 diagram_list$variables$xmax[2] = 3.75
+#relabel box
+diagram_list$variables$plot_label[2] = "T cells"
 #adjust arrow location
 diagram_list$flows$xstart[5] <- 2.25
 #move labels
@@ -195,62 +193,62 @@ my_diagram <- make_diagram(
 plot(my_diagram)
 ```
 
-<!-- ### Example 3 -->
+### Example 3
 
-<!-- Finally, let's briefly revisit our 7-compartment model and see if we can make some further tweaks to get it to something that might be suitable for public use. -->
+Finally, let's briefly revisit our 7-compartment model and see if we can make some further tweaks to get it to something that might be suitable for public use.
 
-<!-- Here is the model specification again -->
+Here is the model specification again
 
-<!-- ```{r} -->
-<!-- varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P") -->
-<!-- varnames = c("Susceptible children","Infected children","Recovered children","Susceptible adults","Infected adults","Recovered adults","Pathogen in Environment") -->
-<!-- flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),  -->
-<!--              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),  -->
-<!--              Rc_flows = c("gc*Ic"), -->
-<!--              Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),  -->
-<!--              Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"),  -->
-<!--              Ra_flows = c("ga*Ia"), -->
-<!--              P_flows = c("sc*Ic","sa*Ia","-d*P") -->
-<!--              ) -->
-<!-- varlocations = matrix(data = c("Sc", "Ic", "Rc", -->
-<!--                                "",   "P",   "", -->
-<!--                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE) -->
-<!-- mymodel = list(varlabels = varlabels, flows = flows) -->
-<!-- mysettings = list(varlocations = varlocations, varnames = varnames) -->
-<!-- diagram_list <- prepare_diagram(mymodel, mysettings) -->
-<!-- ``` -->
+```{r}
+varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
+             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),
+             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"),
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             )
+mymodel = list(varlabels = varlabels, flows = flows)
 
-<!-- If you print the resulting `diagram_list`, you can see details for each box/variable and arrow/flow. Since this is big, we are not showing it here. But we'll go ahead and make some modifications.  -->
+varnames = c("Susceptible children","Infected children","Recovered children","Susceptible adults","Infected adults","Recovered adults","Pathogen in Environment")
+varlocations = matrix(data = c("Sc", "Ic", "Rc",
+                               "",   "P",   "",
+                               "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
+mysettings = list(varlocations = varlocations, varnames = varnames, use_varnames = TRUE)
+diagram_list <- prepare_diagram(mymodel, mysettings)
+```
 
-<!-- We'll increase the box for the pathogen and change the text for all variables by including both the full name and the label (this could of course also be done by just renaming `varnames` above, but we want to show a different way). We'll also move some of the flow labels so they don't overlap with the arrows.  -->
+If you print the resulting `diagram_list`, you can see details for each box/variable and arrow/flow. Since this is big, we are not showing it here. But we'll go ahead and make some modifications.
 
-<!-- **BELOW IS WRONG SETTINGS, WILL BE DOING THAT ONE LATER ONCE ARROW ISSUE IS FIXED.** -->
+We'll increase the box for the pathogen and change the text for all variables by including both the full name and the label (this could of course also be done by just renaming `varnames` above, but we want to show a different way). We'll also move some of the flow labels so they don't overlap with the arrows.
 
-<!-- ```{r} -->
-<!-- # change labeling of variables -->
-<!-- diagram_list$nodes$name = paste0(diagram_list$nodes$name,", ",diagram_list$nodes$label) -->
-<!-- #increase box -->
-<!-- diagram_list$nodes$xmin[7] = 2.25 -->
-<!-- diagram_list$nodes$xmax[7] = 3.75 -->
-<!-- #adjust arrow location -->
-<!-- diagram_list$curved_edges$xstart[2] <- 2.25 -->
-<!-- #move labels -->
-<!-- diagram_list$curved_edges$labelx[1] <- 2 -->
-<!-- diagram_list$curved_edges$labelx[2] <- 1.4 -->
-<!-- ``` -->
+**MODIFICATIONS NOT YET IMPLEMENTED, WILL BE DOING THAT ONCE ARROW LOCATION AND BOX SIZING IS ADDRESSED.**
+
+```{r}
+# change labeling of variables
+#diagram_list$nodes$name = paste0(diagram_list$nodes$name,", ",diagram_list$nodes$label)
+#increase box
+#diagram_list$nodes$xmin[7] = 2.25
+#diagram_list$nodes$xmax[7] = 3.75
+#adjust arrow location
+#diagram_list$curved_edges$xstart[2] <- 2.25
+#move labels
+#diagram_list$curved_edges$labelx[1] <- 2
+#diagram_list$curved_edges$labelx[2] <- 1.4
+```
 
 
-<!-- Finally, we make the diagram, and also apply different styling as previously -->
+Finally, we make the diagram, and also apply different styling as previously
 
-<!-- ```{r} -->
-<!-- diagram_settings <- list( -->
-<!--        node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"), -->
-<!--                           node_text_size = 4, -->
-<!--                           use_varnames = TRUE -->
-<!--                         ) -->
-<!-- model_plot <- make_diagram(diagram_list, diagram_settings) -->
-<!-- plot(model_plot) -->
-<!-- ``` -->
+```{r}
+diagram_settings <- list(
+                        var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
+                        var_outline_color = "black"
+                        )
+model_plot <- make_diagram(diagram_list, diagram_settings)
+plot(model_plot)
+```
 
 
 

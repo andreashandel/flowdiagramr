@@ -52,11 +52,24 @@
 #'
 #' @return A list of two data frames:
 #' \itemize{
-#'   \item `variables`: A data frame containing the state variable names,
-#'   labels, and positions.
+#'   \item `variables`: A data frame containing information for all variables.
+#'   The data frame contains these columns:
 #'
-#'   \item `flows`: A data fram containing the name and position information
-#'   for all the flows. The data frame contains eleven (11) columns:
+#'   \itemize{
+#'     \item `label`: The variable label as provided in the model specification.
+#'     \item `name`: If provided, the full text for each variable.
+#'     \item `xmin`: Left edge location of box.
+#'     \item `xmax`: Right edge location of box.
+#'     \item `ymin`: Lower edge of location box.
+#'     \item `ymax`: Upper edge of location box.
+#'     \item `labelx`: Horizontal position (midpoint) of label.
+#'     \item `labely`: Vertical position (midpoint) of label.
+#'     \item `plot_label`: The text to be written into the box.
+#'     \item `plot_label_size`: Size of text to be written into the box.
+#'   }
+#'
+#'   \item `flows`: A data frame containing information for all flows.
+#'   The data frame contains these columns:
 #'   \itemize{
 #'     \item `to`: The variable to which the arrow will point. That is, the
 #'     variable receiving the flow.
@@ -67,8 +80,8 @@
 #'     represents an interaction between two (or more) variables (TRUE) or
 #'     not (FALSE).
 #'     \item `xstart`: The starting horizontal position of the arrow.
-#'     \item `ystart`: The starting vertical position of the arrow.
 #'     \item `xend`: The ending horizontal position of the arrow.
+#'     \item `ystart`: The starting vertical position of the arrow.
 #'     \item `yend`: The ending vertical position of the arrow.
 #'     \item `labelx`: Horizontal position (midpoint) of label.
 #'     \item `labely`: Vertical position (midpoint) of label.

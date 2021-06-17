@@ -1,7 +1,7 @@
 ******
-# 2021-06-15
+# 2021-06-15 & 16
 
-
+* Can you re-order flow columns from xstart ystart xend yend to xstart xend ystart yend to make consistent with ordering for variables (couldn't quickly figure out where in code that happens.)
 
 
 * Optional arguments to make_diagram not yet what I have in mind. See documentation header of function for a sketched out setup.
