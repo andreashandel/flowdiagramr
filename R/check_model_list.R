@@ -78,7 +78,7 @@ check_model_list <- function(model_list) {
 
   # Make sure all variables in flows are in the varlabels
   allflows <- paste(unlist(model_list$flows), collapse = "+")
-  vps <- flowdiagramr:::get_vars_pars(allflows)
+  vps <- get_vars_pars(allflows)
   vars_in_flows <- unique(vps[which(vps %in% LETTERS)])
   badids <- which(!(vars_in_flows %in% model_list$varlabels))
   if(length(badids) != 0) {

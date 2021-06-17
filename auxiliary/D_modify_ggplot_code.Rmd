@@ -149,7 +149,7 @@ Create the diagram the usual way using `make_diagram`, while also supplying addi
 ```{r}
 #specify the settings separately so we can re-use them below
 diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                        var_text_size = 14,
+                        var_label_size = 14,
                         main_flow_color = "blue",
                         main_flow_linetype = "dotted")
 sir2_diagram <- make_diagram(diagram_list, diagram_settings)

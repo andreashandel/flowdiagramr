@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -74,9 +74,6 @@
     </li>
     <li>
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
-    </li>
-    <li>
-      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
       <a href="../articles/E_more_model_examples.html">More model examples</a>
@@ -145,14 +142,14 @@
 <p>This is the same information formatted as a structure that can be used as input for <code>prepare_diagram</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"H"</span>,<span class="st">"F"</span>,<span class="st">"T"</span>,<span class="st">"B"</span>,<span class="st">"A"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Antigen"</span>,<span class="st">"Interferon"</span>,<span class="st">"T-cells"</span>,<span class="st">"B-cells"</span>,<span class="st">"Antibody"</span><span class="op">)</span>
+<span class="co">#varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")</span>
 <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>H_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-kA*A*H"</span>, <span class="st">"- dH * H"</span><span class="op">)</span>,
              F_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pF"</span> ,<span class="st">"- dF*F"</span>, <span class="st">"H / (H + hH) * gF * (fmax - F)"</span><span class="op">)</span>,
              T_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"F*H*T/(F*H + hT)"</span> ,<span class="st">"+ gT*T"</span><span class="op">)</span>,
              B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gB * B * rH*F*H/(s1+F*H)"</span>,  <span class="st">"gB * B *rT*F*T/(s2+F*T)"</span> <span class="op">)</span>,
              A_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"rA*B"</span>,  <span class="st">"- dA*A"</span>, <span class="st">"- kA*A*H"</span><span class="op">)</span> 
              <span class="op">)</span>
-<span class="va">model_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span>, varnames <span class="op">=</span> <span class="va">varnames</span><span class="op">)</span>
+<span class="va">model_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
 <span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">model_list</span><span class="op">)</span>
 <span class="co">#&gt; Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include</span>
 <span class="co">#&gt; an interaction between more than two variables. Consider</span>
@@ -177,18 +174,18 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># define adjusted settings for layout</span>
 <span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-    node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-    node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-    node_text_color <span class="op">=</span> <span class="st">"white"</span>,
-    node_text_size <span class="op">=</span> <span class="fl">10</span>,
-    flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
-    flow_text_size <span class="op">=</span> <span class="fl">5</span>,
-    main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-    main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
-    main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
-    interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-    interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
-    interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span>
+    var_outline_color <span class="op">=</span> <span class="cn">NA</span>,
+    var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+    var_label_color <span class="op">=</span> <span class="st">"white"</span>,
+    var_label_size <span class="op">=</span> <span class="fl">10</span>,
+    main_flow_label_color <span class="op">=</span> <span class="st">"black"</span>,
+    main_flow_label_size <span class="op">=</span> <span class="fl">5</span>,
+    main_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    <span class="co">#main_flow_linetype = 1,</span>
+    main_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    interaction_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    <span class="co">#interaction_flow_linetype = 2,</span>
+    interaction_flow_size <span class="op">=</span> <span class="fl">0.7</span>
 <span class="op">)</span>
     
 <span class="co"># make diagram with adjusted settings</span>
@@ -199,23 +196,25 @@
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag1</span><span class="op">)</span></code></pre></div>
 <p><img src="E_more_model_examples_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
-<p>For the next diagram, we are turning off the interactions and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
+<p><strong>SPECIFYING FLOW LINETYPE AS NUMBER THROWS AN ERROR MESSAGE. UNCOMMENT ABOVE TO REPRODUCE.</strong></p>
+<p>For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify custom settings for the diagram layout</span>
 <span class="va">diagram_settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-    node_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-    node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-    node_text_color <span class="op">=</span> <span class="st">"white"</span>,
-    node_text_size <span class="op">=</span> <span class="fl">10</span>,
-    flow_text_color <span class="op">=</span> <span class="st">"black"</span>,
-    flow_text_size <span class="op">=</span> <span class="fl">5</span>,
-    main_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-    main_arrow_linetype <span class="op">=</span> <span class="fl">1</span>,
-    main_arrow_size <span class="op">=</span> <span class="fl">0.7</span>,
-    interaction_label <span class="op">=</span> <span class="cn">FALSE</span>,
-    interaction_arrow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-    interaction_arrow_linetype <span class="op">=</span> <span class="fl">2</span>,
-    interaction_arrow_size <span class="op">=</span> <span class="fl">0.7</span>
+  var_outline_color <span class="op">=</span> <span class="cn">NA</span>,
+    var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+    var_label_color <span class="op">=</span> <span class="st">"white"</span>,
+    var_label_size <span class="op">=</span> <span class="fl">10</span>,
+    main_flow_label_color <span class="op">=</span> <span class="st">"black"</span>,
+    main_flow_label_size <span class="op">=</span> <span class="fl">5</span>,
+    main_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    <span class="co">#main_flow_linetype = 1,</span>
+    main_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    interaction_flow_on <span class="op">=</span> <span class="cn">FALSE</span>,  
+    interaction_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    <span class="co">#interaction_flow_linetype = 2,</span>
+    interaction_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    external_flow_on <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span>
 
     <span class="co"># make another diagram with adjusted settings</span>

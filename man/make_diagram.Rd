@@ -7,15 +7,16 @@
 make_diagram(
   diagram_list,
   diagram_settings = list(var_outline_color = NA, var_fill_color = "#6aa4c8",
-    var_text_color = "white", var_text_size = NA, main_flow_on = TRUE, main_flow_color =
-    "grey25", main_flow_linetype = "solid", main_flow_size = 0.7, main_flow_label_on =
-    TRUE, main_flow_label_color = "black", main_flow_label_size = 5, interaction_flow_on
-    = TRUE, interaction_flow_color = "grey25", interaction_flow_linetype = "dashed",
-    interaction_flow_size = 0.7, interaction_flow_label_on = TRUE,
-    interaction_flow_label_color = "black", interaction_flow_label_size = 5,     
-    external_flow_on = TRUE, external_flow_color = "grey25", external_flow_linetype =
-    "solid", external_flow_size = 0.7, external_flow_label_on = TRUE,
-    external_flow_label_color = "black", external_flow_label_size = 5, with_grid = FALSE)
+    var_label_on = TRUE, var_label_color = "white", var_label_size = NA, main_flow_on =
+    TRUE, main_flow_color = "grey25", main_flow_linetype = "solid", main_flow_size = 0.7,
+    main_flow_label_on = TRUE, main_flow_label_color = "black", main_flow_label_size = 5,
+    interaction_flow_on = TRUE, interaction_flow_color = "grey25",
+    interaction_flow_linetype = "dashed", interaction_flow_size = 0.7,
+    interaction_flow_label_on = TRUE, interaction_flow_label_color = "black",     
+    interaction_flow_label_size = 5, external_flow_on = TRUE, external_flow_color =
+    "grey25", external_flow_linetype = "solid", external_flow_size = 0.7,
+    external_flow_label_on = TRUE, external_flow_label_color = "black",
+    external_flow_label_size = 5, with_grid = FALSE)
 )
 }
 \arguments{
@@ -32,10 +33,12 @@ recycled in the order of the variables in the supplied data frame.
 \item \code{var_fill_color}: A character string or vector of character strings
 specifying the fill color of variables. If a vector, the colors will be
 recycled in the order of the variables in the supplied data frame.
-\item \code{var_text_color}: A character string or vector of character strings
+\item \code{var_label_on}: A logical indicating if the labels for the variables
+should be plotted.
+\item \code{var_label_color}: A character string or vector of character strings
 specifying the text color for variable labels. If a vector, the colors will
 be recycled in the order of the variables in the supplied data frame.
-\item \code{var_text_size}: A numeric scalar specifying the text size for variable
+\item \code{var_label_size}: A numeric scalar specifying the text size for variable
 labels. Default value is NA and the values in the \code{variables} data frame
 returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
 supplied here, the values in the \code{variables} data frame are not used and
@@ -136,15 +139,10 @@ aesthetics that are not associated with x, y locations. Colors, linetypes,
 and other graphical options can be set by the user.
 }
 \examples{
-varlabels <- c("S","I","R")
-varnames <- c("Susceptible","Infected","Recovered")  # optional
-flows <- list(S_flows = c("-b*S*I"),
-              I_flows = c("b*S*I","-g*I"),
-              R_flows = c("g*I"))
-varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
-                        nrow = 2, ncol = 3, byrow = TRUE)
-mymodel <- list(varlabels = varlabels, varnames = varnames,
-flows = flows, varlocations = varlocations)
+mymodel = list(varlabels = c("S","I","R"),
+               flows = list(S_flows = c("-b*S*I"),
+                            I_flows = c("b*S*I","-g*I"),
+                            R_flows = c("g*I") ) )
 diagram_list <- prepare_diagram(model_list = mymodel)
 
 # make diagram without grid

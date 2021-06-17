@@ -18,10 +18,12 @@
 #' \item `var_fill_color`: A character string or vector of character strings
 #'     specifying the fill color of variables. If a vector, the colors will be
 #'     recycled in the order of the variables in the supplied data frame.
-#' \item `var_text_color`: A character string or vector of character strings
+#' \item `var_label_on`: A logical indicating if the labels for the variables
+#'     should be plotted.
+#' \item `var_label_color`: A character string or vector of character strings
 #'     specifying the text color for variable labels. If a vector, the colors will
 #'     be recycled in the order of the variables in the supplied data frame.
-#' \item `var_text_size`: A numeric scalar specifying the text size for variable
+#' \item `var_label_size`: A numeric scalar specifying the text size for variable
 #'     labels. Default value is NA and the values in the `variables` data frame
 #'     returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
 #'     supplied here, the values in the `variables` data frame are not used and
@@ -113,21 +115,12 @@
 #'     want/need to move items around.
 #' }
 #'
-#'
 #' @return A ggplot2 object.
-#' @import ggplot2
-#' @export
-#'
 #' @examples
-#' varlabels <- c("S","I","R")
-#' varnames <- c("Susceptible","Infected","Recovered")  # optional
-#' flows <- list(S_flows = c("-b*S*I"),
-#'               I_flows = c("b*S*I","-g*I"),
-#'               R_flows = c("g*I"))
-#' varlocations <-  matrix(data = c("S", "", "R", "", "I", "" ),
-#'                         nrow = 2, ncol = 3, byrow = TRUE)
-#' mymodel <- list(varlabels = varlabels, varnames = varnames,
-#' flows = flows, varlocations = varlocations)
+#' mymodel = list(varlabels = c("S","I","R"),
+#'                flows = list(S_flows = c("-b*S*I"),
+#'                             I_flows = c("b*S*I","-g*I"),
+#'                             R_flows = c("g*I") ) )
 #' diagram_list <- prepare_diagram(model_list = mymodel)
 #'
 #' # make diagram without grid
@@ -135,13 +128,17 @@
 #'
 #' # make diagram with grid
 #' diagram_with_grid <- make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
+#' @import ggplot2
+#' @export
+#'
 
 make_diagram <- function (diagram_list,
                           diagram_settings = list(
                             var_outline_color = NA,
                             var_fill_color = "#6aa4c8",
-                            var_text_color = "white",
-                            var_text_size = NA,
+                            var_label_on = TRUE,
+                            var_label_color = "white",
+                            var_label_size = NA,
                             main_flow_on = TRUE,
                             main_flow_color = "grey25",
                             main_flow_linetype = "solid",
@@ -170,8 +167,17 @@ make_diagram <- function (diagram_list,
   # assign default settings to be updated by user
   defaults <- eval(formals(make_diagram)$diagram_settings)
 
+
+  # check user inputs provided in diagram_settings, if user supplies a non-recognized argument, stop
+  nonrecognized_inputs <- setdiff(names(diagram_settings),  names(defaults))
+  if (length(nonrecognized_inputs>0) )
+  {
+    stop('These elements of diagram_settings are not recognized: ', nonrecognized_inputs)
+  }
+
   # update defaults with user settings
   defaults[names(diagram_settings)] <- diagram_settings
+
 
   # assign settings list to objects
   for(i in 1:length(defaults)) {
@@ -190,17 +196,17 @@ make_diagram <- function (diagram_list,
 
   # if text size is not provided (NA), then use text sizes in the data
   # frames. otherwise, override and use the provided sizes for all.
-  if(is.na(var_text_size)) {
-    var_text_size <- variables$plot_label_size
+  if(is.na(var_label_size)) {
+    var_label_size <- variables$plot_label_size
   } else {
-    var_text_size <- recycle_values(var_text_size, nrow(variables))
+    var_label_size <- recycle_values(var_label_size, nrow(variables))
   }
 
   # recycle values as needed
   variables$color <- recycle_values(var_outline_color, nrow(variables))
   variables$fill <- recycle_values(var_fill_color, nrow(variables))
-  variables$label_color <- recycle_values(var_text_color, nrow(variables))
-  variables$label_size <- recycle_values(var_text_size, nrow(variables))
+  variables$label_color <- recycle_values(var_label_color, nrow(variables))
+  variables$label_size <- recycle_values(var_label_size, nrow(variables))
   variables$plot_label_size <- NULL
 
   mains <- subset(flows, type == "main")

@@ -20,28 +20,23 @@ output:
 
 * Flow diagrams are often good ways to communicate these models.
 
-<div class="centered">
-[SIR model as example](https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology)
-</div>
+* [SIR model as example](https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology)
 
-::::{.columns}
-:::{}
+<div class="centered">
+
 $$
 \begin{aligned}
-\dot S & = - b S I \\ 
-\dot I & = b S I - g I \\
-\dot R & = g I 
+\textrm{Susceptible Individuals} \qquad \dot S & = - b S I \\ 
+\textrm{Infected Individuals} \qquad \dot I & = b S I - g I \\
+\textrm{Recovered Individuals} \qquad \dot R & = g I 
 \end{aligned}
 $$
-:::
-:::{}
 
 ```{r,  echo=FALSE, fig.cap='SIR model', out.width = '60%'}
-knitr::include_graphics("sirdiagram.png")
+knitr::include_graphics(knitr::plot_crop("sirdiagram.png"))
 ```
-:::
-::::
 
+</div>
 
 ## Motivation
 
@@ -80,22 +75,20 @@ plot(sir_diagram)
 
 ## Customize your diagram
 
-Specify settings to be passed to `make_diagram`
+Specify settings to be passed to function 
+`make_diagram(diagram_list, diagram_settings)`
 
 ```{r}
 sir_diagram_settings <- list(
-    node_outline_color = "black",
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "black",
-    node_text_size = 14,
-    flow_text_color = "black",
-    flow_text_size = 8,
-    main_arrow_color = "blue",
-    main_arrow_linetype = "solid",
-    main_arrow_size = 1,
-    interaction_arrow_color = "red",
-    interaction_arrow_linetype = "dashed",
-    interaction_arrow_size = 0.7)
+    var_outline_color = "black",
+    var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    var_label_color = "black",
+    var_label_size = 12,
+    main_flow_color = "blue",
+    main_flow_size = 1.5,
+    interaction_flow_label_size = 6,
+    interaction_flow_color = "red",
+    interaction_flow_size = 1.2)
 ```
 
 
@@ -111,26 +104,25 @@ plot(sir_diagram)
 
 ## More customizations
 
-You can provide variable names and locations.
+Specify settings to be passed to function 
+`prepare_diagram(model_list, model_settings)` 
 
 ```{r}
-varlabels = c("S","I","R")
-varnames  = c("Susceptible","Infected","Recovered")
-flows     = list(S_flows = c("n", "-b*S*I", "-m*S"), 
-                 I_flows = c("+b*S*I","-g*I", "-m*I"), 
-                 R_flows = c("g*I", "-m*R"))
-varlocations = matrix(data = c("S", "", "R",
-                               "", "I", "" ),
+model_settings = 
+  list(varnames  = c("Susceptible","Infected","Recovered"),
+       use_varnames = TRUE,
+       var_label_size = 8,
+       varlocations = matrix(data = c("S", "", "R",
+                                       "", "I", "" ),
                       nrow = 2, ncol = 3, byrow = TRUE)
-sirmodel2 = list(varlabels = varlabels, flows = flows, 
-                 varnames = varnames, varlocations = varlocations)
+      )
 ```
 
 
 ## More customizations
 
 ```{r}
-sir_diagram_list2 <- prepare_diagram(sirmodel2)
+sir_diagram_list2 <- prepare_diagram(sirmodel, model_settings)
 sir_diagram2 <- make_diagram(sir_diagram_list2)
 plot(sir_diagram2)
 ```
@@ -138,27 +130,18 @@ plot(sir_diagram2)
 
 ## More customizations
 
-You can combine location specification with user-supplied settings for `make_diagram`
+You can combine settings for `prepare_diagram` and `make_diagram`
 
 ```{r}
-sir_diagram_settings2 = c(sir_diagram_settings, 
-                          use_varnames = TRUE, 
-                          node_text_size = 4)
 sir_diagram3 <- make_diagram(sir_diagram_list2, 
-                             sir_diagram_settings2)
-```
-## More customizations
-
-You can combine location specification with user-supplied settings for `make_diagram`
-
-```{r}
+                             sir_diagram_settings)
 plot(sir_diagram3)
 ```
 
 
 ## Even more customization {.smaller}
 
-* `prepare_diagram` returns a list of data frames that specify variables/compartments/boxes and flows/arrows.
+* `prepare_diagram` returns a list of data frames that specify variable and flow location and styling.
 
 ```{r}
 print(sir_diagram_list2)
@@ -170,21 +153,17 @@ print(sir_diagram_list2)
 * You can edit the object produced by `prepare_diagram` before calling `make_diagram`.
 
 ```{r}
-#assign to a new variable so we preserve the original
-modified_diagram_list <- sir_diagram_list2
 #increase the I box a bit both on left and right 
-modified_diagram_list$nodes$xmin[2] = 5
-modified_diagram_list$nodes$xmax[2] = 7
+sir_diagram_list2$variables$xmin[2] = 2
+sir_diagram_list2$variables$xmax[2] = 4
 #modify inflow and outflow arrows to align with new box size 
-modified_diagram_list$horizontal_edges$xend[1] = 5
-modified_diagram_list$horizontal_edges$xstart[2] = 7
+sir_diagram_list2$flows$xend[1] = 2
+sir_diagram_list2$flows$xstart[2] = 4
 #move the b*S*I arrow end a bit
-modified_diagram_list$curved_edges$xend[1] = 4
+sir_diagram_list2$flows$xend[3] = 1.25
 #move the b*S*I label 
-modified_diagram_list$curved_edges$labely[1] = 0.2
-modified_diagram_list$curved_edges$labelx[1] = 4.6
-#move the g*I arrow over just a bit
-modified_diagram_list$horizontal_edges$labelx[2] = 7.75
+sir_diagram_list2$flows$labely[3] = -1.2
+sir_diagram_list2$flows$labelx[3] = 2
 ```
 
 
@@ -193,7 +172,7 @@ modified_diagram_list$horizontal_edges$labelx[2] = 7.75
 With those modifications, the resulting diagram looks like this
 
 ```{r}
-sir_diagram4 <- make_diagram(modified_diagram_list)
+sir_diagram4 <- make_diagram(sir_diagram_list2, sir_diagram_settings)
 plot(sir_diagram4)
 ```
 
@@ -201,7 +180,7 @@ plot(sir_diagram4)
 
 ## Get the full code to reproduce the diagram
 
-* **`flowdiagramr`** can produce a stand-alone script with all `ggplot2` code.
+* **`flowdiagramr`** can produce an `R` script containing the complete code to produce the diagram.
 
 ```{r, eval = FALSE}
 write_diagram(sirmodel, filename ="sirmodel_diagram_code.R")
@@ -215,6 +194,7 @@ write_diagram(sirmodel, filename ="sirmodel_diagram_code.R")
 
 The [**`flowdiagramr`** website](https://andreashandel.github.io/flowdiagramr/) provides a lot of additional information (https://andreashandel.github.io/flowdiagramr/):
 
+* Several detailed vignettes.
 * Many examples illustrating options for customization.
 * Explanation for making non-model based flow diagrams.
 * Comparison to other R packages (e.g. `DiagrammeR`).

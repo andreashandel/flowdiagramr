@@ -82,7 +82,7 @@ make manual adjustments to the diagram." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -118,9 +118,6 @@ make manual adjustments to the diagram." />
     </li>
     <li>
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
-    </li>
-    <li>
-      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
       <a href="../articles/E_more_model_examples.html">More model examples</a>
@@ -170,11 +167,10 @@ make manual adjustments to the diagram.</p>
 
     <pre class="usage"><span class='fu'>write_diagram</span><span class='op'>(</span>
   model_list <span class='op'>=</span> <span class='cn'>NULL</span>,
+  model_settings <span class='op'>=</span> <span class='cn'>NULL</span>,
   diagram_list <span class='op'>=</span> <span class='cn'>NULL</span>,
   diagram_settings <span class='op'>=</span> <span class='cn'>NULL</span>,
-  use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  with_grid <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  directory <span class='op'>=</span> <span class='cn'>NULL</span>,
+  directory <span class='op'>=</span> <span class='st'>"./"</span>,
   filename <span class='op'>=</span> <span class='st'>"diagram_code.R"</span>,
   always_overwrite <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
@@ -188,6 +184,11 @@ make manual adjustments to the diagram.</p>
 <code><a href='prepare_diagram.html'>prepare_diagram</a></code>. Also see <code>Details</code> below.</p></td>
     </tr>
     <tr>
+      <th>model_settings</th>
+      <td><p>A named list of model settings.  See
+<code><a href='prepare_diagram.html'>prepare_diagram</a></code>. Also see <code>Details</code> below.</p></td>
+    </tr>
+    <tr>
       <th>diagram_list</th>
       <td><p>A <strong>flowdiagramr</strong> input structure, resulting from
 a call to <code><a href='prepare_diagram.html'>prepare_diagram</a></code>. See <code>Details</code> below.</p></td>
@@ -197,18 +198,6 @@ a call to <code><a href='prepare_diagram.html'>prepare_diagram</a></code>. See <
       <td><p>A named list of diagram aesthetics. See
 <code><a href='make_diagram.html'>make_diagram</a></code> documentation. Default is <code>NULL</code> and the
 default values from <code><a href='make_diagram.html'>make_diagram</a></code> are used.</p></td>
-    </tr>
-    <tr>
-      <th>use_varnames</th>
-      <td><p>A logical indicating whether to label nodes with
-variable abbreviations (<code>FALSE</code>; default) or to use the full names
-provided in the <code>varnames</code> element of <code>model_list</code> (<code>TRUE</code>).</p></td>
-    </tr>
-    <tr>
-      <th>with_grid</th>
-      <td><p>A logical indicating whether to return the ggplot
-with a grid. Default is FALSE. The grid can be helpful if you
-want/need to move items around.</p></td>
     </tr>
     <tr>
       <th>directory</th>

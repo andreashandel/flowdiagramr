@@ -122,13 +122,14 @@ write_diagram <- function(model_list = NULL,
   rec_block <- paste(
     "var_outline_color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))",
     "var_fill_color <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))",
-    "var_text_color <- flowdiagramr:::recycle_values(var_text_color, nrow(variables))",
-    "flow_text_color <- flowdiagramr:::recycle_values(flow_text_color, nrow(flows))",
+    "var_label_color <- flowdiagramr:::recycle_values(var_label_color, nrow(variables))",
+    "main_flow_label_color <- flowdiagramr:::recycle_values(main_flow_label_color, nrow(flows))",
     sep = "\n"
     )
 
+
   # ggplot2 code block ---
-  gg_block <- flowdiagramr:::get_code()  # gets the code used by flowdiagramr
+  gg_block <- get_code()  # gets the code used by flowdiagramr
 
   # Plotting and saving block ---
   plot_save_block <- "# These lines plot or save the generated diagram. \n# Uncomment them if you want to perform either action. \n# plot(diagram_plot) \n# ggsave('diagram_plot.png',diagram_plot)"

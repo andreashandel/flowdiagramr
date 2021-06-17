@@ -1,8 +1,9 @@
 ******
 # 2021-06-15 & 16
 
-* Can you re-order flow columns from xstart ystart xend yend to xstart xend ystart yend to make consistent with ordering for variables (couldn't quickly figure out where in code that happens.)
+* If one specifies flow linetype in make_diagram as number, it throws an error message. See vignette E.
 
+* Can you re-order flow columns from xstart ystart xend yend to xstart xend ystart yend to make consistent with ordering for variables (couldn't quickly figure out where in code that happens.)
 
 * Optional arguments to make_diagram not yet what I have in mind. See documentation header of function for a sketched out setup.
 
@@ -29,8 +30,6 @@ if(!is.null(nodes_matrix)) {
 
 * Minor: In general, if I were to manually label diagrams, I would try to place the text for interaction flows close to the tip of the arrow, i.e., where the interaction happens. E.g. in the basic SIR diagram, I would move it down to where the bSI arrow meets the S->I arrow. Not sure if placement could be changed to be generally close to interaction, and if that would produce worse looking diagrams?
 
-* The vignette A still had node_fill_color, which led to no change. Seems right now if the user specifies any input that the function doesn't understand, it is silently ignored. Not sure if that's ideal, users might have typos and wonder why nothing works. maybe we can have a check at the beginning of prepare_diagram that looks for all user-supplied input and if the user specifies something that's not part of the recognized input (e.g. sets node_fill_color, which doesn't exist), a warning message is produced. E.g. "you supplied input argument xxx, which is not a recognized input for make_diagram". Or something like that. And might want to have the same check/warning for prepare_diagram?
-
 
 ******
 # 2021-06-02 and 2021-06-07 and 2021-06-10
@@ -38,8 +37,6 @@ if(!is.null(nodes_matrix)) {
 * Should we try to write a manuscript describing the package?
 
 * The quickstart vignette shows an error message "Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables". Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new 'more model examples' vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be. (and first address the other points).
-
-* Is it possible to add some code at the end of a plot generation that trims all the white space? I know something like theme(plot.margin=unit(c(-2,-2,0,0), "null")) or such can work, the tricky bit is how to figure out automatically how the cropping should happen.
 
 * Need a function that checks that all model_list conventions are adhered to (see vignette A). (might already exist?)
 

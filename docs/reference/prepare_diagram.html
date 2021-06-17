@@ -52,20 +52,11 @@ consisting of variables/compartments and flows
 and creates a list of data frames with label and
 position information for plotting a flow diagram.
 The resulting object is used as an input to
-make_diagram, which creates a ggplot2 based
-diagram. Attempts to make good decisions regarding the placement of nodes,
-flows (arrow segment), and labels are made. However, complex models with
+make_diagram, which creates a ggplot2 based diagram.
+Attempts to make decent decisions regarding the placement of nodes (boxes),
+flows (arrows), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
-in the vignettes.
-IMPORTANT. All variables must start with an upper case letter,
-followed by any combination of letters and numbers (e.g.,
-S, Si, or Aml2). All parameters must start with a lower case letter
-followed by any combination of letters and numbers (e.g.,
-b, bBmax, kS, p21S). All variables and parameters MUST be separated by
-math notation (e.g., +, -, *, /).
-EXAMPLE. The following includes a parameter b and two variables, S
-and I: b*S*I. The following includes a parameter s and two
-variables, Bg and I2: Bg*s*I2." />
+in the vignettes." />
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png" />
 
 
@@ -98,7 +89,7 @@ variables, Bg and I2: Bg*s*I2." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -134,9 +125,6 @@ variables, Bg and I2: Bg*s*I2." />
     </li>
     <li>
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
-    </li>
-    <li>
-      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
       <a href="../articles/E_more_model_examples.html">More model examples</a>
@@ -184,133 +172,147 @@ consisting of variables/compartments and flows
 and creates a list of data frames with label and
 position information for plotting a flow diagram.
 The resulting object is used as an input to
-<code><a href='make_diagram.html'>make_diagram</a></code>, which creates a <strong>ggplot2</strong> based
-diagram. Attempts to make good decisions regarding the placement of nodes,
-flows (arrow segment), and labels are made. However, complex models with
+<code><a href='make_diagram.html'>make_diagram</a></code>, which creates a <strong>ggplot2</strong> based diagram.
+Attempts to make decent decisions regarding the placement of nodes (boxes),
+flows (arrows), and labels are made. However, complex models with
 complex diagrams will likely need user modification. This is documented
 in the vignettes.</p>
-<p>IMPORTANT. All variables must start with an upper case letter,
-followed by any combination of letters and numbers (e.g.,
-S, Si, or Aml2). All parameters must start with a lower case letter
-followed by any combination of letters and numbers (e.g.,
-b, bBmax, kS, p21S). All variables and parameters MUST be separated by
-math notation (e.g., +, -, *, /).</p>
-<p>EXAMPLE. The following includes a parameter <em>b</em> and two variables, <em>S</em>
-and <em>I</em>: <code>b*S*I</code>. The following includes a parameter <em>s</em> and two
-variables, <em>Bg</em> and <em>I2</em>: <code>Bg*s*I2</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prepare_diagram</span><span class='op'>(</span><span class='va'>model_list</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>prepare_diagram</span><span class='op'>(</span>
+  <span class='va'>model_list</span>,
+  model_settings <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varnames <span class='op'>=</span> <span class='cn'>NULL</span>, use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>, var_label_size <span class='op'>=</span> <span class='fl'>10</span>,
+    varlocations <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>model_list</th>
-      <td><p>A list of model elements. The list must contain at least
-two elements with names <code>varlabels</code> and <code>flows</code>. The
-<code>flows</code> list must contain a sub-list for each variable in
-the <code>varlabels</code> vector. For example, if the user specifies
-two variables in <code>model_list$varlabels</code>, then
-<code>model_list$flows</code> must contain two sub-lists, each containing
-a character vector of flows into and out of the node. Currently,
-this function assumes that the <code>model_list$varlabels</code> sub-lists
-are in the same order as the <code>model_list$varlabels</code> vector. See
-examples. The <code>model_list</code> can contain the optional argument
-<code>varnames</code> which can contain the full text for each
-compartment/variable and <code>varlocations</code> which contains a matrix
-that specifies the locations of the compartments/variables on an x-y
-grid with their desired x (columns) and y (row) locations. See examples
-for more.</p></td>
+      <td><p>A list of model elements. This list is required and
+must contain these two elements:</p><ul>
+<li><p><code>varlabels</code>: A character vector with labels for each variable.</p></li>
+<li><p><code>flows</code>: A list that is the same length as <code>varlabels</code>. Each sub-list
+element is a character vector of any length specifying the flows into
+and out of the variable. Note that <strong>flowdiagramr</strong> assumes that the
+order of <code>flows</code> and <code>varlabels</code> match.</p></li>
+<li><p>IMPORTANT: All varlabel entries must start with an upper case letter,
+followed by any combination of letters and numbers (e.g.,
+S, Si, or Aml2). All parameters contained in the flows
+must start with a lower case letter
+followed by any combination of letters and numbers (e.g.,
+b, bBmax, kS, p21S). All variables and parameters MUST be separated by
+math notation (e.g., +, -, *, /).</p></li>
+<li><p>See examples and details below and vignettes.</p></li>
+</ul></td>
+    </tr>
+    <tr>
+      <th>model_settings</th>
+      <td><p>A list of optional model settings. The following
+elements are supported and default values are provided:</p><ul>
+<li><p><code>varnames</code>: Vector of strings containing labels, one  for each variable.
+Default is <code>NULL</code>.</p></li>
+<li><p><code>use_varnames</code>: A logical. If <code>FALSE</code> (default)  variable boxes will be labeled with
+the <code>varlabels</code> entry from <code>model_list</code>. If <code>TRUE</code> variable boxes will be
+labeled using the text provided in the <code>varnames</code> element.
+If <code>varnames</code> is missing, an error occurs.
+Note that labeling can be turned off through a setting in <code>make_diagram</code>.</p></li>
+<li><p><code>var_label_size</code>: A numeric defining the size of the variable
+labels in the plot. This is necessary because the the box sizes will
+(eventually) be determined by the size of the text within. Default is
+10.</p></li>
+<li><p><code>varlocations</code>: A numeric matrix that specifies the locations of the
+variables on an x-y grid with their desired x (columns) and y (row)
+locations. See examples and vignettes. Default is <code>NULL</code>, which
+results in a left-to-right diagram.</p></li>
+</ul></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of five data frames:</p><ul>
-<li><p><code>nodes</code>: A data frame containing the node (state variable) ids,
-labels, and positions. Position is defined with the <code>x</code> and
-<code>y</code> columns, which define the center of the node squares. The
-ggplot2 function <code>geom_tile</code> is used for placement of nodes and
-the height and width are set to 1 to generate a perfect square centered
-on <code>x</code> and <code>y</code>. The <code>row</code> column indicates which row
-the node is placed on; this is also evident from the <code>y</code> values.
-<code>id</code> is a numeric id for the node, which shows up in the edge
-data frames for defining connects (see below).</p></li>
-<li><p><code>horizontal_edges</code>: A data frame containing name and position
-information for straight flows from one node to an adjacent node. The
-data frame contains nine (9) columns:</p><ul>
-<li><p><code>to</code>: The node to which the arrow will point. That is, the node
-receiving the flow.</p></li>
-<li><p><code>from</code>: The node from which the arrow originate. That is, the
-node donating the flow.</p></li>
+    <p>A list of two data frames:</p><ul>
+<li><p><code>variables</code>: A data frame containing information for all variables.
+The data frame contains these columns:</p>
+<ul>
+<li><p><code>label</code>: The variable label as provided in the model specification.</p></li>
+<li><p><code>name</code>: If provided, the full text for each variable.</p></li>
+<li><p><code>xmin</code>: Left edge location of box.</p></li>
+<li><p><code>xmax</code>: Right edge location of box.</p></li>
+<li><p><code>ymin</code>: Lower edge of location box.</p></li>
+<li><p><code>ymax</code>: Upper edge of location box.</p></li>
+<li><p><code>labelx</code>: Horizontal position (midpoint) of label.</p></li>
+<li><p><code>labely</code>: Vertical position (midpoint) of label.</p></li>
+<li><p><code>plot_label</code>: The text to be written into the box.</p></li>
+<li><p><code>plot_label_size</code>: Size of text to be written into the box.</p></li>
+</ul></li>
+<li><p><code>flows</code>: A data frame containing information for all flows.
+The data frame contains these columns:</p><ul>
+<li><p><code>to</code>: The variable to which the arrow will point. That is, the
+variable receiving the flow.</p></li>
+<li><p><code>from</code>: The variable from which the arrow originate. That is, the
+variable donating the flow.</p></li>
 <li><p><code>label</code>: The label of the flow. Typically a mathematical expression.</p></li>
+<li><p><code>interaction</code>: A logical flag indicating whether the flow
+represents an interaction between two (or more) variables (TRUE) or
+not (FALSE).</p></li>
 <li><p><code>xstart</code>: The starting horizontal position of the arrow.</p></li>
-<li><p><code>ystart</code>: The starting veritcal position of the arrow.</p></li>
 <li><p><code>xend</code>: The ending horizontal position of the arrow.</p></li>
+<li><p><code>ystart</code>: The starting vertical position of the arrow.</p></li>
 <li><p><code>yend</code>: The ending vertical position of the arrow.</p></li>
 <li><p><code>labelx</code>: Horizontal position (midpoint) of label.</p></li>
 <li><p><code>labely</code>: Vertical position (midpoint) of label.</p></li>
-</ul></li>
-<li><p><code>vertical_edges</code>: A data frame containing name and position
-information for flows that arrive from out of the system or leave the
-system. That is, flows that either (1) do not come from a node specified
-in the nodes data frame or (2) exit the system without connecting to
-another node. The data frame contains the same columns as
-<code>horizontal_edges</code>. Note that either the <code>to</code> or <code>from</code>
-value will be NA in each row (if rows are present). These flows arrive
-or leave at 45 degree angles, despite the name of the data frame implying
-a vertical entrance or exit.</p></li>
-<li><p><code>curved_edges</code>: A data frame containing name and position
-information for, typically, two types of curved arrows: (1) interaction
-arrows that point toward a horizontal arrow or (2) a physical flow
-that would normally be a horizontal arrow but must bypass at least
-one node. The data frame has eleven (10) columns. The data frame contains
-the same 9 columns as the <code>horizontal_edges</code> data frame, with one addition:</p><ul>
 <li><p><code>curvature</code>: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.</p></li>
 </ul></li>
-<li><p><code>feedback_edges</code>: A data frame containing name and position
-information for arrows indicating a feedback into the same node. The
-data frame contains the same columns as the <code>horizontal_edges</code>
-data frame. Note that the <code>to</code> and <code>from</code> columns should have
-the same values for feedback edges.</p></li>
 </ul>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><code>varlabels</code> needs to be specified as a vector of model variables,
+e.g., varlabels &lt;- c("Pred","Prey").
+<code>flows</code> need to be specified as a list, with each list entry containing the
+flows/processes for each variable in the order in which the variables appear.
+Flows need to be named according to VARLABEL_flows.
+Example: flows &lt;- list(Pred_flows = c(<code>r*Pred</code>, <code>-k1*Pred*Prey</code>),
+Prey_flows = c(<code>g*Prey</code>, <code>-k2*Pred*Prey</code>) )
+Each flow, i.e. each entry in the flow vector, needs to be a valid
+mathematical expression made up of varlabels and parameters.
+The rules are as described above.
+As an example, the following includes a parameter <em>b</em> and two variables, <em>S</em>
+and <em>I</em>: <code>b*S*I</code>. The following includes a parameter <em>s</em> and two
+variables, <em>Bg</em> and <em>I2</em>: <code>Bg*s*I2</code>.
+See more examples below and in the vignettes.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span><span class='op'>)</span>
-<span class='va'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span><span class='op'>)</span>  <span class='co'># optional</span>
 <span class='va'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>S_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-b*S*I"</span><span class='op'>)</span>,
               I_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span><span class='op'>)</span>,
               R_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"g*I"</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> <span class='op'>)</span>,
+<span class='va'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span><span class='op'>)</span>  <span class='co'># optional</span>
+<span class='va'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>,
+                                 <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> <span class='op'>)</span>,
                         nrow <span class='op'>=</span> <span class='fl'>2</span>, ncol <span class='op'>=</span> <span class='fl'>3</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varlabels <span class='op'>=</span> <span class='va'>varlabels</span>, varnames <span class='op'>=</span> <span class='va'>varnames</span>,
-flows <span class='op'>=</span> <span class='va'>flows</span>, varlocations <span class='op'>=</span> <span class='va'>varlocations</span><span class='op'>)</span>
-<span class='fu'>prepare_diagram</span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>mymodel</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $nodes
-#&gt;   label        name xmin xmax ymin ymax labelx labely
-#&gt; 1     S Susceptible -0.5  0.5 -0.5  0.5      0      0
-#&gt; 2     I    Infected  2.5  3.5 -2.5 -1.5      3     -2
-#&gt; 3     R   Recovered  5.5  6.5 -0.5  0.5      6      0
+<span class='va'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varlabels <span class='op'>=</span> <span class='va'>varlabels</span>, flows <span class='op'>=</span> <span class='va'>flows</span><span class='op'>)</span>
+<span class='va'>mysettings</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varnames <span class='op'>=</span> <span class='va'>varnames</span>, use_varnames <span class='op'>=</span> <span class='cn'>TRUE</span>,
+                   var_label_size <span class='op'>=</span> <span class='fl'>12</span>,varlocations <span class='op'>=</span> <span class='va'>varlocations</span><span class='op'>)</span>
+<span class='fu'>prepare_diagram</span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>mymodel</span>, model_settings <span class='op'>=</span> <span class='va'>mysettings</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $variables
+#&gt;   label        name xmin xmax ymin ymax labelx labely  plot_label
+#&gt; 1     S Susceptible -0.5  0.5 -0.5  0.5      0      0 Susceptible
+#&gt; 2     I    Infected  2.5  3.5 -2.5 -1.5      3     -2    Infected
+#&gt; 3     R   Recovered  5.5  6.5 -0.5  0.5      6      0   Recovered
+#&gt;   plot_label_size
+#&gt; 1              12
+#&gt; 2              12
+#&gt; 3              12
 #&gt; 
-#&gt; $horizontal_edges
-#&gt;   to from label interaction xstart ystart xend yend labelx labely
-#&gt; 1  I    S             FALSE    0.5      0  2.5   -2    1.5  -0.75
-#&gt; 2  R    I   g*I       FALSE    3.5     -2  5.5    0    4.5  -0.75
-#&gt; 
-#&gt; $vertical_edges
-#&gt; [1] to     from   label  xstart ystart xend   yend   labelx labely
-#&gt; &lt;0 rows&gt; (or 0-length row.names)
-#&gt; 
-#&gt; $curved_edges
-#&gt;   to from label interaction xstart ystart xend yend curvature labelx labely
-#&gt; 1 NA    I b*S*I        TRUE      3   -1.5  1.5   -1       0.4   2.35  -0.75
-#&gt; 
-#&gt; $feedback_edges
-#&gt; [1] to     from   label  xstart ystart xend   yend   labelx labely
-#&gt; &lt;0 rows&gt; (or 0-length row.names)
+#&gt; $flows
+#&gt;     to from label xstart ystart xend yend labelx labely curvature        type
+#&gt; 1    I    S          0.5    0.0  2.5   -2   1.50  -0.75       0.0        main
+#&gt; 2    R    I   g*I    3.5   -2.0  5.5    0   4.50  -0.75       0.0        main
+#&gt; 3 &lt;NA&gt;    I b*S*I    3.0   -1.5  1.5   -1   2.35  -0.75       0.4 interaction
 #&gt; </div><div class='input'>
 </div></pre>
   </div>

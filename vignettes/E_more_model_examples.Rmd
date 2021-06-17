@@ -49,16 +49,17 @@ This is the same information formatted as a structure that can be used as input 
 
 ```{r, error = TRUE}
 varlabels = c("H","F","T","B","A")
-varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")
+#varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")
 flows = list(H_flows = c("-kA*A*H", "- dH * H"),
              F_flows = c("pF" ,"- dF*F", "H / (H + hH) * gF * (fmax - F)"),
              T_flows = c("F*H*T/(F*H + hT)" ,"+ gT*T"),
              B_flows = c("gB * B * rH*F*H/(s1+F*H)",  "gB * B *rT*F*T/(s2+F*T)" ),
              A_flows = c("rA*B",  "- dA*A", "- kA*A*H") 
              )
-model_list = list(varlabels = varlabels, flows = flows, varnames = varnames)
+model_list = list(varlabels = varlabels, flows = flows)
 diagram_list <- prepare_diagram(model_list)
 ```
+
 
 # Example 2
 
@@ -87,18 +88,18 @@ Finally, we can make a diagram with settings adjusted to our liking.
 ```{r}
 # define adjusted settings for layout
 diagram_settings = list(
-    node_outline_color = NA,
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "white",
-    node_text_size = 10,
-    flow_text_color = "black",
-    flow_text_size = 5,
-    main_arrow_color = "grey25",
-    main_arrow_linetype = 1,
-    main_arrow_size = 0.7,
-    interaction_arrow_color = "grey25",
-    interaction_arrow_linetype = 2,
-    interaction_arrow_size = 0.7
+    var_outline_color = NA,
+    var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    var_label_color = "white",
+    var_label_size = 10,
+    main_flow_label_color = "black",
+    main_flow_label_size = 5,
+    main_flow_color = "grey25",
+    #main_flow_linetype = 1,
+    main_flow_size = 0.7,
+    interaction_flow_color = "grey25",
+    #interaction_flow_linetype = 2,
+    interaction_flow_size = 0.7
 )
     
 # make diagram with adjusted settings
@@ -110,24 +111,27 @@ diag1 <- make_diagram(
 plot(diag1)
 ```
 
-For the next diagram, we are turning off the interactions and only show physical flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.
+**SPECIFYING FLOW LINETYPE AS NUMBER THROWS AN ERROR MESSAGE. UNCOMMENT ABOVE TO REPRODUCE.**
+
+For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.
 
 ```{r}
 # specify custom settings for the diagram layout
 diagram_settings <- list(
-    node_outline_color = NA,
-    node_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    node_text_color = "white",
-    node_text_size = 10,
-    flow_text_color = "black",
-    flow_text_size = 5,
-    main_arrow_color = "grey25",
-    main_arrow_linetype = 1,
-    main_arrow_size = 0.7,
-    interaction_label = FALSE,
-    interaction_arrow_color = "grey25",
-    interaction_arrow_linetype = 2,
-    interaction_arrow_size = 0.7
+  var_outline_color = NA,
+    var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    var_label_color = "white",
+    var_label_size = 10,
+    main_flow_label_color = "black",
+    main_flow_label_size = 5,
+    main_flow_color = "grey25",
+    #main_flow_linetype = 1,
+    main_flow_size = 0.7,
+    interaction_flow_on = FALSE,  
+    interaction_flow_color = "grey25",
+    #interaction_flow_linetype = 2,
+    interaction_flow_size = 0.7,
+    external_flow_on = FALSE
 )
 
     # make another diagram with adjusted settings

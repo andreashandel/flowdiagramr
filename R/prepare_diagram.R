@@ -40,7 +40,7 @@
 #'     labeled using the text provided in the `varnames` element.
 #'     If `varnames` is missing, an error occurs.
 #'     Note that labeling can be turned off through a setting in `make_diagram`.
-#' \item `plot_varlabel_size`: A numeric defining the size of the variable
+#' \item `var_label_size`: A numeric defining the size of the variable
 #'     labels in the plot. This is necessary because the the box sizes will
 #'     (eventually) be determined by the size of the text within. Default is
 #'     10.
@@ -104,7 +104,6 @@
 #' variables, *Bg* and *I2*: `Bg*s*I2`.
 #' See more examples below and in the vignettes.
 #'
-#'
 #' @examples
 #' varlabels <- c("S","I","R")
 #' flows <- list(S_flows = c("-b*S*I"),
@@ -116,7 +115,7 @@
 #'                         nrow = 2, ncol = 3, byrow = TRUE)
 #' mymodel <- list(varlabels = varlabels, flows = flows)
 #' mysettings <- list(varnames = varnames, use_varnames = TRUE,
-#'                    plot_varlable_size = 12,varlocations = varlocations)
+#'                    var_label_size = 12,varlocations = varlocations)
 #' prepare_diagram(model_list = mymodel, model_settings = mysettings)
 #'
 #' @export
@@ -126,7 +125,7 @@ prepare_diagram <- function(model_list,
                             model_settings = list(
                               varnames = NULL,
                               use_varnames = FALSE,
-                              plot_varlabel_size = 10,
+                              var_label_size = 10,
                               varlocations = NULL)
                             ) {
 
@@ -138,6 +137,14 @@ prepare_diagram <- function(model_list,
 
   # assign default settings to be updated by user
   defaults <- eval(formals(prepare_diagram)$model_settings)
+
+  # check user inputs provided in model_settings, if user supplies a non-recognized argument, stop
+  nonrecognized_inputs <- setdiff(names(model_settings),  names(defaults))
+  if (length(nonrecognized_inputs>0) )
+  {
+    stop('These elements of model_settings are not recognized: ', nonrecognized_inputs)
+  }
+
 
   # update defaults with user settings
   defaults[names(model_settings)] <- model_settings
@@ -186,7 +193,7 @@ prepare_diagram <- function(model_list,
   flows <- model_list$flows
 
   #add implicit + signs to make explicit before additional parsing
-  flows <- flowdiagramr:::add_plus_signs(flows)
+  flows <- add_plus_signs(flows)
 
   #turns flow list into matrix, adding NA, found it online,
   #not sure how exactly it works (from AH and modelbuilder code base)
@@ -932,7 +939,7 @@ prepare_diagram <- function(model_list,
   flows$interaction <- NULL
 
   # add text size arguments
-  nodes$plot_label_size <- model_settings$plot_varlabel_size
+  nodes$plot_label_size <- model_settings$var_label_size
 
 
   return(list(variables = nodes,

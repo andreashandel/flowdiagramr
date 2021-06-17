@@ -83,7 +83,7 @@ and other graphical options can be set by the user." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -119,9 +119,6 @@ and other graphical options can be set by the user." />
     </li>
     <li>
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
-    </li>
-    <li>
-      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
       <a href="../articles/E_more_model_examples.html">More model examples</a>
@@ -172,12 +169,17 @@ and other graphical options can be set by the user.</p>
 
     <pre class="usage"><span class='fu'>make_diagram</span><span class='op'>(</span>
   <span class='va'>diagram_list</span>,
-  diagram_settings <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>label_flows <span class='op'>=</span> <span class='cn'>TRUE</span>, external_flows <span class='op'>=</span> <span class='cn'>TRUE</span>, interaction_label
-    <span class='op'>=</span> <span class='cn'>TRUE</span>, node_outline_color <span class='op'>=</span> <span class='cn'>NA</span>, node_fill_color <span class='op'>=</span> <span class='st'>"#6aa4c8"</span>, node_text_color <span class='op'>=</span>
-    <span class='st'>"white"</span>, node_text_size <span class='op'>=</span> <span class='fl'>10</span>, flow_text_color <span class='op'>=</span> <span class='st'>"black"</span>, flow_text_size <span class='op'>=</span> <span class='fl'>5</span>,
-    main_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, main_arrow_linetype <span class='op'>=</span> <span class='st'>"solid"</span>, main_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span>,
-    interaction_arrow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, interaction_arrow_linetype <span class='op'>=</span> <span class='st'>"dashed"</span>,
-    interaction_arrow_size <span class='op'>=</span> <span class='fl'>0.7</span>, use_varnames <span class='op'>=</span> <span class='cn'>FALSE</span>, with_grid <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+  diagram_settings <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>var_outline_color <span class='op'>=</span> <span class='cn'>NA</span>, var_fill_color <span class='op'>=</span> <span class='st'>"#6aa4c8"</span>,
+    var_label_on <span class='op'>=</span> <span class='cn'>TRUE</span>, var_label_color <span class='op'>=</span> <span class='st'>"white"</span>, var_label_size <span class='op'>=</span> <span class='cn'>NA</span>, main_flow_on <span class='op'>=</span>
+    <span class='cn'>TRUE</span>, main_flow_color <span class='op'>=</span> <span class='st'>"grey25"</span>, main_flow_linetype <span class='op'>=</span> <span class='st'>"solid"</span>, main_flow_size <span class='op'>=</span> <span class='fl'>0.7</span>,
+    main_flow_label_on <span class='op'>=</span> <span class='cn'>TRUE</span>, main_flow_label_color <span class='op'>=</span> <span class='st'>"black"</span>, main_flow_label_size <span class='op'>=</span> <span class='fl'>5</span>,
+    interaction_flow_on <span class='op'>=</span> <span class='cn'>TRUE</span>, interaction_flow_color <span class='op'>=</span> <span class='st'>"grey25"</span>,
+    interaction_flow_linetype <span class='op'>=</span> <span class='st'>"dashed"</span>, interaction_flow_size <span class='op'>=</span> <span class='fl'>0.7</span>,
+    interaction_flow_label_on <span class='op'>=</span> <span class='cn'>TRUE</span>, interaction_flow_label_color <span class='op'>=</span> <span class='st'>"black"</span>,     
+    interaction_flow_label_size <span class='op'>=</span> <span class='fl'>5</span>, external_flow_on <span class='op'>=</span> <span class='cn'>TRUE</span>, external_flow_color <span class='op'>=</span>
+    <span class='st'>"grey25"</span>, external_flow_linetype <span class='op'>=</span> <span class='st'>"solid"</span>, external_flow_size <span class='op'>=</span> <span class='fl'>0.7</span>,
+    external_flow_label_on <span class='op'>=</span> <span class='cn'>TRUE</span>, external_flow_label_color <span class='op'>=</span> <span class='st'>"black"</span>,
+    external_flow_label_size <span class='op'>=</span> <span class='fl'>5</span>, with_grid <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -185,71 +187,108 @@ and other graphical options can be set by the user.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>diagram_list</th>
-      <td><p>A list of data frames returned from the
+      <td><p>A required list of data frames returned from the
 <code>prepare_diagram</code> function. See that function for details
 about this object.</p></td>
     </tr>
     <tr>
       <th>diagram_settings</th>
-      <td><p>A list of diagram aesthetic settings. The
+      <td><p>An optional list of diagram aesthetic settings. The
 following elements are supported and default values are provided:</p><ul>
-<li><p><code>label_flows</code>: A logical indicating whether to label the flows
-(TRUE, default) or not (FALSE).</p></li>
-<li><p><code>external_flows</code>: A logical indicating whether to include flows into
-and out of the system (external flows). Default is TRUE (include).</p></li>
-<li><p><code>interaction_label</code>: A logical indicating whether to make the diagram
-with interaction terms (typically curved arrows leading to the
-mid point of another arrow) or to simply label the main flow. See
-vignettes for examples.</p></li>
-<li><p><code>node_outline_color</code>: A character string or vector of character strings
-specifying the color of node outlines. If a vector, the colors will be
+<li><p><code>var_outline_color</code>: A character string or vector of character strings
+specifying the color of variable outlines. If a vector, the colors will be
 recycled in the order of the variables in the supplied data frame.</p></li>
-<li><p><code>node_fill_color</code>: A character string or vector of character strings
-specifying the fill color of nodes. If a vector, the colors will be
+<li><p><code>var_fill_color</code>: A character string or vector of character strings
+specifying the fill color of variables. If a vector, the colors will be
 recycled in the order of the variables in the supplied data frame.</p></li>
-<li><p><code>node_text_color</code>: A character string or vector of character strings
-specifying the text color for node labels. If a vector, the colors will
+<li><p><code>var_label_on</code>: A logical indicating if the labels for the variables
+should be plotted.</p></li>
+<li><p><code>var_label_color</code>: A character string or vector of character strings
+specifying the text color for variable labels. If a vector, the colors will
 be recycled in the order of the variables in the supplied data frame.</p></li>
-<li><p><code>node_text_size</code>: A numeric scalar specifying the text size for node
-labels. Default value is 8.</p></li>
-<li><p><code>flow_text_color</code>: A character string or vector of character strings
-specifying the text color for flow labels. If a vector, the colors will
-be recycled in the order of the flows in the supplied data frame.</p></li>
-<li><p><code>flow_text_size</code>: A numeric scalar specifying the text size for flow
-labels. Default value is 3.</p></li>
-<li><p><code>main_arrow_color</code>: A character string or vector of character strings
+<li><p><code>var_label_size</code>: A numeric scalar specifying the text size for variable
+labels. Default value is NA and the values in the <code>variables</code> data frame
+returned by <code><a href='prepare_diagram.html'>prepare_diagram</a></code> are used. If a non-NA value is
+supplied here, the values in the <code>variables</code> data frame are not used and
+are replaced by the value specified here.</p></li>
+<li><p><code>main_flow_on</code>: A logical indicating if the main flow arrows should be plotted.</p></li>
+<li><p><code>main_flow_color</code>: A character string or vector of character strings
 specifying the text color for non-interaction flow arrows.
-If a vector, the colors will be recycled in the order of the flows
+If a vector, the values will be recycled in the order of the flows
 in the supplied data frame.</p></li>
-<li><p><code>main_arrow_linetype</code>: Either a numeric scalar or a character scalar
-specifying the linetype for main arrows (non-interaction arrows). This
+<li><p><code>main_flow_linetype</code>: Either a numeric scalar/vector or a character scalar/vector
+specifying the linetype for main flows (non-interaction flows). This
 argument is passed to the <code>linetype</code> argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
 with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 1 (solid).</p></li>
-<li><p><code>main_arrow_size</code>: A numeric scaler specifying the line size for the
-main arrows (non-interaction arrows).</p></li>
-<li><p><code>interaction_arrow_color</code>: A character string or vector of character
-strings specifying the text color for interaction flow arrows.
-If a vector, the colors will be recycled in the order of the flows
+the string." Default is 1 (solid). If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>main_flow_size</code>: A numeric scalar or vector specifying the line size for the
+main flows (non-interaction flows). If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>main_flow_label_on</code>: A logical indicating if the labels for the main
+flows should be plotted.</p></li>
+<li><p><code>main_flow_label_color</code>: A character string or vector of character strings
+specifying the text color for main flow labels. If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>main_flow_label_size</code>: A scalar or numeric vector
+specifying the text size for main flow labels. If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>interaction_flow_on</code>: A logical indicating if the interaction flow arrows should be plotted.</p></li>
+<li><p><code>interaction_flow_color</code>: A character string or vector of character strings
+specifying the text color for non-interaction flow arrows.
+If a vector, the values will be recycled in the order of the flows
 in the supplied data frame.</p></li>
-<li><p><code>interaction_arrow_linetype</code>: Either a numeric scalar or a character scalar
-specifying the linetype for interaction arrows. This
+<li><p><code>interaction_flow_linetype</code>: Either a numeric scalar/vector or a character scalar/vector
+specifying the linetype for interaction flows. This
 argument is passed to the <code>linetype</code> argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
 with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 2 (dashed).</p></li>
-<li><p><code>interaction_arrow_size</code>: A numeric scalar specifying the line size for
-the interaction arrows.</p></li>
-<li><p><code>use_varnames</code> A logical indicating whether to label nodes with
-variable abbreviations (<code>FALSE</code>; default) or to use the full names
-provided in the <code>varnames</code> element of <code>model_list</code> (<code>TRUE</code>).</p></li>
+the string." Default is 1 (solid). If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>interaction_flow_size</code>: A numeric scalar or vector specifying the line size for the
+interaction flows (non-interaction flows). If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>interaction_flow_label_on</code>: A logical indicating if the labels for the interaction
+flows should be plotted.</p></li>
+<li><p><code>interaction_flow_label_color</code>: A character string or vector of character strings
+specifying the text color for interaction flow labels. If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>interaction_flow_label_size</code>: A scalar or numeric vector
+specifying the text size for interaction flow labels. If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>external_flow_on</code>: A logical indicating if the external flow arrows should be plotted.</p></li>
+<li><p><code>external_flow_color</code>: A character string or vector of character strings
+specifying the text color for non-interaction flow arrows.
+If a vector, the values will be recycled in the order of the flows
+in the supplied data frame.</p></li>
+<li><p><code>external_flow_linetype</code>: Either a numeric scalar/vector or a character scalar/vector
+specifying the linetype for external flows. This
+argument is passed to the <code>linetype</code> argument in ggplot2. From
+the ggplot2 documentation: "The linetype aesthetic can be specified
+with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
+3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
+discrete variable, or a string of an even number (up to eight) of
+hexadecimal digits which give the lengths in consecutive positions in
+the string." Default is 1 (solid). If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>external_flow_size</code>: A numeric scalar or vector specifying the line size for the
+external flows (non-interaction flows). If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>external_flow_label_on</code>: A logical indicating if the labels for the external
+flows should be plotted.</p></li>
+<li><p><code>external_flow_label_color</code>: A character string or vector of character strings
+specifying the text color for external flow labels. If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
+<li><p><code>external_flow_label_size</code>: A scalar or numeric vector
+specifying the text size for external flow labels. If a vector, the values will
+be recycled in the order of the flows in the supplied data frame.</p></li>
 <li><p><code>with_grid</code> A logical indicating whether to return the ggplot
 with a grid. Default is FALSE. The grid can be helpful if you
 want/need to move items around.</p></li>
@@ -262,15 +301,10 @@ want/need to move items around.</p></li>
     <p>A ggplot2 object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>varlabels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span><span class='op'>)</span>
-<span class='va'>varnames</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Susceptible"</span>,<span class='st'>"Infected"</span>,<span class='st'>"Recovered"</span><span class='op'>)</span>  <span class='co'># optional</span>
-<span class='va'>flows</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>S_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-b*S*I"</span><span class='op'>)</span>,
-              I_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span><span class='op'>)</span>,
-              R_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"g*I"</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>varlocations</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>, <span class='st'>""</span>, <span class='st'>"R"</span>, <span class='st'>""</span>, <span class='st'>"I"</span>, <span class='st'>""</span> <span class='op'>)</span>,
-                        nrow <span class='op'>=</span> <span class='fl'>2</span>, ncol <span class='op'>=</span> <span class='fl'>3</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>mymodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varlabels <span class='op'>=</span> <span class='va'>varlabels</span>, varnames <span class='op'>=</span> <span class='va'>varnames</span>,
-flows <span class='op'>=</span> <span class='va'>flows</span>, varlocations <span class='op'>=</span> <span class='va'>varlocations</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='va'>mymodel</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>varlabels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"S"</span>,<span class='st'>"I"</span>,<span class='st'>"R"</span><span class='op'>)</span>,
+               flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>S_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-b*S*I"</span><span class='op'>)</span>,
+                            I_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"b*S*I"</span>,<span class='st'>"-g*I"</span><span class='op'>)</span>,
+                            R_flows <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"g*I"</span><span class='op'>)</span> <span class='op'>)</span> <span class='op'>)</span>
 <span class='va'>diagram_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepare_diagram.html'>prepare_diagram</a></span><span class='op'>(</span>model_list <span class='op'>=</span> <span class='va'>mymodel</span><span class='op'>)</span>
 
 <span class='co'># make diagram without grid</span>

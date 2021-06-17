@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -74,9 +74,6 @@
     </li>
     <li>
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
-    </li>
-    <li>
-      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
       <a href="../articles/E_more_model_examples.html">More model examples</a>
@@ -127,8 +124,8 @@
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
 <p>We assume you went through the <a href="./A_quickstart.html">getting started vignette</a> and also the <a href="./B_modify_diagrams_simple.html">basic modification vignette</a>.</p>
-<p>If the basic modifications you can achieve by providing different options to <code>make_diagram</code>, then you do not need to go any further, and there is no need to understand in more detail how <strong>flowdiagramr</strong> works. However, it is quite likely that at some point, you want to further tweak your diagram. To do so successfully, it is useful to learn some more details about how the package works.</p>
-<p>As you learned, producing a diagram with <strong>flowdiagramr</strong> involves two steps. After you have defined your model, there is a first step that takes your model and creates a list of data frames (which we called the <code>input_structure</code> in the prior vignettes). These data frames are used by <code>make_diagram</code> to produce the ggplot code and figure.</p>
+<p>If the modifications you can achieve by providing optional settings to <code>prepare_diagram</code> and <code>make_diagram</code>, then you do not need to go any further, and there is no need to understand in more detail how <strong>flowdiagramr</strong> works. However, it is quite likely that at some point, you want to further tweak your diagram. To do so successfully, it is useful to learn some more details about how the package works.</p>
+<p>As you learned, producing a diagram with <strong>flowdiagramr</strong> involves two steps. After you have defined your model, there is a first step in which you call <code>prepare_diagram</code>, which takes your model and creates a list of data frames (which we called the <code>input_structure</code> in the prior vignettes). These data frames are used by <code>make_diagram</code> to produce the ggplot code and figure.</p>
 <p>The advantage of this 2-step process is that you can make modifications to the <code>input_structure</code> object before sending it into the <code>make_diagram</code> function, and thus modify the layout of the diagram beyond what you can through the<code>make_diagram</code> options, while still being fairly easy to do.</p>
 </div>
 <div id="explanation-of-the-diagram_list-object" class="section level2">
@@ -137,10 +134,10 @@
 <p>To modify the object returned from <code>prepare_diagram</code> and used as input for <code>make_diagram</code>, it is important to learn a bit about it. You can learn the details from the help file for the <code>prepare_diagram</code> function, which you can call like this</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/help.html">help</a></span><span class="op">(</span><span class="st">'prepare_diagram'</span><span class="op">)</span></code></pre></div>
-<p>As the help file explains, what <code>prepare_diagram</code> does is to produce a list (which we call <code>diagram_list</code>, but can assign it any name) that contains 5 elements, one for the node/variable placement information, and 4 others with information for different types of edges. Depending on the model, some of the edge data frames might be empty. This information about the location of the nodes/variables, and the different types of edges is used by <code>make_diagram</code> to create the plot.</p>
-<p><code>prepare_diagram</code> attempts to make reasonable choices on node location and classification and location of flows. For example, flows into or out of the system with only one node intersection are typically drawn at a 45 degree angle. Flows that bypass a node are typically curved.</p>
+<p>As the help file explains, what <code>prepare_diagram</code> does is to produce a list (which we call <code>diagram_list</code>, but you can assign it any name) that contains 2 data frames, one with variable related information and one with flow related information. This information is used by <code>make_diagram</code> to create the plot.</p>
+<p><code>prepare_diagram</code> attempts to make reasonable choices on location and sizing for variables and flows. For example, flows into or out of the system with only one node intersection are typically drawn at a 45 degree angle. Flows that bypass a node are typically curved.</p>
 <p>Once you understand the components of the input object and what the different parts mean, you can modify them. This allows you to impact the look of the diagram you get once you send your modified object into the <code>make_diagram</code> function.</p>
-<p>It is easiest to understand this approach by showing a few examples, so this is what we’ll do next.</p>
+<p>It is easiest to understand this approach by showing a few examples, so let’s do that.</p>
 </div>
 <div id="modifying-the-make_diagram-input-object" class="section level2">
 <h2 class="hasAnchor">
@@ -152,12 +149,10 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Set up model</span>
 <span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Susceptible"</span>,<span class="st">"Infected"</span>,<span class="st">"Recovered"</span><span class="op">)</span>
-<span class="co"># currently only works with trailing + signs</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+n"</span>, <span class="st">"-b*S*I"</span>, <span class="st">"-m*S"</span><span class="op">)</span>, 
-             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+b*S*I"</span>,<span class="st">"-g*I"</span>, <span class="st">"-m*I"</span><span class="op">)</span>, 
-             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"+g*I"</span>, <span class="st">"-m*R"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">sirmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="st">"-b*S*I"</span>, <span class="st">"-m*S"</span><span class="op">)</span>, 
+             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span>, <span class="st">"-m*I"</span><span class="op">)</span>, 
+             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*I"</span>, <span class="st">"-m*R"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">sirmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>Next, we send the model to the <code>prepare_diagram</code> function.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sir_diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span></code></pre></div>
@@ -168,51 +163,40 @@
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 <p>So far, nothing really new, apart from showing the grid in the plot.</p>
 <p>Now, instead of sending the object produced by <code>prepare_diagram</code> (here called <code>sir_diagram_list</code>) to the <code>make_diagram</code> function right away, we’ll take a look at it and modify it. Here are the details contained in this object</p>
-<p><strong>RENAME AS DESCRIBED IN TODO</strong></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">sir_diagram_list</span><span class="op">)</span>
-<span class="co">#&gt; $nodes</span>
-<span class="co">#&gt;   label        name xmin xmax ymin ymax labelx labely</span>
-<span class="co">#&gt; 1     S Susceptible  2.5  3.5 -0.5  0.5      3      0</span>
-<span class="co">#&gt; 2     I    Infected  5.5  6.5 -0.5  0.5      6      0</span>
-<span class="co">#&gt; 3     R   Recovered  8.5  9.5 -0.5  0.5      9      0</span>
+<span class="co">#&gt; $variables</span>
+<span class="co">#&gt;   label name xmin xmax ymin ymax labelx labely plot_label plot_label_size</span>
+<span class="co">#&gt; 1     S   NA  2.5  3.5 -0.5  0.5      3      0          S              10</span>
+<span class="co">#&gt; 2     I   NA  5.5  6.5 -0.5  0.5      6      0          I              10</span>
+<span class="co">#&gt; 3     R   NA  8.5  9.5 -0.5  0.5      9      0          R              10</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $horizontal_edges</span>
-<span class="co">#&gt;   to from label interaction xstart ystart xend yend labelx labely</span>
-<span class="co">#&gt; 2  I    S             FALSE    3.5      0  5.5    0    4.5   0.25</span>
-<span class="co">#&gt; 3  R    I   g*I       FALSE    6.5      0  8.5    0    7.5   0.25</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $vertical_edges</span>
-<span class="co">#&gt;     to from label xstart ystart xend yend labelx labely</span>
-<span class="co">#&gt; 1    S &lt;NA&gt;     n    2.5    1.0  3.0  0.5   2.75   1.00</span>
-<span class="co">#&gt; 5 &lt;NA&gt;    S   m*S    3.0   -0.5  3.5 -1.0   3.00  -0.75</span>
-<span class="co">#&gt; 6 &lt;NA&gt;    I   m*I    6.0   -0.5  6.5 -1.0   6.00  -0.75</span>
-<span class="co">#&gt; 7 &lt;NA&gt;    R   m*R    9.0   -0.5  9.5 -1.0   9.00  -0.75</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $curved_edges</span>
-<span class="co">#&gt;   to from label interaction xstart ystart xend yend curvature labelx labely</span>
-<span class="co">#&gt; 1 NA    I b*S*I        TRUE      6    0.5  4.5    0       0.4   5.15   0.75</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $feedback_edges</span>
-<span class="co">#&gt; [1] to     from   label  xstart ystart xend   yend   labelx labely</span>
-<span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></code></pre></div>
+<span class="co">#&gt; $flows</span>
+<span class="co">#&gt;      to from label xstart ystart xend yend labelx labely curvature        type</span>
+<span class="co">#&gt; 2     I    S          3.5    0.0  5.5  0.0   4.50   0.25       0.0        main</span>
+<span class="co">#&gt; 3     R    I   g*I    6.5    0.0  8.5  0.0   7.50   0.25       0.0        main</span>
+<span class="co">#&gt; 1     S &lt;NA&gt;     n    2.5    1.0  3.0  0.5   2.75   1.00       0.0    external</span>
+<span class="co">#&gt; 5  &lt;NA&gt;    S   m*S    3.0   -0.5  3.5 -1.0   3.00  -0.75       0.0    external</span>
+<span class="co">#&gt; 6  &lt;NA&gt;    I   m*I    6.0   -0.5  6.5 -1.0   6.00  -0.75       0.0    external</span>
+<span class="co">#&gt; 7  &lt;NA&gt;    R   m*R    9.0   -0.5  9.5 -1.0   9.00  -0.75       0.0    external</span>
+<span class="co">#&gt; 11 &lt;NA&gt;    I b*S*I    6.0    0.5  4.5  0.0   5.15   0.75       0.4 interaction</span></code></pre></div>
 <p>Let’s modify this object somewhat. The following code makes the <code>I</code> box bigger, and moves the inflow and outflow arrows such that they start/end on the box with the new size. It also shifts the curved arrow and adjusts the label positioning.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#assign to a new variable so we preserve the original</span>
 <span class="va">modified_diagram_list</span> <span class="op">&lt;-</span> <span class="va">sir_diagram_list</span> 
 <span class="co">#increase the I box a bit both on left and right </span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">xmin</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">5</span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">xmax</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">7</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">xmin</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">5</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">xmax</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">7</span>
 <span class="co">#modify inflow and outflow arrows to align with new box size </span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">horizontal_edges</span><span class="op">$</span><span class="va">xend</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">5</span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">horizontal_edges</span><span class="op">$</span><span class="va">xstart</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">7</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xend</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">5</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xstart</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">7</span>
 <span class="co">#move the b*S*I arrow end a bit</span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">xend</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">4</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xend</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">=</span> <span class="fl">4</span>
 <span class="co">#move the b*S*I label </span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">labely</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">0.2</span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">4.6</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labely</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">=</span> <span class="fl">0.2</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">=</span> <span class="fl">4.6</span>
 <span class="co">#move the g*I arrow over just a bit</span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">horizontal_edges</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">7.75</span></code></pre></div>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">7.75</span></code></pre></div>
 <p>With those modifications, the resulting diagram looks like this</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">modified_diagram_list</span><span class="op">)</span>
@@ -220,12 +204,13 @@
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>It is possible to combine the modification of the diagram with modifications made through settings in <code>make_diagram</code>, e.g., we can add some color like this</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">modified_diagram_list</span>,
-                      diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>flow_text_color <span class="op">=</span> <span class="st">"blue"</span>,
-                                              node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-                                              node_text_color <span class="op">=</span> <span class="st">"white"</span>
-                                              <span class="op">)</span>
-                     <span class="op">)</span>
+<code class="sourceCode R"><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
+  <span class="va">modified_diagram_list</span>,
+  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+                          var_label_color <span class="op">=</span> <span class="st">"black"</span>,
+                          main_flow_label_color <span class="op">=</span> <span class="st">"blue"</span>,
+                          interaction_flow_color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">plot3</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 </div>
@@ -245,57 +230,49 @@
 <span class="va">ppplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ppplot</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
-<p>Let’s modify this. We’ll make the <code>Imm</code> box larger, adjust the location of some of the flow labels and let’s also assume that you want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called <code>Pmax</code>, not <code>pmax</code>. You can’t do that when you specify the model since <strong>flowdiagramr</strong> requires that parameters start with a lower case letter. Not a big deal, you can fix this now by replacing the label.</p>
+<p>Let’s modify this. We’ll make the <code>Imm</code> box larger, relabel it, adjust the location of some of the flows to work with the different box sizes. We’ll also move some flow labels around and let’s also assume that you want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called <code>Pmax</code>, not <code>pmax</code>. You can’t do that when you specify the model since <strong>flowdiagramr</strong> requires that parameters start with a lower case letter. Not a big deal, you can fix this now by replacing the label.</p>
 <p>First, we’ll look at the <code>diagram_list</code> structure to see which elements we need to change.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
-<span class="co">#&gt; $nodes</span>
-<span class="co">#&gt;   label name xmin xmax ymin ymax labelx labely</span>
-<span class="co">#&gt; 1   Pat   NA -0.5  0.5 -0.5  0.5      0      0</span>
-<span class="co">#&gt; 2   Imm   NA  2.5  3.5 -0.5  0.5      3      0</span>
+<span class="co">#&gt; $variables</span>
+<span class="co">#&gt;   label name xmin xmax ymin ymax labelx labely plot_label plot_label_size</span>
+<span class="co">#&gt; 1   Pat   NA -0.5  0.5 -0.5  0.5      0      0        Pat              10</span>
+<span class="co">#&gt; 2   Imm   NA  2.5  3.5 -0.5  0.5      3      0        Imm              10</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $horizontal_edges</span>
-<span class="co">#&gt;  [1] to          from        label       interaction xstart      ystart     </span>
-<span class="co">#&gt;  [7] xend        yend        labelx      labely     </span>
-<span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $vertical_edges</span>
-<span class="co">#&gt;   to from  label xstart ystart xend yend labelx labely</span>
-<span class="co">#&gt; 5 NA  Imm dI*Imm   3.00   -0.5 3.50   -1   3.00  -0.75</span>
-<span class="co">#&gt; 3 NA  Pat dP*Pat  -0.25   -0.5 0.25   -1  -0.25  -0.75</span>
-<span class="co">#&gt; 4 NA  Pat          0.25   -0.5 0.75   -1   0.25  -0.75</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $curved_edges</span>
-<span class="co">#&gt;    to from     label interaction xstart ystart xend  yend curvature labelx</span>
-<span class="co">#&gt; 1 Pat  Imm r*Pat*Imm        TRUE    0.5      0 2.67  0.75       0.1   2.42</span>
-<span class="co">#&gt; 2 Imm  Pat k*Pat*Imm        TRUE    2.5      0 0.50 -0.75       0.1   0.65</span>
-<span class="co">#&gt;   labely</span>
-<span class="co">#&gt; 1    0.7</span>
-<span class="co">#&gt; 2   -0.5</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $feedback_edges</span>
-<span class="co">#&gt;    to from              label xstart ystart xend yend labelx labely</span>
-<span class="co">#&gt; 1 Pat  Pat g*Pat*(1-Pat/pmax)  -0.25    0.5 0.25  0.5      0    1.1</span>
-<span class="co">#&gt; 2 Imm  Imm                      2.75    0.5 3.25  0.5      3    1.1</span></code></pre></div>
-<p><strong>Need to be able to change label location for all flows. Not currently working.</strong></p>
+<span class="co">#&gt; $flows</span>
+<span class="co">#&gt;      to from              label xstart ystart xend  yend labelx labely</span>
+<span class="co">#&gt; 5  &lt;NA&gt;  Imm             dI*Imm   3.00   -0.5 3.50 -1.00   3.00  -0.75</span>
+<span class="co">#&gt; 3  &lt;NA&gt;  Pat             dP*Pat  -0.25   -0.5 0.25 -1.00  -0.25  -0.75</span>
+<span class="co">#&gt; 4  &lt;NA&gt;  Pat                      0.25   -0.5 0.75 -1.00   0.25  -0.75</span>
+<span class="co">#&gt; 1   Pat  Imm          r*Pat*Imm   0.50    0.0 2.67  0.75   2.42   0.70</span>
+<span class="co">#&gt; 2   Imm  Pat          k*Pat*Imm   2.50    0.0 0.50 -0.75   0.65  -0.50</span>
+<span class="co">#&gt; 11  Pat  Pat g*Pat*(1-Pat/pmax)  -0.25    0.5 0.25  0.50   0.00   1.10</span>
+<span class="co">#&gt; 21  Imm  Imm                      2.75    0.5 3.25  0.50   3.00   1.10</span>
+<span class="co">#&gt;    curvature        type</span>
+<span class="co">#&gt; 5        0.0    external</span>
+<span class="co">#&gt; 3        0.0    external</span>
+<span class="co">#&gt; 4        0.0    external</span>
+<span class="co">#&gt; 1        0.1 interaction</span>
+<span class="co">#&gt; 2        0.1 interaction</span>
+<span class="co">#&gt; 11      -2.0        main</span>
+<span class="co">#&gt; 21      -2.0        main</span></code></pre></div>
 <p>And here is the code that makes some changes</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#increase box</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">xmin</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">2.25</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">xmax</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">3.75</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">xmin</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">2.25</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">xmax</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">3.75</span>
+<span class="co">#relabel box</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">plot_label</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="st">"T cells"</span>
 <span class="co">#adjust arrow location</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">xstart</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2.25</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xstart</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2.25</span>
 <span class="co">#move labels</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1.4</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1.4</span>
 <span class="co">#change label</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">feedback_edges</span><span class="op">$</span><span class="va">label</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"g*Pat*(1-Pat/Pmax)"</span></code></pre></div>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">label</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"g*Pat*(1-Pat/Pmax)"</span></code></pre></div>
 <p>Sure enough, if you plot this now, you can see all your improvements.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
-  <span class="va">diagram_list</span>, 
-  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>flow_text_size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="op">)</span>
+<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
 </div>
@@ -306,44 +283,47 @@
 <p>Here is the model specification again</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Susceptible children"</span>,<span class="st">"Infected children"</span>,<span class="st">"Recovered children"</span>,<span class="st">"Susceptible adults"</span>,<span class="st">"Infected adults"</span>,<span class="st">"Recovered adults"</span>,<span class="st">"Pathogen in Environment"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sc*bcc*Ic"</span>,<span class="st">"-Sc*bca*Ia"</span>,<span class="st">"-Sc*bcp*P"</span><span class="op">)</span>, 
-             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc*bcc*Ic"</span>,<span class="st">"Sc*bca*Ia"</span>,<span class="st">"Sc*bcp*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, 
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sc*bcc*Ic"</span>,<span class="st">"-Sc*bca*Ia"</span>,<span class="st">"-Sc*bcp*P"</span><span class="op">)</span>,
+             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc*bcc*Ic"</span>,<span class="st">"Sc*bca*Ia"</span>,<span class="st">"Sc*bcp*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>,
              Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
-             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sa*bac*Ic"</span>,<span class="st">"-Sa*baa*Ia"</span>,<span class="st">"-Sa*bap*P"</span><span class="op">)</span>, 
-             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sa*bac*Ic"</span>,<span class="st">"Sa*baa*Ia"</span>,<span class="st">"Sa*bap*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>, 
+             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sa*bac*Ic"</span>,<span class="st">"-Sa*baa*Ia"</span>,<span class="st">"-Sa*bap*P"</span><span class="op">)</span>,
+             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sa*bac*Ic"</span>,<span class="st">"Sa*baa*Ia"</span>,<span class="st">"Sa*bap*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>,
              Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
              P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sc*Ic"</span>,<span class="st">"sa*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
              <span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
+
+<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Susceptible children"</span>,<span class="st">"Infected children"</span>,<span class="st">"Recovered children"</span>,<span class="st">"Susceptible adults"</span>,<span class="st">"Infected adults"</span>,<span class="st">"Recovered adults"</span>,<span class="st">"Pathogen in Environment"</span><span class="op">)</span>
 <span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc"</span>, <span class="st">"Ic"</span>, <span class="st">"Rc"</span>,
                                <span class="st">""</span>,   <span class="st">"P"</span>,   <span class="st">""</span>,
                                <span class="st">"Sa"</span>, <span class="st">"Ia"</span>, <span class="st">"Ra"</span><span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span>, varnames <span class="op">=</span> <span class="va">varnames</span><span class="op">)</span>
-<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
+<span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, use_varnames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, <span class="va">mysettings</span><span class="op">)</span></code></pre></div>
 <p>If you print the resulting <code>diagram_list</code>, you can see details for each box/variable and arrow/flow. Since this is big, we are not showing it here. But we’ll go ahead and make some modifications.</p>
 <p>We’ll increase the box for the pathogen and change the text for all variables by including both the full name and the label (this could of course also be done by just renaming <code>varnames</code> above, but we want to show a different way). We’ll also move some of the flow labels so they don’t overlap with the arrows.</p>
-<p><strong>BELOW IS WRONG SETTINGS, WILL BE DOING THAT ONE LATER ONCE ARROW ISSUE IS FIXED.</strong></p>
+<p><strong>MODIFICATIONS NOT YET IMPLEMENTED, WILL BE DOING THAT ONCE ARROW LOCATION AND BOX SIZING IS ADDRESSED.</strong></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># change labeling of variables</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">name</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">name</span>,<span class="st">", "</span>,<span class="va">diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">label</span><span class="op">)</span>
+<span class="co">#diagram_list$nodes$name = paste0(diagram_list$nodes$name,", ",diagram_list$nodes$label)</span>
 <span class="co">#increase box</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">xmin</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">=</span> <span class="fl">2.25</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">nodes</span><span class="op">$</span><span class="va">xmax</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">=</span> <span class="fl">3.75</span>
+<span class="co">#diagram_list$nodes$xmin[7] = 2.25</span>
+<span class="co">#diagram_list$nodes$xmax[7] = 3.75</span>
 <span class="co">#adjust arrow location</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">xstart</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2.25</span>
+<span class="co">#diagram_list$curved_edges$xstart[2] &lt;- 2.25</span>
 <span class="co">#move labels</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1.4</span></code></pre></div>
+<span class="co">#diagram_list$curved_edges$labelx[1] &lt;- 2</span>
+<span class="co">#diagram_list$curved_edges$labelx[2] &lt;- 1.4</span></code></pre></div>
 <p>Finally, we make the diagram, and also apply different styling as previously</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diagram_settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-       node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span>, <span class="st">"#2987c2"</span>, <span class="st">"#e38b59"</span>, <span class="st">"#5c948c"</span>, <span class="st">"#e8e656"</span><span class="op">)</span>,
-                          node_text_size <span class="op">=</span> <span class="fl">4</span>,
-                          use_varnames <span class="op">=</span> <span class="cn">TRUE</span>
+                        var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span>, <span class="st">"#2987c2"</span>, <span class="st">"#e38b59"</span>, <span class="st">"#5c948c"</span>, <span class="st">"#e8e656"</span><span class="op">)</span>,
+                        var_outline_color <span class="op">=</span> <span class="st">"black"</span>
                         <span class="op">)</span>
 <span class="va">model_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, <span class="va">diagram_settings</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 2 rows containing missing values (geom_text).</span></code></pre></div>
+<span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span>
+
+<span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
 </div>
 </div>

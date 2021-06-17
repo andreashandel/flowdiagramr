@@ -7,14 +7,11 @@ flows = list(S_flows = c("n","-m*S","-bI*S*I", "-bP*S*P"),
              R_flows = c("g*I", "-m*R"),
              P_flows = c("q*I", "-c*P")
             )
+
 mymodel = list(varlabels = varlabels, flows = flows)
-model_list <- mymodel
 
 diagram_list = prepare_diagram(mymodel)
-# make_diagram(diagram_list)
 
-externals <- subset(diagram_list$flows, interaction == FALSE & (is.na(to) | is.na(from)))
-
-test_that("right number of external flows", {
-  expect_equal(5, nrow(externals))
+test_that("right number of flows", {
+  expect_equal(10, nrow(diagram_list$flows))
 })

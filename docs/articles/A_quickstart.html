@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -74,9 +74,6 @@
     </li>
     <li>
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
-    </li>
-    <li>
-      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
       <a href="../articles/E_more_model_examples.html">More model examples</a>
@@ -147,12 +144,16 @@
 \end{aligned}
 \]</span></p>
 <p>A diagram for the model looks as follows</p>
-<p><img src="sirdiagram.png" width="70%"></p>
+<div class="figure" style="text-align: center">
+<img src="sirdiagram.png" alt="Flow diagram for basic SIR model" width="90%"><p class="caption">
+Flow diagram for basic SIR model
+</p>
+</div>
 <p>The purpose of <strong>flowdiagramr</strong> is to automatically create this diagram for you if you supply the model specification. Here is how.</p>
 <div id="specify-the-model" class="section level3">
 <h3 class="hasAnchor">
 <a href="#specify-the-model" class="anchor"></a>Specify the model</h3>
-<p><strong>flowdiagramr</strong> requires that the model is specified as a simple list structure. This list needs to have a minimum of 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this looks as follows:</p>
+<p><strong>flowdiagramr</strong> requires that the model is specified as a simple list structure. This list needs to have 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this looks as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
 <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, 
@@ -170,8 +171,7 @@
 <li>Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write <code>b*S*I</code>, writing it as <code>bSI</code> will not work.</li>
 <li>Minus signs for outflows are required, plus signs for inflows are optional.</li>
 </ul>
-<p>In addition to the required two list elements, <code>varlables</code> and <code>flows</code>, you can specify a few optional list elements, which we’ll discuss later.</p>
-<p><strong>CHECK THAT ABOVE IS CORRECT AND CORRESPONDS TO CHECKS IN THE FUNCTION THAT CHECKS VALIDITY OF MODEL</strong></p>
+<p><strong>CHECK THAT ABOVE IS CORRECT AND CORRESPONDS TO CHECKS IN THE FUNCTION THAT CHECKS VALIDITY OF MODEL. ALSO, ONCE CHECKED, LET’S MAKE prepare_diagram HELP FILE AND THIS TEXT CONSISTENT SO BOTH PLACES EXPLAIN ALL.</strong></p>
 </div>
 <div id="create-elements-needed-for-diagram-generation" class="section level3">
 <h3 class="hasAnchor">
@@ -220,17 +220,15 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
 
-<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
-  <span class="va">diagram_list</span>, 
-  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>,
-                          main_arrow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
-                          interaction_arrow_linetype <span class="op">=</span> <span class="st">"solid"</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, 
+                            diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>,
+                                      main_flow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
+                                      interaction_flow_size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>
                           <span class="op">)</span>
-<span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="A_quickstart_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
-<p>In this example, we added some optional inputs to the <code>make_diagram</code> function to start customizing the model. You’ll learn more about this <a href="./B_modify_diagrams_simple.html">in the next vignette</a>.</p>
+<p>In this example, we also added the optional list <code>diagram_settings</code> to the call of <code>make_diagram</code>. Those some settings allow you to customize the model. You’ll learn more about this <a href="./B_modify_diagrams_simple.html">in the next vignette</a>.</p>
 <p>As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models, as we discuss <a href="./F_non_model_diagrams.html">in this vignette</a>.</p>
 <p>But for completeness, here are the ODE equations for the model we just plotted.</p>
 <p><span class="math display">\[
@@ -298,12 +296,12 @@
 <code class="sourceCode R"><span class="va">model_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span></code></pre></div>
 <p><img src="A_quickstart_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
-<p>As you can see, while the most basic approach of using <strong>flowdiagramr</strong> gets you <em>somewhere</em>, you usually can’t produce a publication-quality diagram this way. Fortunately, <strong>flowdiagramr</strong> gives you ways to customize things - some of them fairly easily - to give you a great-looking diagram!</p>
+<p>As you can see, while the most basic approach of using <strong>flowdiagramr</strong> that we just explained gets you <em>somewhere</em>, you might not be able to produce a publication-quality diagram this way. Fortunately, <strong>flowdiagramr</strong> gives you ways to (easily) customize things to give you a great-looking diagram!</p>
 </div>
 <div id="next-steps" class="section level2">
 <h2 class="hasAnchor">
 <a href="#next-steps" class="anchor"></a>Next steps</h2>
-<p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way should look ok (most of the time), but it won’t be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. <a href="./B_modify_diagrams_simple.html">This vignette</a>, which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments.</p>
+<p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way might look ok (most of the time), but it likely won’t be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. <a href="./B_modify_diagrams_simple.html">The <em>Basic Modifications</em> vignette</a>, which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments.</p>
 </div>
   </div>
 

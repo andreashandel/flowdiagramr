@@ -11,17 +11,11 @@ flows = list(U_flows = c("n","-dU*U","-b*U*V"),
 )
 mymodel = list(varlabels = varlabels, flows = flows)
 
-model_list = mymodel
-nodes_matrix = NULL
-
 diagram_list = prepare_diagram(mymodel)
-# make_diagram(diagram_list)
+diag <- make_diagram(diagram_list)
 
-externals <- subset(diagram_list$flows, interaction == FALSE & (is.na(to) | is.na(from)))
+expect_is(diag, "ggplot" )
 
-test_that("right number of external flows", {
-  expect_equal(4, nrow(externals))
-})
 
 
 

@@ -6,7 +6,7 @@
 \usage{
 prepare_diagram(
   model_list,
-  model_settings = list(varnames = NULL, use_varnames = FALSE, plot_varlabel_size = 10,
+  model_settings = list(varnames = NULL, use_varnames = FALSE, var_label_size = 10,
     varlocations = NULL)
 )
 }
@@ -39,7 +39,7 @@ the \code{varlabels} entry from \code{model_list}. If \code{TRUE} variable boxes
 labeled using the text provided in the \code{varnames} element.
 If \code{varnames} is missing, an error occurs.
 Note that labeling can be turned off through a setting in \code{make_diagram}.
-\item \code{plot_varlabel_size}: A numeric defining the size of the variable
+\item \code{var_label_size}: A numeric defining the size of the variable
 labels in the plot. This is necessary because the the box sizes will
 (eventually) be determined by the size of the text within. Default is
 10.
@@ -52,11 +52,24 @@ results in a left-to-right diagram.
 \value{
 A list of two data frames:
 \itemize{
-\item \code{variables}: A data frame containing the state variable names,
-labels, and positions.
+\item \code{variables}: A data frame containing information for all variables.
+The data frame contains these columns:
 
-\item \code{flows}: A data fram containing the name and position information
-for all the flows. The data frame contains eleven (11) columns:
+\itemize{
+\item \code{label}: The variable label as provided in the model specification.
+\item \code{name}: If provided, the full text for each variable.
+\item \code{xmin}: Left edge location of box.
+\item \code{xmax}: Right edge location of box.
+\item \code{ymin}: Lower edge of location box.
+\item \code{ymax}: Upper edge of location box.
+\item \code{labelx}: Horizontal position (midpoint) of label.
+\item \code{labely}: Vertical position (midpoint) of label.
+\item \code{plot_label}: The text to be written into the box.
+\item \code{plot_label_size}: Size of text to be written into the box.
+}
+
+\item \code{flows}: A data frame containing information for all flows.
+The data frame contains these columns:
 \itemize{
 \item \code{to}: The variable to which the arrow will point. That is, the
 variable receiving the flow.
@@ -67,8 +80,8 @@ variable donating the flow.
 represents an interaction between two (or more) variables (TRUE) or
 not (FALSE).
 \item \code{xstart}: The starting horizontal position of the arrow.
-\item \code{ystart}: The starting vertical position of the arrow.
 \item \code{xend}: The ending horizontal position of the arrow.
+\item \code{ystart}: The starting vertical position of the arrow.
 \item \code{yend}: The ending vertical position of the arrow.
 \item \code{labelx}: Horizontal position (midpoint) of label.
 \item \code{labely}: Vertical position (midpoint) of label.
@@ -116,7 +129,7 @@ varlocations <-  matrix(data = c("S", "", "R",
                         nrow = 2, ncol = 3, byrow = TRUE)
 mymodel <- list(varlabels = varlabels, flows = flows)
 mysettings <- list(varnames = varnames, use_varnames = TRUE,
-                   plot_varlable_size = 12,varlocations = varlocations)
+                   var_label_size = 12,varlocations = varlocations)
 prepare_diagram(model_list = mymodel, model_settings = mysettings)
 
 }

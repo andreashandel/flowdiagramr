@@ -75,8 +75,8 @@ This looks ok, but maybe you want to make some adjustments. So let's define some
 sir_diagram_settings <- list(
     var_outline_color = "black",
     var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    var_text_color = "black",
-    var_text_size = 14,
+    var_label_color = "black",
+    var_label_size = 14,
     main_flow_color = "blue",
     main_flow_size = 1,
     external_flow_linetype = "dashed",
@@ -150,7 +150,7 @@ sirmodel = list(varlabels = c("S","I","R"),
 #optional list of settings
 sirsettings = list(varnames = c("Susceptible","Infected","Recovered"),
                    use_varnames = TRUE,
-                   plot_varlabel_size = 10,
+                   var_label_size = 10,
                    varlocations = matrix(data = c("S", "", "R",
                                                   "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
                   )

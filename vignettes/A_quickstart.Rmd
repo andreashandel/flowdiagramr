@@ -52,7 +52,7 @@ $$
 A diagram for the model looks as follows
 
 ```{r sirdiagram,  fig.cap='Flow diagram for basic SIR model',  echo=FALSE, out.width = "90%", fig.align = 'center'}
-knitr::include_graphics(knitr::plot_crop("sirdiagram.png"))
+knitr::include_graphics("sirdiagram.png")
 ```
 
 The purpose of **`r pkg`** is to automatically create this diagram for you if you supply the model specification. Here is how.

@@ -45,22 +45,23 @@ The model here is not a dynamical systems model like the ones we have looked at 
 Here is how you can implement this model.
 
 ```{r}
-varlabels = c("L","P","B","Pl","R","Re")
-varnames = c("Lamp doesn't work","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp")
-
-flows = list(L_flows = c("-L"), 
-             P_flows = c("L","-no_P","-yes_P"), 
-             B_flows = c("yes_P","-yes_B", "-no_B"),
-             Pl_flows = c("no_P"),
-             R_flows = c("yes_B"),
-             Re_flows = c("no_B")
-             )
-varlocations = matrix(data = c("L", "",
-                               "P", "Pl",
-                               "B", "R", 
-                               "Re","" ), ncol = 2, byrow = TRUE)
-mymodel = list(varlabels = varlabels, varnames = varnames, 
-               flows = flows, varlocations = varlocations)
+mymodel = list(varlabels = c("L","P","B","Pl","R","Re"),
+                flows = list(L_flows = c("-L"), 
+                             P_flows = c("L","-no_P","-yes_P"), 
+                             B_flows = c("yes_P","-yes_B", "-no_B"),
+                             Pl_flows = c("no_P"),
+                             R_flows = c("yes_B"),
+                             Re_flows = c("no_B")
+                            )
+                )
+model_settings = list( varnames = c("Lamp doesn't work","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp"),
+                       use_varnames = TRUE,
+                       var_label_size = 6,
+                       varlocations = matrix(data = c("L", "",
+                                                     "P", "Pl",
+                                                     "B", "R", 
+                                                     "Re","" ), ncol = 2, byrow = TRUE)
+)
 ```
 
 Note that to make the diagram logic work, we have to define actual flows. For instance we can't just label the various flows with "Yes" or "No" like in the original diagram. If we did this, **`r pkg`** wouldn't know with which boxes/variables to associate the arrows with.   
@@ -69,8 +70,8 @@ Note that to make the diagram logic work, we have to define actual flows. For in
 Now, it's the standard steps of preparing, making and plotting the diagram.
 
 ```{r, fig.height = 5}
-diagram_list <- prepare_diagram(mymodel)
-my_diagram <- make_diagram(diagram_list, diagram_settings = list(use_varnames = TRUE))
+diagram_list <- prepare_diagram(mymodel,model_settings)
+my_diagram <- make_diagram(diagram_list)
 plot(my_diagram)
 ```
 
@@ -83,13 +84,13 @@ modified_diagram_list <- diagram_list
 modified_diagram_list$horizontal_edges$label <- c("", "Yes", "No", "Yes", "No")
 
 # apply some styling
-diagram_settings <- list(node_text_size = 3,
-                          flow_text_size= 4,
-                          node_text_color = "black",
-                          node_fill_color = c("pink", "yellow", "yellow",
+diagram_settings <- list( var_fill_color = c("pink", "yellow", "yellow",
                                               "green", "green", "green"),
-                          node_outline_color = "black",
-                           use_varnames = TRUE)
+                          var_outline_color = "black",
+                          var_label_color = "black",
+                          var_label_size = 3,
+                          main_flow_label_size= 4
+)
 # make and plot diagram
 my_diagram <- make_diagram(
   modified_diagram_list, 

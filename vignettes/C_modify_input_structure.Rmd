@@ -128,7 +128,7 @@ It is possible to combine the modification of the diagram with modifications mad
 plot3 <- make_diagram(
   modified_diagram_list,
   diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                          var_text_color = "black",
+                          var_label_color = "black",
                           main_flow_label_color = "blue",
                           interaction_flow_color = "red")
 )
@@ -186,10 +186,7 @@ diagram_list$flows$label[6] <- "g*Pat*(1-Pat/Pmax)"
 Sure enough, if you plot this now, you can see all your improvements.
 
 ```{r}
-my_diagram <- make_diagram(
-  diagram_list, 
-  diagram_settings = list(flow_text_size = 4)
-)
+my_diagram <- make_diagram(diagram_list)
 plot(my_diagram)
 ```
 

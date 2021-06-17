@@ -12,8 +12,9 @@ flows <- diagram_list$flows
 
 var_outline_color <- NA
 var_fill_color <- '#6aa4c8'
-var_text_color <- 'white'
-var_text_size <- NA
+var_label_on <- TRUE
+var_label_color <- 'white'
+var_label_size <- NA
 main_flow_on <- TRUE
 main_flow_color <- 'grey25'
 main_flow_linetype <- 'solid'
@@ -39,8 +40,8 @@ with_grid <- FALSE
 
 var_outline_color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))
 var_fill_color <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))
-var_text_color <- flowdiagramr:::recycle_values(var_text_color, nrow(variables))
-flow_text_color <- flowdiagramr:::recycle_values(flow_text_color, nrow(flows))
+var_label_color <- flowdiagramr:::recycle_values(var_label_color, nrow(variables))
+main_flow_label_color <- flowdiagramr:::recycle_values(main_flow_label_color, nrow(flows))
 
 
 # Start with an empty ggplot2 canvas. The coord_equal function ensures
