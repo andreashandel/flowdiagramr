@@ -828,6 +828,25 @@ prepare_diagram <- function(model_list,
           cdf[i, "labely"] <- cdf[i, "labely"] - yoff
         }
       }
+
+      if(cdf[i, "interaction"] == FALSE &
+         cdf[i, "direct_interaction"] == TRUE &
+         cdf[i, "diff"] > -5000 & cdf[i, "diff"] < 5000) {
+        if(sign(cdf[i, "diff"]) == 1) {
+          cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
+          cdf[i, "xend"] <- cdf[i, "xend"] - xoff
+          cdf[i, "ystart"] <- cdf[i, "ystart"] + yoff
+          cdf[i, "yend"] <- cdf[i, "yend"] + yoff
+          cdf[i, "labely"] <- cdf[i, "labely"] + yoff
+        }
+        if(sign(cdf[i, "diff"]) == -1) {
+          cdf[i, "xstart"] <- cdf[i, "xstart"] - xoff
+          cdf[i, "xend"] <- cdf[i, "xend"] + xoff
+          cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
+          cdf[i, "yend"] <- cdf[i, "yend"] - yoff
+          cdf[i, "labely"] <- cdf[i, "labely"] - yoff
+        }
+      }
     }
   }
 

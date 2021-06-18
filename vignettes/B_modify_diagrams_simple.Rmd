@@ -160,7 +160,7 @@ The `varlocations` argument needs a bit more explanation. What this allows you t
 
 With these additional settings, the model diagram looks as follows
 
-```{r}
+```{r, fig.height=4}
 # prepare inputs 
 sir_diagram_list <- prepare_diagram(model_list = sirmodel, model_settings = sirsettings)
 # make  diagram
@@ -178,6 +178,7 @@ Let's do another example, one that might come up somewhat often, where you need 
 varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE)
 sirsettings$varlocations = varlocations
 sirsettings$use_varnames = FALSE
+sirsettings$var_label_size = 8
 ```
 
 With this setup, the diagram looks like this
@@ -219,19 +220,18 @@ varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
 mymodel = list(varlabels = varlabels, flows = flows)
 mysettings = list(varlocations = varlocations, 
-                  varnames = varnames, use_varnames = TRUE, var_label_size = 6)
+                  varnames = varnames, use_varnames = TRUE, var_label_size = 4)
 diagram_list <- prepare_diagram(mymodel, mysettings)
 ```
 
 In a next step, we combine the object we obtained from `prepare_diagram` (above called `diagram_list`) with further customized settings for additionl styling of the diagram.
 This is all sent to `make_diagram` and the resulting plot looks as follows.
 
-```{r}
+```{r, fig.height=5}
 diagram_settings <- list(
        var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
        interaction_flow_label_size = 4,
-       interaction_flow_color = "blue"
-                        )
+       interaction_flow_color = "blue")
 model_plot <- make_diagram(diagram_list, diagram_settings)
 plot(model_plot)
 ```

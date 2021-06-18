@@ -42,6 +42,35 @@ make_diagram(diagram_list, diagram_settings = list(main_flow_color = "blue",
 
 
 
-write_diagram(model_list = model_list, model_settings = model_settings)
 
+
+
+varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+varnames = c("Susceptible Children","Infected Children","Recovered Children",
+             "Susceptible adults","Infected adults","Recovered adults",
+             "Pathogen in Environment")
+flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
+             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),
+             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"),
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+)
+varlocations = matrix(data = c("Sc", "Ic", "Rc",
+                               "",   "P",   "",
+                               "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
+model_list = list(varlabels = varlabels, flows = flows)
+model_settings = list(varlocations = varlocations,
+                  varnames = varnames, use_varnames = TRUE, var_label_size = 4)
+diagram_list <- prepare_diagram(model_list,model_settings)
+
+diagram_settings <- list(
+  var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
+  interaction_flow_label_size = 4,
+  interaction_flow_color = "blue",
+  with_grid = TRUE
+)
+model_plot <- make_diagram(diagram_list, diagram_settings)
+plot(model_plot)
 
