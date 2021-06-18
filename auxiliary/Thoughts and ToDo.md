@@ -2,6 +2,9 @@
 # Urgent
 ******
 
+* Fix size of boxes when variable names are used. Still not quite working, see e.g. the example in the slides. 
+
+* Fix arrow placement for final example in vignette B.
 
 
 ******

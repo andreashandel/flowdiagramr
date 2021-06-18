@@ -147,8 +147,8 @@ diagram_list <- prepare_diagram(mymodel)
 
 my_diagram <- make_diagram(diagram_list, 
                             diagram_settings = list(var_fill_color = c('blue','red'),
-                                      main_flow_linetype = "dashed",
-                                      interaction_flow_size = 1.5)
+                                                    main_flow_linetype = "dashed",
+                                                    interaction_flow_size = 1.5)
                           )
 
 plot(my_diagram)

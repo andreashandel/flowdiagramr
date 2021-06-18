@@ -82,7 +82,7 @@ Specify settings to be passed to function
 sir_diagram_settings <- list(
     var_outline_color = "black",
     var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    var_label_color = "black",
+    var_label_color = c("black","white","black"),
     var_label_size = 12,
     main_flow_color = "blue",
     main_flow_size = 1.5,
@@ -111,7 +111,7 @@ Specify settings to be passed to function
 model_settings = 
   list(varnames  = c("Susceptible","Infected","Recovered"),
        use_varnames = TRUE,
-       var_label_size = 8,
+       var_label_size = 14,
        varlocations = matrix(data = c("S", "", "R",
                                        "", "I", "" ),
                       nrow = 2, ncol = 3, byrow = TRUE)

@@ -75,7 +75,7 @@ This looks ok, but maybe you want to make some adjustments. So let's define some
 sir_diagram_settings <- list(
     var_outline_color = "black",
     var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    var_label_color = "black",
+    var_label_color = c("black","white","black"),
     var_label_size = 14,
     main_flow_color = "blue",
     main_flow_size = 1,
@@ -188,7 +188,8 @@ sir_diagram <- make_diagram(sir_diagram_list)
 plot(sir_diagram)
 ```
 
-**DIAGRAM NOT LOOKING RIGHT**
+The placement of the labels could be improved, which is not hard to do with **`r pkg`** and you'll learn that in a future vignette.
+
 
 
 ## Combining the two approaches
@@ -198,10 +199,13 @@ It is of course possible to adjust the look of the diagram by combining the two 
 Let's look at this for the somewhat large model with 7 compartments shown in the _Getting Started_ vignette. 
 
 Here is the model again, this time with locations specified. We place the 2 *SIR* compartments on the top and the bottom, and the **P** compartment in the middle.
+We also provide names for each compartment. All this additional information is passed to `prepare_diagram`.
 
 ```{r}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-varnames = c("Susceptible Children","Infected Children","Recovered Children","Susceptible adults","Infected adults","Recovered adults","Pathogen in Environment")
+varnames = c("Susceptible Children","Infected Children","Recovered Children",
+             "Susceptible adults","Infected adults","Recovered adults",
+             "Pathogen in Environment")
 flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
              Rc_flows = c("gc*Ic"),
@@ -214,11 +218,13 @@ varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
 mymodel = list(varlabels = varlabels, flows = flows)
-mysettings = list(varlocations = varlocations, varnames = varnames, use_varnames = TRUE, var_label_size = 4)
+mysettings = list(varlocations = varlocations, 
+                  varnames = varnames, use_varnames = TRUE, var_label_size = 6)
 diagram_list <- prepare_diagram(mymodel, mysettings)
 ```
 
-In a next step, we apply different styling to the diagram
+In a next step, we combine the object we obtained from `prepare_diagram` (above called `diagram_list`) with further customized settings for additionl styling of the diagram.
+This is all sent to `make_diagram` and the resulting plot looks as follows.
 
 ```{r}
 diagram_settings <- list(
@@ -230,15 +236,14 @@ model_plot <- make_diagram(diagram_list, diagram_settings)
 plot(model_plot)
 ```
 
-**SOME ARROWS SEEM TO START/END IN MIDDLE OF BOXES INSTEAD OF EDGES. BOX SIZING NOT RIGHT.**
+**SOME ARROWS SEEM TO START/END IN MIDDLE OF BOXES INSTEAD OF EDGES. BOX SIZING NOT RIGHT. ALSO GGPLOT PRODUCES THIS WARNING MESSAGE, WHICH MIGHT BE WORTH LOOKING INTO "Removed 1 rows containing missing values (geom_text)."**
 
-This starts to look better, though the placement of the labels is clearly not ideal and needs some more tweaking.
-
+This plot is starting to look decent, though some more tweaking is needed (which we'll do shortly).
 
 
 ## Next steps
 
-With the approach just discussed, you can tweak the look of the diagram a good bit. This might give you a diagram that's good enough for what you want. However, at times you might want to make further changes. For instance you might want to tweak the placement of the boxes and arrows or add some extra text somewhere on the diagram. **`r pkg`** gives you ways of doing this. 
+With the approach just discussed, you can modify the look of the diagram a good bit. This might give you a diagram that's good enough for what you want. However, at times you might want to make further changes. For instance you might want to tweak the placement of the boxes and arrows or add some extra text somewhere on the diagram. **`r pkg`** gives you ways of doing this. 
 
 After you have exhausted the modifications described here, and need to make further changes, we recommend as a next step to tweak the input structure that is produced by the `prepare_diagram` function before sending it to the `make_diagram` function. This gives you a good bit more flexibility in adjusting the model, and is not that difficulty to do. This is described [in the next vignette](./C_modify_input_structure.html).    
 
