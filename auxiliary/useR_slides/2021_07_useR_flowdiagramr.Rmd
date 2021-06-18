@@ -63,7 +63,7 @@ sirmodel = list(varlabels = varlabels, flows = flows)
 
 Let **flowdiagramr** turn it into a nice diagram (in 2 steps):
 
-```{r}
+```{r, fig.height = 3}
 # prepare diagram
 sir_diagram_list <- prepare_diagram(sirmodel)
 # make diagram
@@ -96,7 +96,7 @@ sir_diagram_settings <- list(
 
 Create diagram with customized settings
 
-```{r}
+```{r, fig.height = 3}
 sir_diagram <- make_diagram(sir_diagram_list, sir_diagram_settings)
 plot(sir_diagram)
 ```
@@ -111,7 +111,7 @@ Specify settings to be passed to function
 model_settings = 
   list(varnames  = c("Susceptible","Infected","Recovered"),
        use_varnames = TRUE,
-       var_label_size = 14,
+       var_label_size = 4,
        varlocations = matrix(data = c("S", "", "R",
                                        "", "I", "" ),
                       nrow = 2, ncol = 3, byrow = TRUE)
@@ -121,7 +121,7 @@ model_settings =
 
 ## More customizations
 
-```{r}
+```{r, fig.height = 3}
 sir_diagram_list2 <- prepare_diagram(sirmodel, model_settings)
 sir_diagram2 <- make_diagram(sir_diagram_list2)
 plot(sir_diagram2)
@@ -132,7 +132,8 @@ plot(sir_diagram2)
 
 You can combine settings for `prepare_diagram` and `make_diagram`
 
-```{r}
+```{r, fig.height = 3}
+sir_diagram_settings$var_label_size = 4 #reduce to make text fit
 sir_diagram3 <- make_diagram(sir_diagram_list2, 
                              sir_diagram_settings)
 plot(sir_diagram3)
@@ -171,7 +172,7 @@ sir_diagram_list2$flows$labelx[3] = 2
 
 With those modifications, the resulting diagram looks like this
 
-```{r}
+```{r, fig.height = 3}
 sir_diagram4 <- make_diagram(sir_diagram_list2, sir_diagram_settings)
 plot(sir_diagram4)
 ```
