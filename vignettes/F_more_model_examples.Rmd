@@ -95,10 +95,10 @@ diagram_settings = list(
     main_flow_label_color = "black",
     main_flow_label_size = 5,
     main_flow_color = "grey25",
-    #main_flow_linetype = 1,
+    main_flow_linetype = 1,
     main_flow_size = 0.7,
     interaction_flow_color = "grey25",
-    #interaction_flow_linetype = 2,
+    interaction_flow_linetype = 2,
     interaction_flow_size = 0.7
 )
     
@@ -111,7 +111,6 @@ diag1 <- make_diagram(
 plot(diag1)
 ```
 
-**SPECIFYING FLOW LINETYPE AS NUMBER THROWS AN ERROR MESSAGE. UNCOMMENT ABOVE TO REPRODUCE.**
 
 For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.
 
@@ -125,11 +124,11 @@ diagram_settings <- list(
     main_flow_label_color = "black",
     main_flow_label_size = 5,
     main_flow_color = "grey25",
-    #main_flow_linetype = 1,
+    main_flow_linetype = 1,
     main_flow_size = 0.7,
     interaction_flow_on = FALSE,  
     interaction_flow_color = "grey25",
-    #interaction_flow_linetype = 2,
+    interaction_flow_linetype = 2,
     interaction_flow_size = 0.7,
     external_flow_on = FALSE
 )

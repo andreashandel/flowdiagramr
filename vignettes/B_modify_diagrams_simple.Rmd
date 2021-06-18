@@ -236,8 +236,6 @@ model_plot <- make_diagram(diagram_list, diagram_settings)
 plot(model_plot)
 ```
 
-**SOME ARROWS SEEM TO START/END IN MIDDLE OF BOXES INSTEAD OF EDGES. BOX SIZING NOT RIGHT. ALSO GGPLOT PRODUCES THIS WARNING MESSAGE, WHICH MIGHT BE WORTH LOOKING INTO "Removed 1 rows containing missing values (geom_text)."**
-
 This plot is starting to look decent, though some more tweaking is needed (which we'll do shortly).
 
 

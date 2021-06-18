@@ -65,6 +65,19 @@ set_curvature <- function(cdf, ndf) {
         cdf[i, "xend"] <- cdf[i, "xend"]  + 0.5
         cdf[i, "xmid"]  <- cdf[i, "xmid"]  + 0.5
       }
+      if(s == e) {
+        sy <- cdf[i, "ystart"]
+        ey <- cdf[i, "yend"]
+        if(sy > ey) {
+          cdf[i, "ystart"] <- cdf[i, "ystart"] - 0.5
+          cdf[i, "yend"] <- cdf[i, "yend"] + 0.5
+          cdf[i, "ymid"]  <- cdf[i, "ymid"]  + 0.5
+        } else {
+          cdf[i, "ystart"] <- cdf[i, "ystart"] + 0.5
+          cdf[i, "yend"] <- cdf[i, "yend"] - 0.5
+          cdf[i, "ymid"]  <- cdf[i, "ymid"]  - 0.5
+        }
+      }
 
     }
   }
@@ -74,7 +87,7 @@ set_curvature <- function(cdf, ndf) {
   cdf$labely <- NA
   for(i in 1:nrow(cdf)) {
     tmp <- cdf[i, ]
-    if(!is.na(tmp$linkfrom)) {
+    if(!is.na(tmp$linkfrom) | (is.na(tmp$linkfrom) & (!is.na(tmp$to) | !is.na(tmp$from)))) {
       mids <- calc_control_points(x1 = tmp$xstart,
                                   y1 = tmp$ystart,
                                   x2 = tmp$xend,

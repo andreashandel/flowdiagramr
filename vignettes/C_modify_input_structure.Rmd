@@ -106,10 +106,10 @@ modified_diagram_list$variables$xmax[2] = 7
 modified_diagram_list$flows$xend[1] = 5
 modified_diagram_list$flows$xstart[2] = 7
 #move the b*S*I arrow end a bit
-modified_diagram_list$flows$xend[7] = 4
+modified_diagram_list$flows$xend[3] = 4
 #move the b*S*I label 
-modified_diagram_list$flows$labely[7] = 0.2
-modified_diagram_list$flows$labelx[7] = 4.6
+modified_diagram_list$flows$labely[3] = 0.2
+modified_diagram_list$flows$labelx[3] = 4.6
 #move the g*I arrow over just a bit
 modified_diagram_list$flows$labelx[2] = 7.75
 ```
@@ -175,12 +175,12 @@ diagram_list$variables$xmax[2] = 3.75
 #relabel box
 diagram_list$variables$plot_label[2] = "T cells"
 #adjust arrow location
-diagram_list$flows$xstart[5] <- 2.25
+diagram_list$flows$xstart[4] <- 2.25
 #move labels
 diagram_list$flows$labelx[4] <- 2
-diagram_list$flows$labelx[5] <- 1.4
+diagram_list$flows$labelx[4] <- 1.4
 #change label
-diagram_list$flows$label[6] <- "g*Pat*(1-Pat/Pmax)"
+diagram_list$flows$label[1] <- "g*Pat*(1-Pat/Pmax)"
 ```
 
 Sure enough, if you plot this now, you can see all your improvements.

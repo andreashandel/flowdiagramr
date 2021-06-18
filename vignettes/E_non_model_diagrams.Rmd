@@ -81,7 +81,7 @@ This looks somewhat similar to the original, but of course not quite as good. We
 modified_diagram_list <- diagram_list
 
 # update the flow labels
-modified_diagram_list$horizontal_edges$label <- c("", "Yes", "No", "Yes", "No")
+modified_diagram_list$flows$label <- c("", "Yes", "No", "Yes", "No")
 
 # apply some styling
 diagram_settings <- list( var_fill_color = c("pink", "yellow", "yellow",
