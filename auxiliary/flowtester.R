@@ -7,7 +7,7 @@ varnames = c("Susceptible","Infected","Recovered")
 varlocations = matrix(data = c("S", "", "R",
                                "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
 model_list = list(varlabels = varlabels, flows = flows)
-model_settings = list(varnames = varnames)
+model_settings = list(varnames = varnames, varlocations = varlocations, use_varnames = TRUE)
 diagram_list <- prepare_diagram(model_list, model_settings)
 
 ?make_diagram()

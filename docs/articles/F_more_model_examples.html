@@ -76,6 +76,9 @@
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
     </li>
     <li>
+      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
+    </li>
+    <li>
       <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
@@ -181,10 +184,10 @@
     main_flow_label_color <span class="op">=</span> <span class="st">"black"</span>,
     main_flow_label_size <span class="op">=</span> <span class="fl">5</span>,
     main_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-    <span class="co">#main_flow_linetype = 1,</span>
+    main_flow_linetype <span class="op">=</span> <span class="fl">1</span>,
     main_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
     interaction_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-    <span class="co">#interaction_flow_linetype = 2,</span>
+    interaction_flow_linetype <span class="op">=</span> <span class="fl">2</span>,
     interaction_flow_size <span class="op">=</span> <span class="fl">0.7</span>
 <span class="op">)</span>
     
@@ -196,7 +199,6 @@
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag1</span><span class="op">)</span></code></pre></div>
 <p><img src="F_more_model_examples_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
-<p><strong>SPECIFYING FLOW LINETYPE AS NUMBER THROWS AN ERROR MESSAGE. UNCOMMENT ABOVE TO REPRODUCE.</strong></p>
 <p>For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify custom settings for the diagram layout</span>
@@ -208,11 +210,11 @@
     main_flow_label_color <span class="op">=</span> <span class="st">"black"</span>,
     main_flow_label_size <span class="op">=</span> <span class="fl">5</span>,
     main_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-    <span class="co">#main_flow_linetype = 1,</span>
+    main_flow_linetype <span class="op">=</span> <span class="fl">1</span>,
     main_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
     interaction_flow_on <span class="op">=</span> <span class="cn">FALSE</span>,  
     interaction_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
-    <span class="co">#interaction_flow_linetype = 2,</span>
+    interaction_flow_linetype <span class="op">=</span> <span class="fl">2</span>,
     interaction_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
     external_flow_on <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span>
@@ -227,6 +229,17 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
 <p><img src="F_more_model_examples_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 <p>As you can see, not showing the interactions doesn’t produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.</p>
+<p>This shows the model with vertical alignment</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">varnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>,<span class="st">"Immune Response"</span><span class="op">)</span>
+<span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"I"</span><span class="op">)</span>,
+                        nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">mysettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varnames <span class="op">=</span> <span class="va">varnames</span>, use_varnames <span class="op">=</span> <span class="cn">TRUE</span>,
+                   var_label_size <span class="op">=</span> <span class="fl">4</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span>
+<span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span>, <span class="va">mysettings</span><span class="op">)</span>
+<span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mydiag</span><span class="op">)</span></code></pre></div>
+<p><img src="F_more_model_examples_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 </div>
   </div>
 

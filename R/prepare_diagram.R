@@ -115,18 +115,41 @@
 #' See more examples below and in the vignettes.
 #'
 #' @examples
+#' #basic model specification
 #' varlabels <- c("S","I","R")
 #' flows <- list(S_flows = c("-b*S*I"),
 #'               I_flows = c("b*S*I","-g*I"),
 #'               R_flows = c("g*I"))
-#' varnames <- c("Susceptible","Infected","Recovered")  # optional
+#' mymodel <- list(varlabels = varlabels, flows = flows)
+#' diag_list <- prepare_diagram(model_list = mymodel)
+#' mydiag <- make_diagram(diag_list)
+#'
+#' #adding optional specifications
+#' varnames <- c("Susceptible","Infected","Recovered")
 #' varlocations <-  matrix(data = c("S", "", "R",
 #'                                  "", "I", "" ),
 #'                         nrow = 2, ncol = 3, byrow = TRUE)
-#' mymodel <- list(varlabels = varlabels, flows = flows)
 #' mysettings <- list(varnames = varnames, use_varnames = TRUE,
-#'                    var_label_size = 12,varlocations = varlocations)
-#' prepare_diagram(model_list = mymodel, model_settings = mysettings)
+#'                    var_label_size = 4, varlocations = varlocations)
+#' diag_list <- prepare_diagram(model_list = mymodel, model_settings = mysettings)
+#' mydiag <- make_diagram(diag_list)
+#'
+#' #another simple model
+#' varlabels = c("Pat","Imm")
+#' flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
+#'                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
+#' mymodel = list(varlabels = varlabels, flows = flows)
+#' diag_list <- prepare_diagram(mymodel)
+#' mydiag <- make_diagram(diag_list)
+#'
+#' #options to switch to vertical layout and adding names
+#' varnames <- c("Pathogen","Immune Response")
+#' varlocations <-  matrix(data = c("Pat", "Imm"),
+#'                         nrow = 2, byrow = TRUE)
+#' mysettings <- list(varnames = varnames, use_varnames = TRUE,
+#'                    var_label_size = 4, varlocations = varlocations)
+#' diag_list <- prepare_diagram(mymodel,mysettings)
+#' mydiag <- make_diagram(diag_list)
 #'
 #' @export
 
@@ -139,40 +162,49 @@ prepare_diagram <- function(model_list,
                               varlocations = NULL)
                             ) {
 
-  # check user inputs for necessary elements
+  ######################################################################
+  # check to make sure model_list is a properly specified model
+  ######################################################################
   check <- check_model_list(model_list)
   if(check$bad == TRUE) {
     stop(check$msg)
   }
 
+
   # assign default settings to be updated by user
   defaults <- eval(formals(prepare_diagram)$model_settings)
 
+  ######################################################################
   # check user inputs provided in model_settings, if user supplies a non-recognized argument, stop
-  nonrecognized_inputs <- setdiff(names(model_settings),  names(defaults))
-  if (length(nonrecognized_inputs>0) )
+  ######################################################################
+  if (!is.null(model_settings))
   {
-    stop('These elements of model_settings are not recognized: ', nonrecognized_inputs)
+    nonrecognized_inputs <- setdiff(names(model_settings),  names(defaults))
+    if (length(nonrecognized_inputs>0) )
+    {
+      stop('These elements of model_settings are not recognized: ', nonrecognized_inputs)
+    }
+    # update defaults with user settings
+    defaults[names(model_settings)] <- model_settings
+    model_settings <- defaults  # reassign
   }
 
-
-  # update defaults with user settings
-  defaults[names(model_settings)] <- model_settings
-  model_settings <- defaults  # reassign
-
-  # assign the nodes matrix if provided
-  if(is.matrix(model_settings$varlocations)) {
-    nodes_matrix <- model_settings$varlocations
-  } else {
-    nodes_matrix <- NULL
+  ######################################################################
+  # Check if varlocation matrix is provided
+  # Make sure the varlocations matrix entries match those in model_list
+  ######################################################################
+  varlocation_matrix <- model_settings$varlocations
+  if(!is.null(model_settings$varlocations))
+     {
+       varlocnames = as.vector(model_settings$varlocations)
+       varlocnames = varlocnames[varlocnames !=""] #remove empty entries
+       if (!setequal(varlocnames, model_list$varlabels))
+          {
+            # returns fatal error if variables do not match
+            stop("varlocation entries do not match varlabels in model_list.")
+       }
   }
 
-  # Make sure the nodes_df contains all the state variables included
-  # in the model_list and no other variables.
-  if(!is.null(nodes_matrix)) {
-    # returns fatal error if variables do not match
-    check_nodes_matrix(model_list, nodes_matrix)
-  }
 
 
   # Extract relevant details from the model_list and make a matrix
@@ -597,9 +629,9 @@ prepare_diagram <- function(model_list,
   # arbitrary x positions. y positions take the row id and multiply by
   # negative 2, meaning that additional rows always go below the row that
   # was previously defined.
-  # If the nodes_matrix is provided, then the same procedure is applied, but
+  # If the varlocation_matrix is provided, then the same procedure is applied, but
   # based on the row and column positions provided by the user.
-  if(is.null(nodes_matrix)) {
+  if(is.null(varlocation_matrix)) {
     ndf <- ndf[order(ndf$id), ]
     ndf$x <- NA
     ndf$y <- NA
@@ -608,10 +640,10 @@ prepare_diagram <- function(model_list,
       ndf[which(ndf$row == rid), "y"] <- (as.numeric(rid) * -2)+2
     }
   } else {
-    ny <- (1:nrow(nodes_matrix) * -2)+2
-    nx <- (1:ncol(nodes_matrix) * 3)-3
+    ny <- (1:nrow(varlocation_matrix) * -2)+2
+    nx <- (1:ncol(varlocation_matrix) * 3)-3
     for(nid in varnames) {
-      pos <- which(nodes_matrix == nid, arr.ind = TRUE)
+      pos <- which(varlocation_matrix == nid, arr.ind = TRUE)
       ndf[which(ndf$label == nid), "x"] <- nx[pos[1, 2]]
       ndf[which(ndf$label == nid), "y"] <- ny[pos[1, 1]]
     }
@@ -700,7 +732,7 @@ prepare_diagram <- function(model_list,
   edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25  # label slightly above the arrrow
   edf$diff <- with(edf, abs(to-from))
 
-  if(!is.null(nodes_matrix)) {
+  if(!is.null(varlocation_matrix)) {
     xdiffs <- with(edf, abs(xstart - xend))
     xdiffs <- ifelse(xdiffs %in% c(0, 3), 0.5, 1)
     ydiffs <- with(edf, abs(ystart - yend))

@@ -129,17 +129,40 @@ variables, \emph{Bg} and \emph{I2}: \code{Bg*s*I2}.
 See more examples below and in the vignettes.
 }
 \examples{
+#basic model specification
 varlabels <- c("S","I","R")
 flows <- list(S_flows = c("-b*S*I"),
               I_flows = c("b*S*I","-g*I"),
               R_flows = c("g*I"))
-varnames <- c("Susceptible","Infected","Recovered")  # optional
+mymodel <- list(varlabels = varlabels, flows = flows)
+diag_list <- prepare_diagram(model_list = mymodel)
+mydiag <- make_diagram(diag_list)
+
+#adding optional specifications
+varnames <- c("Susceptible","Infected","Recovered")
 varlocations <-  matrix(data = c("S", "", "R",
                                  "", "I", "" ),
                         nrow = 2, ncol = 3, byrow = TRUE)
-mymodel <- list(varlabels = varlabels, flows = flows)
 mysettings <- list(varnames = varnames, use_varnames = TRUE,
-                   var_label_size = 12,varlocations = varlocations)
-prepare_diagram(model_list = mymodel, model_settings = mysettings)
+                   var_label_size = 4, varlocations = varlocations)
+diag_list <- prepare_diagram(model_list = mymodel, model_settings = mysettings)
+mydiag <- make_diagram(diag_list)
+
+#another simple model
+varlabels = c("Pat","Imm")
+flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
+                 Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
+mymodel = list(varlabels = varlabels, flows = flows)
+diag_list <- prepare_diagram(mymodel)
+mydiag <- make_diagram(diag_list)
+
+#options to switch to vertical layout and adding names
+varnames <- c("Pathogen","Immune Response")
+varlocations <-  matrix(data = c("Pat", "Imm"),
+                        nrow = 2, byrow = TRUE)
+mysettings <- list(varnames = varnames, use_varnames = TRUE,
+                   var_label_size = 4, varlocations = varlocations)
+diag_list <- prepare_diagram(mymodel,mysettings)
+mydiag <- make_diagram(diag_list)
 
 }

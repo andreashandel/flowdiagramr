@@ -5,11 +5,12 @@ articles:
   A_quickstart: A_quickstart.html
   B_modify_diagrams_simple: B_modify_diagrams_simple.html
   C_modify_input_structure: C_modify_input_structure.html
+  D_modify_ggplot_code: D_modify_ggplot_code.html
   E_non_model_diagrams: E_non_model_diagrams.html
   F_more_model_examples: F_more_model_examples.html
   G_additional_topics: G_additional_topics.html
   H_comparison_to_other_packages: H_comparison_to_other_packages.html
-last_built: 2021-06-17T19:45Z
+last_built: 2021-06-19T16:19Z
 urls:
   reference: https://andreashandel.github.io/flowdiagramr/index.html/reference
   article: https://andreashandel.github.io/flowdiagramr/index.html/articles

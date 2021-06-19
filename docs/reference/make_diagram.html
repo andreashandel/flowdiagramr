@@ -121,6 +121,9 @@ and other graphical options can be set by the user." />
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
     </li>
     <li>
+      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
+    </li>
+    <li>
       <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
@@ -207,10 +210,11 @@ should be plotted.</p></li>
 specifying the text color for variable labels. If a vector, the colors will
 be recycled in the order of the variables in the supplied data frame.</p></li>
 <li><p><code>var_label_size</code>: A numeric scalar specifying the text size for variable
-labels. Default value is NA and the values in the <code>variables</code> data frame
-returned by <code><a href='prepare_diagram.html'>prepare_diagram</a></code> are used. If a non-NA value is
-supplied here, the values in the <code>variables</code> data frame are not used and
-are replaced by the value specified here.</p></li>
+labels. Note that any value supplied here overwrites
+entries in the list structure returned by <code><a href='prepare_diagram.html'>prepare_diagram</a></code>.
+Specifically, if you set this parameter when calling <code><a href='prepare_diagram.html'>prepare_diagram</a></code>
+with <code>use_varnames = TRUE</code>, the value is used to compute box size,
+but then the actual size of the label as provided here is applied.</p></li>
 <li><p><code>main_flow_on</code>: A logical indicating if the main flow arrows should be plotted.</p></li>
 <li><p><code>main_flow_color</code>: A character string or vector of character strings
 specifying the text color for non-interaction flow arrows.

@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -79,13 +79,13 @@
       <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
     </li>
     <li>
-      <a href="../articles/E_more_model_examples.html">More model examples</a>
+      <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
-      <a href="../articles/F_non_model_diagrams.html">Making non-model based diagrams</a>
+      <a href="../articles/F_more_model_examples.html">More model examples</a>
     </li>
     <li>
-      <a href="../articles/G_flowdiagramr_and_modelbuilder.html">Using modelbuilder models with flowdiagramr</a>
+      <a href="../articles/G_additional_topics.html">Additional topics</a>
     </li>
     <li>
       <a href="../articles/H_comparison_to_other_packages.html">Comparison to other R packages</a>
@@ -144,14 +144,13 @@
 <span class="va">sirmodel1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>Once you have your model, you can send it to <code>write_diagram</code>, a function that writes the full code needed to generate the diagram. You can specify the location and name for the file. If you don’t provide those, it will be stored in the current working directory under the name <code>diagram_code.R</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/write_diagram.html">write_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel1</span>, filename <span class="op">=</span> <span class="st">'sirmodel1_diagram_code.R'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/write_diagram.html">write_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel1</span>, filename <span class="op">=</span> <span class="st">'sirmodel1_diagram_code.R'</span>, always_overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>If things worked well, you should get a message telling you the location where the code was saved. The code that is generated is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure.</p>
 <p>If you run the code that is generated, it will create the diagram structure as an object called <code>diagram_plot</code>. You can then plot or save that object (there is code at the bottom of the generated file for that).</p>
 <p>For this example, here is what you get.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">'sirmodel1_diagram_code.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
 <p>Having all the code that generates the figure also allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot.</p>
 <p>Let’s assume for this example that you want to add some text below the <code>I</code> compartment. In this case, you don’t need to modify any of the existing code, just add a some code at the end. The following lines of code appended to the bottom of <code>sirmodel1_diagram_code.R</code>, just before the final <code>plot</code> statement, will do the trick:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -187,7 +186,6 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">'sirmodel1_diagram_code_modified.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 </div>
 <div id="example-2" class="section level3">
 <h3 class="hasAnchor">
@@ -203,38 +201,37 @@
 <span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Susceptible"</span>,<span class="st">"Infected"</span>,<span class="st">"Recovered"</span><span class="op">)</span>
 <span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>,
                                <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span> <span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">sirmodel2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span>, varnames <span class="op">=</span> <span class="va">varnames</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></code></pre></div>
+<span class="va">sirmodel2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
+<span class="va">sirsettings2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varnames <span class="op">=</span> <span class="va">varnames</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></code></pre></div>
 <p>Make and modify the <code>diagram_list</code> object by flipping the b<em>S</em>I interaction arrow to go below the S <span class="math inline">\(\rightarrow\)</span> I arrow. (There’s no good reason to do that, other than to show an example.)</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel2</span><span class="op">)</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">ystart</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">2.5</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">yend</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">1.2</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">labely</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">2</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">curved_edges</span><span class="op">$</span><span class="va">curvature</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span></code></pre></div>
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel2</span>, <span class="va">sirsettings2</span><span class="op">)</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">ystart</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">2.5</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">yend</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="fl">1.2</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labely</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">2</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">curvature</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span></code></pre></div>
 <p>Create the diagram the usual way using <code>make_diagram</code>, while also supplying additional settings.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#specify the settings separately so we can re-use them below</span>
-<span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-                          node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-                          node_text_size <span class="op">=</span> <span class="fl">14</span>,
-                          main_arrow_color <span class="op">=</span> <span class="st">"blue"</span>,
-                          main_arrow_linetype <span class="op">=</span> <span class="st">"dotted"</span><span class="op">)</span>
+<span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
+                        var_label_size <span class="op">=</span> <span class="fl">14</span>,
+                        main_flow_color <span class="op">=</span> <span class="st">"blue"</span>,
+                        main_flow_linetype <span class="op">=</span> <span class="st">"dotted"</span><span class="op">)</span>
 <span class="va">sir2_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, <span class="va">diagram_settings</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sir2_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <p>Alternatively, you can generate the full code that produces this plot as follows</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/write_diagram.html">write_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, 
+              model_settings <span class="op">=</span> <span class="va">sirsettings2</span>,
               diagram_list <span class="op">=</span> <span class="va">diagram_list</span>,
               diagram_settings <span class="op">=</span> <span class="va">diagram_settings</span>,
               filename <span class="op">=</span> <span class="st">'sirmodel2_diagram_code.R'</span><span class="op">)</span></code></pre></div>
-<p><strong>NOT WORKING, some of THE SUPPLIED make_diagram_settings ARE IGNORED.</strong></p>
 <p>If you run the code that is generated, you should see a figure like this</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">'sirmodel2_diagram_code.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
 <p>All of this you can get by using the previous methods of modification we explained.</p>
 <p>Let’s assume that you are mostly happy with this figure, but you want to make another tweak. This time, you want to (for some reason) turn the shape of the <code>I</code> box into a circle.</p>
 <p>Here is how you modify the <code>sirmodel2_diagram_code.R</code> code to achieve this.</p>
@@ -258,7 +255,6 @@
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">'sirmodel2_diagram_code_modified.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
 </div>
 <div id="example-3" class="section level3">
 <h3 class="hasAnchor">
@@ -275,14 +271,14 @@
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span>
 <span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-                          node_outline_color <span class="op">=</span> <span class="st">"red"</span>,
-                          node_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"green"</span><span class="op">)</span>,
-                          node_text_color <span class="op">=</span> <span class="st">"red"</span>,
-                          node_text_size <span class="op">=</span> <span class="fl">10</span>,
-                          flow_text_size <span class="op">=</span> <span class="fl">4</span>,
-                          interaction_arrow_size <span class="op">=</span> <span class="fl">2</span>,
-                          main_arrow_color <span class="op">=</span> <span class="st">"green"</span>,
-                          main_arrow_linetype <span class="op">=</span> <span class="st">"dotted"</span><span class="op">)</span>
+                          var_outline_color <span class="op">=</span> <span class="st">"red"</span>,
+                          var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"green"</span><span class="op">)</span>,
+                          var_label_color <span class="op">=</span> <span class="st">"red"</span>,
+                          var_label_size <span class="op">=</span> <span class="fl">10</span>,
+                          main_flow_label_size <span class="op">=</span> <span class="fl">4</span>,
+                          interaction_flow_size <span class="op">=</span> <span class="fl">2</span>,
+                          main_flow_color <span class="op">=</span> <span class="st">"green"</span>,
+                          main_flow_linetype <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
 <span class="va">pp_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, <span class="va">diagram_settings</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">pp_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
@@ -297,13 +293,11 @@
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">'ppmodel_diagram_code.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
 <p>Let’s say that for some reason, you want the rectangles with rounded corners. I didn’t know how to do that, but a quick online search <a href="https://stackoverflow.com/questions/52820756/roundrectgrob-equivalent-for-geom-rect-in-ggplot">provided this solution</a>. Note that this is somewhat advanced and hacky, but I figured I show it as an example to illustrate that at this point, you can do anything you like with the code to make whatever you want.</p>
 <p>It’s actually not much code editing. First, you need to install the <a href="https://github.com/hrbrmstr/statebins"><code>statebins</code> R package</a>. The version on CRAN works fine, so you can just use <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages('statebins')</a></code>. Then add <code><a href="https://gitlab.com/hrbrmstr/statebins">library('statebins')</a></code> at the top of your code file, underneath the other <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> commands. Finally, find the <code>geom_rect</code> bit in your code (close to the top) and replace it with <code>statebins:::geom_rrect</code> (yes, you need the ::: in there since <code>geom_rrect</code> is not an exported function. If you have no idea what that means, that’s ok.) Everything else you can keep unchanged. Save your code (I recommend using a different name so you don’t accidentally overwrite it if you run your <code>write_diagram</code> code again). Now, if you run the code, it should produce this diagram.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">'ppmodel_diagram_code_modified.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
 </div>
 </div>
 <div id="general-suggestions" class="section level2">

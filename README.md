@@ -51,11 +51,11 @@ We wrote several tutorials/vignettes that explain all features of
 *Read them based on interest, in any order*
 
 -   [More model
-    examples](https://andreashandel.github.io/flowdiagramr/articles/F_non_model_diagrams.html)
+    examples](https://andreashandel.github.io/flowdiagramr/articles/E_non_model_diagrams.html)
 -   [Making non-model based
-    diagrams](https://andreashandel.github.io/flowdiagramr/articles/F_non_model_diagrams.html)
--   [Using modelbuilder models with
-    flowdiagramr](https://andreashandel.github.io/flowdiagramr/articles/G_flowdiagramr_and_modelbuilder.html)
+    diagrams](https://andreashandel.github.io/flowdiagramr/articles/F_more_model_examples.html)
+-   [Some additional
+    topics](https://andreashandel.github.io/flowdiagramr/articles/G_additional_topics.html)
 -   [Comparison to other R
     packages](https://andreashandel.github.io/flowdiagramr/articles/H_comparison_to_other_packages.html)
 

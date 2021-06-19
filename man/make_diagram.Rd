@@ -39,10 +39,11 @@ should be plotted.
 specifying the text color for variable labels. If a vector, the colors will
 be recycled in the order of the variables in the supplied data frame.
 \item \code{var_label_size}: A numeric scalar specifying the text size for variable
-labels. Default value is NA and the values in the \code{variables} data frame
-returned by \code{\link{prepare_diagram}} are used. If a non-NA value is
-supplied here, the values in the \code{variables} data frame are not used and
-are replaced by the value specified here.
+labels. Note that any value supplied here overwrites
+entries in the list structure returned by \code{\link{prepare_diagram}}.
+Specifically, if you set this parameter when calling \code{\link{prepare_diagram}}
+with \code{use_varnames = TRUE}, the value is used to compute box size,
+but then the actual size of the label as provided here is applied.
 
 \item \code{main_flow_on}: A logical indicating if the main flow arrows should be plotted.
 \item \code{main_flow_color}: A character string or vector of character strings

@@ -47,8 +47,9 @@
 
 
 <meta property="og:title" content="Convert modelbuilder list object to list for modeldiagram — convert_from_modelbuilder" />
-<meta property="og:description" content="convert_from_modelbuilder() takes a modelbuilder model object and
-converts it to the list format used by flowdiagramr." />
+<meta property="og:description" content="convert_from_modelbuilder() takes a model, stored in an Rds file,
+that was built with the modelbuilder package, and
+converts it to the format used by flowdiagramr." />
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png" />
 
 
@@ -119,6 +120,9 @@ converts it to the list format used by flowdiagramr." />
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
     </li>
     <li>
+      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
+    </li>
+    <li>
       <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
@@ -159,8 +163,9 @@ converts it to the list format used by flowdiagramr." />
     </div>
 
     <div class="ref-description">
-    <p><code>convert_from_modelbuilder()</code> takes a <strong>modelbuilder</strong> model object and
-converts it to the list format used by <strong>flowdiagramr</strong>.</p>
+    <p><code>convert_from_modelbuilder()</code> takes a model, stored in an Rds file,
+that was built with the <strong>modelbuilder</strong> package, and
+converts it to the format used by <strong>flowdiagramr</strong>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>convert_from_modelbuilder</span><span class='op'>(</span><span class='va'>mbmodel</span><span class='op'>)</span></pre>
@@ -176,17 +181,24 @@ converts it to the list format used by <strong>flowdiagramr</strong>.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list object that can be used as input for the
-<code><a href='prepare_diagram.html'>prepare_diagram</a></code> function. The list contains three elements:</p><ul>
-<li><p><code>varlabels</code>: A vector of variable labels. Typically
+    <p>A list object consisting of the two components used by
+<code><a href='prepare_diagram.html'>prepare_diagram</a></code> function. The list contains two elements:</p><ul>
+<li><p><code>model_list</code>: A list containing variable labels and flows.
+This has the format needed for the first argument of <code><a href='prepare_diagram.html'>prepare_diagram</a></code>.
 single uppercase characters. Must start with uppercase.</p></li>
-<li><p><code>varnames</code>: A vector of variables names. Full names
-that correspond with the variable labels.</p></li>
-<li><p><code>flows</code>: A list of flows. The elements are vectors of
-flows into and out of each variable.</p></li>
+<li><p><code>model_settings</code>: A list containing the variable names.
+Also sets <code>use_varnames = TRUE</code>. This has the format needed
+for the second, optional argument of <code><a href='prepare_diagram.html'>prepare_diagram</a></code>.</p></li>
 </ul>
 
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='co'>#loading a model file that was made with **modelbuilder**</span>
+<span class='va'>mbmodel</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/readRDS.html'>readRDS</a></span><span class='op'>(</span><span class='st'>'SIR_model.Rds'</span><span class='op'>)</span>
+<span class='va'>mbmodel_structure</span> <span class='op'>&lt;-</span> <span class='fu'>convert_from_modelbuilder</span><span class='op'>(</span><span class='va'>mbmodel</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

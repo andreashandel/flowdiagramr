@@ -1,11 +1,11 @@
 #' Checks for coherence between the varlocation matrix and the input list.
 #'
 #' @param input_list A list.
-#' @param nodes_matrix A data frame.
+#' @param varlocation_matrix A matrix
 #' @noRd
 
-check_nodes_matrix <- function(input_list, nodes_matrix) {
-  ret_message <- paste0("The inputs list contains variable (nodes) not ",
+check_varlocation_matrix <- function(input_list, varlocation_matrix) {
+  ret_message <- paste0("The model_list object contains variable (nodes) not ",
                         "contained in the varlocation matrix, or vice versa.")
 
   in_vars <- sort(input_list$varlabels)

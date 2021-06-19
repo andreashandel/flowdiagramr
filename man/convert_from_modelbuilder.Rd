@@ -10,18 +10,26 @@ convert_from_modelbuilder(mbmodel)
 \item{mbmodel}{A \strong{modelbuilder} model object.}
 }
 \value{
-A list object that can be used as input for the
-\code{\link{prepare_diagram}} function. The list contains three elements:
+A list object consisting of the two components used by
+\code{\link{prepare_diagram}} function. The list contains two elements:
 \itemize{
-\item{\code{varlabels}}: A vector of variable labels. Typically
+\item{\code{model_list}}: A list containing variable labels and flows.
+This has the format needed for the first argument of \code{\link{prepare_diagram}}.
 single uppercase characters. Must start with uppercase.
-\item{\code{varnames}}: A vector of variables names. Full names
-that correspond with the variable labels.
-\item{\code{flows}}: A list of flows. The elements are vectors of
-flows into and out of each variable.
+\item{\code{model_settings}}: A list containing the variable names.
+Also sets \code{use_varnames = TRUE}. This has the format needed
+for the second, optional argument of \code{\link{prepare_diagram}}.
 }
 }
 \description{
-\code{convert_from_modelbuilder()} takes a \strong{modelbuilder} model object and
-converts it to the list format used by \strong{flowdiagramr}.
+\code{convert_from_modelbuilder()} takes a model, stored in an Rds file,
+that was built with the \strong{modelbuilder} package, and
+converts it to the format used by \strong{flowdiagramr}.
+}
+\examples{
+\dontrun{
+#loading a model file that was made with **modelbuilder**
+mbmodel <- readRDS('SIR_model.Rds')
+mbmodel_structure <- convert_from_modelbuilder(mbmodel)
+}
 }

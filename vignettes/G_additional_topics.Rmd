@@ -55,7 +55,8 @@ Next, we convert the object.
 mymodel <- convert_from_modelbuilder(mbmodel)
 ```
 
-If you print the content, you can see it has the structure needed for **`r pkg`**. 
+If you print the content, you can see it has two lists, the required `model_list` and the optional `model_settings`. The latter contains 
+the variable names. You can use either or both in your call to `prepare_diagram`. 
 
 ```{r}
 print(mymodel)
@@ -63,10 +64,10 @@ print(mymodel)
 
 You can now proceed with the usual steps.
 
-```{r}
-diagram_list <- prepare_diagram(mymodel)
-my_diagram <- make_diagram(diagram_list)
-plot(my_diagram)
+```{r, fig.width = 7, fig.align = "center"}
+diagram_list <- prepare_diagram(mymodel$model_list, mymodel$model_settings)
+sir_diagram <- make_diagram(diagram_list)
+plot(sir_diagram)
 ```
 
 ### Example 2
@@ -82,51 +83,36 @@ print(mymodel)
 ```
 
 As promised, this is a much more complex model. We don't expect the default diagram for this model to look great, but let's give it a try. 
-Instead of directly plotting it, we are saving the diagram and loading from a file, otherwise the dimensions will look too squished.
 
-
-```{r}
-diagram_list <- prepare_diagram(mymodel)
+```{r, fig.width = 7, fig.align = "center"}
+model_list = mymodel$model_list #pull out the model list part
+model_settings = mymodel$model_settings #pull out the optional settings list
+diagram_list <- prepare_diagram(model_list) #only use the model list here
 my_diagram <- make_diagram(diagram_list)
-```
-
-
-```{r, eval=FALSE}
-ggplot2::ggsave('Complex_ID_Control.png',my_diagram)
-```
-
-```{r,  echo=FALSE, fig.cap='', out.width = '80%', fig.align='center'}
-knitr::include_graphics("Complex_ID_Control.png")
+plot(my_diagram)
 ```
 
 The diagram is not ideal. But you now know how to make it better, once you have done the model conversion, you can use the usual approaches.
-As an example, let's specify the layout for the variables/nodes. We can do that by adding `varlocations` to the `mymodel` object.
+As an example, let's specify the layout for the variables/nodes. We can use the existing `model_settings` object stored in `mymodel` and can add `varlocations`.
 
 The rationale of how to place the variables is determined by the meaning of each of them and what makes logical sense. I'm not discussing this here, if you want to learn more about the model, see the _Complex Control Scenarios_ app inside [DSAIDE](https://ahgroup.github.io/DSAIDE/).
 
 ```{r}
-model_settings = list(varlocations = matrix(data = c("","E","","",
-                                      "", "", "A", "R",
-                                      "S", "P", "", "",
-                                      "", "", "I", "D",
-                               "", "Sv", "Iv", ""), nrow = 5, byrow = TRUE)
-                      )
+model_settings = mymodel$model_settings
+model_settings$varlocations = matrix(data = c("","E","","",
+                                              "", "", "A", "R",
+                                              "S", "P", "", "",
+                                               "", "", "I", "D",
+                                              "", "Sv", "Iv", ""), nrow = 5, byrow = TRUE)
 ```
 
-**TO DO**. I'm also showing the compartment names instead of their labels to make things a bit clearer.
 
-```{r}
-diagram_list <- prepare_diagram(mymodel)
+```{r, fig.height = 6, fig.width = 8, fig.align = "center"}
+diagram_list <- prepare_diagram(mymodel$model_list, model_settings)
 my_diagram <- make_diagram(diagram_list)
+plot(my_diagram)
 ```
 
-```{r, eval=FALSE}
-ggplot2::ggsave('Complex_ID_Control2.png',my_diagram)
-```
-
-```{r,  echo=FALSE, fig.cap='', out.width = '80%', fig.align='center'}
-knitr::include_graphics("Complex_ID_Control2.png")
-```
 
 This is better, but of course still not quite good enough. Fortunately, you have learned how to use **`r pkg`** to fairly easily turn this into a publication-quality diagram :).
 
@@ -135,22 +121,59 @@ This is better, but of course still not quite good enough. Fortunately, you have
 
 It is quite likely that the diagram you get back from `make_diagram` contains a good bit of white space. This is often a problem when trying to use the figure in publications.
 
-There are different options you can use to change the white space.
+As example, consider the above diagram. If we write it into a file, then load the file and show it, it looks like this.
+
+```{r, eval = FALSE}
+ggplot2::ggsave("sirdiag.png",sir_diagram)
+```
+
+```{r, out.width = "90%", fig.align='center'}
+knitr::include_graphics('sirdiag.png')
+```
+
+As you can see, the saved image file contains a lot of unwanted white space. There are different options you can use to change the white space. Here are some we are aware of.
+
+### Set margins in ggplot2
+
+One approach is to play with the margins of the gpplot object returend from `make_diagram` until things look ok. 
+Here is an example:
+
+```{r}
+#shrink top and bottom margins
+diag_new <- sir_diagram + ggplot2::theme(plot.margin = ggplot2::unit(c(-7,0,-7,0), "in"))
+```
+
+```{r, eval = FALSE}
+ggplot2::ggsave("sirdiag_new.png",diag_new)
+```
+
+```{r,  out.width = "90%", fig.align='center'}
+knitr::include_graphics('sirdiag_new.png')
+```
+
+This looks better. You will likely have to fiddle a bit with the margin settings until you get it cropped the way you want.
 
 
 
+### Use the `magick` package
 
-* Thoughts on 'auto-crop' plots. I found some stuff. 
-1. The answer provided here seems to be a way to calculate the size of the plot and then using that when calling ggsave()
-https://stackoverflow.com/questions/45731238/autocrop-faceted-plots-made-by-ggplot
-This seems general and doesn't require other packages, but some coding/fiddling to work for us.
+The `magick` package allows for automated trimming of a file. 
+This means you first need to save your diagram into a file, then load, trim and resave.
+Here is an example
 
-2. The magick package allows for automated trimming of a file. E.g., after saving the plot with ggsave, this is how one can trim:
-image_write(image_trim(image_read('test.png'),'test2.png'))
-This seems easier to use, but would require another package dependency (and dependency on those packages)
+```{r, eval = FALSE}
+library(magick)
+fig <- magick::image_read("sirdiag.png")
+fig2 <- magick::image_trim(fig)
+magick::image_write(fig2,'sirdiag2.png')
+```
 
-Maybe we should use the 2nd approach, but add magick as a suggest package, then describe in a vignette how one can use it to crop plots, but not make it part of the standard workflow?
-This reduces package dependencies, at it seems simple enough for a user to do themselves.
 
+```{r,  out.width = "90%", fig.align='center'}
+knitr::include_graphics('sirdiag2.png')
+```
+
+
+The disadvantages of this approach is that you need to use another R package and that the cropping is very tight. The advantages are that the `magick` package can do a lot more, so there might be some additional useful tweaks possible that you can apply to your figure to get it exactly the way you want.
 
 

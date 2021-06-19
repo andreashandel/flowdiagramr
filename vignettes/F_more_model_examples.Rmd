@@ -145,5 +145,18 @@ plot(diag2)
 
 As you can see, not showing the interactions doesn't produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.
 
+This shows the model with vertical alignment
+
+```{r}
+varnames <- c("Bacteria","Immune Response")
+varlocations <-  matrix(data = c("B", "I"),
+                        nrow = 2, byrow = TRUE)
+mysettings <- list(varnames = varnames, use_varnames = TRUE,
+                   var_label_size = 4, varlocations = varlocations)
+diag_list <- prepare_diagram(ppmodel, mysettings)
+mydiag <- make_diagram(diag_list)
+plot(mydiag)
+```
+
 
             

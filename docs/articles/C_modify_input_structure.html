@@ -76,6 +76,9 @@
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
     </li>
     <li>
+      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
+    </li>
+    <li>
       <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
@@ -203,10 +206,10 @@
 <span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xend</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">5</span>
 <span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xstart</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">7</span>
 <span class="co">#move the b*S*I arrow end a bit</span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xend</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">=</span> <span class="fl">4</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xend</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="fl">4</span>
 <span class="co">#move the b*S*I label </span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labely</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">=</span> <span class="fl">0.2</span>
-<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">=</span> <span class="fl">4.6</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labely</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="fl">0.2</span>
+<span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="fl">4.6</span>
 <span class="co">#move the g*I arrow over just a bit</span>
 <span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">7.75</span></code></pre></div>
 <p>With those modifications, the resulting diagram looks like this</p>
@@ -255,14 +258,14 @@
 <span class="co">#&gt; 2       white         10</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $flows</span>
-<span class="co">#&gt;      to from              label xstart xend ystart  yend labelx labely</span>
-<span class="co">#&gt; 11  Pat  Pat g*Pat*(1-Pat/pmax)  -0.25 0.25    0.5  0.50   0.00   1.10</span>
-<span class="co">#&gt; 21  Imm  Imm                      2.75 3.25    0.5  0.50   3.00   1.10</span>
-<span class="co">#&gt; 1   Pat  Imm          r*Pat*Imm   0.50 2.67    0.0  0.75   2.42   0.70</span>
-<span class="co">#&gt; 2   Imm  Pat          k*Pat*Imm   2.50 0.50    0.0 -0.75   0.65  -0.50</span>
-<span class="co">#&gt; 5  &lt;NA&gt;  Imm             dI*Imm   3.00 3.50   -0.5 -1.00   3.00  -0.75</span>
-<span class="co">#&gt; 3  &lt;NA&gt;  Pat             dP*Pat  -0.25 0.25   -0.5 -1.00  -0.25  -0.75</span>
-<span class="co">#&gt; 4  &lt;NA&gt;  Pat                      0.25 0.75   -0.5 -1.00   0.25  -0.75</span>
+<span class="co">#&gt;      to from              label xstart xend ystart  yend  labelx  labely</span>
+<span class="co">#&gt; 11  Pat  Pat g*Pat*(1-Pat/pmax)  -0.25 0.25    0.5  0.50  0.0000  1.1000</span>
+<span class="co">#&gt; 21  Imm  Imm                      2.75 3.25    0.5  0.50  3.0000  1.1000</span>
+<span class="co">#&gt; 1   Pat  Imm          r*Pat*Imm   0.50 2.67    0.0  0.75  1.6225  0.4665</span>
+<span class="co">#&gt; 2   Imm  Pat          k*Pat*Imm   2.50 0.50    0.0 -0.75  1.4625 -0.0750</span>
+<span class="co">#&gt; 5  &lt;NA&gt;  Imm             dI*Imm   3.00 3.50   -0.5 -1.00  3.0000 -0.7500</span>
+<span class="co">#&gt; 3  &lt;NA&gt;  Pat             dP*Pat  -0.25 0.25   -0.5 -1.00 -0.2500 -0.7500</span>
+<span class="co">#&gt; 4  &lt;NA&gt;  Pat                      0.25 0.75   -0.5 -1.00  0.2500 -0.7500</span>
 <span class="co">#&gt;    curvature        type  color linetype size label_color label_size arrowsize</span>
 <span class="co">#&gt; 11      -2.0        main grey25    solid  0.7       black          5      0.25</span>
 <span class="co">#&gt; 21      -2.0        main grey25    solid  0.7       black          5      0.25</span>
@@ -287,12 +290,12 @@
 <span class="co">#relabel box</span>
 <span class="va">diagram_list</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">plot_label</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="st">"T cells"</span>
 <span class="co">#adjust arrow location</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xstart</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2.25</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">xstart</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2.25</span>
 <span class="co">#move labels</span>
 <span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1.4</span>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">labelx</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1.4</span>
 <span class="co">#change label</span>
-<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">label</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"g*Pat*(1-Pat/Pmax)"</span></code></pre></div>
+<span class="va">diagram_list</span><span class="op">$</span><span class="va">flows</span><span class="op">$</span><span class="va">label</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"g*Pat*(1-Pat/Pmax)"</span></code></pre></div>
 <p>Sure enough, if you plot this now, you can see all your improvements.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
@@ -343,10 +346,7 @@
                         var_outline_color <span class="op">=</span> <span class="st">"black"</span>
                         <span class="op">)</span>
 <span class="va">model_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, <span class="va">diagram_settings</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span>
-
-<span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
 </div>
 </div>

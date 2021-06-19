@@ -76,6 +76,9 @@
       <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
     </li>
     <li>
+      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
+    </li>
+    <li>
       <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
@@ -221,8 +224,8 @@ Flow diagram for basic SIR model
 
 <span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, 
                             diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>,
-                                      main_flow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
-                                      interaction_flow_size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>
+                                                    main_flow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
+                                                    interaction_flow_size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>
                           <span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
@@ -254,7 +257,7 @@ Flow diagram for basic SIR model
              P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sc*Ic"</span>,<span class="st">"sa*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
              <span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
-<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
+<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>var_label_size <span class="op">=</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Before we make the diagram and look at it, it’s worth pointing out some current limitations of <strong>flowdiagramr</strong>. You might have noticed that each flow term above is defined separately. If you were to write down the model in math formulation, you would likely not do that. Instead, you would probably write something like this, with flow terms combined using parentheses:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
