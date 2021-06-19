@@ -204,9 +204,6 @@ We also provide names for each compartment. All this additional information is p
 
 ```{r}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-varnames = c("Susceptible Children","Infected Children","Recovered Children",
-             "Susceptible adults","Infected adults","Recovered adults",
-             "Pathogen in Environment")
 flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
              Rc_flows = c("gc*Ic"),
@@ -215,12 +212,17 @@ flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
              Ra_flows = c("ga*Ia"),
              P_flows = c("sc*Ic","sa*Ia","-d*P")
              )
+mymodel = list(varlabels = varlabels, flows = flows)
+
+varnames = c("Susceptible Children","Infected Children","Recovered Children",
+             "Susceptible adults","Infected adults","Recovered adults",
+             "Pathogen in Environment")
 varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-mymodel = list(varlabels = varlabels, flows = flows)
 mysettings = list(varlocations = varlocations, 
                   varnames = varnames, use_varnames = TRUE, var_label_size = 4)
+
 diagram_list <- prepare_diagram(mymodel, mysettings)
 ```
 

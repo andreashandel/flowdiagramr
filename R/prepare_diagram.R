@@ -907,7 +907,8 @@ prepare_diagram <- function(model_list,
   # rename data frames for exporting
   ndf$labelx <- ndf$x
   ndf$labely <- ndf$y
-  nodes <- subset(ndf, select = -c(id, row, x, y))
+  #nodes <- subset(ndf, select = -c(id, row, x, y))
+  nodes <- subset(ndf, select = -c(row, x, y))
 
   # change the label to full name, if requested
   # this will be move farther up once code to adjust box size to text is

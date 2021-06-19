@@ -156,7 +156,7 @@ plot(my_diagram)
 
 In this example, we also added the optional list `diagram_settings` to the call of `make_diagram`. Those some settings allow you to customize the model. You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html).
 
-As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models, as we discuss [in this vignette](./F_non_model_diagrams.html). 
+As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models, as we discuss [in this vignette](./E_non_model_diagrams.html). 
 
 But for completeness, here are the ODE equations for the model we just plotted.
 

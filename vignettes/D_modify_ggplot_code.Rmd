@@ -281,7 +281,8 @@ Of course, once you have started manual editing of the code, things are not reve
 
 ## Next steps
 
-This concludes the main tutorials for the package. If you happen to be a user of our [modelbuilder package](https://ahgroup.github.io/modelbuilder/), there is another short vignette [explaining how the two connect.](./E_flowdiagramr_and_modelbuilder.html). There is also a vignette that explains how you can use **`r pkg`** to create flow diagrams that are not based on compartmental models. Basically, anything for which you want to make a diagram consisting of nodes/boxes and flows/arrows can be created with **`r pkg`**. [This vignette](./F_non_model_diagrams.html) gives some examples. Another vignette [provides some more model examples](./G_flowdiagramr_and_modelbuilder.html), and another one [compares **`r pkg`** to other R packages](./H_comparison_to_other_packages.html).
+This concludes the main tutorials for the package. Several additional vignettes are available. One shows further model examples, another one discusses additional topics such as using **`r pkg`** together with our [modelbuilder package](https://ahgroup.github.io/modelbuilder/) and how to crop white space around the diagrams. Yet another vignette provides some examples on how to create flow diagrams for scenarios that are not based on compartmental models. It illustrates how basically anything for which you want to make a diagram consisting of nodes/boxes and flows/arrows can be created with **`r pkg`**. And one more vignette compares **`r pkg`** to similar R packages. You can access all those additional vignettes [from the package website](https://andreashandel.github.io/flowdiagramr/).
+
 
 
 
