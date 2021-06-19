@@ -1,5 +1,6 @@
 #' Helper function to adjust vertical edge start and end positions
 #'     to create angles.
+#'     helper function for prepare_diagram
 #'
 #' @param vdf The vertical edges data frame.
 #' @return A dataframe.

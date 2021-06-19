@@ -1,4 +1,4 @@
-#' Extract the variables and parameters from a flow
+#' Extract the variables and parameters from a flow. used by prepare_diagram
 #'
 #' This function takes as input a modelbuilder flow and
 #' extracts the variables and parameters (excludes the

@@ -165,7 +165,8 @@ prepare_diagram <- function(model_list,
   ######################################################################
   # check to make sure model_list is a properly specified model
   ######################################################################
-  check <- check_model_list(model_list)
+  check <- flowdiagramr:::check_model_list(model_list)
+  #check <- check_model_list(model_list)
   if(check$bad == TRUE) {
     stop(check$msg)
   }
@@ -235,7 +236,8 @@ prepare_diagram <- function(model_list,
   flows <- model_list$flows
 
   #add implicit + signs to make explicit before additional parsing
-  flows <- add_plus_signs(flows)
+  #flows <- add_plus_signs(flows)
+  flows <- flowdiagramr:::add_plus_signs(flows)
 
   #turns flow list into matrix, adding NA, found it online,
   #not sure how exactly it works (from AH and modelbuilder code base)
@@ -306,7 +308,8 @@ prepare_diagram <- function(model_list,
       connectvars <- unname(which(flowmatred == currentflow, arr.ind = TRUE)[,1])
 
       # Extract the variable names in the flow expression
-      varspars <- unique(get_vars_pars(currentflowfull))
+      #varspars <- unique(get_vars_pars(currentflowfull))
+      varspars <- unique(flowdiagramr:::get_vars_pars(currentflowfull))
       varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
 
       #vars is now a vector of the variables that are in the flow math
@@ -539,7 +542,8 @@ prepare_diagram <- function(model_list,
     # of the physical flow arrow.
     for(i in 1:nrow(ints)) {
       tmp <- ints[i, ]
-      v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
+      #v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
+      v <- flowdiagramr:::get_vars_pars(tmp$label)  #strips away math, leaving just letters
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
       ids <- subset(ndf, label %in% v)[ , "id"]  #extract the relevant numeric ids
@@ -712,7 +716,7 @@ prepare_diagram <- function(model_list,
   if(nrow(extints) > 0) {
     for(i in 1:nrow(extints)) {
       tmp <- extints[i, ]
-      v <- get_vars_pars(tmp$label)
+      v <- flowdiagramr:::get_vars_pars(tmp$label)
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]
       ids <- subset(ndf, label %in% v)[ , "id"]
@@ -832,7 +836,8 @@ prepare_diagram <- function(model_list,
 
   # Set the curvature using internal function
   if(nrow(cdf) > 0) {
-    cdf <- set_curvature(cdf, ndf)
+    #cdf <- set_curvature(cdf, ndf)
+    cdf <- flowdiagramr:::set_curvature(cdf, ndf)
   }
 
   # Update start and end points for curved arrows that bypass nodes,
@@ -874,35 +879,37 @@ prepare_diagram <- function(model_list,
   ndf <- subset(ndf, label != "")
 
   # update vertical edges to go in and out at angles
-  vdf <- make_vdf_angled(vdf)
+  #vdf <- make_vdf_angled(vdf)
+  vdf <- flowdiagramr:::make_vdf_angled(vdf)
 
   # update vertical edges to avoid overlaps
-  vdf <- fix_arrow_pos(vdf)
+  #vdf <- fix_arrow_pos(vdf)
+  vdf <- flowdiagramr:::fix_arrow_pos(vdf)
 
   # set to/from columns to NA if value is not in node dataframe
-  sdf <- set_node_to_na(sdf, ndf)
-  vdf <- set_node_to_na(vdf, ndf)
-  cdf <- set_node_to_na(cdf, ndf)
-  fdf <- set_node_to_na(fdf, ndf)
+  sdf <- flowdiagramr:::set_node_to_na(sdf, ndf)
+  vdf <- flowdiagramr:::set_node_to_na(vdf, ndf)
+  cdf <- flowdiagramr:::set_node_to_na(cdf, ndf)
+  fdf <- flowdiagramr:::set_node_to_na(fdf, ndf)
 
   # remove rows with no location information
-  sdf <- remove_na_rows(sdf)
-  vdf <- remove_na_rows(vdf)
-  cdf <- remove_na_rows(cdf)
-  fdf <- remove_na_rows(fdf)
+  sdf <- flowdiagramr:::remove_na_rows(sdf)
+  vdf <- flowdiagramr:::remove_na_rows(vdf)
+  cdf <- flowdiagramr:::remove_na_rows(cdf)
+  fdf <- flowdiagramr:::remove_na_rows(fdf)
 
   # convert direct interaction to flag to regular interaction flag,
   # now only relevant for plotting
-  sdf <- update_interactions(sdf)
-  vdf <- update_interactions(vdf)
-  cdf <- update_interactions(cdf)
-  fdf <- update_interactions(fdf)
+  sdf <- flowdiagramr:::update_interactions(sdf)
+  vdf <- flowdiagramr:::update_interactions(vdf)
+  cdf <- flowdiagramr:::update_interactions(cdf)
+  fdf <- flowdiagramr:::update_interactions(fdf)
 
   # update all to and froms such that each is the variable label
-  sdf <- update_tofroms(sdf, ndf)
-  vdf <- update_tofroms(vdf, ndf)
-  cdf <- update_tofroms(cdf, ndf)
-  fdf <- update_tofroms(fdf, ndf)
+  sdf <- flowdiagramr:::update_tofroms(sdf, ndf)
+  vdf <- flowdiagramr:::update_tofroms(vdf, ndf)
+  cdf <- flowdiagramr:::update_tofroms(cdf, ndf)
+  fdf <- flowdiagramr:::update_tofroms(fdf, ndf)
 
   # rename data frames for exporting
   ndf$labelx <- ndf$x
@@ -983,17 +990,35 @@ prepare_diagram <- function(model_list,
                        "external", flows$type)
   flows$interaction <- NULL
 
+
   # add text size arguments
   nodes$plot_label_size <- model_settings$var_label_size
   variables <- nodes  # rename for user facing data frame
 
+  #sort flows by type, main/external/interaction
+  flows = rbind(flows[flows$type=="main",],flows[flows$type=="external",],flows[flows$type=="interaction",])
+
+
+  #add a row id so it's easier for users to know which row to alter
+  flows$id = 1:nrow(flows)
+
+  # add a math column to differentiate from label if needed
+  flows$math <- flows$label
+
   # update flows column ordering
-  flows <- flows[, c("to", "from", "label", "xstart", "xend", "ystart", "yend",
-                     "labelx", "labely", "curvature", "type")]
+  flows <- flows[, c("id","to", "from", "label", "xstart", "xend", "ystart", "yend",
+                     "labelx", "labely", "curvature", "type","math")]
+
+
+  #remove row names, those are confusing
+  rownames(flows) <- NULL
+  rownames(variables) <- NULL
 
   # apply default aesthetics
-  dflist <- apply_default_aesthetics(list(variables = variables,
+  dflist <- flowdiagramr:::apply_default_aesthetics(list(variables = variables,
                                           flows = flows))
+
+
 
   return(dflist)
 }

@@ -2,14 +2,19 @@
 # Urgent
 ******
 
-* Fix size of boxes when variable names are used. Still not quite working, see e.g. the example in the slides. 
+* In vignette C, last plot of example 1 the I label should be red, i.e. preserved from diagram_list modification. It is not, needs fixing.
 
-* Fix arrow placement for final example in vignette B.
-
+* get write_code to work. Then change all `source` code chunks in vignette D from eval=FALSE to eval=TRUE
 
 ******
 # Important/Later
 ******
+
+* Arrow placing for last plot in vignette F is poor. Might not be an easy fix.
+
+* Rewrite prepare_diagram. Contains a lot of "legacy code", e.g. the sdf/vdf/cdf/etc. distinctions. And there is a lot of code overall, seems like it should be possible to streamline a good bit. As it is right now, really hard to follow (for me) and thus maintain/update.
+
+* Fix size of boxes when variable names are used. Still not quite working, see e.g. the example in the slides. 
 
 * Moved this from vignette A: **NEED TO CHECK THAT DESCRIPTION REGARDING MODEL_LIST SPECIFICATION IS 1) CORRECT, 2) AGREES WITH HELP CONTENT 3) CHECK_MODEL_LIST CHECKS VALIDITY OF ALL THAT.** As discussed, should be combined with modelbuilder to not duplicate checking code. 
 

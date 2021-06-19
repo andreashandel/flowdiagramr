@@ -91,7 +91,7 @@ Now, instead of sending the object produced by `prepare_diagram` (here called `s
 Here are the details contained in this object
 
 ```{r}
-print(sir_diagram_list)
+print(sir_diagram_list, row.names = FALSE)
 ```
 
 Let's modify this object somewhat. The following code makes the `I` box bigger, and moves the inflow and outflow arrows such that they start/end on the box with the new size. It also shifts the curved arrow and adjusts the label positioning.
@@ -106,10 +106,10 @@ modified_diagram_list$variables$xmax[2] = 7
 modified_diagram_list$flows$xend[1] = 5
 modified_diagram_list$flows$xstart[2] = 7
 #move the b*S*I arrow end a bit
-modified_diagram_list$flows$xend[3] = 4
+modified_diagram_list$flows$xend[7] = 4
 #move the b*S*I label 
-modified_diagram_list$flows$labely[3] = 0.2
-modified_diagram_list$flows$labelx[3] = 4.6
+modified_diagram_list$flows$labely[7] = 0.2
+modified_diagram_list$flows$labelx[7] = 4.6
 #move the g*I arrow over just a bit
 modified_diagram_list$flows$labelx[2] = 7.75
 ```
@@ -125,16 +125,33 @@ plot(plot2)
 It is possible to combine the modification of the diagram with modifications made through settings in `make_diagram`, e.g., we can add some color like this
 
 ```{r}
-plot3 <- make_diagram(
-  modified_diagram_list,
-  diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
                           var_label_color = "black",
                           main_flow_label_color = "blue",
                           interaction_flow_color = "red")
-)
+plot3 <- make_diagram( modified_diagram_list, diagram_settings)
 plot(plot3)
 ```
 
+**Important Note:** If you supply settings for a specific element to `make_diagram` through the `diagram_settings` input, those take precedence over entries in `diagram_list`. Thus, if you make manual adjustments to `diagram_list`, make sure that you don't apply further styling to that component in `diagram_settings`. For instance if you decided to change the label color for the variables by editing `diagram_list`, you should not provide a `var_label_color` entry in `diagram_settings`.  
+
+Here is a quick example. We change the color of the `I` variable to red, which results in the first plot.
+But once we supply color specifications through `diagram_settings`, this is overwritten. As the third plot shows, you can still use `diagram_settings`, you just need to be careful not to adjust an element you already modified in `diagram_list`.
+
+
+```{r}
+#manually change label color
+modified_diagram_list$variables$label_color[2] = "red"
+diag1 <- make_diagram(modified_diagram_list)
+plot(diag1)
+#var_label_color is overwritten by values from diagram_settings
+diag2 <- make_diagram(modified_diagram_list, diagram_settings)
+plot(diag2)
+#remove the var_label_color element to preserve your manual setting
+diagram_settings$var_label_color <- NULL
+diag3 <- make_diagram(modified_diagram_list, diagram_settings)
+plot(diag3)
+```
 
 
 ### Example 2
@@ -163,7 +180,7 @@ We'll also move some flow labels around and let's also assume that we want the p
 
 First, we'll look at the `diagram_list` structure to see which elements we need to change.
 ```{r}
-print(diagram_list)
+print(diagram_list, row.names = FALSE)
 ```
 
 And here is the code that makes some changes
@@ -178,11 +195,11 @@ diagram_list$variables$xmax[2] = 3.75
 diagram_list$variables$plot_label[1] = "Pat \n (Bacteria)"
 diagram_list$variables$plot_label[2] = "Imm \n (T cells)"
 #adjust arrow locations to start/end at box edges
-diagram_list$flows$xstart[3] <- 0.75
-diagram_list$flows$xstart[4] <- 2.25
-#move labels
-diagram_list$flows$labelx[4] <- 2
-diagram_list$flows$labelx[4] <- 1.4
+diagram_list$flows$xstart[6] <- 0.75
+diagram_list$flows$xstart[7] <- 2.25
+#move k*Pat*Imm label
+diagram_list$flows$labelx[7] <- 1.75
+diagram_list$flows$labely[7] <- -0.4
 #change label
 diagram_list$flows$label[1] <- "g*Pat*(1-Pat/Pmax)"
 ```
@@ -225,35 +242,54 @@ diagram_list <- prepare_diagram(mymodel, mysettings)
 
 If you print the resulting `diagram_list`, you can see details for each box/variable and arrow/flow. Since this is big, we are not showing it here. But we'll go ahead and make some modifications.
 
-The main problems are the location of the labels, so we'll focus on moving them around.
+The main problems are the location of the labels and some of the arrows, so let's move them around.
 
-
-**MODIFICATIONS NOT YET IMPLEMENTED, WILL BE DOING THAT ONCE ARROW LOCATION AND BOX SIZING IS ADDRESSED.**
 
 ```{r}
+# change some of the flow arrows
+diagram_list$flows$xstart[11] <- 2.5
+diagram_list$flows$ystart[11] <- 0
+diagram_list$flows$xstart[10] <- 2.5
+diagram_list$flows$ystart[10] <- -2
+diagram_list$flows$xstart[13] <- 2.5
+diagram_list$flows$ystart[13] <- -2
+diagram_list$flows$curvature[9] <- - 0.5
+diagram_list$flows$curvature[10] <- - 0.5
+
 # change location of flow labels
-diagram_list$flows$labelx[13] <- 3.5
-diagram_list$flows$label7[13] <- -3
+diagram_list$flows$labelx[5] <- 3.75
+diagram_list$flows$labely[5] <- -3
+diagram_list$flows$labelx[7] <- 2.75
+diagram_list$flows$labelx[9] <- 0.75 
+diagram_list$flows$labely[9] <- -1
+diagram_list$flows$labelx[10] <- 2 
+diagram_list$flows$labely[10] <- -1.75 
+diagram_list$flows$labelx[11] <- 0.75
+diagram_list$flows$labely[11] <- -2
+diagram_list$flows$labelx[13] <- 2
+
 ```
 
 
-Finally, we make the diagram, and also apply different styling as previously
+Finally, we make the diagram, and also apply custom styling as previously
 
 ```{r, fig.height=5}
 diagram_settings <- list(
                         var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
-                        var_outline_color = "black"
+                        var_outline_color = "black",
+                        var_label_color = "black"
                         )
 model_plot <- make_diagram(diagram_list, diagram_settings)
 plot(model_plot)
 ```
 
+Ok, this was a bit tedious, but it's pretty close to a diagram that could be used for public consumption.
 
 
 
 ## Next steps
 
-You now learned two ways that allow you to customize the diagram in a fairly easy way. The first approach is [through optional arguments to `make_diagram`](./B_modify_diagrams_simple.html), and the second approach is the one we just discussed. 
+You now learned two ways that allow you to customize the diagram in a fairly easy way. The first approach is [through optional arguments to `make_diagram` and `prepare_diagram`](./B_modify_diagrams_simple.html), and the second approach is the one we just discussed. They can be combined.
 
 We expect that this is often enough to give you a diagram that's good enough for what you want. However, at times you might want to make further changes. For instance you might want to change specific elements, add text to the diagram, or perform other fine tuning. **`r pkg`** gives you a way of doing this, which is described in the [modifying the ggplot2 code vignette](./D_modify_ggplot_code.html), which you should read next. 
 

@@ -1,4 +1,4 @@
-#' Sets the curvature values for curved arrows
+#' Sets the curvature values for curved arrows. used by prepare_diagram
 #'
 #' @param cdf Curved edge df
 #' @param ndf Nodes df

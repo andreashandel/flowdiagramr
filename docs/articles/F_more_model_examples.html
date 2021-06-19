@@ -123,15 +123,16 @@
 
     
     
-<div id="overview" class="section level1">
-<h1 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h1>
+<div id="overview" class="section level2">
+<h2 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h2>
 <p>The previous tutorials/vignettes showed several example models as way to illustrate how to use <strong>flowdiagramr</strong>.</p>
 <p>This vignette is a (growing) list of further model examples, which might be helpful to illustrate further ways of using the package.</p>
 </div>
-<div id="example-1" class="section level1">
-<h1 class="hasAnchor">
-<a href="#example-1" class="anchor"></a>Example 1</h1>
+<div id="example-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example-1" class="anchor"></a>Example 1</h2>
+<p><strong>Currently not working, is here to remind us to extend to more then 2 variables.</strong></p>
 <p>This is a model that describes the infection or vaccination dynamics of an acute viral infection in a simplified manner. The model tracks virus/antigen (H), and a few immune response components. These are the differential equations for the model.</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -158,9 +159,9 @@
 <span class="co">#&gt; an interaction between more than two variables. Consider</span>
 <span class="co">#&gt; breaking flows apart.</span></code></pre></div>
 </div>
-<div id="example-2" class="section level1">
-<h1 class="hasAnchor">
-<a href="#example-2" class="anchor"></a>Example 2</h1>
+<div id="example-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example-2" class="anchor"></a>Example 2</h2>
 <p>This is the simple predator-prey model, with some styling applied.</p>
 <p>First, we specify the model again. We did a bit of renaming here, what we called pathogen before is now called bacteria and labeled <strong>B</strong> and the Immune response is abbreviated as <strong>I</strong>. Parameter names have been adjusted accordingly, but otherwise it is the same model you already saw.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -177,18 +178,17 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># define adjusted settings for layout</span>
 <span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-    var_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-    var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-    var_label_color <span class="op">=</span> <span class="st">"white"</span>,
-    var_label_size <span class="op">=</span> <span class="fl">10</span>,
-    main_flow_label_color <span class="op">=</span> <span class="st">"black"</span>,
-    main_flow_label_size <span class="op">=</span> <span class="fl">5</span>,
-    main_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span><span class="op">)</span>,
+    var_label_color <span class="op">=</span> <span class="st">"gray"</span>,
+    var_label_size <span class="op">=</span> <span class="fl">12</span>,
+    main_flow_label_color <span class="op">=</span> <span class="st">"blue"</span>,
+    main_flow_label_size <span class="op">=</span> <span class="fl">6</span>,
+    main_flow_color <span class="op">=</span> <span class="st">"grey50"</span>,
     main_flow_linetype <span class="op">=</span> <span class="fl">1</span>,
-    main_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    main_flow_size <span class="op">=</span> <span class="fl">1.2</span>,
     interaction_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
     interaction_flow_linetype <span class="op">=</span> <span class="fl">2</span>,
-    interaction_flow_size <span class="op">=</span> <span class="fl">0.7</span>
+    interaction_flow_size <span class="op">=</span> <span class="fl">0.8</span>
 <span class="op">)</span>
     
 <span class="co"># make diagram with adjusted settings</span>
@@ -199,37 +199,36 @@
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag1</span><span class="op">)</span></code></pre></div>
 <p><img src="F_more_model_examples_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
-<p>For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.</p>
+<p>For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next. Any settings pertaining to the styling of the not shown components are ignored.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify custom settings for the diagram layout</span>
 <span class="va">diagram_settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-  var_outline_color <span class="op">=</span> <span class="cn">NA</span>,
-    var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span>, <span class="st">"#1a9988"</span><span class="op">)</span>,
-    var_label_color <span class="op">=</span> <span class="st">"white"</span>,
-    var_label_size <span class="op">=</span> <span class="fl">10</span>,
-    main_flow_label_color <span class="op">=</span> <span class="st">"black"</span>,
-    main_flow_label_size <span class="op">=</span> <span class="fl">5</span>,
-    main_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
+    var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#6aa4c8"</span>, <span class="st">"#eb5600"</span><span class="op">)</span>,
+    var_label_color <span class="op">=</span> <span class="st">"gray"</span>,
+    var_label_size <span class="op">=</span> <span class="fl">12</span>,
+    main_flow_label_color <span class="op">=</span> <span class="st">"blue"</span>,
+    main_flow_label_size <span class="op">=</span> <span class="fl">6</span>,
+    main_flow_color <span class="op">=</span> <span class="st">"grey50"</span>,
     main_flow_linetype <span class="op">=</span> <span class="fl">1</span>,
-    main_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
+    main_flow_size <span class="op">=</span> <span class="fl">1.2</span>,
     interaction_flow_on <span class="op">=</span> <span class="cn">FALSE</span>,  
     interaction_flow_color <span class="op">=</span> <span class="st">"grey25"</span>,
     interaction_flow_linetype <span class="op">=</span> <span class="fl">2</span>,
-    interaction_flow_size <span class="op">=</span> <span class="fl">0.7</span>,
-    external_flow_on <span class="op">=</span> <span class="cn">FALSE</span>
+    interaction_flow_size <span class="op">=</span> <span class="fl">0.8</span>,
+    external_flow_on <span class="op">=</span> <span class="cn">TRUE</span>,
+    external_flow_label_on <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span>
 
-    <span class="co"># make another diagram with adjusted settings</span>
+<span class="co"># make another diagram with adjusted settings</span>
 <span class="va">diag2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>
   diagram_list <span class="op">=</span> <span class="va">pp_diagram_list</span>,
   diagram_settings <span class="op">=</span> <span class="va">diagram_settings</span>
 <span class="op">)</span>
 
-
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
 <p><img src="F_more_model_examples_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
-<p>As you can see, not showing the interactions doesn’t produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.</p>
-<p>This shows the model with vertical alignment</p>
+<p>As you can see, not showing the interactions or not labeling some of the flows doesn’t produce a very useful diagram. In general, as long as it is decently readable, you should show and label all components of your model.</p>
+<p>Here is another example, the model shown with vertical alignment</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">varnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>,<span class="st">"Immune Response"</span><span class="op">)</span>
 <span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"I"</span><span class="op">)</span>,
@@ -240,6 +239,11 @@
 <span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mydiag</span><span class="op">)</span></code></pre></div>
 <p><img src="F_more_model_examples_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+</div>
+<div id="example-3" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example-3" class="anchor"></a>Example 3</h2>
+<p>More examples to come.</p>
 </div>
   </div>
 

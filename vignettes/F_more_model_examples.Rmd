@@ -23,14 +23,16 @@ pkg = 'flowdiagramr' #so we can easily switch names
 library(pkg, character.only = TRUE)
 ```
 
-# Overview
+## Overview
 
 The previous tutorials/vignettes showed several example models as way to illustrate how to use **`r pkg`**.
 
 This vignette is a (growing) list of further model examples, which might be helpful to illustrate further ways of using the package.
 
 
-# Example 1
+## Example 1
+
+**Currently not working, is here to remind us to extend to more then 2 variables.**
 
 This is a model that describes the infection or vaccination dynamics of an acute viral infection in a simplified manner.
 The model tracks virus/antigen (H), and a few immune response components. These are the differential equations for the model.
@@ -61,7 +63,7 @@ diagram_list <- prepare_diagram(model_list)
 ```
 
 
-# Example 2
+## Example 2
 
 This is the simple predator-prey model, with some styling applied.
 
@@ -88,18 +90,17 @@ Finally, we can make a diagram with settings adjusted to our liking.
 ```{r}
 # define adjusted settings for layout
 diagram_settings = list(
-    var_outline_color = NA,
-    var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    var_label_color = "white",
-    var_label_size = 10,
-    main_flow_label_color = "black",
-    main_flow_label_size = 5,
-    main_flow_color = "grey25",
+    var_fill_color = c("#6aa4c8", "#eb5600"),
+    var_label_color = "gray",
+    var_label_size = 12,
+    main_flow_label_color = "blue",
+    main_flow_label_size = 6,
+    main_flow_color = "grey50",
     main_flow_linetype = 1,
-    main_flow_size = 0.7,
+    main_flow_size = 1.2,
     interaction_flow_color = "grey25",
     interaction_flow_linetype = 2,
-    interaction_flow_size = 0.7
+    interaction_flow_size = 0.8
 )
     
 # make diagram with adjusted settings
@@ -112,42 +113,41 @@ plot(diag1)
 ```
 
 
-For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next.
+For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next. Any settings pertaining to the styling of the not shown components are ignored.
 
 ```{r}
 # specify custom settings for the diagram layout
 diagram_settings <- list(
-  var_outline_color = NA,
-    var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-    var_label_color = "white",
-    var_label_size = 10,
-    main_flow_label_color = "black",
-    main_flow_label_size = 5,
-    main_flow_color = "grey25",
+    var_fill_color = c("#6aa4c8", "#eb5600"),
+    var_label_color = "gray",
+    var_label_size = 12,
+    main_flow_label_color = "blue",
+    main_flow_label_size = 6,
+    main_flow_color = "grey50",
     main_flow_linetype = 1,
-    main_flow_size = 0.7,
+    main_flow_size = 1.2,
     interaction_flow_on = FALSE,  
     interaction_flow_color = "grey25",
     interaction_flow_linetype = 2,
-    interaction_flow_size = 0.7,
-    external_flow_on = FALSE
+    interaction_flow_size = 0.8,
+    external_flow_on = TRUE,
+    external_flow_label_on = FALSE
 )
 
-    # make another diagram with adjusted settings
+# make another diagram with adjusted settings
 diag2 <- make_diagram(
   diagram_list = pp_diagram_list,
   diagram_settings = diagram_settings
 )
 
-
 plot(diag2)
 ```
 
-As you can see, not showing the interactions doesn't produce a very useful diagram, so in this (and most cases), not showing interaction terms is maybe not the best idea.
+As you can see, not showing the interactions or not labeling some of the flows doesn't produce a very useful diagram. In general, as long as it is decently readable, you should show and label all components of your model.
 
-This shows the model with vertical alignment
+Here is another example, the model shown with vertical alignment
 
-```{r}
+```{r, fig.height = 4}
 varnames <- c("Bacteria","Immune Response")
 varlocations <-  matrix(data = c("B", "I"),
                         nrow = 2, byrow = TRUE)
@@ -160,3 +160,6 @@ plot(mydiag)
 
 
             
+## Example 3
+
+More examples to come.

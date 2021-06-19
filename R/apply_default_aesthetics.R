@@ -57,11 +57,8 @@ apply_default_aesthetics <- function(diagram_list) {
   exts$label_size <- recycle_values(external_flow_label_size, nrow(exts))
 
   # recombine flows data frame with aesthetics as columns
-  flows <- rbind(mains, ints, exts)
+  flows <- rbind(mains, exts, ints)
   flows$arrowsize <- 0.25  # default arrow size Applies default aesthetic values to data frames
-
-  # add a math column to differentiate from label if needed
-  flows$math <- flows$label
 
   return(list(variables = variables,
               flows = flows))
