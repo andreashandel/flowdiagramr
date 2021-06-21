@@ -1,0 +1,161 @@
+---
+title: "zane-notes"
+author: "Zane"
+date: "6/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+After running all of the included code chunks below I ran
+```{r}
+mymodel = list(varlabels = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+```
+
+to get the diagram.
+
+* `vignette(package = "flowdiagramr")` doesn't do anything. Maybe this could be a nice place to put a page that links to the package website.
+
+* Adding a duplicate flow (even to just one of the connected compartments) does not change the output, e.g.
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "-b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+```
+
+perhaps a warning here would be useful? 
+
+If the flow is duplicated in both places, e.g.
+
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "-b*S*I"),
+  I_flows = c("b*S*I","-g*I", "b*S*I"),
+  R_flows = c("g*I")
+)
+```
+
+I get an error.
+
+* Similarly, nothing changes if there is an identical flow of opposite sign. E.g.
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+```
+
+Maybe nothing should happen in this case but it still seems like a good idea to issue a warning. Similarly, I think that this
+
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "b*S*I"),
+  I_flows = c("b*S*I","-g*I", "-b*S*I"),
+  R_flows = c("g*I")
+)
+```
+
+while unrealistic does not have what I think is the desired output--even if the flow values do not make a lot of sense I think this should make a cycle between the two nodes.
+
+
+* In fact if I do something like this
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "-b*S", "b*S"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+```
+
+I get an error that is probably not easy to diagnose for the intended audience. Adding in either of the terms separately gives a loop as desired but adding both simultaeously generates an error. A more descriptive error would be better here, I think.
+
+* Exponents are not formatted, e.g.
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S^2*I"),
+  I_flows = c("b*S^2*I","-g*I"),
+  R_flows = c("g*I")
+)
+```
+
+works correctly but the label does not have superscript. Low priority but I think it is possible to format superscript/subscript in ggplot labels.
+
+* Unsure if this is the intended behavior--it seems cycles cause issues.
+
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "c*S*I"),
+  I_flows = c("b*S*I","-g*I", "-c*S*I"),
+  R_flows = c("g*I")
+)
+```
+
+* Maybe input types should be checked. E.g. I can run
+
+```{r}
+varlabels = c(0, "I", "R")
+flows = list(
+  `0_flows` = c("-b*0*I"),
+  I_flows = c("b*0*I","-g*I"),
+  R_flows = c("g*I")
+)
+```
+
+and get an output--is this desirable? Also works with negative integer literals e.g. `-1` and numeric literals e.g. `2.2412`. 
+
+This can probably be ignored since anyone who wants to name their variable `2` can just use `"2"` as the name but I thought it was interesting. To my delight,
+
+```{r}
+varlabels = c("Robert'); DROP TABLE Students;--", "I", "R")
+flows = list(
+  `Robert'); DROP TABLE Students;--_flows` = c("-b*Robert'); DROP TABLE Students;--*I"),
+  I_flows = c("b*Robert'); DROP TABLE Students;--*I","-g*I"),
+  R_flows = c("g*I")
+)
+```
+
+also works, though I am not convinced if it should or not. 
+
+HOWEVER, I did get some issues with the diagram when I changed the name of "S" to `"\n"`. In this case, the arrow from I to S did not show up correctly.
+
+Again, not sure how much of this is worth fixing, but I did think it was important to note that the function seems to be robust to many types of inputs.
+
+* If I put in an empty flow, I get an error message.
+
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c()
+)
+```
+
+I think this is the correct behavior since having a component by itself is kind of useless but maybe there should be a more specific warning message.
+
+* If I mislabel the flows, e.g.
+
+```{r}
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I"),
+  R_flows = c("b*S*I","-g*I"),
+  I_flows = c("g*I")
+)
+```
+
+the same diagram gets produced as the original SIR model. Unsure if this is intentional.
