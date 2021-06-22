@@ -32,7 +32,7 @@ $$
 \end{aligned}
 $$
 
-```{r,  echo=FALSE, fig.cap='SIR model', out.width = '60%'}
+```{r,  echo=FALSE, fig.cap='SIR model', out.width = '50%'}
 knitr::include_graphics(knitr::plot_crop("sirdiagram.png"))
 ```
 
@@ -63,7 +63,7 @@ sirmodel = list(varlabels = varlabels, flows = flows)
 
 Let **flowdiagramr** turn it into a nice diagram (in 2 steps):
 
-```{r, fig.height = 3}
+```{r, fig.height = 3, fig.align = "center"}
 # prepare diagram
 sir_diagram_list <- prepare_diagram(sirmodel)
 # make diagram
@@ -96,7 +96,7 @@ sir_diagram_settings <- list(
 
 Create diagram with customized settings
 
-```{r, fig.height = 3}
+```{r, fig.height = 3, fig.align = "center"}
 sir_diagram <- make_diagram(sir_diagram_list, sir_diagram_settings)
 plot(sir_diagram)
 ```
@@ -121,7 +121,7 @@ model_settings =
 
 ## More customizations
 
-```{r, fig.height = 3}
+```{r, fig.height = 3, fig.align = "center"}
 sir_diagram_list2 <- prepare_diagram(sirmodel, model_settings)
 sir_diagram2 <- make_diagram(sir_diagram_list2)
 plot(sir_diagram2)
@@ -132,7 +132,7 @@ plot(sir_diagram2)
 
 You can combine settings for `prepare_diagram` and `make_diagram`
 
-```{r, fig.height = 3}
+```{r, fig.height = 2.5, fig.align = "center"}
 sir_diagram_settings$var_label_size = 4 #reduce to make text fit
 sir_diagram3 <- make_diagram(sir_diagram_list2, 
                              sir_diagram_settings)
@@ -140,31 +140,32 @@ plot(sir_diagram3)
 ```
 
 
-## Even more customization {.smaller}
+## Even more customization 
 
-* `prepare_diagram` returns a list of data frames that specify variable and flow location and styling.
+`prepare_diagram` returns a list of data frames that specify variable and flow location and styling.
 
+:::{ .smallcode}
 ```{r}
-print(sir_diagram_list2)
+print(sir_diagram_list2$variables)
 ```
-
+:::
 
 ## Even more customization
 
-* You can edit the object produced by `prepare_diagram` before calling `make_diagram`.
+You can edit the object produced by `prepare_diagram` before calling `make_diagram`.
 
 ```{r}
 #increase the I box a bit both on left and right 
-sir_diagram_list2$variables$xmin[2] = 2
-sir_diagram_list2$variables$xmax[2] = 4
+sir_diagram_list2$variables$xmin[2] = 2 #was 2.5
+sir_diagram_list2$variables$xmax[2] = 4 #was 3.5
 #modify inflow and outflow arrows to align with new box size 
-sir_diagram_list2$flows$xend[1] = 2
-sir_diagram_list2$flows$xstart[2] = 4
+sir_diagram_list2$flows$xend[1] = 2 #was 2.5
+sir_diagram_list2$flows$xstart[2] = 4 #was 3.5
 #move the b*S*I arrow end a bit
-sir_diagram_list2$flows$xend[3] = 1.25
+sir_diagram_list2$flows$xend[3] = 1.25 #was 1.5
 #move the b*S*I label 
-sir_diagram_list2$flows$labely[3] = -1.2
-sir_diagram_list2$flows$labelx[3] = 2
+sir_diagram_list2$flows$labelx[3] = 2 #was 2.35
+sir_diagram_list2$flows$labely[3] = -1.2 #was -0.75
 ```
 
 
@@ -172,7 +173,7 @@ sir_diagram_list2$flows$labelx[3] = 2
 
 With those modifications, the resulting diagram looks like this
 
-```{r, fig.height = 3}
+```{r, fig.height = 3, fig.align = "center"}
 sir_diagram4 <- make_diagram(sir_diagram_list2, sir_diagram_settings)
 plot(sir_diagram4)
 ```
@@ -188,6 +189,8 @@ write_diagram(sirmodel, filename ="sirmodel_diagram_code.R")
 ```
 
 * You can run the code to reproduce the figure in a stand-alone manner. You can also fully edit the code to make any tweaks you like.
+
+* You can provide `write_diagram` all your modifications implemented in `model_settings`, `diagram_list` and `diagram_settings`.
 
 
 

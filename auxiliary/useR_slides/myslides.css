@@ -34,12 +34,9 @@
 	margin-bottom: 5px;
 }
 
-
-
-
 /*  See: https://bookdown.org/yihui/rmarkdown-cookbook/multi-column.html */
 .columns {
-  display: flex; 
+  display: flex;
   flex-basis: auto;
   margin: auto;
 }
@@ -56,14 +53,14 @@ slides > slide {
 
 h2 {
 	color: #123c66;  /* dark blue */
-	margin-bottom: -20px; /* reduce space between title slide and text */
+	margin-bottom: 100px; /* adjust space between title slide and text. make smaller or larger depending on embedding of presenter video. */
 }
 
 /* Turn off page count in footer
 -------------------- */
 slides > slide:not(.nobackground):after {
   content: '';
-}  
+}
 
 .narrowlist
 {
@@ -72,9 +69,9 @@ slides > slide:not(.nobackground):after {
 
 
 /* Modify margin for level 1 (black title) slides */
-.segue 
+.segue
 {
-	padding-left: 50px; 
+	padding-left: 50px;
 	padding-right: 50px;
 }
 
@@ -86,6 +83,11 @@ slides > slide:not(.nobackground):after {
 .font80
 {
 	font-size: 80%;
+}
+
+.font50
+{
+	font-size: 50%;
 }
 
 
@@ -105,6 +107,14 @@ slides > slide:not(.nobackground):after {
 	font-size: 50%;
 }
 
+/* Change font size for code chunks
+-------------------- */
+
+.smallcode pre {
+  font-size: 50%;
+}
+
+
 /* Reduce font size for figure caption (class caption)
 -------------------- */
 .caption
@@ -114,7 +124,7 @@ slides > slide:not(.nobackground):after {
 
 
 /* Keep text off left side of screen
--------------------- 
+--------------------
 p {
 	margin-right: 0px;
 }
