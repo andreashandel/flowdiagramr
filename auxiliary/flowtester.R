@@ -10,6 +10,9 @@ model_list = list(varlabels = varlabels, flows = flows)
 model_settings = list(varnames = varnames, varlocations = varlocations, use_varnames = TRUE)
 diagram_list <- prepare_diagram(model_list, model_settings)
 
+write_diagram(model_list, model_settings)
+write_diagram(diagram_list = diagram_list)
+
 ?make_diagram()
 
 make_diagram(diagram_list)

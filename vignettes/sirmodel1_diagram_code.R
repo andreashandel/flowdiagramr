@@ -3,7 +3,7 @@ library(flowdiagramr)
 
 model_list <- list(varlabels = c("S", "I", "R"), flows = list(S_flows = "-b*S*I", I_flows = c("b*S*I", "-g*I"), R_flows = "g*I"))
 
-model_settings <- NULL
+model_settings <- list(varnames = NULL, use_varnames = FALSE, var_label_size = 10, varlocations = NULL)
 
 diagram_list <- prepare_diagram(model_list = model_list, model_settings = model_settings)
 
@@ -38,10 +38,75 @@ external_flow_label_color <- 'black'
 external_flow_label_size <- 5
 with_grid <- FALSE
 
-var_outline_color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))
-var_fill_color <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))
-var_label_color <- flowdiagramr:::recycle_values(var_label_color, nrow(variables))
-main_flow_label_color <- flowdiagramr:::recycle_values(main_flow_label_color, nrow(flows))
+# recycle values as needed
+variables$color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))
+variables$fill <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))
+variables$label_color <- flowdiagramr:::recycle_values(var_label_color, nrow(variables))
+variables$label_size <- flowdiagramr:::recycle_values(var_label_size, nrow(variables))
+variables$plot_label_size <- NULL
+
+mains <- subset(flows, type == "main")
+mains$color <- flowdiagramr:::recycle_values(main_flow_color, nrow(mains))
+if(is.numeric(main_flow_linetype)) {
+  main_flow_linetype <- subset(ltys, code == main_flow_linetype)[,"text"]
+}
+mains$linetype <- flowdiagramr:::recycle_values(main_flow_linetype, nrow(mains))
+mains$size <- flowdiagramr:::recycle_values(main_flow_size, nrow(mains))
+mains$label_color <- flowdiagramr:::recycle_values(main_flow_label_color, nrow(mains))
+mains$label_size <- flowdiagramr:::recycle_values(main_flow_label_size, nrow(mains))
+
+ints <- subset(flows, type == "interaction")
+ints$color <- flowdiagramr:::recycle_values(interaction_flow_color, nrow(ints))
+if(is.numeric(interaction_flow_linetype)) {
+  interaction_flow_linetype <- subset(ltys, code == interaction_flow_linetype)[,"text"]
+}
+ints$linetype <- flowdiagramr:::recycle_values(interaction_flow_linetype, nrow(ints))
+ints$size <- flowdiagramr:::recycle_values(interaction_flow_size, nrow(ints))
+ints$label_color <- flowdiagramr:::recycle_values(interaction_flow_label_color, nrow(ints))
+ints$label_size <- flowdiagramr:::recycle_values(interaction_flow_label_size, nrow(ints))
+
+exts <- subset(flows, type == "external")
+exts$color <- flowdiagramr:::recycle_values(external_flow_color, nrow(exts))
+if(is.numeric(external_flow_linetype)){
+  external_flow_linetype <- subset(ltys, code == external_flow_linetype)[,"text"]
+}
+exts$linetype <- flowdiagramr:::recycle_values(external_flow_linetype, nrow(exts))
+exts$size <- flowdiagramr:::recycle_values(external_flow_size, nrow(exts))
+exts$label_color <- flowdiagramr:::recycle_values(external_flow_label_color, nrow(exts))
+exts$label_size <- flowdiagramr:::recycle_values(external_flow_label_size, nrow(exts))
+
+# recombine flows data frame with aesthetics as columns
+ flows <- rbind(mains, ints, exts)
+flows$arrowsize <- 0.25  # default arrow size
+
+
+# turn off flows completely by setting linetype to blank as needed
+if(main_flow_on == FALSE) {
+  flows[flows$type == "main", "linetype"] <- "blank"
+  flows[flows$type == "main", "arrowsize"] <- 0
+}
+if(interaction_flow_on == FALSE) {
+  flows[flows$type == "interaction", "linetype"] <- "blank"
+  flows[flows$type == "interaction", "arrowsize"] <- 0
+}
+if(external_flow_on == FALSE) {
+ flows[flows$type == "external", "linetype"] <- "blank"
+ flows[flows$type == "external", "arrowsize"] <- 0
+}
+
+
+# set label to "" to suppress label if requested
+# also do not show label if the flow itself is turned off
+flows$math <- flows$label
+if(main_flow_on == FALSE || main_flow_label_on == FALSE) {
+  flows[flows$type == "main", "label"] <- ""
+}
+if(interaction_flow_on == FALSE || interaction_flow_label_on == FALSE) {
+  flows[flows$type == "interaction", "label"] <- ""
+}
+if(external_flow_on == FALSE || external_flow_label_on == FALSE) {
+  flows[flows$type == "external", "label"] <- ""
+}
 
 
 # Start with an empty ggplot2 canvas. The coord_equal function ensures

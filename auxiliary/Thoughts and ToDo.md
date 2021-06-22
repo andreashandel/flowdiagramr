@@ -2,9 +2,7 @@
 # Urgent
 ******
 
-* In vignette C, last plot of example 1 the I label should be red, i.e. preserved from diagram_list modification. It is not, needs fixing.
-
-* get write_code to work. Then change all `source` code chunks in vignette D from eval=FALSE to eval=TRUE
+* In vignette C, last plot of example 1 the I label should be red, i.e. preserved from diagram_list modification. It is not, needs fixing. -- UPDATED TO WORK. BUT WE NEED TO DISCUSS DETAILS.
 
 ******
 # Important/Later

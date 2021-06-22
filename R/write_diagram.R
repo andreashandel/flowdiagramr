@@ -73,10 +73,27 @@ write_diagram <- function(model_list = NULL,
   # The R script for writing out is built as a series of blocks
   # that are concatenated at the very end of the function.
 
+  # Linetypes block
+  lty_block <- paste(
+    "# setup linetypes mapping from numeric to text",
+    'ltys <- data.frame(code = 0:6,
+                   text = c("blank", "solid", "dashed",
+                            "dotted", "dotdash", "longdash",
+                            "twodash"))',
+    sep = "\n")
+
   # Load libraries block ---
   lib_block <- paste0("library(ggplot2)",
                       "\n",
                       "library(flowdiagramr)")
+
+  # Get model settings
+  mod_defs <- eval(formals(prepare_diagram)$model_settings)
+  if(!is.null(model_settings)) {
+    mod_defs[names(model_settings)] <- model_settings
+  }
+  model_settings <- mod_defs
+
 
 
   # Graphing aesthetics block ---
@@ -119,13 +136,89 @@ write_diagram <- function(model_list = NULL,
   args_block <- paste(args_block, collapse = "\n")
 
   # Recycle aesthetics as needed
-  rec_block <- paste(
-    "var_outline_color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))",
-    "var_fill_color <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))",
-    "var_label_color <- flowdiagramr:::recycle_values(var_label_color, nrow(variables))",
-    "main_flow_label_color <- flowdiagramr:::recycle_values(main_flow_label_color, nrow(flows))",
+  var_rec_block <- paste(
+    "# recycle values as needed",
+    "variables$color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))",
+    "variables$fill <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))",
+    "variables$label_color <- flowdiagramr:::recycle_values(var_label_color, nrow(variables))",
+    "variables$label_size <- flowdiagramr:::recycle_values(var_label_size, nrow(variables))",
+    "variables$plot_label_size <- NULL",
     sep = "\n"
-    )
+  )
+
+  main_rec_block <- paste(
+    'mains <- subset(flows, type == "main")',
+    "mains$color <- flowdiagramr:::recycle_values(main_flow_color, nrow(mains))",
+    "if(is.numeric(main_flow_linetype)) {",
+      '  main_flow_linetype <- subset(ltys, code == main_flow_linetype)[,"text"]',
+    "}",
+    "mains$linetype <- flowdiagramr:::recycle_values(main_flow_linetype, nrow(mains))",
+    "mains$size <- flowdiagramr:::recycle_values(main_flow_size, nrow(mains))",
+    "mains$label_color <- flowdiagramr:::recycle_values(main_flow_label_color, nrow(mains))",
+    "mains$label_size <- flowdiagramr:::recycle_values(main_flow_label_size, nrow(mains))",
+    sep = "\n"
+  )
+
+  ints_rec_block <- paste(
+    'ints <- subset(flows, type == "interaction")',
+    "ints$color <- flowdiagramr:::recycle_values(interaction_flow_color, nrow(ints))",
+    "if(is.numeric(interaction_flow_linetype)) {",
+    '  interaction_flow_linetype <- subset(ltys, code == interaction_flow_linetype)[,"text"]',
+    "}",
+    "ints$linetype <- flowdiagramr:::recycle_values(interaction_flow_linetype, nrow(ints))",
+    "ints$size <- flowdiagramr:::recycle_values(interaction_flow_size, nrow(ints))",
+    "ints$label_color <- flowdiagramr:::recycle_values(interaction_flow_label_color, nrow(ints))",
+    "ints$label_size <- flowdiagramr:::recycle_values(interaction_flow_label_size, nrow(ints))",
+    sep = "\n"
+  )
+
+  exts_rec_block <- paste(
+    'exts <- subset(flows, type == "external")',
+    'exts$color <- flowdiagramr:::recycle_values(external_flow_color, nrow(exts))',
+    'if(is.numeric(external_flow_linetype)){',
+      '  external_flow_linetype <- subset(ltys, code == external_flow_linetype)[,"text"]',
+    '}',
+    "exts$linetype <- flowdiagramr:::recycle_values(external_flow_linetype, nrow(exts))",
+    "exts$size <- flowdiagramr:::recycle_values(external_flow_size, nrow(exts))",
+    "exts$label_color <- flowdiagramr:::recycle_values(external_flow_label_color, nrow(exts))",
+    "exts$label_size <- flowdiagramr:::recycle_values(external_flow_label_size, nrow(exts))",
+    sep = "\n"
+  )
+
+  # Final aesthetics block
+  final_aes <- paste(
+    "# recombine flows data frame with aesthetics as columns",
+   " flows <- rbind(mains, ints, exts)",
+    "flows$arrowsize <- 0.25  # default arrow size",
+    "\n",
+    "# turn off flows completely by setting linetype to blank as needed",
+    "if(main_flow_on == FALSE) {",
+      '  flows[flows$type == "main", "linetype"] <- "blank"',
+      '  flows[flows$type == "main", "arrowsize"] <- 0',
+    "}",
+    "if(interaction_flow_on == FALSE) {",
+      '  flows[flows$type == "interaction", "linetype"] <- "blank"',
+      '  flows[flows$type == "interaction", "arrowsize"] <- 0',
+    "}",
+    "if(external_flow_on == FALSE) {",
+      ' flows[flows$type == "external", "linetype"] <- "blank"',
+      ' flows[flows$type == "external", "arrowsize"] <- 0',
+    "}",
+    "\n",
+    '# set label to "" to suppress label if requested',
+    '# also do not show label if the flow itself is turned off',
+    "flows$math <- flows$label",
+    "if(main_flow_on == FALSE || main_flow_label_on == FALSE) {",
+      '  flows[flows$type == "main", "label"] <- ""',
+    "}",
+    "if(interaction_flow_on == FALSE || interaction_flow_label_on == FALSE) {",
+      '  flows[flows$type == "interaction", "label"] <- ""',
+    "}",
+    "if(external_flow_on == FALSE || external_flow_label_on == FALSE) {",
+      '  flows[flows$type == "external", "label"] <- ""',
+    "}",
+    sep = "\n"
+  )
 
 
   # ggplot2 code block ---
@@ -170,7 +263,7 @@ write_diagram <- function(model_list = NULL,
       dtmp <- character(length(ncol(tmp)))
       for(j in 1:ncol(tmp)) {
         cname <- colnames(tmp)[j]
-        dtmp[j] <- paste(cname, "=", deparse(tmp[ , j]))
+        dtmp[j] <- paste(cname, "=", deparse1(tmp[ , j]))
       }
       dftmp <- paste0(start, "\n  ", paste(dtmp, collapse = ",\n  "), "\n", end)
       df_block[i] <- dftmp
@@ -178,6 +271,7 @@ write_diagram <- function(model_list = NULL,
 
     df_block <- paste(df_block, collapse = "\n\n")
   }
+
 
   # Entire script
   if(!is.null(model_list) & is.null(diagram_list)) {
@@ -187,8 +281,13 @@ write_diagram <- function(model_list = NULL,
                      input_settings_block,
                      prep_block,
                      unlist_block,
+                     lty_block,
                      args_block,
-                     rec_block,
+                     var_rec_block,
+                     main_rec_block,
+                     ints_rec_block,
+                     exts_rec_block,
+                     final_aes,
                      gg_block,
                      plot_save_block,
                      sep = "\n\n")
@@ -196,8 +295,13 @@ write_diagram <- function(model_list = NULL,
     # If just the diagram_list is provided, just include the data frames blocks
     outcode <- paste(lib_block,
                      df_block,
+                     lty_block,
                      args_block,
-                     rec_block,
+                     var_rec_block,
+                     main_rec_block,
+                     ints_rec_block,
+                     exts_rec_block,
+                     final_aes,
                      gg_block,
                      plot_save_block,
                      sep = "\n\n")
@@ -209,8 +313,13 @@ write_diagram <- function(model_list = NULL,
                      prep_block,
                      unlist_block,
                      df_block,
+                     lty_block,
                      args_block,
-                     rec_block,
+                     var_rec_block,
+                     main_rec_block,
+                     ints_rec_block,
+                     exts_rec_block,
+                     final_aes,
                      gg_block,
                      plot_save_block,
                      sep = "\n\n")

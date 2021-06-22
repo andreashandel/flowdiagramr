@@ -59,7 +59,7 @@ If you run the code that is generated, it will create the diagram structure as a
 You can then plot or save that object (there is code at the bottom of the generated file for that).
 
 For this example, here is what you get. 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 source('sirmodel1_diagram_code.R')
 plot(diagram_plot)
 ```
@@ -105,7 +105,7 @@ Then save the new code, let's call it `sirmodel1_diagram_code_modified.R`.
 Running the new code will add the wanted text to the diagram plot
 
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 source('sirmodel1_diagram_code_modified.R')
 plot(diagram_plot)
 ```
@@ -169,7 +169,7 @@ write_diagram(model_list = sirmodel2,
 
 If you run the code that is generated, you should see a figure like this
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 source('sirmodel2_diagram_code.R')
 plot(diagram_plot)
 ```
@@ -181,29 +181,41 @@ This time, you want to (for some reason) turn the shape of the `I` box into a ci
 
 Here is how you modify the `sirmodel2_diagram_code.R` code to achieve this.
 
-**Doing a circle for I is hard to do in the current vectorized way the code is written. I still think loops might be easier to manipulate.**
 
 ```{r, eval = FALSE}
 #######################
 ### LAST PART OF THE GENERATED CODE BEFORE ADDITION
 #######################
-#to come
+for(i in 1:nrow(variables)) {
 
 #######################
 ### YOUR NEW ADDITION
 #######################
-#to come
-
-#######################
-### PART OF THE GENERATED CODE AFTER ADDITION
-#######################
-#to come
+if(i == 2) {
+    diagram_plot <- diagram_plot +
+      geom_point(
+        data = variables[i, ],
+        aes(x = labelx, y = labely),
+        color = variables[i, "fill"],
+        fill = variables[i, "fill"],
+        shape = 21,
+        size = 30
+      )
+  } else {
+    diagram_plot <- diagram_plot +
+      geom_rect(
+        data = variables[i, ],
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+        color = variables[i, "color"],
+        fill = variables[i, "fill"]
+      )
+  }
 ```
 
 
 Now save the modified script (here We call it `sirmodel2_diagram_code_modified.R`), source it and plot the generated `diagram_plot` object to get this figure:
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 source('sirmodel2_diagram_code_modified.R')
 plot(diagram_plot)
 ```
@@ -252,7 +264,7 @@ write_diagram(model_list = ppmodel,
 
 Running the resulting code produces this diagram.
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 source('ppmodel_diagram_code.R')
 plot(diagram_plot)
 ```
@@ -263,7 +275,7 @@ Let's say that for some reason, you want the rectangles with rounded corners. I 
 It's actually not much code editing. First, you need to install the [`statebins` R package](https://github.com/hrbrmstr/statebins). The version on CRAN works fine, so you can just use `install.packages('statebins')`. Then add `library('statebins')` at the top of your code file, underneath the other `library()` commands. 
 Finally, find the `geom_rect` bit in your code (close to the top) and replace it with `statebins:::geom_rrect` (yes, you need the ::: in there since `geom_rrect` is not an exported function. If you have no idea what that means, that's ok.) Everything else you can keep unchanged. Save your code (I recommend using a different name so you don't accidentally overwrite it if you run your `write_diagram` code again). Now, if you run the code, it should produce this diagram.
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 source('ppmodel_diagram_code_modified.R')
 plot(diagram_plot)
 ```

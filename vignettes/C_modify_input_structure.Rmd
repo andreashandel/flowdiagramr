@@ -136,7 +136,9 @@ plot(plot3)
 **Important Note:** If you supply settings for a specific element to `make_diagram` through the `diagram_settings` input, those take precedence over entries in `diagram_list`. Thus, if you make manual adjustments to `diagram_list`, make sure that you don't apply further styling to that component in `diagram_settings`. For instance if you decided to change the label color for the variables by editing `diagram_list`, you should not provide a `var_label_color` entry in `diagram_settings`.  
 
 Here is a quick example. We change the color of the `I` variable to red, which results in the first plot.
-But once we supply color specifications through `diagram_settings`, this is overwritten. As the third plot shows, you can still use `diagram_settings`, you just need to be careful not to adjust an element you already modified in `diagram_list`.
+But once we supply color specifications through `diagram_settings`, this is overwritten. 
+<!-- As the third plot shows, you can still use `diagram_settings`, you just need to be careful not to adjust an element you already modified in `diagram_list`. -->
+As the third plot shows, it is easiest to make multiple specifications through `diagram_settings` rather than `diagram_list` because `diagram_settings` always takes priority.
 
 
 ```{r}
@@ -147,8 +149,8 @@ plot(diag1)
 #var_label_color is overwritten by values from diagram_settings
 diag2 <- make_diagram(modified_diagram_list, diagram_settings)
 plot(diag2)
-#remove the var_label_color element to preserve your manual setting
-diagram_settings$var_label_color <- NULL
+#explicitly define the vector of label colors
+diagram_settings$var_label_color <- c("white", "red", "white")
 diag3 <- make_diagram(modified_diagram_list, diagram_settings)
 plot(diag3)
 ```
@@ -175,7 +177,7 @@ ppplot <- make_diagram(diagram_list)
 plot(ppplot)
 ```
 
-Let's modify this. We'll make the boxes a bit wider, relabel then, and adjust the location of some of the flows to work with the different box sizes. 
+Let's modify this. We'll make the boxes a bit wider, relabel them, and adjust the location of some of the flows to work with the different box sizes. 
 We'll also move some flow labels around and let's also assume that we want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called `Pmax`, not `pmax`. We can't do that when you specify the model since **`r pkg`** requires that parameters start with a lower case letter. Not a big deal, we can fix this now by replacing the label.
 
 First, we'll look at the `diagram_list` structure to see which elements we need to change.
