@@ -180,7 +180,7 @@ plot(sir_diagram4)
 
 
 
-## Get the full code to reproduce the diagram
+## Get the full code 
 
 * **`flowdiagramr`** can produce an `R` script containing the complete code to produce the diagram.
 
@@ -198,8 +198,7 @@ write_diagram(sirmodel, filename ="sirmodel_diagram_code.R")
 
 The [**`flowdiagramr`** website](https://andreashandel.github.io/flowdiagramr/) provides a lot of additional information (https://andreashandel.github.io/flowdiagramr/):
 
-* Several detailed vignettes.
-* Many examples illustrating options for customization.
+* Several detailed vignettes with examples illustrating options for customization.
 * Explanation for making non-model based flow diagrams.
 * Comparison to other R packages (e.g. `DiagrammeR`).
 * And much more `r emo::ji('smile')`
