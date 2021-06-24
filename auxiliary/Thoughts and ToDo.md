@@ -1,33 +1,41 @@
 ******
-# Urgent
+# Urgent/Next
 ******
 
-* In vignette C, last plot of example 1 the I label should be red, i.e. preserved from diagram_list modification. It is not, needs fixing. -- UPDATED TO WORK. BUT WE NEED TO DISCUSS DETAILS.
+My current thinking (up for discussion):
+
+* By default, the first (or, if present, lower left variable in varlocations matrix) is placed on a grid with the lower left corner of that box (xmin/ymin) at (0,0). By default, boxes are of size 1, with both horizontal and vertical spacing between boxes size 2.
+* model_settings in prepare_diagram will take these inputs: varlocations, varbox_x_scaling, varbox_y_scaling, varspace_x_scaling, varspace_y_scaling. The first 2 scale the box size by a factor along that direction, e.g. varbox_x_scaling = 1.5 makes each box of size 1.5. Might be easiest to just push the max value out by that amount? varspace does the same for the empty space between boxes, e.g. it scales the default value of 2 to create more/less spacing between boxes. These settings determine the location of all boxes. Once all boxes are 'placed', arrows will then be drawn between boxes based on box start/end settings.
+* varnames, use_varnames, var_label_size will be removed from model_settings
+* Also, let's call the low/high values for boxes and arrows the same. right now it's xmin and xstart for boxes and arrows respectively. That leads to extra cognitive load by the user :) Just pick one labeling and use the same for both boxes and arrows. I prefer min/max since it doesn't indicate directionality, but I'm ok with either (or something else).
+
+-> Rewrite prepare_diagram to implement those changes. Also, streamline/simplify code. Remove "legacy code", e.g. the sdf/vdf/cdf/etc. distinctions. Make code as streamlined/simple/documented as possible, so I can follow :) and thus maintain/update. That also means changing variable names to something consistent (instead of renaming at end, like we are doing for some currently.)
+
+
+* make_diagram gets a new entry for diagram_settings called var_label_text. The user provides a vector of text to be printed into the boxes (e.g. the variable names, or anything else). If provided, this is used, otherwise the default is to use varlabels from the model_list. This basically reproduces the varnames/use_varnames functionality in a more flexible way. It also reduces confusion about specifying var_label_size twice.
+
+* If a user specifies one of the entries in diagram_settings, it overwrites whatever is in diagram_list. If a user wants to do more detailed adjustments, they need to edit diagram_list and leave that entry of diagram_settings empty. Maybe (if easy to do) if code detects a non-default setting in diagram_list AND styling for that entry in diagram_settings, it could issue a warning message.
+
+-> Rewrite make_diagram to implement those changes. Also, as for prepare diagram, streamline/simplify code.
+
 
 ******
 # Important/Later
 ******
 
+* In vignette C, last plot of example 1 the I label should be red, i.e. preserved from diagram_list modification. It is not, needs fixing. -- UPDATED TO WORK. BUT WE NEED TO DISCUSS DETAILS.
+
 * Arrow placing for last plot in vignette F is poor. Might not be an easy fix.
 
-* Rewrite prepare_diagram. Contains a lot of "legacy code", e.g. the sdf/vdf/cdf/etc. distinctions. And there is a lot of code overall, seems like it should be possible to streamline a good bit. As it is right now, really hard to follow (for me) and thus maintain/update.
+* For CRAN submission, we want no errors/warning/notes. To prevent "Undefined global functions or variables", message, mostly caused by ggplot2 code, need to one of dplyr/rlang or utils::globalVariables. 
+Right now I'm defining global variables in global.R. I still don't fully understand how 'clean' this approach is. In general, I think one should try to minimize global variables, though it's hard with ggplot and dplyr code. 
+The rlang option described at link below can work. As you modify code, see if you can use that approach. And we should give all global variable distinct and unique names so that there isn't another variable with that name, which might lead to conflicts. Right now there are 'x' and 'y' as global variables (see globals.R) which is not ideal.
+https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887
 
-* Fix size of boxes when variable names are used. Still not quite working, see e.g. the example in the slides. 
 
 * Moved this from vignette A: **NEED TO CHECK THAT DESCRIPTION REGARDING MODEL_LIST SPECIFICATION IS 1) CORRECT, 2) AGREES WITH HELP CONTENT 3) CHECK_MODEL_LIST CHECKS VALIDITY OF ALL THAT.** As discussed, should be combined with modelbuilder to not duplicate checking code. 
 
 * convert_from_modelbuilder function has been updated to provide the new output as list with elements model_list and model_settings. This will require adjustments of modelbuilder code when using flowdiagramr to show diagrams in modelbuilder.
-
-* For CRAN submission, we want no errors/warning/notes. To prevent "Undefined global functions or variables", message, mostly caused by ggplot2 code, need to one of dplyr/rlang or utils::globalVariables. 
-See e.g. here:
-https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887
-We should also try to minimize global use, and give them distinct names so that there isn't another variable with that name.
-
-* In `prepare_diagram`, unclear how this block throws an error message that leads to exit out of the main function:
-if(!is.null(nodes_matrix)) {
-    # returns fatal error if variables do not match
-    check_nodes_matrix(model_list, nodes_matrix)
-  }
 
 * The quickstart vignette shows an error message "Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables". Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new 'more model examples' vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be. (and first address the other points).
 
