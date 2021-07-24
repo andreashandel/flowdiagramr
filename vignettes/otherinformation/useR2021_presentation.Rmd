@@ -12,12 +12,12 @@ library(emo)
 ```
 
 
-This site has the recording and slides from a [useR! 2021 conference](https://user2021.r-project.org/) presentation introducing the `flowdiagramr` pacakge.
+This site has the recording and slides from a [useR! 2021 conference](https://user2021.r-project.org/) presentation introducing the `flowdiagramr` package.
 
 <p>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/uO-ED4Vgmm0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </p>
 
-The slides can be found [here as html](https://github.com/andreashandel/flowdiagramr/blob/main/auxiliary/useR_slides/2021_07_useR_flowdiagramr.html) or [here as pdf](useR2021_slides.pdf).
+The slides can be found [here as html](https://github.com/andreashandel/flowdiagramr/blob/main/auxiliary/useR2021_presentation/useR2021_slides.html) or [here as pdf](https://github.com/andreashandel/flowdiagramr/blob/main/auxiliary/useR2021_presentation/useR2021_slides.pdf). (Download with right-click, they won't render on GitHub).
 
 

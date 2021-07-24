@@ -53,11 +53,41 @@
 <li>
   <a href="../articles/A_quickstart.html">Get started</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
 <li>
-  <a href="../reference/index.html">Reference</a>
+      <a href="../articles/A_quickstart.html">Quick Start Guide</a>
+    </li>
+    <li>
+      <a href="../articles/B_modify_diagrams_simple.html">Basic modification of diagrams</a>
+    </li>
+    <li>
+      <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
+    </li>
+    <li>
+      <a href="../articles/D_modify_ggplot_code.html">Modifying the code</a>
+    </li>
+    <li>
+      <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
+    </li>
+    <li>
+      <a href="../articles/F_more_model_examples.html">Additional diagram examples</a>
+    </li>
+    <li>
+      <a href="../articles/G_additional_topics.html">Additional topics</a>
+    </li>
+    <li>
+      <a href="../articles/H_comparison_to_other_packages.html">Comparison to other R packages</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -70,6 +100,9 @@
       <a href="../articles/otherinformation/useR2021_presentation.html">UseR! 2021 Presentation</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -274,10 +307,10 @@
 <a href="#use-the-magick-package" class="anchor"></a>Use the <code>magick</code> package</h3>
 <p>The <code>magick</code> package allows for automated trimming of a file. This means you first need to save your diagram into a file, then load, trim and resave. Here is an example</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">magick</span><span class="op">)</span>
-<span class="va">fig</span> <span class="op">&lt;-</span> <span class="fu">magick</span><span class="fu">::</span><span class="fu">image_read</span><span class="op">(</span><span class="st">"sirdiag.png"</span><span class="op">)</span>
-<span class="va">fig2</span> <span class="op">&lt;-</span> <span class="fu">magick</span><span class="fu">::</span><span class="fu">image_trim</span><span class="op">(</span><span class="va">fig</span><span class="op">)</span>
-<span class="fu">magick</span><span class="fu">::</span><span class="fu">image_write</span><span class="op">(</span><span class="va">fig2</span>,<span class="st">'sirdiag2.png'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/magick/">magick</a></span><span class="op">)</span>
+<span class="va">fig</span> <span class="op">&lt;-</span> <span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/editing.html">image_read</a></span><span class="op">(</span><span class="st">"sirdiag.png"</span><span class="op">)</span>
+<span class="va">fig2</span> <span class="op">&lt;-</span> <span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/transform.html">image_trim</a></span><span class="op">(</span><span class="va">fig</span><span class="op">)</span>
+<span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/editing.html">image_write</a></span><span class="op">(</span><span class="va">fig2</span>,<span class="st">'sirdiag2.png'</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html">include_graphics</a></span><span class="op">(</span><span class="st">'sirdiag2.png'</span><span class="op">)</span></code></pre></div>
 <p><img src="sirdiag2.png" width="90%" style="display: block; margin: auto;"></p>

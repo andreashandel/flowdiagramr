@@ -138,50 +138,50 @@ write_diagram <- function(model_list = NULL,
   # Recycle aesthetics as needed
   var_rec_block <- paste(
     "# recycle values as needed",
-    "variables$color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))",
-    "variables$fill <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))",
-    "variables$label_color <- flowdiagramr:::recycle_values(var_label_color, nrow(variables))",
-    "variables$label_size <- flowdiagramr:::recycle_values(var_label_size, nrow(variables))",
+    "variables$color <- recycle_values(var_outline_color, nrow(variables))",
+    "variables$fill <- recycle_values(var_fill_color, nrow(variables))",
+    "variables$label_color <- recycle_values(var_label_color, nrow(variables))",
+    "variables$label_size <- recycle_values(var_label_size, nrow(variables))",
     "variables$plot_label_size <- NULL",
     sep = "\n"
   )
 
   main_rec_block <- paste(
     'mains <- subset(flows, type == "main")',
-    "mains$color <- flowdiagramr:::recycle_values(main_flow_color, nrow(mains))",
+    "mains$color <- recycle_values(main_flow_color, nrow(mains))",
     "if(is.numeric(main_flow_linetype)) {",
       '  main_flow_linetype <- subset(ltys, code == main_flow_linetype)[,"text"]',
     "}",
-    "mains$linetype <- flowdiagramr:::recycle_values(main_flow_linetype, nrow(mains))",
-    "mains$size <- flowdiagramr:::recycle_values(main_flow_size, nrow(mains))",
-    "mains$label_color <- flowdiagramr:::recycle_values(main_flow_label_color, nrow(mains))",
-    "mains$label_size <- flowdiagramr:::recycle_values(main_flow_label_size, nrow(mains))",
+    "mains$linetype <- recycle_values(main_flow_linetype, nrow(mains))",
+    "mains$size <- recycle_values(main_flow_size, nrow(mains))",
+    "mains$label_color <- recycle_values(main_flow_label_color, nrow(mains))",
+    "mains$label_size <- recycle_values(main_flow_label_size, nrow(mains))",
     sep = "\n"
   )
 
   ints_rec_block <- paste(
     'ints <- subset(flows, type == "interaction")',
-    "ints$color <- flowdiagramr:::recycle_values(interaction_flow_color, nrow(ints))",
+    "ints$color <- recycle_values(interaction_flow_color, nrow(ints))",
     "if(is.numeric(interaction_flow_linetype)) {",
     '  interaction_flow_linetype <- subset(ltys, code == interaction_flow_linetype)[,"text"]',
     "}",
-    "ints$linetype <- flowdiagramr:::recycle_values(interaction_flow_linetype, nrow(ints))",
-    "ints$size <- flowdiagramr:::recycle_values(interaction_flow_size, nrow(ints))",
-    "ints$label_color <- flowdiagramr:::recycle_values(interaction_flow_label_color, nrow(ints))",
-    "ints$label_size <- flowdiagramr:::recycle_values(interaction_flow_label_size, nrow(ints))",
+    "ints$linetype <- recycle_values(interaction_flow_linetype, nrow(ints))",
+    "ints$size <- recycle_values(interaction_flow_size, nrow(ints))",
+    "ints$label_color <- recycle_values(interaction_flow_label_color, nrow(ints))",
+    "ints$label_size <- recycle_values(interaction_flow_label_size, nrow(ints))",
     sep = "\n"
   )
 
   exts_rec_block <- paste(
     'exts <- subset(flows, type == "external")',
-    'exts$color <- flowdiagramr:::recycle_values(external_flow_color, nrow(exts))',
+    'exts$color <- recycle_values(external_flow_color, nrow(exts))',
     'if(is.numeric(external_flow_linetype)){',
       '  external_flow_linetype <- subset(ltys, code == external_flow_linetype)[,"text"]',
     '}',
-    "exts$linetype <- flowdiagramr:::recycle_values(external_flow_linetype, nrow(exts))",
-    "exts$size <- flowdiagramr:::recycle_values(external_flow_size, nrow(exts))",
-    "exts$label_color <- flowdiagramr:::recycle_values(external_flow_label_color, nrow(exts))",
-    "exts$label_size <- flowdiagramr:::recycle_values(external_flow_label_size, nrow(exts))",
+    "exts$linetype <- recycle_values(external_flow_linetype, nrow(exts))",
+    "exts$size <- recycle_values(external_flow_size, nrow(exts))",
+    "exts$label_color <- recycle_values(external_flow_label_color, nrow(exts))",
+    "exts$label_size <- recycle_values(external_flow_label_size, nrow(exts))",
     sep = "\n"
   )
 

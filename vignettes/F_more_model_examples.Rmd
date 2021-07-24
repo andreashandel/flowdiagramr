@@ -1,5 +1,5 @@
 ---
-title: More model examples
+title: Additional diagram examples
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{More model examples}

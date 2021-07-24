@@ -11,7 +11,6 @@ Authors@R: c(
 Maintainer: Andreas Handel <ahandel@uga.edu>
 License: GPL-3
 Encoding: UTF-8
-LazyData: TRUE
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports:

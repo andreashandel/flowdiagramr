@@ -1,5 +1,5 @@
 ---
-title: Modifying the ggplot2 code 
+title: Modifying the code 
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Modifying the ggplot2 code}
