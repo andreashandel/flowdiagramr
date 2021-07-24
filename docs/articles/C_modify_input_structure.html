@@ -46,7 +46,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
+    <span class="fa fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -61,34 +61,13 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Additional Information
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/A_quickstart.html">A quick start to flowdiagramr</a>
-    </li>
-    <li>
-      <a href="../articles/B_modify_diagrams_simple.html">Basic modification of diagrams</a>
-    </li>
-    <li>
-      <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
-    </li>
-    <li>
-      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a>
-    </li>
-    <li>
-      <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
-    </li>
-    <li>
-      <a href="../articles/F_more_model_examples.html">More model examples</a>
-    </li>
-    <li>
-      <a href="../articles/G_additional_topics.html">Additional topics</a>
-    </li>
-    <li>
-      <a href="../articles/H_comparison_to_other_packages.html">Comparison to other R packages</a>
+      <a href="../articles/otherinformation/useR2021_presentation.html">UseR! 2021 Presentation</a>
     </li>
   </ul>
 </li>
@@ -110,7 +89,7 @@
 
       
 
-      </header><script src="C_modify_input_structure_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="C_modify_input_structure_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Modifying the input structure</h1>
@@ -227,7 +206,7 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">plot3</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <p><strong>Important Note:</strong> If you supply settings for a specific element to <code>make_diagram</code> through the <code>diagram_settings</code> input, those take precedence over entries in <code>diagram_list</code>. Thus, if you make manual adjustments to <code>diagram_list</code>, make sure that you don’t apply further styling to that component in <code>diagram_settings</code>. For instance if you decided to change the label color for the variables by editing <code>diagram_list</code>, you should not provide a <code>var_label_color</code> entry in <code>diagram_settings</code>.</p>
-<p>Here is a quick example. We change the color of the <code>I</code> variable to red, which results in the first plot. But once we supply color specifications through <code>diagram_settings</code>, this is overwritten. As the third plot shows, you can still use <code>diagram_settings</code>, you just need to be careful not to adjust an element you already modified in <code>diagram_list</code>.</p>
+<p>Here is a quick example. We change the color of the <code>I</code> variable to red, which results in the first plot. But once we supply color specifications through <code>diagram_settings</code>, this is overwritten. <!-- As the third plot shows, you can still use `diagram_settings`, you just need to be careful not to adjust an element you already modified in `diagram_list`. --> As the third plot shows, it is easiest to make multiple specifications through <code>diagram_settings</code> rather than <code>diagram_list</code> because <code>diagram_settings</code> always takes priority.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#manually change label color</span>
 <span class="va">modified_diagram_list</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">label_color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="st">"red"</span>
@@ -240,8 +219,8 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-10-2.png" width="672"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#remove the var_label_color element to preserve your manual setting</span>
-<span class="va">diagram_settings</span><span class="op">$</span><span class="va">var_label_color</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+<code class="sourceCode R"><span class="co">#explicitly define the vector of label colors</span>
+<span class="va">diagram_settings</span><span class="op">$</span><span class="va">var_label_color</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"red"</span>, <span class="st">"white"</span><span class="op">)</span>
 <span class="va">diag3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">modified_diagram_list</span>, <span class="va">diagram_settings</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diag3</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-10-3.png" width="672"></p>
@@ -262,7 +241,7 @@
 <span class="va">ppplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ppplot</span><span class="op">)</span></code></pre></div>
 <p><img src="C_modify_input_structure_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
-<p>Let’s modify this. We’ll make the boxes a bit wider, relabel then, and adjust the location of some of the flows to work with the different box sizes. We’ll also move some flow labels around and let’s also assume that we want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called <code>Pmax</code>, not <code>pmax</code>. We can’t do that when you specify the model since <strong>flowdiagramr</strong> requires that parameters start with a lower case letter. Not a big deal, we can fix this now by replacing the label.</p>
+<p>Let’s modify this. We’ll make the boxes a bit wider, relabel them, and adjust the location of some of the flows to work with the different box sizes. We’ll also move some flow labels around and let’s also assume that we want the parameter that specifies the maximum pathogen level at which growth goes to zero to be called <code>Pmax</code>, not <code>pmax</code>. We can’t do that when you specify the model since <strong>flowdiagramr</strong> requires that parameters start with a lower case letter. Not a big deal, we can fix this now by replacing the label.</p>
 <p>First, we’ll look at the <code>diagram_list</code> structure to see which elements we need to change.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">diagram_list</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>

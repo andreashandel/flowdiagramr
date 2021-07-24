@@ -11,7 +11,7 @@ navbar:
     - intro
     - reference
     - news
-    - related
+    - other
     right:
     - github
   components:
@@ -27,6 +27,11 @@ navbar:
     news:
       text: Changelog
       href: news/index.html
+    articles:
+      text: Additional Information
+      menu:
+        - text: "UseR! 2021 Presentation"
+          href: articles/otherinformation/useR2021_presentation.html
     github:
       icon: fab fa-github
       href: https://github.com/andreashandel/flowdiagramr

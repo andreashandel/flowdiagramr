@@ -1,0 +1,23 @@
+---
+title: useR 2021 Presentation
+subtitle: ""
+date: "`r file.mtime(knitr::current_input())`"
+output: 
+  html_document:
+    toc_depth: 3
+---
+
+```{r, echo = FALSE}
+library(emo)
+```
+
+
+This site has the recording and slides from a [useR! 2021 conference](https://user2021.r-project.org/) presentation introducing the `flowdiagramr` pacakge.
+
+<p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/uO-ED4Vgmm0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</p>
+
+The slides can be found [here as html](https://github.com/andreashandel/flowdiagramr/blob/main/auxiliary/useR_slides/2021_07_useR_flowdiagramr.html) or [here as pdf](useR2021_slides.pdf).
+
+

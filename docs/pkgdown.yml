@@ -10,7 +10,9 @@ articles:
   F_more_model_examples: F_more_model_examples.html
   G_additional_topics: G_additional_topics.html
   H_comparison_to_other_packages: H_comparison_to_other_packages.html
-last_built: 2021-06-19T20:14Z
+  otherinformation/useR2021_presentation: useR2021_presentation.html
+  otherinformation/useR2021_slides: useR2021_slides.html
+last_built: 2021-07-24T12:28Z
 urls:
   reference: https://andreashandel.github.io/flowdiagramr/index.html/reference
   article: https://andreashandel.github.io/flowdiagramr/index.html/articles
