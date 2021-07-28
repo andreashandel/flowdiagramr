@@ -584,7 +584,7 @@ prepare_diagram <- function(model_list,
   # Dummy compartments are given ids that start with three numbers
   # that identify the type of dummy:
   #   999* = dummy compartments for flows out of the system (e.g., death pool)
-  #   -999* = dummy comparments for flows in the system (e.g., birth pool)
+  #   -999* = dummy comparments for flows into the system (e.g., birth pool)
   #   555* = dummy compartments for interaction links
   # These are just used to create empty nodes for arrows to originate from
   # or go to.
@@ -626,6 +626,36 @@ prepare_diagram <- function(model_list,
     ndf <- rbind(ndf, exnodes)
   }
 
+  # Add locations for nodes
+  newndf <- list()
+  for(rid in unique(ndf$row)) {
+    tmp <- subset(ndf, row == rid)
+    tmp$xmin <- NA
+    tmp$xmax <- NA
+    tmp$ymin <- NA
+    tmp$ymax <- NA
+    xstart <- 0
+    ystart <- 0 + (rid-1)*-3  #each row is -3 from the bottom of the other row: 2 spacing and 1 for size of box
+    bumpout <- 1
+    space <- 2
+    for(i in 1:nrow(tmp)) {
+      tmp[i, "xmin"] <- xstart
+      tmp[i, "xmax"] <- xstart + bumpout
+      tmp[i, "ymin"] <- ystart
+      tmp[i, "ymax"] <- ystart + bumpout
+
+      # update location settings, just x within a row
+      xstart <- xstart + bumpout + space
+    }
+    newndf <- rbind(newndf, tmp)
+  }
+  ndf <- newndf
+  rm(newndf)
+
+  # calculate midpoints
+  ndf$xmid <- rowMeans(ndf[ , c("xmin", "xmax")])
+  ndf$ymid <- rowMeans(ndf[ , c("ymin", "ymax")])
+
 
   # Add midpoint locations for nodes
   # Here we just iterate over the nodes and take their position in the
@@ -635,41 +665,41 @@ prepare_diagram <- function(model_list,
   # was previously defined.
   # If the varlocation_matrix is provided, then the same procedure is applied, but
   # based on the row and column positions provided by the user.
-  if(is.null(varlocation_matrix)) {
-    ndf <- ndf[order(ndf$id), ]
-    ndf$x <- NA
-    ndf$y <- NA
-    for(rid in unique(ndf$row)) {
-      ndf[which(ndf$row == rid), "x"] <- (1:nrow(ndf[which(ndf$row == rid), ])*3)-3
-      ndf[which(ndf$row == rid), "y"] <- (as.numeric(rid) * -2)+2
-    }
-  } else {
-    ny <- (1:nrow(varlocation_matrix) * -2)+2
-    nx <- (1:ncol(varlocation_matrix) * 3)-3
-    for(nid in varnames) {
-      pos <- which(varlocation_matrix == nid, arr.ind = TRUE)
-      ndf[which(ndf$label == nid), "x"] <- nx[pos[1, 2]]
-      ndf[which(ndf$label == nid), "y"] <- ny[pos[1, 1]]
-    }
-  }
-
-  # Add xmin/max and ymin/max columns for node rectangles
-  # I use a 0.5 offset in both directions, creating a 1x1 sized square.
-  xoff <- 0.5  # default
-  yoff <- 0.5  # default
-  ndf$xmin <- with(ndf, x - xoff)
-  ndf$xmax <- with(ndf, x + xoff)
-  ndf$ymin <- with(ndf, y - yoff)
-  ndf$ymax <- with(ndf, y + yoff)
+  # if(is.null(varlocation_matrix)) {
+  #   ndf <- ndf[order(ndf$id), ]
+  #   ndf$x <- NA
+  #   ndf$y <- NA
+  #   for(rid in unique(ndf$row)) {
+  #     ndf[which(ndf$row == rid), "x"] <- (1:nrow(ndf[which(ndf$row == rid), ])*3)-2.5
+  #     ndf[which(ndf$row == rid), "y"] <- (as.numeric(rid) * -2)+2.5
+  #   }
+  # } else {
+  #   ny <- (1:nrow(varlocation_matrix) * -2)+2
+  #   nx <- (1:ncol(varlocation_matrix) * 3)-3
+  #   for(nid in varnames) {
+  #     pos <- which(varlocation_matrix == nid, arr.ind = TRUE)
+  #     ndf[which(ndf$label == nid), "x"] <- nx[pos[1, 2]]
+  #     ndf[which(ndf$label == nid), "y"] <- ny[pos[1, 1]]
+  #   }
+  # }
+  #
+  # # Add xmin/max and ymin/max columns for node rectangles
+  # # I use a 0.5 offset in both directions, creating a 1x1 sized square.
+  # xoff <- 0.5  # default
+  # yoff <- 0.5  # default
+  # ndf$xmin <- with(ndf, x - xoff)
+  # ndf$xmax <- with(ndf, x + xoff)
+  # ndf$ymin <- with(ndf, y - yoff)
+  # ndf$ymax <- with(ndf, y + yoff)
 
 
   # update inflow node positions from nowhere (e.g. births)
   inflownodes <- subset(ndf, id < -9990)$id
   for(id in inflownodes) {
     newxyid <- edf[which(edf$from == id), "to"]
-    newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
-    newxy$y <- newxy$y + 2  # above the variable
-    ndf[which(ndf$id == id), c("x", "y")] <- newxy
+    newxy <- ndf[which(ndf$id == newxyid), c("xmid", "ymid")]
+    newxy$ymid <- newxy$ymid + 2  # above the variable
+    ndf[which(ndf$id == id), c("xmid", "ymid")] <- newxy
 
     # set min/max to midpoint for ease because these are not actually
     # drawn, therefore rectangle boundaries do not need to be accurate
@@ -681,9 +711,9 @@ prepare_diagram <- function(model_list,
   outflownodes <- subset(ndf, id > 9990)$id
   for(id in outflownodes) {
     newxyid <- edf[which(edf$to == id), "from"]
-    newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
-    newxy$y <- newxy$y - 2  # below the variable
-    ndf[which(ndf$id == id), c("x", "y")] <- newxy
+    newxy <- ndf[which(ndf$id == newxyid), c("xmid", "ymid")]
+    newxy$ymid <- newxy$ymid - 2  # below the variable
+    ndf[which(ndf$id == id), c("xmid", "ymid")] <- newxy
 
     # set min/max to midpoint for ease because these are not actually
     # drawn, therefore rectangle boundaries do not need to be accurate
@@ -697,13 +727,13 @@ prepare_diagram <- function(model_list,
   for(id in linknodes) {
     start <- edf[which(edf$to == id), "linkfrom"]
     end <- edf[which(edf$to == id), "linkto"]
-    newx1 <- ndf[which(ndf$id == start), "x"]
-    newx2 <- ndf[which(ndf$id == end), "x"]
+    newx1 <- ndf[which(ndf$id == start), "xmid"]
+    newx2 <- ndf[which(ndf$id == end), "xmid"]
     newx <- (newx1+newx2)/2  # midpoint of the physical arrow
-    newy1 <- ndf[which(ndf$id == start), "y"]
-    newy2 <- ndf[which(ndf$id == end), "y"]
+    newy1 <- ndf[which(ndf$id == start), "ymid"]
+    newy2 <- ndf[which(ndf$id == end), "ymid"]
     newy <- (newy1+newy2)/2  # midpoint of the physical arrow
-    ndf[which(ndf$id == id), c("x", "y")] <- c(newx, newy)
+    ndf[which(ndf$id == id), c("xmid", "ymid")] <- c(newx, newy)
 
     # set min/max to midpoint for ease because these are not actually
     # drawn, therefore rectangle boundaries do not need to be accurate
