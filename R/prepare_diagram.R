@@ -35,19 +35,20 @@
 #' \itemize{
 #' \item `varnames`: Vector of strings containing labels, one  for each variable.
 #'                   Default is `NULL`.
-#' \item `use_varnames`: A logical. If `FALSE` (default)  variable boxes will be labeled with
-#'     the `varlabels` entry from `model_list`. If `TRUE` variable boxes will be
-#'     labeled using the text provided in the `varnames` element.
-#'     If `varnames` is missing, an error occurs.
-#'     Note that labeling can be turned off through a setting in `make_diagram`.
-#' \item `var_label_size`: A numeric defining the size of the variable
-#'     labels in the plot. This is necessary because the the box sizes will
-#'     (eventually) be determined by the size of the text within. Default is
-#'     10.
-#' \item `varlocations`: A numeric matrix that specifies the locations of the
-#'     variables on an x-y grid with their desired x (columns) and y (row)
-#'     locations. See examples and vignettes. Default is `NULL`, which
-#'     results in a left-to-right diagram.
+#' \item `varbox_x_scaling`: A scalar that changes the default width of
+#'     variable boxes. For example, `varbox_x_scaling = 1.5` makes each box
+#'     1.5 times the default width.
+#' \item `varbox_y_scaling`: A scalar that changes the default height of
+#'     variable boxes. For example, `varbox_y_scaling = 1.5` makes each box
+#'     1.5 times the default height.
+#' \item `varspace_x_scaling`: A scalar that changes the default spacing between
+#'     variable boxes in the x dimension. For example, `varspace_x_scaling = 1.5`
+#'     makes each box 1.5 times farther apart in the x dimension than the
+#'     default spacing.
+#' \item `varspace_y_scaling`: A scalar that changes the default spacing between
+#'     variable boxes in the y dimension. For example, `varspace_y_scaling = 1.5`
+#'     makes each box 1.5 times farther apart in the y dimension than the
+#'     default spacing.
 #' }
 #'
 #' @return A list of two data frames:
@@ -62,8 +63,8 @@
 #'     \item `xmax`: Right edge location of box.
 #'     \item `ymin`: Lower edge of location box.
 #'     \item `ymax`: Upper edge of location box.
-#'     \item `labelx`: Horizontal position (midpoint) of label.
-#'     \item `labely`: Vertical position (midpoint) of label.
+#'     \item `xlabel`: Horizontal position (midpoint) of label.
+#'     \item `ylabel`: Vertical position (midpoint) of label.
 #'     \item `plot_label`: The text to be written into the box.
 #'     \item `color`: Default outline color for the box.
 #'     \item `fill`: Default fill color for the box.
@@ -79,12 +80,12 @@
 #'     \item `from`: The variable from which the arrow originate. That is, the
 #'     variable donating the flow.
 #'     \item `label`: The label of the flow. Typically a mathematical expression.
-#'     \item `xstart`: The starting horizontal position of the arrow.
-#'     \item `xend`: The ending horizontal position of the arrow.
-#'     \item `ystart`: The starting vertical position of the arrow.
-#'     \item `yend`: The ending vertical position of the arrow.
-#'     \item `labelx`: Horizontal position (midpoint) of label.
-#'     \item `labely`: Vertical position (midpoint) of label.
+#'     \item `xmin`: The starting horizontal position of the arrow.
+#'     \item `xmax`: The ending horizontal position of the arrow.
+#'     \item `ymin`: The starting vertical position of the arrow.
+#'     \item `ymax`: The ending vertical position of the arrow.
+#'     \item `xlabel`: Horizontal position (midpoint) of label.
+#'     \item `ylabel`: Vertical position (midpoint) of label.
 #'     \item `curvature`: The amount of curvature applied to arrow.
 #'     Higher numbers indicate more curvature; 0 = straight line.
 #'     \item `type`: Type of flow. One of main, interaction, or external.
@@ -156,10 +157,11 @@
 
 prepare_diagram <- function(model_list,
                             model_settings = list(
-                              varnames = NULL,
-                              use_varnames = FALSE,
-                              var_label_size = 10,
-                              varlocations = NULL)
+                              varlocations = NULL,
+                              varbox_x_scaling = 1,
+                              varbox_y_scaling = 1,
+                              varspace_x_scaling = 1,
+                              varspace_x_scaling = 1)
                             ) {
 
   ######################################################################
@@ -635,26 +637,28 @@ prepare_diagram <- function(model_list,
     tmp$ymin <- NA
     tmp$ymax <- NA
     xstart <- 0
-    ystart <- 0 + (rid-1)*-3  #each row is -3 from the bottom of the other row: 2 spacing and 1 for size of box
-    bumpout <- 1
-    space <- 2
+    rowspace_y <- -3 #each row is -3 from the bottom of the other row: 2 spacing and 1 for size of box
+    ystart <- (rid-1) * rowspace * varspace_y_scaling
+    bumpout_x <- 1 * varbox_x_scaling
+    bumpout_y <- 1 * varbox_y_scaling
+    space_x <- 2 * varspace_x_scaling
     for(i in 1:nrow(tmp)) {
       tmp[i, "xmin"] <- xstart
-      tmp[i, "xmax"] <- xstart + bumpout
+      tmp[i, "xmax"] <- xstart + bumpout_x
       tmp[i, "ymin"] <- ystart
-      tmp[i, "ymax"] <- ystart + bumpout
+      tmp[i, "ymax"] <- ystart + bumpout_y
 
       # update location settings, just x within a row
-      xstart <- xstart + bumpout + space
+      xstart <- xstart + bumpout + space_x
     }
     newndf <- rbind(newndf, tmp)
   }
   ndf <- newndf
   rm(newndf)
 
-  # calculate midpoints
-  ndf$xmid <- rowMeans(ndf[ , c("xmin", "xmax")])
-  ndf$ymid <- rowMeans(ndf[ , c("ymin", "ymax")])
+  # calculate midpoints for label locations, in general
+  ndf$xlabel <- rowMeans(ndf[ , c("xmin", "xmax")])
+  ndf$ylabel <- rowMeans(ndf[ , c("ymin", "ymax")])
 
 
   # Add midpoint locations for nodes
@@ -697,9 +701,9 @@ prepare_diagram <- function(model_list,
   inflownodes <- subset(ndf, id < -9990)$id
   for(id in inflownodes) {
     newxyid <- edf[which(edf$from == id), "to"]
-    newxy <- ndf[which(ndf$id == newxyid), c("xmid", "ymid")]
-    newxy$ymid <- newxy$ymid + 2  # above the variable
-    ndf[which(ndf$id == id), c("xmid", "ymid")] <- newxy
+    newxy <- ndf[which(ndf$id == newxyid), c("xlabel", "ylabel")]
+    newxy$ylabel <- newxy$ylabel + 2  # above the variable
+    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- newxy
 
     # set min/max to midpoint for ease because these are not actually
     # drawn, therefore rectangle boundaries do not need to be accurate
@@ -711,9 +715,9 @@ prepare_diagram <- function(model_list,
   outflownodes <- subset(ndf, id > 9990)$id
   for(id in outflownodes) {
     newxyid <- edf[which(edf$to == id), "from"]
-    newxy <- ndf[which(ndf$id == newxyid), c("xmid", "ymid")]
-    newxy$ymid <- newxy$ymid - 2  # below the variable
-    ndf[which(ndf$id == id), c("xmid", "ymid")] <- newxy
+    newxy <- ndf[which(ndf$id == newxyid), c("xlabel", "ylabel")]
+    newxy$ylabel <- newxy$ylabel - 2  # below the variable
+    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- newxy
 
     # set min/max to midpoint for ease because these are not actually
     # drawn, therefore rectangle boundaries do not need to be accurate
@@ -727,13 +731,13 @@ prepare_diagram <- function(model_list,
   for(id in linknodes) {
     start <- edf[which(edf$to == id), "linkfrom"]
     end <- edf[which(edf$to == id), "linkto"]
-    newx1 <- ndf[which(ndf$id == start), "xmid"]
-    newx2 <- ndf[which(ndf$id == end), "xmid"]
+    newx1 <- ndf[which(ndf$id == start), "xlabel"]
+    newx2 <- ndf[which(ndf$id == end), "xlabel"]
     newx <- (newx1+newx2)/2  # midpoint of the physical arrow
-    newy1 <- ndf[which(ndf$id == start), "ymid"]
-    newy2 <- ndf[which(ndf$id == end), "ymid"]
+    newy1 <- ndf[which(ndf$id == start), "ylabel"]
+    newy2 <- ndf[which(ndf$id == end), "ylabel"]
     newy <- (newy1+newy2)/2  # midpoint of the physical arrow
-    ndf[which(ndf$id == id), c("xmid", "ymid")] <- c(newx, newy)
+    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- c(newx, newy)
 
     # set min/max to midpoint for ease because these are not actually
     # drawn, therefore rectangle boundaries do not need to be accurate
@@ -757,13 +761,21 @@ prepare_diagram <- function(model_list,
 
 
   # Create segment coordinates by merging with node locations
-  edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
-  edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "to", by.y = "id",
-               suffixes = c("start", "end"))
+  edf <- merge(edf, ndf[ , c("xmax", "ylabel", "id")], by.x = "from", by.y = "id")
+  edf <- merge(edf, ndf[ , c("xmin", "ylabel", "id")], by.x = "to", by.y = "id")
+
+  # Rename columns for arrow positioning
+  edf$xminA <- edf$xmax  # to avoid overwritin the other xmin
+  edf$xmaxA <- edf$xmin  # to avoid overwritin the other xmax
+  edf$xmin <- edf$xminA
+  edf$xmax <- edf$xmaxA
+  edf$ymin <- edf$ylabel.x
+  edf$ymax <- edf$ylabel.y
+  edf[ , c("xminA", "xmaxA", "ylabel.x", "ylabel.y")] <- NULL
 
   # label locations are mid points
-  edf$xmid <- with(edf, (xend + xstart) / 2)
-  edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25  # label slightly above the arrrow
+  edf$xlabel <- with(edf, (xmax + xmin) / 2)
+  edf$ylabel <- with(edf, (ymax + ymin) / 2) + 0.25  # label slightly above the arrrow
   edf$diff <- with(edf, abs(to-from))
 
   if(!is.null(varlocation_matrix)) {
@@ -814,6 +826,16 @@ prepare_diagram <- function(model_list,
 
     edf <- rbind(edf, extints)
   }
+
+
+  #############################
+  #############################
+  ########## END WIP ##########
+  #############################
+  #############################
+
+
+
 
   # split up the edges into constituent parts:
   # - curved segments
@@ -909,11 +931,9 @@ prepare_diagram <- function(model_list,
   ndf <- subset(ndf, label != "")
 
   # update vertical edges to go in and out at angles
-  #vdf <- make_vdf_angled(vdf)
   vdf <- make_vdf_angled(vdf)
 
   # update vertical edges to avoid overlaps
-  #vdf <- fix_arrow_pos(vdf)
   vdf <- fix_arrow_pos(vdf)
 
   # set to/from columns to NA if value is not in node dataframe
