@@ -158,10 +158,12 @@
 prepare_diagram <- function(model_list,
                             model_settings = list(
                               varlocations = NULL,
+                              ## TODO MAKE THESE VECTORS, CAN BE RECYCLED, HARD ERROR IF WRONG LENGTH
+                              ## MUST BE OF LENGTH 1 or LENGTH OF VARS
                               varbox_x_scaling = 1,
                               varbox_y_scaling = 1,
                               varspace_x_scaling = 1,
-                              varspace_x_scaling = 1)
+                              varspace_y_scaling = 1)
                             ) {
 
   ######################################################################
@@ -208,6 +210,10 @@ prepare_diagram <- function(model_list,
        }
   }
 
+  # Extract model_settings to in scope objects
+  for(i in 1:length(model_settings)) {
+    assign(names(model_settings)[i], value = model_settings[[i]])
+  }
 
 
   # Extract relevant details from the model_list and make a matrix
@@ -638,7 +644,7 @@ prepare_diagram <- function(model_list,
     tmp$ymax <- NA
     xstart <- 0
     rowspace_y <- -3 #each row is -3 from the bottom of the other row: 2 spacing and 1 for size of box
-    ystart <- (rid-1) * rowspace * varspace_y_scaling
+    ystart <- (rid-1) * rowspace_y * varspace_y_scaling
     bumpout_x <- 1 * varbox_x_scaling
     bumpout_y <- 1 * varbox_y_scaling
     space_x <- 2 * varspace_x_scaling
@@ -649,7 +655,7 @@ prepare_diagram <- function(model_list,
       tmp[i, "ymax"] <- ystart + bumpout_y
 
       # update location settings, just x within a row
-      xstart <- xstart + bumpout + space_x
+      xstart <- xstart + bumpout_x + space_x
     }
     newndf <- rbind(newndf, tmp)
   }
@@ -1068,7 +1074,7 @@ prepare_diagram <- function(model_list,
   dflist <- apply_default_aesthetics(list(variables = variables,
                                           flows = flows))
 
-
+  # TODO Add inputs to return list.
 
   return(dflist)
 }

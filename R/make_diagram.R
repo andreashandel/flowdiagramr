@@ -164,6 +164,10 @@ make_diagram <- function (diagram_list,
                             with_grid = FALSE)
                           ) {
   # TODO error checking
+  # TODO Compare default prepare diagram output to that provided
+  # and issue warning if styling is changed AND diagram_settings changed
+  # to tell user that diagram_settings takes priority. Will require prepare_diagram
+  # to return the inputs.
 
   # unlist the data frames to objects
   variables <- diagram_list$variables
