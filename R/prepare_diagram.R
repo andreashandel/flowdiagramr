@@ -158,8 +158,6 @@
 prepare_diagram <- function(model_list,
                             model_settings = list(
                               varlocations = NULL,
-                              ## TODO MAKE THESE VECTORS, CAN BE RECYCLED, HARD ERROR IF WRONG LENGTH
-                              ## MUST BE OF LENGTH 1 or LENGTH OF VARS
                               varbox_x_scaling = 1,
                               varbox_y_scaling = 1,
                               varspace_x_scaling = 1,
@@ -170,11 +168,37 @@ prepare_diagram <- function(model_list,
   # check to make sure model_list is a properly specified model
   ######################################################################
   check <- check_model_list(model_list)
-  #check <- check_model_list(model_list)
   if(check$bad == TRUE) {
     stop(check$msg)
   }
 
+  # Extract model_settings to in scope objects
+  for(i in 1:length(model_settings)) {
+    assign(names(model_settings)[i], value = model_settings[[i]])
+  }
+
+  # check to make sure scaling parameters are of length 1 or length of the
+  # the number of variables. hard error out if not
+  if(varbox_x_scaling != 1) {
+    if(varbox_x_scaling != length(model_list$varlabels)) {
+      stop("varbox_x_scaling must be of length 1 or length of the number of variables")
+    }
+  }
+  if(varbox_y_scaling != 1) {
+    if(varbox_y_scaling != length(model_list$varlabels)) {
+      stop("varbox_y_scaling must be of length 1 or length of the number of variables")
+    }
+  }
+  if(varspace_x_scaling != 1) {
+    if(varspace_x_scaling != length(model_list$varlabels)) {
+      stop("varspace_x_scaling must be of length 1 or length of the number of variables")
+    }
+  }
+  if(varspace_y_scaling != 1) {
+    if(varspace_y_scaling != length(model_list$varlabels)) {
+      stop("varspace_y_scaling must be of length 1 or length of the number of variables")
+    }
+  }
 
   # assign default settings to be updated by user
   defaults <- eval(formals(prepare_diagram)$model_settings)
@@ -208,11 +232,6 @@ prepare_diagram <- function(model_list,
             # returns fatal error if variables do not match
             stop("varlocation entries do not match varlabels in model_list.")
        }
-  }
-
-  # Extract model_settings to in scope objects
-  for(i in 1:length(model_settings)) {
-    assign(names(model_settings)[i], value = model_settings[[i]])
   }
 
 
@@ -707,28 +726,26 @@ prepare_diagram <- function(model_list,
   inflownodes <- subset(ndf, id < -9990)$id
   for(id in inflownodes) {
     newxyid <- edf[which(edf$from == id), "to"]
-    newxy <- ndf[which(ndf$id == newxyid), c("xlabel", "ylabel")]
-    newxy$ylabel <- newxy$ylabel + 2  # above the variable
-    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- newxy
+    newxy <- ndf[which(ndf$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
+    newxy$ymax <- newxy$ymax + (varspace_y_scaling * 2)  # above the variable
+    newxy$ymin <- newxy$ymin + (varspace_y_scaling * 2)  # above the variable
+    ndf[which(ndf$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
 
-    # set min/max to midpoint for ease because these are not actually
-    # drawn, therefore rectangle boundaries do not need to be accurate
-    ndf[which(ndf$id == id), c("xmin", "ymin")] <- newxy
-    ndf[which(ndf$id == id), c("xmax", "ymax")] <- newxy
+    newmids <- c((newxy$xmin+newxy$xmax)/2, (newxy$ymin+newxy$ymax)/2)
+    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- newmids
   }
 
   # update outflow node positions to nowhere
   outflownodes <- subset(ndf, id > 9990)$id
   for(id in outflownodes) {
     newxyid <- edf[which(edf$to == id), "from"]
-    newxy <- ndf[which(ndf$id == newxyid), c("xlabel", "ylabel")]
-    newxy$ylabel <- newxy$ylabel - 2  # below the variable
-    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- newxy
+    newxy <- ndf[which(ndf$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
+    newxy$ymax <- newxy$ymax - (varspace_y_scaling * 2)  # below the variable
+    newxy$ymin <- newxy$ymin - (varspace_y_scaling * 2)  # below the variable
+    ndf[which(ndf$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
 
-    # set min/max to midpoint for ease because these are not actually
-    # drawn, therefore rectangle boundaries do not need to be accurate
-    ndf[which(ndf$id == id), c("xmin", "ymin")] <- newxy
-    ndf[which(ndf$id == id), c("xmax", "ymax")] <- newxy
+    newmids <- c((newxy$xmin+newxy$xmax)/2, (newxy$ymin+newxy$ymax)/2)
+    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- newmids
   }
 
   # update invisible interaction link nodes, i.e., nodes that need to sit
@@ -767,17 +784,55 @@ prepare_diagram <- function(model_list,
 
 
   # Create segment coordinates by merging with node locations
-  edf <- merge(edf, ndf[ , c("xmax", "ylabel", "id")], by.x = "from", by.y = "id")
-  edf <- merge(edf, ndf[ , c("xmin", "ylabel", "id")], by.x = "to", by.y = "id")
+  edf <- merge(edf, ndf[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
+               by.x = "from", by.y = "id")
+  edf <- merge(edf, ndf[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
+               by.x = "to", by.y = "id", suffixes = c("start", "end"))
 
-  # Rename columns for arrow positioning
-  edf$xminA <- edf$xmax  # to avoid overwritin the other xmin
-  edf$xmaxA <- edf$xmin  # to avoid overwritin the other xmax
-  edf$xmin <- edf$xminA
-  edf$xmax <- edf$xmaxA
-  edf$ymin <- edf$ylabel.x
-  edf$ymax <- edf$ylabel.y
-  edf[ , c("xminA", "xmaxA", "ylabel.x", "ylabel.y")] <- NULL
+  # add columns to be populated
+  edf$xmin <- NA_real_
+  edf$xmax <- NA_real_
+  edf$ymin <- NA_real_
+  edf$ymax <- NA_real_
+
+  # update arrow start and end points based on relationship between to
+  # and from positions
+  for(i in 1:nrow(edf)) {
+    tmp <- edf[i, ]
+    if(tmp$yminstart == tmp$yminend & tmp$xminstart != tmp$xminend) {
+      edf[i, "xmin"] <- tmp$xmaxstart
+      edf[i, "xmax"] <- tmp$xminend
+      edf[i, "ymin"] <- mean(c(tmp$yminstart, tmp$ymaxstart))
+      edf[i, "ymax"] <- mean(c(tmp$yminstart, tmp$ymaxstart))
+    }
+
+    if(tmp$yminstart > tmp$yminend & tmp$xminstart == tmp$xminend) {
+      edf[i, "xmin"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
+      edf[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
+      edf[i, "ymin"] <- tmp$yminstart
+      edf[i, "ymax"] <- tmp$ymaxend
+    }
+
+    if(tmp$yminstart < tmp$yminend & tmp$xminstart == tmp$xminend) {
+      edf[i, "xmin"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
+      edf[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
+      edf[i, "ymin"] <- tmp$ymaxstart
+      edf[i, "ymax"] <- tmp$yminend
+    }
+
+    if(tmp$interaction == TRUE & tmp$direct_interaction == FALSE) {
+      edf[i, "xmin"] <- tmp$xlabelstart
+      edf[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxend))
+      edf[i, "ymin"] <- tmp$ymaxstart
+      edf[i, "ymax"] <- tmp$ylabelend
+    }
+  }
+
+  # remove unneeded columns
+  edf[ , c("xminstart", "xmaxstart", "yminstart", "ymaxstart",
+           "xlabelstart", "ylabelstart", "xminend", "xmaxend",
+           "yminend", "ymaxend", "xlabelend", "ylabelend")] <- NULL
+
 
   # label locations are mid points
   edf$xlabel <- with(edf, (xmax + xmin) / 2)

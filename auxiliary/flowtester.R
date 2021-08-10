@@ -4,6 +4,7 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              I_flows = c("+b*S*I","-g*I", "-m*I"),
              R_flows = c("g*I", "-m*R"))
 varnames = c("Susceptible","Infected","Recovered")
+
 varlocations = matrix(data = c("S", "", "R",
                                "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
 model_list = list(varlabels = varlabels, flows = flows)
