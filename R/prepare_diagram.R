@@ -984,89 +984,67 @@ prepare_diagram <- function(model_list,
   ndf <- subset(ndf, label != "")
 
   # update vertical edges to go in and out at angles
-  edf <- make_vdf_angled(edf)
-
-
-  #############################
-  #############################
-  ########## END WIP ##########
-  #############################
-  #############################
-
+  edf <- make_vdf_angled(edf, ndf)
 
   # update vertical edges to avoid overlaps
-  vdf <- fix_arrow_pos(vdf)
+  edf <- fix_arrow_pos(edf)
 
   # set to/from columns to NA if value is not in node dataframe
-  sdf <- set_node_to_na(sdf, ndf)
-  vdf <- set_node_to_na(vdf, ndf)
-  cdf <- set_node_to_na(cdf, ndf)
-  fdf <- set_node_to_na(fdf, ndf)
+  edf <- set_node_to_na(edf, ndf)
 
   # remove rows with no location information
-  sdf <- remove_na_rows(sdf)
-  vdf <- remove_na_rows(vdf)
-  cdf <- remove_na_rows(cdf)
-  fdf <- remove_na_rows(fdf)
+  edf <- remove_na_rows(edf)
 
   # convert direct interaction to flag to regular interaction flag,
   # now only relevant for plotting
-  sdf <- update_interactions(sdf)
-  vdf <- update_interactions(vdf)
-  cdf <- update_interactions(cdf)
-  fdf <- update_interactions(fdf)
+  edf <- update_interactions(edf)
 
   # update all to and froms such that each is the variable label
-  sdf <- update_tofroms(sdf, ndf)
-  vdf <- update_tofroms(vdf, ndf)
-  cdf <- update_tofroms(cdf, ndf)
-  fdf <- update_tofroms(fdf, ndf)
+  edf <- update_tofroms(edf, ndf)
 
-  # rename data frames for exporting
-  ndf$labelx <- ndf$x
-  ndf$labely <- ndf$y
-  #nodes <- subset(ndf, select = -c(id, row, x, y))
-  nodes <- subset(ndf, select = -c(row, x, y))
+  # remove the row column
+  ndf$row <- NULL
+  edf$row <- NULL
 
   # change the label to full name, if requested
   # this will be move farther up once code to adjust box size to text is
   # implemented
 
-  # first check that varnames are provided, if not cause error
-  if(model_settings$use_varnames & is.null(model_settings$varnames)) {
-    stop("If you want to use `varnames` you need to specify them.")
-  }
+  # # first check that varnames are provided, if not cause error
+  # if(model_settings$use_varnames & is.null(model_settings$varnames)) {
+  #   stop("If you want to use `varnames` you need to specify them.")
+  # }
+  #
+  # # SHOULD CHECK HERE TO MAKE SURE VARNAMES HAS THE RIGHT LENGTH - MAYBE ALREADY DONE ABOVE?
+  # if(model_settings$use_varnames) {
+  #   nodes$plot_label <- nodes$name
+  # } else {
+  #   nodes$plot_label <- nodes$label
+  # }
 
-  # SHOULD CHECK HERE TO MAKE SURE VARNAMES HAS THE RIGHT LENGTH - MAYBE ALREADY DONE ABOVE?
-  if(model_settings$use_varnames) {
-    nodes$plot_label <- nodes$name
-  } else {
-    nodes$plot_label <- nodes$label
-  }
+  # sdf$labelx <- sdf$xmid
+  # sdf$labely <- sdf$ymid
+  # horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom, xmid, ymid))
+  # if(nrow(horizontal_edges) > 0) {
+  #   horizontal_edges$curvature <- 0
+  # } else {
+  #   horizontal_edges$curvature <- numeric()
+  # }
 
-  sdf$labelx <- sdf$xmid
-  sdf$labely <- sdf$ymid
-  horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom, xmid, ymid))
-  if(nrow(horizontal_edges) > 0) {
-    horizontal_edges$curvature <- 0
-  } else {
-    horizontal_edges$curvature <- numeric()
-  }
+  # vdf$labelx <- vdf$xmid
+  # vdf$labely <- vdf$ymid
+  # vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto,
+  #                                           linkfrom, xmid, ymid))
+  # if(nrow(vertical_edges) > 0) {
+  #   vertical_edges$curvature <- 0
+  #   vertical_edges$interaction <- FALSE
+  # } else {
+  #   vertical_edges$curvature <- numeric()
+  #   vertical_edges$interaction <- logical()
+  # }
 
-  vdf$labelx <- vdf$xmid
-  vdf$labely <- vdf$ymid
-  vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto,
-                                            linkfrom, xmid, ymid))
-  if(nrow(vertical_edges) > 0) {
-    vertical_edges$curvature <- 0
-    vertical_edges$interaction <- FALSE
-  } else {
-    vertical_edges$curvature <- numeric()
-    vertical_edges$interaction <- logical()
-  }
-
-  cdf$row <- NULL
-  curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
+  # cdf$row <- NULL
+  # curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
 
   fdf$labelx <- fdf$xmid
   fdf$labely <- fdf$ymid

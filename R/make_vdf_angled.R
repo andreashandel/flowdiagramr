@@ -6,18 +6,22 @@
 #' @return A dataframe.
 #' @noRd
 
-make_vdf_angled <- function(edf) {
+make_vdf_angled <- function(edf, ndf) {
   sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
   vdf <- subset(sdf, abs(diff) >= 9900)
 
   innies <- which(vdf$to < 9991)
   outies <- which(vdf$to > 9990)
-  vdf[innies, "xmin"] <- vdf[innies, "xmin"] - 0.5
+
+  inx <- ndf[which(ndf$id %in% vdf[innies,"to"]), "xmin"]
+  outx <- ndf[which(ndf$id %in% vdf[outies,"from"]), "xmax"]
+
+  vdf[innies, "xmin"] <- inx
   vdf[innies, "ymin"] <- vdf[innies, "ymin"] - 0.5
   # vdf[innies, "ymax"] <- vdf[innies, "ymax"] + 0.5
   vdf[innies, "xlabel"] <- vdf[innies, "xlabel"] - 0.25
   vdf[innies, "ylabel"] <- vdf[innies, "ylabel"] - 0.25
-  vdf[outies, "xmax"] <- vdf[outies, "xmax"] + 0.5
+  vdf[outies, "xmax"] <- outx
   # vdf[outies, "ymin"] <- vdf[outies, "ymin"] - 0.5
   vdf[outies, "ymax"] <- vdf[outies, "ymax"] + 0.5
   vdf[outies, "xlabel"] <- vdf[outies, "xlabel"] - 0.05

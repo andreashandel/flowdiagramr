@@ -11,8 +11,8 @@ remove_na_rows <- function(df) {
     for(i in 1:nrow(df)) {
       tmp <- df[i, ]
       if(
-        is.na(tmp$xstart) & is.na(tmp$ystart) &
-        is.na(tmp$xend) & is.na(tmp$yend)
+        is.na(tmp$xmin) & is.na(tmp$ymin) &
+        is.na(tmp$xmax) & is.na(tmp$ymax)
       ) {
         rmrow[i] <- FALSE
       }
