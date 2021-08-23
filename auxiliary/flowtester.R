@@ -1,4 +1,7 @@
 library(flowdiagramr)
+
+
+
 varlabels = c("S","I","R")
 flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              I_flows = c("+b*S*I","-g*I", "-m*I"),
@@ -7,8 +10,23 @@ varnames = c("Susceptible","Infected","Recovered")
 
 varlocations = matrix(data = c("S", "", "R",
                                "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
+
 model_list = list(varlabels = varlabels, flows = flows)
+model_settings = list(
+  varlocations = NULL,
+  varbox_x_scaling = 1,
+  varbox_y_scaling = 1,
+  varspace_x_scaling = 1,
+  varspace_y_scaling = 1)
+
+
+
+
+
+
 model_settings = list(varnames = varnames, varlocations = varlocations, use_varnames = TRUE)
+
+
 diagram_list <- prepare_diagram(model_list, model_settings)
 
 write_diagram(model_list, model_settings)

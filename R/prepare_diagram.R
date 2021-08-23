@@ -822,7 +822,7 @@ prepare_diagram <- function(model_list,
 
     if(tmp$interaction == TRUE & tmp$direct_interaction == FALSE) {
       edf[i, "xmin"] <- tmp$xlabelstart
-      edf[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxend))
+      edf[i, "xmax"] <- tmp$xminend
       edf[i, "ymin"] <- tmp$ymaxstart
       edf[i, "ymax"] <- tmp$ylabelend
     }
@@ -889,12 +889,6 @@ prepare_diagram <- function(model_list,
   }
 
 
-  #############################
-  #############################
-  ########## END WIP ##########
-  #############################
-  #############################
-
 
 
 
@@ -903,31 +897,31 @@ prepare_diagram <- function(model_list,
   # - straight (horizontal) segments
   # - vertical segments
   # - feedback segments (curved back onto same node)
-  cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from) | interaction == TRUE)
-  sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
-  vdf <- subset(sdf, abs(diff) >= 9900)
-  sdf <- subset(sdf, abs(diff) < 9900)
-  fdf <- subset(sdf, to == from)
-  sdf <- subset(sdf, to != from)
+  # cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from) | interaction == TRUE)
+  # sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
+  # vdf <- subset(sdf, abs(diff) >= 9900)
+  # sdf <- subset(sdf, abs(diff) < 9900)
+  # fdf <- subset(sdf, to == from)
+  # sdf <- subset(sdf, to != from)
 
   # Add offsets to straight edges. The offset depends on the variation
   # in x and y. If xstart == xend, then this is a vertical alignment and
   # y offsets are applied. If ystart == yend, then this is a
   # horizontal alignment and x offsets are applied. If vertical, the midpoints
   # are also updated to move the label to the right of the arrow.
-  if(nrow(sdf) != 0) {
-    for(i in 1:nrow(sdf)) {
-      if(sdf[i, "xstart"] == sdf[i, "xend"]) {
-        sdf[i, "ystart"] <- sdf[i, "ystart"] - yoff
-        sdf[i, "yend"] <- sdf[i, "yend"] + yoff
-        sdf[i, "ymid"] <- (sdf[i, "yend"] + sdf[i, "ystart"]) / 2
-        sdf[i, "xmid"] <- ((sdf[i, "xend"] + sdf[i, "xstart"]) / 2) + 0.25  # label to right
-      } else {
-        sdf[i, "xstart"] <- sdf[i, "xstart"] + xoff
-        sdf[i, "xend"] <- sdf[i, "xend"] - xoff
-      }
-    }
-  }
+  # if(nrow(sdf) != 0) {
+  #   for(i in 1:nrow(sdf)) {
+  #     if(sdf[i, "xstart"] == sdf[i, "xend"]) {
+  #       sdf[i, "ystart"] <- sdf[i, "ystart"] - yoff
+  #       sdf[i, "yend"] <- sdf[i, "yend"] + yoff
+  #       sdf[i, "ymid"] <- (sdf[i, "yend"] + sdf[i, "ystart"]) / 2
+  #       sdf[i, "xmid"] <- ((sdf[i, "xend"] + sdf[i, "xstart"]) / 2) + 0.25  # label to right
+  #     } else {
+  #       sdf[i, "xstart"] <- sdf[i, "xstart"] + xoff
+  #       sdf[i, "xend"] <- sdf[i, "xend"] - xoff
+  #     }
+  #   }
+  # }
 
   # The same logic above applies to curved arrows with an interaction.
   # Add offsets to straight edges. The offset depends on the variation
@@ -935,23 +929,20 @@ prepare_diagram <- function(model_list,
   # y offsets are applied. If ystart == yend, then this is a
   # horizontal alignment and x offsets are applied. If vertical, the midpoints
   # are also updated to move the label to the right of the arrow.
-  if(nrow(cdf) != 0) {
-    for(i in 1:nrow(cdf)) {
-      if(cdf[i, "interaction"] == TRUE &
-         cdf[i, "direct_interaction"] == FALSE) {
-        if(cdf[i, "xstart"] == cdf[i, "xend"]) {
-          cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
-          cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
-        }
-      }
-    }
-  }
+  # if(nrow(cdf) != 0) {
+  #   for(i in 1:nrow(cdf)) {
+  #     if(cdf[i, "interaction"] == TRUE &
+  #        cdf[i, "direct_interaction"] == FALSE) {
+  #       if(cdf[i, "xstart"] == cdf[i, "xend"]) {
+  #         cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
+  #         cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
+  #       }
+  #     }
+  #   }
+  # }
 
-  # Set the curvature using internal function
-  if(nrow(cdf) > 0) {
-    #cdf <- set_curvature(cdf, ndf)
-    cdf <- set_curvature(cdf, ndf)
-  }
+  edf <- set_curvature(edf, ndf)
+
 
   # Update start and end points for curved arrows that bypass nodes,
   # these need to start/end from the top/bottom of the nodes. If the
@@ -959,40 +950,49 @@ prepare_diagram <- function(model_list,
   # the arrow goes left to right, it will start and end on the bottom of
   # nodes. Similar logic applies if the diagram is positioned vertically
   # rather than horizontally.
-  if(nrow(cdf) > 0) {
-    for(i in 1:nrow(cdf)) {
-      if(cdf[i, "interaction"] == FALSE &
-         cdf[i, "direct_interaction"] == FALSE) {
-        if(sign(cdf[i, "diff"]) == 1) {
-          cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
-          cdf[i, "xend"] <- cdf[i, "xend"] - xoff
-          cdf[i, "ystart"] <- cdf[i, "ystart"] + yoff
-          cdf[i, "yend"] <- cdf[i, "yend"] + yoff
-          cdf[i, "labely"] <- cdf[i, "labely"] + yoff
-        }
-        if(sign(cdf[i, "diff"]) == -1) {
-          cdf[i, "xstart"] <- cdf[i, "xstart"] - xoff
-          cdf[i, "xend"] <- cdf[i, "xend"] + xoff
-          cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
-          cdf[i, "yend"] <- cdf[i, "yend"] - yoff
-          cdf[i, "labely"] <- cdf[i, "labely"] - yoff
-        }
-      }
-    }
-  }
+  # if(nrow(cdf) > 0) {
+  #   for(i in 1:nrow(cdf)) {
+  #     if(cdf[i, "interaction"] == FALSE &
+  #        cdf[i, "direct_interaction"] == FALSE) {
+  #       if(sign(cdf[i, "diff"]) == 1) {
+  #         cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
+  #         cdf[i, "xend"] <- cdf[i, "xend"] - xoff
+  #         cdf[i, "ystart"] <- cdf[i, "ystart"] + yoff
+  #         cdf[i, "yend"] <- cdf[i, "yend"] + yoff
+  #         cdf[i, "labely"] <- cdf[i, "labely"] + yoff
+  #       }
+  #       if(sign(cdf[i, "diff"]) == -1) {
+  #         cdf[i, "xstart"] <- cdf[i, "xstart"] - xoff
+  #         cdf[i, "xend"] <- cdf[i, "xend"] + xoff
+  #         cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
+  #         cdf[i, "yend"] <- cdf[i, "yend"] - yoff
+  #         cdf[i, "labely"] <- cdf[i, "labely"] - yoff
+  #       }
+  #     }
+  #   }
+  # }
 
-  # test to make sure splits are unique and sum up to original data frame
-  test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(edf)
-  if(!test) {
-    stop(paste0("Edges data frame is not splitting appropriately.\n",
-                "       Contact package maintainer."))
-  }
+  ### TODO Delete after testing
+  # # test to make sure splits are unique and sum up to original data frame
+  # test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(edf)
+  # if(!test) {
+  #   stop(paste0("Edges data frame is not splitting appropriately.\n",
+  #               "       Contact package maintainer."))
+  # }
 
   # now drop "hidden" nodes without labels
   ndf <- subset(ndf, label != "")
 
   # update vertical edges to go in and out at angles
-  vdf <- make_vdf_angled(vdf)
+  edf <- make_vdf_angled(edf)
+
+
+  #############################
+  #############################
+  ########## END WIP ##########
+  #############################
+  #############################
+
 
   # update vertical edges to avoid overlaps
   vdf <- fix_arrow_pos(vdf)

@@ -2,20 +2,28 @@
 #'     to create angles.
 #'     helper function for prepare_diagram
 #'
-#' @param vdf The vertical edges data frame.
+#' @param edf The edges data frame.
 #' @return A dataframe.
 #' @noRd
 
-make_vdf_angled <- function(vdf) {
+make_vdf_angled <- function(edf) {
+  sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
+  vdf <- subset(sdf, abs(diff) >= 9900)
+
   innies <- which(vdf$to < 9991)
   outies <- which(vdf$to > 9990)
-  vdf[innies, "xstart"] <- vdf[innies, "xstart"] - 0.5
-  vdf[innies, "ystart"] <- vdf[innies, "ystart"] - 1
-  vdf[innies, "yend"] <- vdf[innies, "yend"] + 0.5
-  vdf[innies, "xmid"] <- vdf[innies, "xmid"] - 0.25
-  vdf[innies, "ymid"] <- vdf[innies, "ymid"] - 0.25
-  vdf[outies, "xend"] <- vdf[outies, "xend"] + 0.5
-  vdf[outies, "ystart"] <- vdf[outies, "ystart"] - 0.5
-  vdf[outies, "yend"] <- vdf[outies, "yend"] + 1
-  vdf
+  vdf[innies, "xmin"] <- vdf[innies, "xmin"] - 0.5
+  vdf[innies, "ymin"] <- vdf[innies, "ymin"] - 0.5
+  # vdf[innies, "ymax"] <- vdf[innies, "ymax"] + 0.5
+  vdf[innies, "xlabel"] <- vdf[innies, "xlabel"] - 0.25
+  vdf[innies, "ylabel"] <- vdf[innies, "ylabel"] - 0.25
+  vdf[outies, "xmax"] <- vdf[outies, "xmax"] + 0.5
+  # vdf[outies, "ymin"] <- vdf[outies, "ymin"] - 0.5
+  vdf[outies, "ymax"] <- vdf[outies, "ymax"] + 0.5
+  vdf[outies, "xlabel"] <- vdf[outies, "xlabel"] - 0.05
+
+  toreplace <- match(paste0(edf$to, edf$from), paste0(vdf$to, vdf$from))
+  toreplace <- which(!is.na(toreplace))
+  edf[toreplace, ] <- vdf
+  return(edf)
 }
