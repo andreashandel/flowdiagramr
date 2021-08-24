@@ -16,8 +16,8 @@ model_settings = list(
   varlocations = NULL,
   varbox_x_scaling = 1,
   varbox_y_scaling = 1,
-  varspace_x_scaling = 1,
-  varspace_y_scaling = 1)
+  varspace_x_scaling = 2,
+  varspace_y_scaling = 2)
 
 
 

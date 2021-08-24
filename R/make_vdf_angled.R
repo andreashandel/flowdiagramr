@@ -14,17 +14,23 @@ make_vdf_angled <- function(edf, ndf) {
   outies <- which(vdf$to > 9990)
 
   inx <- ndf[which(ndf$id %in% vdf[innies,"to"]), "xmin"]
+  iny <- ndf[which(ndf$id %in% vdf[innies,"to"]), "ymax"]
   outx <- ndf[which(ndf$id %in% vdf[outies,"from"]), "xmax"]
+  outy <- ndf[which(ndf$id %in% vdf[outies,"from"]), "ymin"]
 
   vdf[innies, "xmin"] <- inx
-  vdf[innies, "ymin"] <- vdf[innies, "ymin"] - 0.5
-  # vdf[innies, "ymax"] <- vdf[innies, "ymax"] + 0.5
-  vdf[innies, "xlabel"] <- vdf[innies, "xlabel"] - 0.25
-  vdf[innies, "ylabel"] <- vdf[innies, "ylabel"] - 0.25
+  vdf[innies, "ymin"] <- iny + (varspace_y_scaling/2)
+  vdf[innies, "xlabel"] <- as.numeric(rowMeans(as.matrix(vdf[innies, c("xmin", "xmax")])))
+  vdf[innies, "ylabel"] <- as.numeric(rowMeans(as.matrix(vdf[innies, c("ymin", "ymax")])))
+  vdf[innies, "ylabel"] <- vdf[innies, "ylabel"] + 0.25
+
   vdf[outies, "xmax"] <- outx
-  # vdf[outies, "ymin"] <- vdf[outies, "ymin"] - 0.5
-  vdf[outies, "ymax"] <- vdf[outies, "ymax"] + 0.5
-  vdf[outies, "xlabel"] <- vdf[outies, "xlabel"] - 0.05
+  vdf[outies, "xmin"] <- outx - (varbox_x_scaling/2)
+  vdf[outies, "ymin"] <- outy
+  vdf[outies, "ymax"] <- outy - (varspace_y_scaling/2)
+  vdf[outies, "xlabel"] <- as.numeric(rowMeans(as.matrix(vdf[outies, c("xmin", "xmax")])))
+  vdf[outies, "ylabel"] <- as.numeric(rowMeans(as.matrix(vdf[outies, c("ymin", "ymax")])))
+  vdf[outies, "ylabel"] <- vdf[outies, "ylabel"] - 0.25
 
   toreplace <- match(paste0(edf$to, edf$from), paste0(vdf$to, vdf$from))
   toreplace <- which(!is.na(toreplace))
