@@ -287,7 +287,7 @@ prepare_diagram <- function(model_list,
 
   #define nodes data frame structure if not provided by user
   # Create a node data frame
-  ndf <- data.frame(
+  variables <- data.frame(
     id = 1:nvars,  # numeric id for nodes
     label = varnames,  # labels for nodes
     name = longvarnames,  # long names for labels
@@ -306,12 +306,12 @@ prepare_diagram <- function(model_list,
   #add implicit 1 if no strats
   strats <- ifelse(strats == "", 1, strats)
   #convert to numeric and make the stratifications encoded as rows
-  ndf$row <- as.numeric(strats)
+  variables$row <- as.numeric(strats)
 
 
   # Create the edge data frame by looping through the variables
   # and associated flows.
-  edf <- list()  #an empty list to be coerced to a data frame via rbind
+  flows <- list()  #an empty list to be coerced to a data frame via rbind
 
   #start loop over variables (rows in the flowmatred matrix)
   for(i in 1:nrow(flowmatred)) {
@@ -343,7 +343,7 @@ prepare_diagram <- function(model_list,
       vars <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
 
       #extract the numeric ids for the variables in this flow
-      varsids <- ndf[which(ndf$label %in% vars), "id"]
+      varsids <- variables[which(variables$label %in% vars), "id"]
 
       # add a connecting var if the expression is only in one row but
       # the flow math contains another state variable (node)
@@ -419,7 +419,7 @@ prepare_diagram <- function(model_list,
                           direct_interaction = FALSE)
 
         # Bind to edge data frame for flows
-        edf <- rbind(edf, tmp)
+        flows <- rbind(flows, tmp)
       }
 
       # If the current sign is positive AND the flow only shows up in
@@ -434,7 +434,7 @@ prepare_diagram <- function(model_list,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
-          edf <- rbind(edf, tmp)
+          flows <- rbind(flows, tmp)
         }
       }
 
@@ -469,7 +469,7 @@ prepare_diagram <- function(model_list,
             rm(flag)
           }
         }
-        edf <- rbind(edf, tmp)
+        flows <- rbind(flows, tmp)
       }
 
       # interaction flag if two variables are in the flow
@@ -477,12 +477,12 @@ prepare_diagram <- function(model_list,
         if(length(unique(connectvars)) > 1) {
           # this means that the flow connects two variables and both
           # are present in the flow math
-          edf[nrow(edf), "interaction"] <- TRUE
+          flows[nrow(flows), "interaction"] <- TRUE
         } else {
           # this means that the flow comes from or goes to somewhere out
           # of the system, and only 1 variable is included in the
           # flow math. this is designated as an "out_interaction"
-          edf[nrow(edf), "out_interaction"] <- TRUE
+          flows[nrow(flows), "out_interaction"] <- TRUE
         }
       }
 
@@ -492,18 +492,18 @@ prepare_diagram <- function(model_list,
   # Keep only distinct rows; duplication occurs because one variable's
   # inflow can be another variable's outflow, but we only want these once
   # in the data frame for edges (segments/arrows/flows).
-  edf <- unique(edf)
+  flows <- unique(flows)
 
   # Parse the meaning of duplicate labels. Usually this is a complex mix
   # of a direct, physical flows and interactions from several other
   # state variables. We assume that the "main" flow among the "auxilliary"
   # duplicate flows is the one that traverses left-to-right (e.g., 1 to 2)
   # with the smallest gap and has no interaction flags.
-  dups <- as.matrix(table(edf$label))  # tally the occurences of each flow
+  dups <- as.matrix(table(flows$label))  # tally the occurences of each flow
   dupids <- rownames(dups)[which(dups[,1] > 1)]  # grab the one with >1 occurence
   if(length(dupids) > 0) {
-    flowdups <- subset(edf, label %in% dupids)  # take a subset of the edge data frame
-    edf <- subset(edf, !(label %in% dupids))  # restrict edf to non-duplicate flows
+    flowdups <- subset(flows, label %in% dupids)  # take a subset of the edge data frame
+    flows <- subset(flows, !(label %in% dupids))  # restrict flows to non-duplicate flows
     flowdups <- subset(flowdups, sign(to-from) == 1)  # keep left-to-right flows
     flowdups <- subset(flowdups, interaction == FALSE &
                          out_interaction == FALSE &
@@ -518,25 +518,25 @@ prepare_diagram <- function(model_list,
     maindup <- flowdups[mainid, ]  # extract just the main flow for physical flow
     intdup <- flowdups[mainid, ]  # extract again for interaction flow, which is parsed later on
     intdup$interaction <- TRUE  # set interaction flag to TRUE
-    edf <- rbind(edf, maindup, intdup)
+    flows <- rbind(flows, maindup, intdup)
   }
 
   # Duplicate rows with out_interaction == TRUE to assign the interaction
   # flag and then remove the out_interaction flag. This is done to
   # achieve appropriate labeling. We want the physical flow to have no label
   # and for the interaction arrow to carry to the label.
-  repdf <- subset(edf, out_interaction == TRUE)
+  repdf <- subset(flows, out_interaction == TRUE)
   if(nrow(repdf) != 0) {  # avoids errors if no rows
     repdf$interaction <- TRUE  # set this to TRUE for linetypes
     repdf$out_interaction <- NULL  # remove this now
-    edf[which(edf$out_interaction == TRUE), "label"] <- ""  # take away the label for the physical flow
-    edf$out_interaction <- NULL  # remove this now
-    edf <- rbind(edf, repdf)  # tack them together
+    flows[which(flows$out_interaction == TRUE), "label"] <- ""  # take away the label for the physical flow
+    flows$out_interaction <- NULL  # remove this now
+    flows <- rbind(flows, repdf)  # tack them together
   }
 
   # remove out_interaction completely now that interaction is
   # appropriately flagged with correct labeling
-  edf$out_interaction <- NULL
+  flows$out_interaction <- NULL
 
 
   # Break edges apart into:
@@ -546,10 +546,10 @@ prepare_diagram <- function(model_list,
   # All flows are treated seperately because their start and end positions
   # depend on state variables in different ways.
 
-  edf$linkto <- NA  #empty column for interaction flows, but needed for binding
-  edf$linkfrom <- NA  #empty column for interaction flows, but needed for binding
-  ints <- subset(edf, interaction == TRUE)
-  edf <- subset(edf, interaction == FALSE)
+  flows$linkto <- NA  #empty column for interaction flows, but needed for binding
+  flows$linkfrom <- NA  #empty column for interaction flows, but needed for binding
+  ints <- subset(flows, interaction == TRUE)
+  flows <- subset(flows, interaction == FALSE)
 
   # If there are interactions, then duplicate them and reassign the to/from
   # columns such that we have two segments for each interaction flagged
@@ -573,7 +573,7 @@ prepare_diagram <- function(model_list,
       v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
-      ids <- subset(ndf, label %in% v)[ , "id"]  #extract the relevant numeric ids
+      ids <- subset(variables, label %in% v)[ , "id"]  #extract the relevant numeric ids
 
       if(is.na(ints[i, "to"])){
         # If the receiving node is NA, then this is an interaction
@@ -600,11 +600,11 @@ prepare_diagram <- function(model_list,
     }
 
     # Recombine the edge data frame
-    edf <- rbind(edf, ints, intflows)
+    flows <- rbind(flows, ints, intflows)
   }
 
   # Keep only distinct rows
-  edf <- unique(edf)
+  flows <- unique(flows)
 
 
   # Make dummy compartment for all flows in and out of the system.
@@ -618,28 +618,28 @@ prepare_diagram <- function(model_list,
 
   # Out of the system
   outdummies <- NULL
-  numnas <- length(edf[is.na(edf$to) & edf$interaction == FALSE, "to"])
+  numnas <- length(flows[is.na(flows$to) & flows$interaction == FALSE, "to"])
   if(numnas > 0) {
     outdummies <- as.numeric(paste0("999", c(1:numnas)))
-    edf[is.na(edf$to) & edf$interaction == FALSE, "to"] <- outdummies
+    flows[is.na(flows$to) & flows$interaction == FALSE, "to"] <- outdummies
   }
 
   # In to the system
   indummies <- NULL
-  numnas <- length(edf[is.na(edf$from) & edf$interaction == FALSE, "from"])
+  numnas <- length(flows[is.na(flows$from) & flows$interaction == FALSE, "from"])
   if(numnas > 0) {
     indummies <- as.numeric(paste0("-999", c(1:numnas)))
-    edf[is.na(edf$from) & edf$interaction == FALSE, "from"] <- indummies
+    flows[is.na(flows$from) & flows$interaction == FALSE, "from"] <- indummies
   }
 
   # Make dummy compartment for "links" in interactions
   linkdummies <- NULL
-  numlinks <- length(edf[is.na(edf$to) &
-                           edf$interaction == TRUE &
-                           !is.na(edf$linkto), "to"])
+  numlinks <- length(flows[is.na(flows$to) &
+                           flows$interaction == TRUE &
+                           !is.na(flows$linkto), "to"])
   if(numlinks > 0) {
     linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
-    edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
+    flows[is.na(flows$to) & flows$interaction == TRUE, "to"] <- linkdummies
   }
 
 
@@ -649,14 +649,14 @@ prepare_diagram <- function(model_list,
                           label = "",
                           name = NA,
                           row = 1)
-    exnodes[setdiff(names(ndf), names(exnodes))] <- NA
-    ndf <- rbind(ndf, exnodes)
+    exnodes[setdiff(names(variables), names(exnodes))] <- NA
+    variables <- rbind(variables, exnodes)
   }
 
   # Add locations for nodes
-  newndf <- list()
-  for(rid in unique(ndf$row)) {
-    tmp <- subset(ndf, row == rid)
+  newvariables <- list()
+  for(rid in unique(variables$row)) {
+    tmp <- subset(variables, row == rid)
     tmp$xmin <- NA
     tmp$xmax <- NA
     tmp$ymin <- NA
@@ -676,14 +676,14 @@ prepare_diagram <- function(model_list,
       # update location settings, just x within a row
       xstart <- xstart + bumpout_x + space_x
     }
-    newndf <- rbind(newndf, tmp)
+    newvariables <- rbind(newvariables, tmp)
   }
-  ndf <- newndf
-  rm(newndf)
+  variables <- newvariables
+  rm(newvariables)
 
   # calculate midpoints for label locations, in general
-  ndf$xlabel <- rowMeans(ndf[ , c("xmin", "xmax")])
-  ndf$ylabel <- rowMeans(ndf[ , c("ymin", "ymax")])
+  variables$xlabel <- rowMeans(variables[ , c("xmin", "xmax")])
+  variables$ylabel <- rowMeans(variables[ , c("ymin", "ymax")])
 
 
   # Add midpoint locations for nodes
@@ -695,20 +695,20 @@ prepare_diagram <- function(model_list,
   # If the varlocation_matrix is provided, then the same procedure is applied, but
   # based on the row and column positions provided by the user.
   # if(is.null(varlocation_matrix)) {
-  #   ndf <- ndf[order(ndf$id), ]
-  #   ndf$x <- NA
-  #   ndf$y <- NA
-  #   for(rid in unique(ndf$row)) {
-  #     ndf[which(ndf$row == rid), "x"] <- (1:nrow(ndf[which(ndf$row == rid), ])*3)-2.5
-  #     ndf[which(ndf$row == rid), "y"] <- (as.numeric(rid) * -2)+2.5
+  #   variables <- variables[order(variables$id), ]
+  #   variables$x <- NA
+  #   variables$y <- NA
+  #   for(rid in unique(variables$row)) {
+  #     variables[which(variables$row == rid), "x"] <- (1:nrow(variables[which(variables$row == rid), ])*3)-2.5
+  #     variables[which(variables$row == rid), "y"] <- (as.numeric(rid) * -2)+2.5
   #   }
   # } else {
   #   ny <- (1:nrow(varlocation_matrix) * -2)+2
   #   nx <- (1:ncol(varlocation_matrix) * 3)-3
   #   for(nid in varnames) {
   #     pos <- which(varlocation_matrix == nid, arr.ind = TRUE)
-  #     ndf[which(ndf$label == nid), "x"] <- nx[pos[1, 2]]
-  #     ndf[which(ndf$label == nid), "y"] <- ny[pos[1, 1]]
+  #     variables[which(variables$label == nid), "x"] <- nx[pos[1, 2]]
+  #     variables[which(variables$label == nid), "y"] <- ny[pos[1, 1]]
   #   }
   # }
   #
@@ -716,67 +716,67 @@ prepare_diagram <- function(model_list,
   # # I use a 0.5 offset in both directions, creating a 1x1 sized square.
   # xoff <- 0.5  # default
   # yoff <- 0.5  # default
-  # ndf$xmin <- with(ndf, x - xoff)
-  # ndf$xmax <- with(ndf, x + xoff)
-  # ndf$ymin <- with(ndf, y - yoff)
-  # ndf$ymax <- with(ndf, y + yoff)
+  # variables$xmin <- with(variables, x - xoff)
+  # variables$xmax <- with(variables, x + xoff)
+  # variables$ymin <- with(variables, y - yoff)
+  # variables$ymax <- with(variables, y + yoff)
 
 
   # update inflow node positions from nowhere (e.g. births)
-  inflownodes <- subset(ndf, id < -9990)$id
+  inflownodes <- subset(variables, id < -9990)$id
   for(id in inflownodes) {
-    newxyid <- edf[which(edf$from == id), "to"]
-    newxy <- ndf[which(ndf$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
+    newxyid <- flows[which(flows$from == id), "to"]
+    newxy <- variables[which(variables$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
     newxy$ymax <- newxy$ymax + (varspace_y_scaling * 2)  # above the variable
     newxy$ymin <- newxy$ymin + (varspace_y_scaling * 2)  # above the variable
-    ndf[which(ndf$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
+    variables[which(variables$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
 
     newmids <- c((newxy$xmin+newxy$xmax)/2, (newxy$ymin+newxy$ymax)/2)
-    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- newmids
+    variables[which(variables$id == id), c("xlabel", "ylabel")] <- newmids
   }
 
   # update outflow node positions to nowhere
-  outflownodes <- subset(ndf, id > 9990)$id
+  outflownodes <- subset(variables, id > 9990)$id
   for(id in outflownodes) {
-    newxyid <- edf[which(edf$to == id), "from"]
-    newxy <- ndf[which(ndf$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
+    newxyid <- flows[which(flows$to == id), "from"]
+    newxy <- variables[which(variables$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
     newxy$ymax <- newxy$ymax - (varspace_y_scaling * 2)  # below the variable
     newxy$ymin <- newxy$ymin - (varspace_y_scaling * 2)  # below the variable
-    ndf[which(ndf$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
+    variables[which(variables$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
 
     newmids <- c((newxy$xmin+newxy$xmax)/2, (newxy$ymin+newxy$ymax)/2)
-    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- newmids
+    variables[which(variables$id == id), c("xlabel", "ylabel")] <- newmids
   }
 
   # update invisible interaction link nodes, i.e., nodes that need to sit
   # at the midpoint of some other arrow, but not be drawn
-  linknodes <- subset(ndf, id > 5550 & id < 9990)$id
+  linknodes <- subset(variables, id > 5550 & id < 9990)$id
   for(id in linknodes) {
-    start <- edf[which(edf$to == id), "linkfrom"]
-    end <- edf[which(edf$to == id), "linkto"]
-    newx1 <- ndf[which(ndf$id == start), "xlabel"]
-    newx2 <- ndf[which(ndf$id == end), "xlabel"]
+    start <- flows[which(flows$to == id), "linkfrom"]
+    end <- flows[which(flows$to == id), "linkto"]
+    newx1 <- variables[which(variables$id == start), "xlabel"]
+    newx2 <- variables[which(variables$id == end), "xlabel"]
     newx <- (newx1+newx2)/2  # midpoint of the physical arrow
-    newy1 <- ndf[which(ndf$id == start), "ylabel"]
-    newy2 <- ndf[which(ndf$id == end), "ylabel"]
+    newy1 <- variables[which(variables$id == start), "ylabel"]
+    newy2 <- variables[which(variables$id == end), "ylabel"]
     newy <- (newy1+newy2)/2  # midpoint of the physical arrow
-    ndf[which(ndf$id == id), c("xlabel", "ylabel")] <- c(newx, newy)
+    variables[which(variables$id == id), c("xlabel", "ylabel")] <- c(newx, newy)
 
     # set min/max to midpoint for ease because these are not actually
     # drawn, therefore rectangle boundaries do not need to be accurate
-    ndf[which(ndf$id == id), c("xmin", "ymin")] <- c(newx, newy)
-    ndf[which(ndf$id == id), c("xmax", "ymax")] <- c(newx, newy)
+    variables[which(variables$id == id), c("xmin", "ymin")] <- c(newx, newy)
+    variables[which(variables$id == id), c("xmax", "ymax")] <- c(newx, newy)
   }
 
   # Subset out interactions to in/out flows
-  extints <- subset(edf, interaction == TRUE & is.na(linkto))
+  extints <- subset(flows, interaction == TRUE & is.na(linkto))
   if(nrow(extints) > 0) {
     for(i in 1:nrow(extints)) {
       tmp <- extints[i, ]
       v <- get_vars_pars(tmp$label)
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]
-      ids <- subset(ndf, label %in% v)[ , "id"]
+      ids <- subset(variables, label %in% v)[ , "id"]
       id <- ids[which(ids != tmp$from)]
       extints[i, "to"] <- id
     }
@@ -784,72 +784,72 @@ prepare_diagram <- function(model_list,
 
 
   # Create segment coordinates by merging with node locations
-  edf <- merge(edf, ndf[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
+  flows <- merge(flows, variables[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
                by.x = "from", by.y = "id")
-  edf <- merge(edf, ndf[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
+  flows <- merge(flows, variables[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
                by.x = "to", by.y = "id", suffixes = c("start", "end"))
 
   # add columns to be populated
-  edf$xmin <- NA_real_
-  edf$xmax <- NA_real_
-  edf$ymin <- NA_real_
-  edf$ymax <- NA_real_
+  flows$xmin <- NA_real_
+  flows$xmax <- NA_real_
+  flows$ymin <- NA_real_
+  flows$ymax <- NA_real_
 
   # update arrow start and end points based on relationship between to
   # and from positions
-  for(i in 1:nrow(edf)) {
-    tmp <- edf[i, ]
+  for(i in 1:nrow(flows)) {
+    tmp <- flows[i, ]
     if(tmp$yminstart == tmp$yminend & tmp$xminstart != tmp$xminend) {
-      edf[i, "xmin"] <- tmp$xmaxstart
-      edf[i, "xmax"] <- tmp$xminend
-      edf[i, "ymin"] <- mean(c(tmp$yminstart, tmp$ymaxstart))
-      edf[i, "ymax"] <- mean(c(tmp$yminstart, tmp$ymaxstart))
+      flows[i, "xmin"] <- tmp$xmaxstart
+      flows[i, "xmax"] <- tmp$xminend
+      flows[i, "ymin"] <- mean(c(tmp$yminstart, tmp$ymaxstart))
+      flows[i, "ymax"] <- mean(c(tmp$yminstart, tmp$ymaxstart))
     }
 
     if(tmp$yminstart > tmp$yminend & tmp$xminstart == tmp$xminend) {
-      edf[i, "xmin"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
-      edf[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
-      edf[i, "ymin"] <- tmp$yminstart
-      edf[i, "ymax"] <- tmp$ymaxend
+      flows[i, "xmin"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
+      flows[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
+      flows[i, "ymin"] <- tmp$yminstart
+      flows[i, "ymax"] <- tmp$ymaxend
     }
 
     if(tmp$yminstart < tmp$yminend & tmp$xminstart == tmp$xminend) {
-      edf[i, "xmin"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
-      edf[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
-      edf[i, "ymin"] <- tmp$ymaxstart
-      edf[i, "ymax"] <- tmp$yminend
+      flows[i, "xmin"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
+      flows[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
+      flows[i, "ymin"] <- tmp$ymaxstart
+      flows[i, "ymax"] <- tmp$yminend
     }
 
     if(tmp$interaction == TRUE & tmp$direct_interaction == FALSE) {
-      edf[i, "xmin"] <- tmp$xlabelstart
-      edf[i, "xmax"] <- tmp$xminend
-      edf[i, "ymin"] <- tmp$ymaxstart
-      edf[i, "ymax"] <- tmp$ylabelend
+      flows[i, "xmin"] <- tmp$xlabelstart
+      flows[i, "xmax"] <- tmp$xminend
+      flows[i, "ymin"] <- tmp$ymaxstart
+      flows[i, "ymax"] <- tmp$ylabelend
     }
   }
 
   # remove unneeded columns
-  edf[ , c("xminstart", "xmaxstart", "yminstart", "ymaxstart",
+  flows[ , c("xminstart", "xmaxstart", "yminstart", "ymaxstart",
            "xlabelstart", "ylabelstart", "xminend", "xmaxend",
            "yminend", "ymaxend", "xlabelend", "ylabelend")] <- NULL
 
 
   # label locations are mid points
-  edf$xlabel <- with(edf, (xmax + xmin) / 2)
-  edf$ylabel <- with(edf, (ymax + ymin) / 2) + 0.25  # label slightly above the arrrow
-  edf$diff <- with(edf, abs(to-from))
+  flows$xlabel <- with(flows, (xmax + xmin) / 2)
+  flows$ylabel <- with(flows, (ymax + ymin) / 2) + 0.25  # label slightly above the arrrow
+  flows$diff <- with(flows, abs(to-from))
 
   if(!is.null(varlocation_matrix)) {
-    xdiffs <- with(edf, abs(xstart - xend))
+    xdiffs <- with(flows, abs(xstart - xend))
     xdiffs <- ifelse(xdiffs %in% c(0, 3), 0.5, 1)
-    ydiffs <- with(edf, abs(ystart - yend))
+    ydiffs <- with(flows, abs(ystart - yend))
     ydiffs <- ifelse(ydiffs %in% c(0, 2), 0.5, 1)
-    for(i in 1:nrow(edf)) {
-      if(edf[i, "interaction"] == FALSE &
-         edf[i, "direct_interaction"] == FALSE &
-         edf[i, "to"] < 9900 &
-         edf[i, "from"] > -9900) {
-        edf[i, "diff"] <- xdiffs[i] + ydiffs[i]
+    for(i in 1:nrow(flows)) {
+      if(flows[i, "interaction"] == FALSE &
+         flows[i, "direct_interaction"] == FALSE &
+         flows[i, "to"] < 9900 &
+         flows[i, "from"] > -9900) {
+        flows[i, "diff"] <- xdiffs[i] + ydiffs[i]
       }
     }
   }
@@ -858,8 +858,8 @@ prepare_diagram <- function(model_list,
 
   # Get midpoints of in/out segments for external interactions "to" locations
   if(nrow(extints) > 0) {
-    extlinks <- subset(edf, label == "")
-    extints <- merge(extints, ndf[,c("x", "y", "id")], by.x = "from", by.y = "id")
+    extlinks <- subset(flows, label == "")
+    extints <- merge(extints, variables[,c("x", "y", "id")], by.x = "from", by.y = "id")
     colnames(extints)[which(colnames(extints) == "x")] <- "xstart"
     colnames(extints)[which(colnames(extints) == "y")] <- "ystart"
     extints$xend <- NA
@@ -885,7 +885,7 @@ prepare_diagram <- function(model_list,
     extints$ymid <- with(extints, (yend + ystart) / 2) + 0.25
     extints$diff <- with(extints, abs(to-from))
 
-    edf <- rbind(edf, extints)
+    flows <- rbind(flows, extints)
   }
 
 
@@ -897,8 +897,8 @@ prepare_diagram <- function(model_list,
   # - straight (horizontal) segments
   # - vertical segments
   # - feedback segments (curved back onto same node)
-  # cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from) | interaction == TRUE)
-  # sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
+  # cdf <- subset(flows, (diff > 1 & diff < 9000) & (to != from) | interaction == TRUE)
+  # sdf <- subset(flows, (diff <= 1 | diff >= 9000) & interaction == FALSE)
   # vdf <- subset(sdf, abs(diff) >= 9900)
   # sdf <- subset(sdf, abs(diff) < 9900)
   # fdf <- subset(sdf, to == from)
@@ -941,9 +941,10 @@ prepare_diagram <- function(model_list,
   #   }
   # }
 
-  edf <- set_curvature(edf, ndf)
+  flows <- set_curvature(flows, variables)
 
 
+  ### TODO Delete after testing
   # Update start and end points for curved arrows that bypass nodes,
   # these need to start/end from the top/bottom of the nodes. If the
   # arrow goes right to left, it will start and end on top of nodes. If
@@ -974,38 +975,45 @@ prepare_diagram <- function(model_list,
 
   ### TODO Delete after testing
   # # test to make sure splits are unique and sum up to original data frame
-  # test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(edf)
+  # test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(flows)
   # if(!test) {
   #   stop(paste0("Edges data frame is not splitting appropriately.\n",
   #               "       Contact package maintainer."))
   # }
 
   # now drop "hidden" nodes without labels
-  ndf <- subset(ndf, label != "")
+  variables <- subset(variables, label != "")
 
   # update vertical edges to go in and out at angles
-  edf <- make_vdf_angled(edf, ndf)
+  flows <- make_vdf_angled(flows, variables)
 
   # update vertical edges to avoid overlaps
-  edf <- fix_arrow_pos(edf)
+  flows <- fix_arrow_pos(flows)
 
   # set to/from columns to NA if value is not in node dataframe
-  edf <- set_node_to_na(edf, ndf)
+  flows <- set_node_to_na(flows, variables)
 
   # remove rows with no location information
-  edf <- remove_na_rows(edf)
+  flows <- remove_na_rows(flows)
 
   # convert direct interaction to flag to regular interaction flag,
   # now only relevant for plotting
-  edf <- update_interactions(edf)
+  flows <- update_interactions(flows)
 
   # update all to and froms such that each is the variable label
-  edf <- update_tofroms(edf, ndf)
+  flows <- update_tofroms(flows, variables)
+
+  # set curvature of feedback loops. this is pretty different from the
+  # "regular" curvature settings, so we made a separat function for this
+  # operation.
+  flows <- set_feedback_curvature(flows)
 
   # remove the row column
-  ndf$row <- NULL
-  edf$row <- NULL
+  variables$row <- NULL
+  flows$row <- NULL
 
+
+  ### TODO Delete after testing
   # change the label to full name, if requested
   # this will be move farther up once code to adjust box size to text is
   # implemented
@@ -1046,30 +1054,30 @@ prepare_diagram <- function(model_list,
   # cdf$row <- NULL
   # curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
 
-  fdf$labelx <- fdf$xmid
-  fdf$labely <- fdf$ymid
-  fdf$labely <- fdf$labely + 0.85  # this offset makes the label a little above the big curved arrow
-  # last, adjust the xs and ys to get arrow above and feeding back into the node
-  fdf$xstart <- fdf$xstart-0.25
-  fdf$ystart <- fdf$ystart+0.5
-  fdf$xend <- fdf$xend+0.25
-  fdf$yend <- fdf$yend+0.5
-  feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction,
-                                             xmid, ymid))
-  if(nrow(feedback_edges) > 0) {
-    feedback_edges$curvature <- -2
-    feedback_edges$interaction <- FALSE
-  } else {
-    feedback_edges$curvature <- numeric()
-    feedback_edges$interaction <- logical()
-  }
-
-
-  # combine all the edge data frames
-  flows <- rbind(horizontal_edges,
-                 vertical_edges,
-                 curved_edges,
-                 feedback_edges)
+  # fdf$labelx <- fdf$xmid
+  # fdf$labely <- fdf$ymid
+  # fdf$labely <- fdf$labely + 0.85  # this offset makes the label a little above the big curved arrow
+  # # last, adjust the xs and ys to get arrow above and feeding back into the node
+  # fdf$xstart <- fdf$xstart-0.25
+  # fdf$ystart <- fdf$ystart+0.5
+  # fdf$xend <- fdf$xend+0.25
+  # fdf$yend <- fdf$yend+0.5
+  # feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction,
+  #                                            xmid, ymid))
+  # if(nrow(feedback_edges) > 0) {
+  #   feedback_edges$curvature <- -2
+  #   feedback_edges$interaction <- FALSE
+  # } else {
+  #   feedback_edges$curvature <- numeric()
+  #   feedback_edges$interaction <- logical()
+  # }
+  #
+  #
+  # # combine all the edge data frames
+  # flows <- rbind(horizontal_edges,
+  #                vertical_edges,
+  #                curved_edges,
+  #                feedback_edges)
 
   # update interaction column to be type column, one of
   # main, interaction, or external.
@@ -1081,8 +1089,8 @@ prepare_diagram <- function(model_list,
 
 
   # add text size arguments
-  nodes$plot_label_size <- model_settings$var_label_size
-  variables <- nodes  # rename for user facing data frame
+  # nodes$plot_label_size <- model_settings$var_label_size
+  # variables <- nodes  # rename for user facing data frame
 
   #sort flows by type, main/external/interaction
   flows = rbind(flows[flows$type=="main",],flows[flows$type=="external",],flows[flows$type=="interaction",])
@@ -1095,8 +1103,8 @@ prepare_diagram <- function(model_list,
   flows$math <- flows$label
 
   # update flows column ordering
-  flows <- flows[, c("id","to", "from", "label", "xstart", "xend", "ystart", "yend",
-                     "labelx", "labely", "curvature", "type","math")]
+  flows <- flows[, c("id", "to", "from", "label", "xmin", "xmax", "ymin", "ymax",
+                     "xlabel", "ylabel", "curvature", "type", "math")]
 
 
   #remove row names, those are confusing
@@ -1107,7 +1115,9 @@ prepare_diagram <- function(model_list,
   dflist <- apply_default_aesthetics(list(variables = variables,
                                           flows = flows))
 
-  # TODO Add inputs to return list.
+  # Add inputs to return list.
+  dflist$inputs <- list(model_list = model_list,
+                        model_settings = model_settings)
 
   return(dflist)
 }

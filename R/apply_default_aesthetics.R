@@ -23,7 +23,7 @@ apply_default_aesthetics <- function(diagram_list) {
   # if text size is not provided (NA), then use text sizes in the data
   # frames. otherwise, override and use the provided sizes for all.
   if(is.na(var_label_size)) {
-    var_label_size <- variables$plot_label_size
+    var_label_size <- 10
   } else {
     var_label_size <- recycle_values(var_label_size, nrow(variables))
   }
