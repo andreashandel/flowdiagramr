@@ -179,26 +179,40 @@ prepare_diagram <- function(model_list,
 
   # check to make sure scaling parameters are of length 1 or length of the
   # the number of variables. hard error out if not
-  if(varbox_x_scaling != 1) {
-    if(varbox_x_scaling != length(model_list$varlabels)) {
+  if(length(varbox_x_scaling) != 1) {
+    if(length(varbox_x_scaling) != length(model_list$varlabels)) {
       stop("varbox_x_scaling must be of length 1 or length of the number of variables")
     }
   }
-  if(varbox_y_scaling != 1) {
-    if(varbox_y_scaling != length(model_list$varlabels)) {
+  if(length(varbox_y_scaling) != 1) {
+    if(length(varbox_y_scaling) != length(model_list$varlabels)) {
       stop("varbox_y_scaling must be of length 1 or length of the number of variables")
     }
   }
-  if(varspace_x_scaling != 1) {
-    if(varspace_x_scaling != length(model_list$varlabels)) {
+  if(length(varspace_x_scaling) != 1) {
+    if(length(varspace_x_scaling) != length(model_list$varlabels)) {
       stop("varspace_x_scaling must be of length 1 or length of the number of variables")
     }
   }
-  if(varspace_y_scaling != 1) {
-    if(varspace_y_scaling != length(model_list$varlabels)) {
+  if(length(varspace_y_scaling) != 1) {
+    if(length(varspace_y_scaling) != length(model_list$varlabels)) {
       stop("varspace_y_scaling must be of length 1 or length of the number of variables")
     }
   }
+
+  # repeat the space scalings if needed
+  # if(length(varbox_x_scaling) == 1) {
+  #   varbox_x_scaling <- recycle_values(varbox_x_scaling, n = length(model_list$varlabels))
+  # }
+  # if(length(varbox_y_scaling) == 1) {
+  #   varbox_y_scaling <- recycle_values(varbox_y_scaling, n = length(model_list$varlabels))
+  # }
+  # if(length(varspace_x_scaling) == 1) {
+  #   varspace_x_scaling <- recycle_values(varspace_x_scaling, n = length(model_list$varlabels))
+  # }
+  # if(length(varbox_y_scaling) == 1) {
+  #   varspace_y_scaling <- recycle_values(varspace_y_scaling, n = length(model_list$varlabels))
+  # }
 
   # assign default settings to be updated by user
   defaults <- eval(formals(prepare_diagram)$model_settings)
@@ -985,7 +999,7 @@ prepare_diagram <- function(model_list,
   variables <- subset(variables, label != "")
 
   # update vertical edges to go in and out at angles
-  flows <- make_vdf_angled(flows, variables)
+  flows <- make_vdf_angled(flows, variables, model_settings)
 
   # update vertical edges to avoid overlaps
   flows <- fix_arrow_pos(flows)

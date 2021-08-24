@@ -173,6 +173,9 @@ make_diagram <- function (diagram_list,
   variables <- diagram_list$variables
   flows <- diagram_list$flows
 
+  # TODO UPDATE
+  variables$plot_label = variables$label
+
   # assign default settings to be updated by user
   defaults <- eval(formals(make_diagram)$diagram_settings)
 

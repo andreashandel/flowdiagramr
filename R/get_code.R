@@ -37,7 +37,7 @@ for(i in 1:nrow(variables)) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = variables[i, ],
-      aes(x = labelx, y = labely, label = plot_label),
+      aes(x = xlabel, y = ylabel, label = plot_label),
       size = variables[i, "label_size"],
       color = variables[i, "label_color"]
     )
@@ -47,10 +47,10 @@ for(i in 1:nrow(flows)) {
   diagram_plot <- diagram_plot +
     geom_curve(
       data = flows[i, ],
-      aes(x = xstart,
-          y = ystart,
-          xend = xend,
-          yend = yend),
+      aes(x = xmin,
+          y = ymin,
+          xend = xmax,
+          yend = ymax),
       linetype = flows[i, "linetype"],
       arrow = arrow(length = unit(flows[i, "arrowsize"],"cm"), type = "closed"),
       color = flows[i, "color"],
@@ -66,7 +66,7 @@ for(i in 1:nrow(flows)) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = flows[i, ],
-      aes(x = labelx, y = labely, label = label),
+      aes(x = xlabel, y = ylabel, label = label),
       size = flows[i, "label_size"],
       color = flows[i, "label_color"])
 }
