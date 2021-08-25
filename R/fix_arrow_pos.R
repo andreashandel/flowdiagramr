@@ -27,7 +27,7 @@ fix_arrow_pos <- function(edf) {
 
   toreplace <- match(paste0(edf$to, edf$from), paste0(vdf$to, vdf$from))
   toreplace <- which(!is.na(toreplace))
-  edf[toreplace, ] <- vdf
+  edf[toreplace, ] <- out
   return(edf)
 
 }

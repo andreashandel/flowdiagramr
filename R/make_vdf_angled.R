@@ -15,10 +15,19 @@ make_vdf_angled <- function(edf, ndf, model_settings) {
   innies <- which(vdf$to < 9991)
   outies <- which(vdf$to > 9990)
 
-  inx <- ndf[which(ndf$id %in% vdf[innies,"to"]), "xmin"]
-  iny <- ndf[which(ndf$id %in% vdf[innies,"to"]), "ymax"]
-  outx <- ndf[which(ndf$id %in% vdf[outies,"from"]), "xmax"]
-  outy <- ndf[which(ndf$id %in% vdf[outies,"from"]), "ymin"]
+  inx <- numeric(length(innies))
+  iny <- numeric(length(innies))
+  for(i in 1:length(innies)) {
+    inx[i] <- ndf[which(ndf$id %in% vdf[innies[i],"to"]), "xmin"]
+    iny[i] <- ndf[which(ndf$id %in% vdf[innies[i],"to"]), "ymax"]
+  }
+
+  outx <- numeric(length(outies))
+  outy <- numeric(length(outies))
+  for(i in 1:length(outies)) {
+    outx[i] <- ndf[which(ndf$id %in% vdf[outies[i],"from"]), "xmax"]
+    outy[i] <- ndf[which(ndf$id %in% vdf[outies[i],"from"]), "ymin"]
+  }
 
   inids <- which(ndf$id %in% vdf[innies,"to"])
   outids <- which(ndf$id %in% vdf[outies,"from"])

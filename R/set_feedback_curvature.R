@@ -11,10 +11,8 @@ set_feedback_curvature <- function(edf) {
 
   if(nrow(fdf) > 0) {
     # now adjust the xs to get arrow above and feeding back into the node
-    fdf$xmin <- fdf$xmin-0.25
-    fdf$xmax <- fdf$xmax+0.25
     fdf$curvature <- -2  # default value for big loop
-
+    fdf$ylabel <- fdf$ylabel + 0.4  # this gets the label just above the loop
     toreplace <- match(paste0(edf$to, edf$from), paste0(fdf$to, fdf$from))
     toreplace <- which(!is.na(toreplace))
     edf[toreplace, ] <- fdf

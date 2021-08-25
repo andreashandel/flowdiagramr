@@ -827,6 +827,13 @@ prepare_diagram <- function(model_list,
       flows[i, "ymin"] <- tmp$ylabelstart
       flows[i, "ymax"] <- tmp$ylabelend
     }
+
+    if(tmp$xmaxstart == tmp$xmaxend & tmp$ymaxstart == tmp$ymaxend) {
+      flows[i, "xmin"] <- tmp$xlabelstart - 0.25
+      flows[i, "xmax"] <- tmp$xlabelend + 0.25
+      flows[i, "ymin"] <- tmp$ymaxend
+      flows[i, "ymax"] <- tmp$ymaxend
+    }
   }
 
   # remove unneeded columns
@@ -855,35 +862,40 @@ prepare_diagram <- function(model_list,
     }
   }
 
+  # update vertical edges to go in and out at angles
+  flows <- make_vdf_angled(flows, variables, model_settings)
+
+  # update vertical edges to avoid overlaps
+  flows <- fix_arrow_pos(flows)
 
 
   # Get midpoints of in/out segments for external interactions "to" locations
   if(nrow(extints) > 0) {
     extlinks <- subset(flows, label == "")
-    extints <- merge(extints, variables[,c("x", "y", "id")], by.x = "from", by.y = "id")
-    colnames(extints)[which(colnames(extints) == "x")] <- "xstart"
-    colnames(extints)[which(colnames(extints) == "y")] <- "ystart"
-    extints$xend <- NA
-    extints$yend <- NA
+    extints <- merge(extints, variables[,c("xlabel", "ylabel", "id")], by.x = "from", by.y = "id")
+    colnames(extints)[which(colnames(extints) == "xlabel")] <- "xmin"
+    colnames(extints)[which(colnames(extints) == "ylabel")] <- "ymin"
+    extints$xmax <- NA
+    extints$ymax <- NA
     for(i in 1:nrow(extints)) {
       tmp1 <- extints[i, ]
-      tmp1[ , c("xend", "yend")] <- NULL
+      tmp1[ , c("xmax", "ymax")] <- NULL
       tmp2 <- extlinks[which(tmp1$to == extlinks$from), ]
       if(tmp2$to == tmp2$from) {
-        tmp3 <- merge(tmp1, tmp2[, c("xend", "yend", "from")],
+        tmp3 <- merge(tmp1, tmp2[, c("xmax", "ymax", "from")],
                          by.x = "to", by.y = "from")
-        tmp3$yend <- tmp3$yend + 0.75
-        tmp3$xend <- tmp3$xend + 0.17
+        tmp3$ymax <- tmp3$ymax + 0.75
+        tmp3$xmax <- tmp3$xmax + 0.17
       } else {
-        tmp3 <- merge(tmp1, tmp2[, c("xmid", "ymid", "from")],
+        tmp3 <- merge(tmp1, tmp2[, c("xlabel", "ylabel", "from")],
                       by.x = "to", by.y = "from")
       }
-      colnames(tmp3) <- c("to", "from", "label", "interaction", "link",
-                             "xstart", "ystart", "xend", "yend")
+      # colnames(tmp3) <- c("to", "from", "label", "interaction", "link",
+      #                        "xmin", "ymin", "xmax", "ymax")
       extints[i, ] <- tmp3
     }
-    extints$xmid <- with(extints, (xend + xstart) / 2)
-    extints$ymid <- with(extints, (yend + ystart) / 2) + 0.25
+    extints$xlabel <- with(extints, (xmax + xmin) / 2)
+    extints$ylabel <- with(extints, (ymax + ymin) / 2) + 0.25
     extints$diff <- with(extints, abs(to-from))
 
     flows <- rbind(flows, extints)
@@ -924,23 +936,7 @@ prepare_diagram <- function(model_list,
   #   }
   # }
 
-  # The same logic above applies to curved arrows with an interaction.
-  # Add offsets to straight edges. The offset depends on the variation
-  # in x and y. If xstart == xend, then this is a vertical alignment and
-  # y offsets are applied. If ystart == yend, then this is a
-  # horizontal alignment and x offsets are applied. If vertical, the midpoints
-  # are also updated to move the label to the right of the arrow.
-  # if(nrow(cdf) != 0) {
-  #   for(i in 1:nrow(cdf)) {
-  #     if(cdf[i, "interaction"] == TRUE &
-  #        cdf[i, "direct_interaction"] == FALSE) {
-  #       if(cdf[i, "xstart"] == cdf[i, "xend"]) {
-  #         cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
-  #         cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
-  #       }
-  #     }
-  #   }
-  # }
+
 
   flows <- set_curvature(flows, variables)
 
@@ -974,6 +970,19 @@ prepare_diagram <- function(model_list,
   #   }
   # }
 
+  # if(nrow(cdf) != 0) {
+  #   for(i in 1:nrow(cdf)) {
+  #     if(cdf[i, "interaction"] == TRUE &
+  #        cdf[i, "direct_interaction"] == FALSE) {
+  #       if(cdf[i, "xmin"] == cdf[i, "xend"]) {
+  #         cdf[i, "xmin"] <- cdf[i, "xstart"] + xoff
+  #         cdf[i, "ymin"] <- cdf[i, "ystart"] - yoff
+  #       }
+  #     }
+  #   }
+  # }
+  #
+
   ### TODO Delete after testing
   # # test to make sure splits are unique and sum up to original data frame
   # test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(flows)
@@ -984,12 +993,6 @@ prepare_diagram <- function(model_list,
 
   # now drop "hidden" nodes without labels
   variables <- subset(variables, label != "")
-
-  # update vertical edges to go in and out at angles
-  flows <- make_vdf_angled(flows, variables, model_settings)
-
-  # update vertical edges to avoid overlaps
-  flows <- fix_arrow_pos(flows)
 
   # set to/from columns to NA if value is not in node dataframe
   flows <- set_node_to_na(flows, variables)

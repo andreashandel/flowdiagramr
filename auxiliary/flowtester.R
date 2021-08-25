@@ -23,12 +23,39 @@ make_diagram(diagram_list)
 
 model_settings = list(
   varlocations = varlocations,
+  varbox_x_scaling = 2,
+  varbox_y_scaling = 2,
+  varspace_x_scaling = 2,
+  varspace_y_scaling = 2)
+diagram_list <- prepare_diagram(model_list, model_settings)
+make_diagram(diagram_list, diagram_settings = list(with_grid = FALSE))
+
+
+model_list = list(varlabels = varlabels, flows = flows)
+model_settings = list(
+  varlocations = NULL,
   varbox_x_scaling = 1,
   varbox_y_scaling = 1,
   varspace_x_scaling = 1,
   varspace_y_scaling = 1)
 diagram_list <- prepare_diagram(model_list, model_settings)
-make_diagram(diagram_list, diagram_settings = list(with_grid = FALSE))
+make_diagram(diagram_list, diagram_setting=list(var_label_text = c("Susc", "Inf", "Rec")))
+
+
+
+varlabels = c("Pat","Imm")
+flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
+                 Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
+model_list = list(varlabels = varlabels, flows = flows)
+model_settings = list(
+  varlocations = NULL,
+  varbox_x_scaling = 1,
+  varbox_y_scaling = 1,
+  varspace_x_scaling = 1,
+  varspace_y_scaling = 1)
+diagram_list <- prepare_diagram(model_list, model_settings)
+make_diagram(diagram_list)
+
 
 
 model_settings = list(varnames = varnames, varlocations = varlocations, use_varnames = TRUE)

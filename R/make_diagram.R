@@ -137,6 +137,7 @@ make_diagram <- function (diagram_list,
                           diagram_settings = list(
                             var_outline_color = NA,
                             var_fill_color = "#6aa4c8",
+                            var_label_text = NA,
                             var_label_on = TRUE,
                             var_label_color = "white",
                             var_label_size = NA,
@@ -173,8 +174,9 @@ make_diagram <- function (diagram_list,
   variables <- diagram_list$variables
   flows <- diagram_list$flows
 
-  # TODO UPDATE
-  variables$plot_label = variables$label
+  # assign the plot_label column, can be updated below if specified
+  variables$plot_label <- variables$label
+
 
   # assign default settings to be updated by user
   defaults <- eval(formals(make_diagram)$diagram_settings)
@@ -210,6 +212,14 @@ make_diagram <- function (diagram_list,
     #   # back with the physical flow.
     #   flows <- move_interaction_label(flows)
     # }
+
+    # if the var_label_text is not provided (NA), then use the labels
+    # in the data frame. otherwise, override.
+    if(anyNA(var_label_text)) {
+      variables$plot_label <- variables$label
+    } else {
+      variables$plot_label <- var_label_text
+    }
 
     # if text size is not provided (NA), then use text sizes in the data
     # frames. otherwise, override and use the provided sizes for all.

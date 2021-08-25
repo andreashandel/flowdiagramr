@@ -7,11 +7,11 @@
 make_diagram(
   diagram_list,
   diagram_settings = list(var_outline_color = NA, var_fill_color = "#6aa4c8",
-    var_label_on = TRUE, var_label_color = "white", var_label_size = NA, main_flow_on =
-    TRUE, main_flow_color = "grey25", main_flow_linetype = "solid", main_flow_size = 0.7,
-    main_flow_label_on = TRUE, main_flow_label_color = "black", main_flow_label_size = 5,
-    interaction_flow_on = TRUE, interaction_flow_color = "grey25",
-    interaction_flow_linetype = "dashed", interaction_flow_size = 0.7,
+    var_label_text = NA, var_label_on = TRUE, var_label_color = "white", var_label_size =
+    NA, main_flow_on = TRUE, main_flow_color = "grey25", main_flow_linetype = "solid",
+    main_flow_size = 0.7, main_flow_label_on = TRUE, main_flow_label_color = "black",
+    main_flow_label_size = 5, interaction_flow_on = TRUE, interaction_flow_color =
+    "grey25", interaction_flow_linetype = "dashed", interaction_flow_size = 0.7,
     interaction_flow_label_on = TRUE, interaction_flow_label_color = "black",     
     interaction_flow_label_size = 5, external_flow_on = TRUE, external_flow_color =
     "grey25", external_flow_linetype = "solid", external_flow_size = 0.7,

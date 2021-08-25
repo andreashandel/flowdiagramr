@@ -6,8 +6,8 @@
 \usage{
 prepare_diagram(
   model_list,
-  model_settings = list(varnames = NULL, use_varnames = FALSE, var_label_size = 10,
-    varlocations = NULL)
+  model_settings = list(varlocations = NULL, varbox_x_scaling = 1, varbox_y_scaling =
+    1, varspace_x_scaling = 1, varspace_y_scaling = 1)
 )
 }
 \arguments{
@@ -34,19 +34,20 @@ elements are supported and default values are provided:
 \itemize{
 \item \code{varnames}: Vector of strings containing labels, one  for each variable.
 Default is \code{NULL}.
-\item \code{use_varnames}: A logical. If \code{FALSE} (default)  variable boxes will be labeled with
-the \code{varlabels} entry from \code{model_list}. If \code{TRUE} variable boxes will be
-labeled using the text provided in the \code{varnames} element.
-If \code{varnames} is missing, an error occurs.
-Note that labeling can be turned off through a setting in \code{make_diagram}.
-\item \code{var_label_size}: A numeric defining the size of the variable
-labels in the plot. This is necessary because the the box sizes will
-(eventually) be determined by the size of the text within. Default is
-10.
-\item \code{varlocations}: A numeric matrix that specifies the locations of the
-variables on an x-y grid with their desired x (columns) and y (row)
-locations. See examples and vignettes. Default is \code{NULL}, which
-results in a left-to-right diagram.
+\item \code{varbox_x_scaling}: A scalar that changes the default width of
+variable boxes. For example, \code{varbox_x_scaling = 1.5} makes each box
+1.5 times the default width.
+\item \code{varbox_y_scaling}: A scalar that changes the default height of
+variable boxes. For example, \code{varbox_y_scaling = 1.5} makes each box
+1.5 times the default height.
+\item \code{varspace_x_scaling}: A scalar that changes the default spacing between
+variable boxes in the x dimension. For example, \code{varspace_x_scaling = 1.5}
+makes each box 1.5 times farther apart in the x dimension than the
+default spacing.
+\item \code{varspace_y_scaling}: A scalar that changes the default spacing between
+variable boxes in the y dimension. For example, \code{varspace_y_scaling = 1.5}
+makes each box 1.5 times farther apart in the y dimension than the
+default spacing.
 }}
 }
 \value{
@@ -62,8 +63,8 @@ The data frame contains these columns:
 \item \code{xmax}: Right edge location of box.
 \item \code{ymin}: Lower edge of location box.
 \item \code{ymax}: Upper edge of location box.
-\item \code{labelx}: Horizontal position (midpoint) of label.
-\item \code{labely}: Vertical position (midpoint) of label.
+\item \code{xlabel}: Horizontal position (midpoint) of label.
+\item \code{ylabel}: Vertical position (midpoint) of label.
 \item \code{plot_label}: The text to be written into the box.
 \item \code{color}: Default outline color for the box.
 \item \code{fill}: Default fill color for the box.
@@ -79,12 +80,12 @@ variable receiving the flow.
 \item \code{from}: The variable from which the arrow originate. That is, the
 variable donating the flow.
 \item \code{label}: The label of the flow. Typically a mathematical expression.
-\item \code{xstart}: The starting horizontal position of the arrow.
-\item \code{xend}: The ending horizontal position of the arrow.
-\item \code{ystart}: The starting vertical position of the arrow.
-\item \code{yend}: The ending vertical position of the arrow.
-\item \code{labelx}: Horizontal position (midpoint) of label.
-\item \code{labely}: Vertical position (midpoint) of label.
+\item \code{xmin}: The starting horizontal position of the arrow.
+\item \code{xmax}: The ending horizontal position of the arrow.
+\item \code{ymin}: The starting vertical position of the arrow.
+\item \code{ymax}: The ending vertical position of the arrow.
+\item \code{xlabel}: Horizontal position (midpoint) of label.
+\item \code{ylabel}: Vertical position (midpoint) of label.
 \item \code{curvature}: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.
 \item \code{type}: Type of flow. One of main, interaction, or external.
