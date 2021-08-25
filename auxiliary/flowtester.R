@@ -14,14 +14,21 @@ varlocations = matrix(data = c("S", "", "R",
 model_list = list(varlabels = varlabels, flows = flows)
 model_settings = list(
   varlocations = NULL,
-  varbox_x_scaling = 2,
-  varbox_y_scaling = 2,
+  varbox_x_scaling = 1,
+  varbox_y_scaling = 1,
   varspace_x_scaling = 1,
   varspace_y_scaling = 1)
-
-
 diagram_list <- prepare_diagram(model_list, model_settings)
 make_diagram(diagram_list)
+
+model_settings = list(
+  varlocations = varlocations,
+  varbox_x_scaling = 1,
+  varbox_y_scaling = 1,
+  varspace_x_scaling = 1,
+  varspace_y_scaling = 1)
+diagram_list <- prepare_diagram(model_list, model_settings)
+make_diagram(diagram_list, diagram_settings = list(with_grid = FALSE))
 
 
 model_settings = list(varnames = varnames, varlocations = varlocations, use_varnames = TRUE)

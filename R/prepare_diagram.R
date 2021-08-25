@@ -667,37 +667,10 @@ prepare_diagram <- function(model_list,
     variables <- rbind(variables, exnodes)
   }
 
-  # Add locations for nodes
-  newvariables <- list()
-  for(rid in unique(variables$row)) {
-    tmp <- subset(variables, row == rid)
-    tmp$xmin <- NA
-    tmp$xmax <- NA
-    tmp$ymin <- NA
-    tmp$ymax <- NA
-    xstart <- 0
-    rowspace_y <- -3 #each row is -3 from the bottom of the other row: 2 spacing and 1 for size of box
-    ystart <- (rid-1) * rowspace_y * varspace_y_scaling
-    bumpout_x <- 1 * varbox_x_scaling
-    bumpout_y <- 1 * varbox_y_scaling
-    space_x <- 2 * varspace_x_scaling
-    for(i in 1:nrow(tmp)) {
-      tmp[i, "xmin"] <- xstart
-      tmp[i, "xmax"] <- xstart + bumpout_x
-      tmp[i, "ymin"] <- ystart
-      tmp[i, "ymax"] <- ystart + bumpout_y
-
-      # update location settings, just x within a row
-      xstart <- xstart + bumpout_x + space_x
-    }
-    newvariables <- rbind(newvariables, tmp)
-  }
-  variables <- newvariables
-  rm(newvariables)
-
-  # calculate midpoints for label locations, in general
-  variables$xlabel <- rowMeans(variables[ , c("xmin", "xmax")])
-  variables$ylabel <- rowMeans(variables[ , c("ymin", "ymax")])
+  # Add location information
+  variables <- add_locations(variables, varlocations, varbox_x_scaling,
+                             varbox_y_scaling, varspace_x_scaling,
+                             varspace_y_scaling)
 
 
   # Add midpoint locations for nodes
@@ -840,6 +813,20 @@ prepare_diagram <- function(model_list,
       flows[i, "ymin"] <- tmp$ymaxstart
       flows[i, "ymax"] <- tmp$ylabelend
     }
+
+    if(tmp$yminstart > tmp$ymaxend & tmp$xmaxstart < tmp$xminend) {
+      flows[i, "xmin"] <- tmp$xmaxstart
+      flows[i, "xmax"] <- tmp$xminend
+      flows[i, "ymin"] <- tmp$ylabelstart
+      flows[i, "ymax"] <- tmp$ylabelend
+    }
+
+    if(tmp$yminstart < tmp$ymaxend & tmp$xmaxstart < tmp$xminend) {
+      flows[i, "xmin"] <- tmp$xmaxstart
+      flows[i, "xmax"] <- tmp$xminend
+      flows[i, "ymin"] <- tmp$ylabelstart
+      flows[i, "ymax"] <- tmp$ylabelend
+    }
   }
 
   # remove unneeded columns
@@ -854,9 +841,9 @@ prepare_diagram <- function(model_list,
   flows$diff <- with(flows, abs(to-from))
 
   if(!is.null(varlocation_matrix)) {
-    xdiffs <- with(flows, abs(xstart - xend))
+    xdiffs <- with(flows, abs(xmin - xmax))
     xdiffs <- ifelse(xdiffs %in% c(0, 3), 0.5, 1)
-    ydiffs <- with(flows, abs(ystart - yend))
+    ydiffs <- with(flows, abs(ymin - ymax))
     ydiffs <- ifelse(ydiffs %in% c(0, 2), 0.5, 1)
     for(i in 1:nrow(flows)) {
       if(flows[i, "interaction"] == FALSE &
