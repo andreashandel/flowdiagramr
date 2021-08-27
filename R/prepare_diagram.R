@@ -869,37 +869,37 @@ prepare_diagram <- function(model_list,
   flows <- fix_arrow_pos(flows)
 
 
-  # Get midpoints of in/out segments for external interactions "to" locations
-  if(nrow(extints) > 0) {
-    extlinks <- subset(flows, label == "")
-    extints <- merge(extints, variables[,c("xlabel", "ylabel", "id")], by.x = "from", by.y = "id")
-    colnames(extints)[which(colnames(extints) == "xlabel")] <- "xmin"
-    colnames(extints)[which(colnames(extints) == "ylabel")] <- "ymin"
-    extints$xmax <- NA
-    extints$ymax <- NA
-    for(i in 1:nrow(extints)) {
-      tmp1 <- extints[i, ]
-      tmp1[ , c("xmax", "ymax")] <- NULL
-      tmp2 <- extlinks[which(tmp1$to == extlinks$from), ]
-      if(tmp2$to == tmp2$from) {
-        tmp3 <- merge(tmp1, tmp2[, c("xmax", "ymax", "from")],
-                         by.x = "to", by.y = "from")
-        tmp3$ymax <- tmp3$ymax + 0.75
-        tmp3$xmax <- tmp3$xmax + 0.17
-      } else {
-        tmp3 <- merge(tmp1, tmp2[, c("xlabel", "ylabel", "from")],
-                      by.x = "to", by.y = "from")
-      }
-      # colnames(tmp3) <- c("to", "from", "label", "interaction", "link",
-      #                        "xmin", "ymin", "xmax", "ymax")
-      extints[i, ] <- tmp3
-    }
-    extints$xlabel <- with(extints, (xmax + xmin) / 2)
-    extints$ylabel <- with(extints, (ymax + ymin) / 2) + 0.25
-    extints$diff <- with(extints, abs(to-from))
-
-    flows <- rbind(flows, extints)
-  }
+  # # Get midpoints of in/out segments for external interactions "to" locations
+  # if(nrow(extints) > 0) {
+  #   extlinks <- subset(flows, label == "")
+  #   extints <- merge(extints, variables[,c("xlabel", "ylabel", "id")], by.x = "from", by.y = "id")
+  #   colnames(extints)[which(colnames(extints) == "xlabel")] <- "xmin"
+  #   colnames(extints)[which(colnames(extints) == "ylabel")] <- "ymin"
+  #   extints$xmax <- NA
+  #   extints$ymax <- NA
+  #   for(i in 1:nrow(extints)) {
+  #     tmp1 <- extints[i, ]
+  #     tmp1[ , c("xmax", "ymax")] <- NULL
+  #     tmp2 <- extlinks[which(tmp1$to == extlinks$from), ]
+  #     if(tmp2$to == tmp2$from) {
+  #       tmp3 <- merge(tmp1, tmp2[, c("xmax", "ymax", "from")],
+  #                        by.x = "to", by.y = "from")
+  #       tmp3$ymax <- tmp3$ymax + 0.75
+  #       tmp3$xmax <- tmp3$xmax + 0.17
+  #     } else {
+  #       tmp3 <- merge(tmp1, tmp2[, c("xlabel", "ylabel", "from")],
+  #                     by.x = "to", by.y = "from")
+  #     }
+  #     # colnames(tmp3) <- c("to", "from", "label", "interaction", "link",
+  #     #                        "xmin", "ymin", "xmax", "ymax")
+  #     extints[i, ] <- tmp3
+  #   }
+  #   extints$xlabel <- with(extints, (xmax + xmin) / 2)
+  #   extints$ylabel <- with(extints, (ymax + ymin) / 2) + 0.25
+  #   extints$diff <- with(extints, abs(to-from))
+  #
+  #   flows <- rbind(flows, extints)
+  # }
 
 
 
@@ -991,6 +991,20 @@ prepare_diagram <- function(model_list,
   #               "       Contact package maintainer."))
   # }
 
+  # set curvature of feedback loops. this is pretty different from the
+  # "regular" curvature settings, so we made a separat function for this
+  # operation.
+  flows <- set_feedback_curvature(flows)
+
+  # update external interaction arrows now that all other positioning
+  # is final
+  ext <- extints
+  edf <- flows
+  ndf <- variables
+
+
+
+
   # now drop "hidden" nodes without labels
   variables <- subset(variables, label != "")
 
@@ -1006,11 +1020,6 @@ prepare_diagram <- function(model_list,
 
   # update all to and froms such that each is the variable label
   flows <- update_tofroms(flows, variables)
-
-  # set curvature of feedback loops. this is pretty different from the
-  # "regular" curvature settings, so we made a separat function for this
-  # operation.
-  flows <- set_feedback_curvature(flows)
 
   # remove the row column
   variables$row <- NULL

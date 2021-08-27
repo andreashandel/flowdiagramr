@@ -25,6 +25,10 @@ fix_arrow_pos <- function(edf) {
     out <- vdf
   }
 
+  # remove rows with all NAs
+  tokeep <- which(!(is.na(out$to) & is.na(out$from)))
+  out <- out[tokeep, ]
+
   toreplace <- match(paste0(edf$to, edf$from), paste0(vdf$to, vdf$from))
   toreplace <- which(!is.na(toreplace))
   edf[toreplace, ] <- out
