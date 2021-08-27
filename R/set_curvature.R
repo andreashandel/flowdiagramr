@@ -36,7 +36,7 @@ set_curvature <- function(edf, ndf) {
 
   # if the connection is an interaction, then set to different values of
   # curvature to avoid overlapping top of "from" node
-  edf[edf$interaction==TRUE, "curvature"] <- 0.4  # default to be updated if conditions below are met
+  edf[edf$interaction==TRUE | edf$direct_interaction == TRUE, "curvature"] <- 0.4  # default to be updated if conditions below are met
 
   for(i in 1:nrow(edf)) {
     # set to lower curvature if the arrow is going from an "invisible" node

@@ -117,8 +117,10 @@ varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
 model_list = list(varlabels = varlabels, flows = flows)
-model_settings = list(varlocations = varlocations,
-                  varnames = varnames, use_varnames = TRUE, var_label_size = 4)
+model_settings = list(varlocations = NULL, varbox_x_scaling = 1,
+                      varbox_y_scaling = 1,
+                      varspace_x_scaling = 1,
+                      varspace_y_scaling = 1)
 diagram_list <- prepare_diagram(model_list,model_settings)
 
 diagram_settings <- list(

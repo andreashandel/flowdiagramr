@@ -998,12 +998,13 @@ prepare_diagram <- function(model_list,
 
   # update external interaction arrows now that all other positioning
   # is final
-  ext <- extints
-  edf <- flows
-  ndf <- variables
+  # ext <- extints
+  # edf <- flows
+  # ndf <- variables
+  extints <- update_external_interaction_positions(extints, variables)
 
-
-
+  # combine all flows
+  flows <- rbind(flows, extints)
 
   # now drop "hidden" nodes without labels
   variables <- subset(variables, label != "")
