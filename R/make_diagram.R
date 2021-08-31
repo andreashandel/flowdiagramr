@@ -218,7 +218,7 @@ make_diagram <- function (diagram_list,
     if(anyNA(var_label_text)) {
       variables$plot_label <- variables$label
     } else {
-      variables$plot_label <- var_label_text
+      variables$plot_label <- gsub(" ", "\n", var_label_text)
     }
 
     # if text size is not provided (NA), then use text sizes in the data

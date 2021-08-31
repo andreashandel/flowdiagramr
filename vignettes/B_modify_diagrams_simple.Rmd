@@ -146,10 +146,7 @@ sirmodel = list(varlabels = c("S","I","R"),
                 )
 
 #optional list of settings
-sirsettings = list(varnames = c("Susceptible","Infected","Recovered"),
-                   use_varnames = TRUE,
-                   var_label_size = 4,
-                   varlocations = matrix(data = c("S", "", "R",
+sirsettings = list(varlocations = matrix(data = c("S", "", "R",
                                                   "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
                   )
 ```
@@ -176,9 +173,9 @@ Let's do another example, one that might come up somewhat often, where you need 
 
 ```{r}
 varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE)
-sirsettings$varlocations = varlocations
-sirsettings$use_varnames = FALSE
-sirsettings$var_label_size = 8
+# sirsettings$varlocations = varlocations
+# sirsettings$use_varnames = FALSE
+# sirsettings$var_label_size = 8
 ```
 
 With this setup, the diagram looks like this
@@ -220,8 +217,7 @@ varnames = c("Susceptible Children","Infected Children","Recovered Children",
 varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-mysettings = list(varlocations = varlocations, 
-                  varnames = varnames, use_varnames = TRUE, var_label_size = 4)
+mysettings = list(varlocations = varlocations)
 
 diagram_list <- prepare_diagram(mymodel, mysettings)
 ```
@@ -232,6 +228,8 @@ This is all sent to `make_diagram` and the resulting plot looks as follows.
 ```{r, fig.height=5}
 diagram_settings <- list(
        var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
+       var_label_text = varnames, 
+       var_label_size = 4,
        interaction_flow_label_size = 4,
        interaction_flow_color = "blue")
 model_plot <- make_diagram(diagram_list, diagram_settings)

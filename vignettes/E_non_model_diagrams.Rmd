@@ -54,14 +54,10 @@ mymodel = list(varlabels = c("L","P","B","Pl","R","Re"),
                              Re_flows = c("no_B")
                             )
                 )
-model_settings = list( varnames = c("Lamp doesn't work","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp"),
-                       use_varnames = TRUE,
-                       var_label_size = 6,
-                       varlocations = matrix(data = c("L", "",
+model_settings = list(varlocations = matrix(data = c("L", "",
                                                      "P", "Pl",
                                                      "B", "R", 
-                                                     "Re","" ), ncol = 2, byrow = TRUE)
-)
+                                                     "Re","" ), ncol = 2, byrow = TRUE))
 ```
 
 Note that to make the diagram logic work, we have to define actual flows. For instance we can't just label the various flows with "Yes" or "No" like in the original diagram. If we did this, **`r pkg`** wouldn't know with which boxes/variables to associate the arrows with.   
@@ -71,7 +67,9 @@ Now, it's the standard steps of preparing, making and plotting the diagram.
 
 ```{r, fig.height = 5}
 diagram_list <- prepare_diagram(mymodel,model_settings)
-my_diagram <- make_diagram(diagram_list)
+diagram_settings <- list(var_label_text = c("Lamp doesn't work","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp"),
+                       var_label_size = 6)
+my_diagram <- make_diagram(diagram_list, diagram_settings = diagram_settings)
 plot(my_diagram)
 ```
 
@@ -87,6 +85,7 @@ modified_diagram_list$flows$label <- c("", "Yes", "No", "Yes", "No")
 diagram_settings <- list( var_fill_color = c("pink", "yellow", "yellow",
                                               "green", "green", "green"),
                           var_outline_color = "black",
+                          var_label_text = c("Lamp doesn't work","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp"),
                           var_label_color = "black",
                           var_label_size = 3,
                           main_flow_label_size= 4

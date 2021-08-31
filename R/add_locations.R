@@ -49,8 +49,8 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_scaling,
     num_cols <- ncol(varlocations)
     positions <- 1:(num_rows*num_cols)
     ids <- varlocations[positions]
-    rids <- rep(num_rows:1, length(positions)/num_cols)
-    cids <- rep(1:num_cols, each = length(positions)/num_rows)
+    rids <- rep(num_rows:1, length(positions)/num_rows)
+    cids <- rep(1:num_cols, each = length(positions)/num_cols)
     idmap <- data.frame(row_id = rids,
                         col_id = cids,
                         pos = positions,
