@@ -115,6 +115,22 @@ or save it into a file, e.g. with
 ggplot2::ggsave("sirdiagram.png",my_diagram)
 ```
 
+To re-cap, these lines of code allowed us to specify and make a fairly simple flow diagram:
+
+```{r, eval = FALSE}
+#specify model
+mymodel = list( varlabels = c("S","I","R"),
+                flows = list(S_flows = c("-b*S*I"), 
+                             I_flows = c("b*S*I","-g*I"), 
+                             R_flows = c("g*I"))
+              )
+#prepare diagram
+diagram_list <- prepare_diagram(mymodel)
+#make diagram
+my_diagram <- make_diagram(diagram_list)
+#plot diagram
+plot(my_diagram)
+```
 
 
 ## Another example
@@ -140,21 +156,22 @@ mymodel = list(varlabels = varlabels, flows = flows)
 
 Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into `R`, they would work (provided you assigned numerical values to each variable and parameter).
 
-Next, you use the same steps as above to create the model diagram.
+Next, you use the same steps as above to create the model diagram. First, we prepare the diagram.
 
 ```{r}
 diagram_list <- prepare_diagram(mymodel)
+```
 
-my_diagram <- make_diagram(diagram_list, 
-                            diagram_settings = list(var_fill_color = c('blue','red'),
-                                                    main_flow_linetype = "dashed",
-                                                    interaction_flow_size = 1.5)
-                          )
+Next, we take the structure returned from `prepare_diagram()` and make the diagram. We also add the optional list `diagram_settings` to the call of `make_diagram`. This provides a quick preview of one of the ways you can customize the diagram. You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html).
 
+```{r}
+diagram_settings = list(var_fill_color = c('blue','red'),
+                        main_flow_linetype = "dashed",
+                        interaction_flow_size = 1.5)
+my_diagram <- make_diagram(diagram_list, diagram_settings) 
 plot(my_diagram)
 ```
 
-In this example, we also added the optional list `diagram_settings` to the call of `make_diagram`. Those some settings allow you to customize the model. You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html).
 
 As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models, as we discuss [in this vignette](./E_non_model_diagrams.html). 
 
@@ -187,14 +204,13 @@ flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
              P_flows = c("sc*Ic","sa*Ia","-d*P")
              )
 mymodel = list(varlabels = varlabels, flows = flows)
-diagram_list <- prepare_diagram(mymodel)
 ```
 
-Before we make the diagram and look at it, it's worth pointing out some current limitations of **`r pkg`**.
+Before we start making the diagram for this model, it is worth pointing out some current limitations of **`r pkg`**.
 You might have noticed that each flow term above is defined separately. If you were to write down the model in math formulation, you would likely not do that.
 Instead, you would probably write something like this, with flow terms combined using parentheses:
 
-```{r, error = TRUE}
+```{r}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
 flows = list(Sc_flows = c("-Sc*(bcc*Ic+bca*Ia+bcp*P)"),
              Ic_flows = c("Sc*(bcc*Ic+bca*Ia+bcp*P)","-gc*Ic"),
@@ -217,9 +233,8 @@ diagram_list <- prepare_diagram(model_list_wrong)
 
 In general, `prepare_diagram` checks your `model_list` object and tries to determine if everything is ok. 
 As an example, here is the model with some typos. We accidentally put minus ("-") signs in front of all the `Ia_flows`.
-This means the model is not properly specified. **`r pkg`** throws an error suggesting where you might have gone wrong.
 
-```{r, error = TRUE}
+```{r}
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
 flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
@@ -229,20 +244,32 @@ flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
              Ra_flows = c("ga*Ia"),
              P_flows = c("sc*Ic","sa*Ia","-d*P")
              )
-model_list = list(varlabels = varlabels, flows = flows)
-diagram_list <- prepare_diagram(model_list)
+model_list_wrong2 = list(varlabels = varlabels, flows = flows)
 ```
 
-Note that not all errors will receive nice messages. There are likely instances where you have typos or other mistakes in your model, or parts that **`r pkg`** currently can't handle, for which you won't get a great error message. 
+This means the model is not properly specified. **`r pkg`** throws an error suggesting where you might have gone wrong.
 
-Now, let's go back to the first, proper model specification, make the diagram, and plot it.
+```{r, error = TRUE}
+diagram_list <- prepare_diagram(model_list_wrong2)
+```
+
+Not all model bugs return informative error messages. There are likely instances where you have typos or other mistakes in your model, or you try to include components in our model that **`r pkg`** currently can't handle, and you end up with a confusing error message from `r pkg`. In this case, the first place to check for bugs is in your model specification, especially your model flows. Of course, you could have also found a bug in `r pkg`, in which case please file an issue about in the Github site of the package!
+
+Now, let's go back to the first, proper model specification. We'll first prepare the diagram, Similar to the prior example where we provided `make_diagram()` with optional settings, we do the same here for `prepare_diagram()`. This is just meant as another quick preview. The next vignette will discuss this in detail.
 
 ```{r}
-model_plot <- make_diagram(diagram_list, diagram_settings = list(var_label_size = 6))
+model_settings = list(varbox_x_scaling = 2)
+diagram_list <- prepare_diagram(mymodel, model_settings)
+```
+
+Now we make the diagram and plot it.
+
+```{r}
+model_plot <- make_diagram(diagram_list)
 plot(model_plot)
 ```
 
-As you can see, while the most basic approach of using **`r pkg`** that we just explained gets you _somewhere_, you might not be able to produce a publication-quality diagram this way. Fortunately, **`r pkg`** gives you ways to (easily) customize things to give you a great-looking diagram!
+As you can see, while the most basic approach of using **`r pkg`** that we just explained gets you _somewhere_, you might not be able to produce a publication-quality diagram using just the default settings. Fortunately, **`r pkg`** gives you ways to easily customize things to give you great-looking diagrams! (At least we think so, but we might be a bit biased.)
 
 
 ## Next steps

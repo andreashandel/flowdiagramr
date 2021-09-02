@@ -1,3 +1,9 @@
+9/2 updates
+
+* Rewrote vignettes A and B. One issue might be box sizing, see ALL CAPS text in vignette B. Might need some discussion.
+
+
+
 ******
 # Urgent/Next
 ******
@@ -5,7 +11,9 @@
 My current thinking (up for discussion):
 
 * By default, the first (or, if present, lower left variable in varlocations matrix) is placed on a grid with the lower left corner of that box (xmin/ymin) at (0,0). By default, boxes are of size 1, with both horizontal and vertical spacing between boxes size 2.
+
 * model_settings in prepare_diagram will take these inputs: varlocations, varbox_x_scaling, varbox_y_scaling, varspace_x_scaling, varspace_y_scaling. The first 2 scale the box size by a factor along that direction, e.g. varbox_x_scaling = 1.5 makes each box of size 1.5. Might be easiest to just push the max value out by that amount? varspace does the same for the empty space between boxes, e.g. it scales the default value of 2 to create more/less spacing between boxes. These settings determine the location of all boxes. Once all boxes are 'placed', arrows will then be drawn between boxes based on box start/end settings.
+
 * varnames, use_varnames, var_label_size will be removed from model_settings
 * Also, let's call the low/high values for boxes and arrows the same. right now it's xmin and xstart for boxes and arrows respectively. That leads to extra cognitive load by the user :) Just pick one labeling and use the same for both boxes and arrows. I prefer min/max since it doesn't indicate directionality, but I'm ok with either (or something else).
 

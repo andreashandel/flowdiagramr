@@ -12,6 +12,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r setup, include = FALSE}
+pkg = 'flowdiagramr' #so we can easily switch names
+library(pkg, character.only = TRUE)
+```
+
+
 # flowdiagramr <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
 
@@ -28,13 +34,31 @@ This package allows automated creation of flow diagrams for compartmental simula
 
 ## Getting Started
 
+For the very impatient, here are few lines of code that make a simple diagram using `r pkg`
 
-For an introduction to the package, step-by-step instructions on getting started, and more information on the different ways you can use the package [see the _Quick Start_ tutorial (vignette)](https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html).
+```{r}
+library(flowdiagramr)
+#specify model
+mymodel = list( varlabels = c("S","I","R"),
+                flows = list(S_flows = c("-b*S*I"), 
+                             I_flows = c("b*S*I","-g*I"), 
+                             R_flows = c("g*I"))
+              )
+#prepare diagram
+diagram_list <- prepare_diagram(mymodel)
+#make diagram
+my_diagram <- make_diagram(diagram_list)
+#plot diagram
+plot(my_diagram)
+```
+
+If you think something like this is of interest to you, hop on over to the  [_Quick Start_ tutorial (vignette)](https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html).
 
 
 ## Further information
 
-We wrote several tutorials/vignettes that explain all features of `flowdiagramr`. Here they are listed for convenience.
+`pkg` gives you many options to easily customize diagrams. You can also make diagrams that are not based on compartmental models.
+To explain (most) everything `pkg` can do, we wrote several tutorials/vignettes. Here they are listed for convenience.
 
 **Main tutorials/vignettes**
 
