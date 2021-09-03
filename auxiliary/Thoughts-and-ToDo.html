@@ -167,120 +167,84 @@ pre code {
 </div>
 
 
-<hr />
-<div id="section" class="section level1">
-<h1>2021-06-15 &amp; 16</h1>
+<p>9/2 updates</p>
 <ul>
-<li>Thoughts on ‘auto-crop’ plots. I found some stuff.</li>
+<li>Rewrote vignettes A and B. One issue might be box sizing, see ALL CAPS text in vignette B. Might need some discussion.</li>
 </ul>
-<ol style="list-style-type: decimal">
-<li><p>The answer provided here seems to be a way to calculate the size of the plot and then using that when calling ggsave() <a href="https://stackoverflow.com/questions/45731238/autocrop-faceted-plots-made-by-ggplot" class="uri">https://stackoverflow.com/questions/45731238/autocrop-faceted-plots-made-by-ggplot</a> This seems general and doesn’t require other packages, but some coding/fiddling to work for us.</p></li>
-<li><p>The magick package allows for automated trimming of a file. E.g., after saving the plot with ggsave, this is how one can trim: image_write(image_trim(image_read(‘test.png’),‘test2.png’)) This seems easier to use, but would require another package dependency (and dependency on those packages)</p></li>
-</ol>
-<p>Maybe we should use the 2nd approach, but add magick as a suggest package, then describe in a vignette how one can use it to crop plots, but not make it part of the standard workflow? This reduces package dependencies, at it seems simple enough for a user to do themselves.</p>
+<hr />
+<div id="urgentnext" class="section level1">
+<h1>Urgent/Next</h1>
+<hr />
+<p>My current thinking (up for discussion):</p>
 <ul>
-<li><p>In <code>prepare_diagram</code>, unclear how this block throws an error message that leads to exit out of the main function: if(!is.null(nodes_matrix)) { # returns fatal error if variables do not match check_nodes_matrix(model_list, nodes_matrix) }</p></li>
-<li><p>Would it be useful to include a <code>box_scaling</code> argument in the optional prepare_diagram list, which would scale all boxes by a factor (i.e. default is 1, if a user says 2 then boxes would be increased in size by a factor of 2.) That could allow for flexible adjustment of boxes. Not sure if good idea, we can discuss.</p></li>
-<li><p>Minor: In general, if I were to manually label diagrams, I would try to place the text for interaction flows close to the tip of the arrow, i.e., where the interaction happens. E.g. in the basic SIR diagram, I would move it down to where the bSI arrow meets the S-&gt;I arrow. Not sure if placement could be changed to be generally close to interaction, and if that would produce worse looking diagrams?</p></li>
+<li>By default, the first (or, if present, lower left variable in varlocations matrix) is placed on a grid with the lower left corner of that box (xmin/ymin) at (0,0). By default, boxes are of size 1, with both horizontal and vertical spacing between boxes size 2.</li>
+</ul>
+<p>THIS IS DONE.</p>
+<ul>
+<li>model_settings in prepare_diagram will take these inputs: varlocations, varbox_x_scaling, varbox_y_scaling, varspace_x_scaling, varspace_y_scaling. The first 2 scale the box size by a factor along that direction, e.g. varbox_x_scaling = 1.5 makes each box of size 1.5. Might be easiest to just push the max value out by that amount? varspace does the same for the empty space between boxes, e.g. it scales the default value of 2 to create more/less spacing between boxes. These settings determine the location of all boxes. Once all boxes are ‘placed’, arrows will then be drawn between boxes based on box start/end settings.</li>
+</ul>
+<p>THIS IS DONE. BUT SCALINGS ARE NOT VECTORIZED – THEY CAN ONLY TAKE ONE VALUE AT THIS TIME.</p>
+<ul>
+<li>varnames, use_varnames, var_label_size will be removed from model_settings</li>
+</ul>
+<p>DONE. I REMOVED USE_VARNAMES AND SIMPLY CHECK WHETHER VARNAMES ARE SUPPLIED AND ASSUME THE USER WANTS TO USE VARNAMES IF THEY PROVIDE THEM. THESE ARGUMENTS ARE NOW IN diagram_settings.</p>
+<ul>
+<li>Also, let’s call the low/high values for boxes and arrows the same. right now it’s xmin and xstart for boxes and arrows respectively. That leads to extra cognitive load by the user :) Just pick one labeling and use the same for both boxes and arrows. I prefer min/max since it doesn’t indicate directionality, but I’m ok with either (or something else).</li>
+</ul>
+<p>DONE.</p>
+<ul>
+<li>Rewrite prepare_diagram to implement those changes. Also, streamline/simplify code. Remove “legacy code”, e.g. the sdf/vdf/cdf/etc. distinctions. Make code as streamlined/simple/documented as possible, so I can follow :) and thus maintain/update. That also means changing variable names to something consistent (instead of renaming at end, like we are doing for some currently.)</li>
+</ul>
+<p>DONE. THOUGH THERE IS PROBABLY MORE REFACTORING THAT CAN BE IDENTIFIED DURING CODE REVIEW.</p>
+<ul>
+<li>make_diagram gets a new entry for diagram_settings called var_label_text. The user provides a vector of text to be printed into the boxes (e.g. the variable names, or anything else). If provided, this is used, otherwise the default is to use varlabels from the model_list. This basically reproduces the varnames/use_varnames functionality in a more flexible way. It also reduces confusion about specifying var_label_size twice.</li>
+</ul>
+<p>DONE.</p>
+<ul>
+<li>If a user specifies one of the entries in diagram_settings, it overwrites whatever is in diagram_list. If a user wants to do more detailed adjustments, they need to edit diagram_list and leave that entry of diagram_settings empty. Maybe (if easy to do) if code detects a non-default setting in diagram_list AND styling for that entry in diagram_settings, it could issue a warning message.</li>
+</ul>
+<p>I THINK THIS IS DONE. BUT WILL REQUIRE TESTING THE SPECIFIC USE CASE YOU HAVE IN MIND.</p>
+<ul>
+<li>Rewrite make_diagram to implement those changes. Also, as for prepare diagram, streamline/simplify code.</li>
+</ul>
+<p>DONE. MOST OF THE CODE IS RECYCLING VALUES FOR AESTHETICS. WE CAN MOVE ALL THOSE TO EXTERNAL FUNCTION IF YOU WANT TO CLEAN UP THE FUNCTION MORE.</p>
+<hr />
+</div>
+<div id="importantlater" class="section level1">
+<h1>Important/Later</h1>
+<hr />
+<ul>
+<li><p>In vignette C, last plot of example 1 the I label should be red, i.e. preserved from diagram_list modification. It is not, needs fixing. – UPDATED TO WORK. BUT WE NEED TO DISCUSS DETAILS.</p></li>
+<li><p>Arrow placing for last plot in vignette F is poor. Might not be an easy fix.</p></li>
+<li><p>For CRAN submission, we want no errors/warning/notes. To prevent “Undefined global functions or variables”, message, mostly caused by ggplot2 code, need to one of dplyr/rlang or utils::globalVariables. Right now I’m defining global variables in global.R. I still don’t fully understand how ‘clean’ this approach is. In general, I think one should try to minimize global variables, though it’s hard with ggplot and dplyr code. The rlang option described at link below can work. As you modify code, see if you can use that approach. And we should give all global variable distinct and unique names so that there isn’t another variable with that name, which might lead to conflicts. Right now there are ‘x’ and ‘y’ as global variables (see globals.R) which is not ideal. <a href="https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887" class="uri">https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887</a></p></li>
+<li><p>Moved this from vignette A: <strong>NEED TO CHECK THAT DESCRIPTION REGARDING MODEL_LIST SPECIFICATION IS 1) CORRECT, 2) AGREES WITH HELP CONTENT 3) CHECK_MODEL_LIST CHECKS VALIDITY OF ALL THAT.</strong> As discussed, should be combined with modelbuilder to not duplicate checking code.</p></li>
+<li><p>convert_from_modelbuilder function has been updated to provide the new output as list with elements model_list and model_settings. This will require adjustments of modelbuilder code when using flowdiagramr to show diagrams in modelbuilder.</p></li>
+<li><p>The quickstart vignette shows an error message “Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables”. Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new ‘more model examples’ vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be. (and first address the other points).</p></li>
+<li><p>Document/briefly describe all functions (both exported and internal) in documentation.md inside docsfordevelopers. Big picture, i.e. what function does and how it’s called is enough. More detailed explanations should be in each function. Basically anything a new person working on this package needs to know to quickly pick up on things.</p></li>
+<li><p>Example 2 in vignette G does not look right, some arrows don’t start/end at boxes.</p></li>
 </ul>
 <hr />
 </div>
-<div id="and-2021-06-07-and-2021-06-10" class="section level1">
-<h1>2021-06-02 and 2021-06-07 and 2021-06-10</h1>
+<div id="less-importantlater" class="section level1">
+<h1>Less Important/Later</h1>
+<hr />
+<ul>
+<li><p>In general, if I were to manually label diagrams, I would try to place the text for interaction flows close to the tip of the arrow, i.e., where the interaction happens. E.g. in the basic SIR diagram, I would move it down to where the bSI arrow meets the S-&gt;I arrow. Not sure if placement could be changed to be generally close to interaction, and if that would produce worse looking diagrams?</p></li>
+<li><p>Would it be useful to include a <code>box_scaling</code> argument in the optional prepare_diagram list, which would scale all boxes by a factor (i.e. default is 1, if a user says 2 then boxes would be increased in size by a factor of 2.) That could allow for flexible adjustment of boxes. Not sure if good idea, we can discuss.</p></li>
+<li><p>More comments in the created ggplot code would be good. More or less every line/bit of code should have a brief explanation so user knows what it is/does.</p></li>
+<li><p>Write unit tests with testthat</p></li>
+<li><p>Implement more error checking inside functions</p></li>
+<li><p>Currently, combining flow terms doesn’t work. I’m ok for now forcing the user to write them explicitly one by one. One could consider adding parsing logic that can take e.g. S1<em>(b11</em>I2 + b12*I2) and parses out the 2 terms. But low priority/not now.</p></li>
+</ul>
+<hr />
+</div>
+<div id="general" class="section level1">
+<h1>General</h1>
+<hr />
 <ul>
 <li><p>Should we try to write a manuscript describing the package?</p></li>
-<li><p>The quickstart vignette shows an error message “Error in prepare_diagram(model_list): flowdiagramr cannot currently process flows that include an interaction between more than two variables”. Not doing more than 2 variables is a problem/limitation we might need to resolve. See e.g. the new ‘more model examples’ vignette where I tried to implement a model that is biologically reasonable, and ideally should work. Should discuss how difficult fixing this would be. (and first address the other points).</p></li>
-<li><p>Need a function that checks that all model_list conventions are adhered to (see vignette A). (might already exist?)</p></li>
+<li><p>There seems to be some overlap between functionality (e.g. processing flows, etc.) done in flowdiagramr and done in modelbuilder. Since I want to use the flowdiagramr functionality in modelbuilder, I think we’ll make modelbuilder depend on flowdiagramr. That means we could think about structuring the 2 packages such that certain helper functions live inside flowdiagramr and are used there and also in modelbuilder. E.g. add_plus_signs is likely one. Or get_vars_pars. I’m not sure how to best go about starting that integration, but we should discuss.</p></li>
 </ul>
-<hr />
-</div>
-<div id="section-1" class="section level1">
-<h1>2021-05-11</h1>
-<ul>
-<li><p>More comments in the created ggplot code would be good. More or less every line/bit of code should have a brief explanation so user knows what it is/does.</p></li>
-<li><p>Document/briefly describe all functions (both exported and internal) in documentation.md inside docsfordevelopers. Big picture, i.e. what function does and how it’s called is enough. More detailed explanations should be in each function. Basically anything a new person working on this package needs to know to quickly pick up on things.</p></li>
-<li><p>Reviewer for useR suggested to put package on CRAN, which I think we should do before the conference, and asked how our package was different to others, e.g. DiagrammeR. We should maybe add a vignette that addresses how our package integrates with and is different from others. I started a shell/draft. Drop any other package names or blurbs in there if you can think of any. Right now just a dumping place, we’ll write this fully at some point.</p></li>
-</ul>
-<hr />
-</div>
-<div id="section-2" class="section level1">
-<h1>2021-05-10</h1>
-<ul>
-<li><p>Ok with idea to move use_varnames as a setting for prepare_diagram so box size can be adjusted. If user doesn’t provide varnames but wants to use them, produce error or warning message (see next point). Update help files and vignettes accordingly.</p></li>
-<li><p>I set ‘use_varnames’ to TRUE on a model that didn’t have them specified (by accident). What happens is that nothing shows. Behavior should be that if no varnames argument exists, the use_varnames should be ignored and the labels plotted, maybe with a notification message to the user.</p></li>
-<li><p>Further update of prepare_diagram help. Specifically streamline Value section so curved_edge entries are not repeat of horizontal_edge. Also make sure everything else is up-to-date and full explained in help file/header. Question: for labels on flows (i.e. labelx and labely) do those specify the start or mid-point of the text? I suggest we do start (e.g. lower left corner of text), seems easier for a user to visualize shifting around. In any case, should be specified. And why does curved_edges have labelx and labely and the other edges don’t? Seems like something they should all have. One should be able to change label location for any label.</p></li>
-<li><p>I tried the with_grid option in make_diagram, but it doesn’t seem to work. I think having the ability to show a grid/coordinate system would be very helpful during the manual adjustment stages, so let’s have that option. Also, I noticed the y coordinates are at times negative. Wouldn’t it be more conventional to have the coordinate 0/0 point in the bottom left corner of the diagram and all x/y values are then positive? But if that would be a major recoding, then I’m ok with having the 0/0 point wherever it is (I actually don’t know right now without seeing a coord system where exactly that point is).</p></li>
-<li><p>Why do the nodes in diagram_list have x and y values, shouldn’t xmin/xmax/ymin/ymax specify everything? Seems a bit confusing. Also, if there is a row entry for $nodes, should there be a column entry too? And is that a quantity the user could/should edit? I think we should in the help file specify which ones the user could touch, and which ones they should leave alone (for all entries in the diagram_list structure).</p></li>
-</ul>
-<p>~All of these are related to my new example I added to the quick-start vignette, see there:~</p>
-<ul>
-<li><p>Currently, combining flow terms doesn’t work. I’m ok for now forcing the user to write them explicitly one by one. One could consider adding parsing logic that can take e.g. S1<em>(b11</em>I2 + b12*I2) and parses out the 2 terms. But low priority/not now.</p></li>
-<li><p>prepare_diagram produces confusing error messages. Can we add some more logic checks to make sure models that are supplied are proper? Some should already be implemented in check_model in modelbuilder (and are definitely needed there), so we might want to use only a single function for this for both packages. Since we decided to make this package a dependence of modelbuilder, we can move the full check_model logic/function into here (even checks that are not needed for the purpose of drawing, but might be needed for the purpose of running). See the latest example in vignette A.</p></li>
-<li><p>Let’s make sure we call the object that’s returned from prepare_diagram and sent into make_diagram the diagram_list everywhere (with a note somewhere that it can have any name). This will make it easier to refer to it in the help files, the vignettes, etc. If you see any place where it’s called something else, replace. I do call it sir_diagram_list at some point, I think that’s ok so users can see it can be any name, but it’s still clear that this is the diagram_list object.</p></li>
-<li><p>If you can think of any use-cases or alternate models that should be shown in the first 3 vignettes, please add.</p></li>
-</ul>
-<div id="completed" class="section level2">
-<h2>COMPLETED</h2>
-<ul>
-<li>I tried the with_grid option in make_diagram, but it doesn’t seem to work. I think having the ability to show a grid/coordinate system would be very helpful during the manual adjustment stages, so let’s have that option. Also, I noticed the y coordinates are at times negative. Wouldn’t it be more conventional to have the coordinate 0/0 point in the bottom left corner of the diagram and all x/y values are then positive? But if that would be a major recoding, then I’m ok with having the 0/0 point wherever it is (I actually don’t know right now without seeing a coord system where exactly that point is).
-<ul>
-<li>with_grid option got accidentally shunted into the aesthetics list; is working now as a stand alone argument in make_diagram.</li>
-<li>The first node is now centered on 0,0. So the ymin will be negative. It is easiest to have the first node be the origin. But we can probably move the origin to the bottom right by shifting the entire diagram before exporting the data frames. <strong>Take a look at the diagram with_grid now and see what you think.</strong></li>
-</ul></li>
-</ul>
-</div>
-</div>
-<div id="section-3" class="section level1">
-<h1>2021-04-30</h1>
-<div id="high" class="section level2">
-<h2>High</h2>
-<ul>
-<li>Add the use_varnames = TRUE setting described in the ‘modify diagrams’ vignette. This should replace the box labels with their full names. This might mean the boxes need to be sized in a way that ensures the text fits into them.
-<ul>
-<li>This is implemented but it is tricky to get the boxes the correction size. This is mostly because of the current workflow: locations and dimensions of the node boxes are specified in the <code>prepare_diagram</code> function, which happens <em>before</em> the package knows whether the user is going to specify the <code>use_varnames</code> argument as TRUE. One workaround is to have the <code>use_varnames</code> argument in <code>prepare_diagram</code> rather than in <code>make_diagram</code>. Then I could implement something that expands the x and y limits of the rectangles based on character number and default size.</li>
-<li>Current workaround in the B vignette (not ideal, but works) is to change the <code>node_text_size</code> argument in the <code>diagram_settings</code> list so it all fits.</li>
-</ul></li>
-</ul>
-</div>
-<div id="low" class="section level2">
-<h2>Low</h2>
-<ul>
-<li><p>There can never be too much documentation/comments :)</p></li>
-<li><p>General thought: There seems to be some overlap between functionality (e.g. processing flows, etc.) done in flowdiagramr and done in modelbuilder. Since I want to use the flowdiagramr functionality in modelbuilder, I think we’ll make modelbuilder depend on flowdiagramr. That means we could think about structuring the 2 packages such that certain helper functions live inside flowdiagramr and are used there and also in modelbuilder. E.g. add_plus_signs is likely one. Or get_vars_pars. I’m not sure how to best go about starting that integration, but we should discuss.</p></li>
-<li><p>Write unit tests with testthat</p></li>
-<li><p>Implement error checking inside functions</p></li>
-<li><p>Add code to check size of content for box and make box size properly. Also content to minimize label and arrow overlap?</p></li>
-<li><p>Add an option to give each flow their own name/label (e.g. replace/add to b<em>S</em>I by calling “infection process”). Similar to flowlabels and flownames for boxes.</p></li>
-<li><p>Explain limitations on naming of variables and parameters in vignette and when describing input structure for prepare_diagram()</p></li>
-<li><p>Maybe be flexible with input structure. E.g. if varlabels/varnames/flows are provided in a different order, still ok? And if they are not named, can we instead try to see if the list has 2 or 3 entries, and try to interpret the 1st as varlabels, 2nd as varnames, 3rd as flows? Not that crucial for now, but we could decide what we allow as input structure. Just need to make sure we fully document this, both in the function help file and the vignette.</p></li>
-</ul>
-<hr />
-</div>
-<div id="completed-1" class="section level2">
-<h2>COMPLETED</h2>
-<ul>
-<li><p>Adjust code such that the last example in the ‘modify diagrams’ vignette looks good (will also apply to example in ‘other diagrams’ vignette). That means some logic that tries to draw flow arrows between boxes from their closest sides, instead of always leaving on right, entering on left.</p></li>
-<li><p>getting the default values for make_diagram by pulling them from get_diagram_settings_default is I think not ideal. I can easily see myself changing the defaults in make_diagram and forgetting to do it in that other R script. Could you instead pull the defaults using something like args(make_diagram) or formals(make_diagram) and getting rid of get_diagraim_settings_default altogether?</p></li>
-<li><p>I think we should maybe change the default settings for make_diagram such that the default already looks rather nice. E.g. settings that are more similar to the nice_diagram example on the ‘modify diagrams’ vignette.</p></li>
-<li><p>For the above, when adding the variable text, if it is more than one word (.e.g. ‘Asymptomatic Recovered’), could we implement a centered two-line placement of the text? Maybe this is more easily done as part of the manual intervention approach by either modifying the input list or directly the code?</p></li>
-<li><p>When writing string/regex code, if possible explain for each regex what it means/does (since I’m terrible at regex). E.g. like so:</p></li>
-</ul>
-<p><code>pattern = &quot;(\\+|-).*&quot;  #find first plus or minus sign in string</code> <code>replacement = &quot;\\1&quot;  #the first occurrence of the pattern</code> <code>si &lt;- gsub(pattern = pattern, replacement = replacement, fl) #pull out first + or - sign from string</code></p>
-<ul>
-<li>Add check_model() and check_input_structure() helper functions
-<ul>
-<li>This is <code>check_model_list.R</code></li>
-</ul></li>
-<li>If possible/code doesn’t get too confusing, use explicit package::function() syntax in code, makes it easier to see in which package a function lives.
-<ul>
-<li>I didn’t see too many instances of this. We mostly call base R functions or interal functions. We can add <code>flowdiagramr::function()</code> to all internal functions if you want, though.</li>
-</ul></li>
-<li>At start of prepare_diagram function, the input should be checked to make sure it looks as needed. If not, a meaningful error message should be given to user.
-<ul>
-<li>This is <code>check_model_list.R</code></li>
-</ul></li>
-</ul>
-</div>
 </div>
 
 

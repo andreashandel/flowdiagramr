@@ -23,6 +23,9 @@
 #' \item `var_label_color`: A character string or vector of character strings
 #'     specifying the text color for variable labels. If a vector, the colors will
 #'     be recycled in the order of the variables in the supplied data frame.
+#' \item `var_label_text`: A character vector the same length as the number
+#'     of variables in the `variables` data frame. If provided, these values
+#'     update the variable labels provided to \code{\link{prepare_diagram}}.
 #' \item `var_label_size`: A numeric scalar specifying the text size for variable
 #'     labels. Note that any value supplied here overwrites
 #'     entries in the list structure returned by \code{\link{prepare_diagram}}.

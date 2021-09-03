@@ -33,8 +33,7 @@
 #' @param model_settings A list of optional model settings. The following
 #'     elements are supported and default values are provided:
 #' \itemize{
-#' \item `varnames`: Vector of strings containing labels, one  for each variable.
-#'                   Default is `NULL`.
+#' \itme `varlocations`: A character matrix of variable locations on a grid.
 #' \item `varbox_x_scaling`: A scalar that changes the default width of
 #'     variable boxes. For example, `varbox_x_scaling = 1.5` makes each box
 #'     1.5 times the default width.
@@ -51,13 +50,15 @@
 #'     default spacing.
 #' }
 #'
-#' @return A list of two data frames:
+#' @return A list of two data frames and the original inputs lists. The returned
+#'     data frames are:
 #' \itemize{
 #'   \item `variables`: A data frame containing information for all variables.
 #'   The data frame contains these columns:
 #'
 #'   \itemize{
 #'     \item `label`: The variable label as provided in the model specification.
+#'     \item `id`: A numeric id for each variable.
 #'     \item `name`: If provided, the full text for each variable.
 #'     \item `xmin`: Left edge location of box.
 #'     \item `xmax`: Right edge location of box.
@@ -65,7 +66,6 @@
 #'     \item `ymax`: Upper edge of location box.
 #'     \item `xlabel`: Horizontal position (midpoint) of label.
 #'     \item `ylabel`: Vertical position (midpoint) of label.
-#'     \item `plot_label`: The text to be written into the box.
 #'     \item `color`: Default outline color for the box.
 #'     \item `fill`: Default fill color for the box.
 #'     \item `label color`: Default color for text label.
@@ -75,6 +75,7 @@
 #'   \item `flows`: A data frame containing information for all flows.
 #'   The data frame contains these columns:
 #'   \itemize{
+#'     \item `id`: A numeric id for each flow.
 #'     \item `to`: The variable to which the arrow will point. That is, the
 #'     variable receiving the flow.
 #'     \item `from`: The variable from which the arrow originate. That is, the
@@ -89,15 +90,15 @@
 #'     \item `curvature`: The amount of curvature applied to arrow.
 #'     Higher numbers indicate more curvature; 0 = straight line.
 #'     \item `type`: Type of flow. One of main, interaction, or external.
+#'     \item `math`: The math from the flows specified by the user. Is a
+#'     duplicate of `label` so that user can update `label` as desired but
+#'     retain the original math for reference.
 #'     \item `color`: Default color of the lines/arrows.
 #'     \item `linetype`: Default linetype.
 #'     \item `size`: Default size of the lines.
 #'     \item `label_color`: Default label color.
 #'     \item `label_size`: Default text size for label.
 #'     \item `arrowsize`: Default arrow size.
-#'     \item `math`: The math from the flows specified by the user. Is a
-#'     duplicate of `label` so that user can update `label` as desired but
-#'     retain the original math for reference.
 #'   }
 #' }
 #' @details `varlabels` needs to be specified as a vector of model variables,
@@ -130,9 +131,9 @@
 #' varlocations <-  matrix(data = c("S", "", "R",
 #'                                  "", "I", "" ),
 #'                         nrow = 2, ncol = 3, byrow = TRUE)
-#' mysettings <- list(varnames = varnames, use_varnames = TRUE,
-#'                    var_label_size = 4, varlocations = varlocations)
+#' mysettings <- list(varlocations = varlocations)
 #' diag_list <- prepare_diagram(model_list = mymodel, model_settings = mysettings)
+#' diagsetting <- list(var_label_text = varlocations, var_label_size = 4)
 #' mydiag <- make_diagram(diag_list)
 #'
 #' #another simple model
@@ -147,9 +148,9 @@
 #' varnames <- c("Pathogen","Immune Response")
 #' varlocations <-  matrix(data = c("Pat", "Imm"),
 #'                         nrow = 2, byrow = TRUE)
-#' mysettings <- list(varnames = varnames, use_varnames = TRUE,
-#'                    var_label_size = 4, varlocations = varlocations)
+#' mysettings <- list(varlocations = varlocations)
 #' diag_list <- prepare_diagram(mymodel,mysettings)
+#' diagsettings <- list(var_label_text = varnames, var_label_size = 4)
 #' mydiag <- make_diagram(diag_list)
 #'
 #' @export
@@ -195,13 +196,19 @@ prepare_diagram <- function(model_list,
   # ALSO, LOOKS LIKE THIS THING IS DONE AGAIN BELOW?
   # update model settings if user provides any
   # assign default settings to be updated by user
+  # this is necessary to allow the user to provide just a single updated
+  # argument, rather than having to specify all list objects.
   defaults <- eval(formals(prepare_diagram)$model_settings)
   defaults[names(model_settings)] <- model_settings
   model_settings <- defaults
   defaults <- NULL  # remove the defaults object
 
   # I'M UNCLEAR WHAT THIS CODE CHUNK DOES
-  # Extract model_settings to in scope objects
+  # Extract model_settings to in scope objects. Loops over the model_settings
+  # list and assigns each value to an object with the name of the list object.
+  # E.g., if there is a list object named 'object1', then this code chunk
+  # takes the value of 'object1' in the list and assigns it to a variable
+  # in the local environment called 'object1'.
   for(i in 1:length(model_settings)) {
     assign(names(model_settings)[i], value = model_settings[[i]])
   }
@@ -261,6 +268,11 @@ prepare_diagram <- function(model_list,
 
 
   # WHAT DOES THIS STRATIFICATION GUESSING PART DO? AREN'T WE BY DEFAULT PLACING ALL VARIABLES ALONG A SINGLE ROW, NO MATTER WHAT?
+  # ATT: We can put everything on one row, but for simple stratifications
+  # we had originally included this to make a new row for each stratification.
+  # E.g., if you had an SIR with two age classes, each age class would get
+  # it's own row. We can remove if you want.
+
   # Split variables by rows if stratification implied by numbers at
   # the end of state variables. For example, two "S" compartments labeled
   # "S1" and "S2" will be split across rows, assuming some stratification.

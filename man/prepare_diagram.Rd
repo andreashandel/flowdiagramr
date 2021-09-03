@@ -32,8 +32,7 @@ math notation (e.g., +, -, *, /).
 \item{model_settings}{A list of optional model settings. The following
 elements are supported and default values are provided:
 \itemize{
-\item \code{varnames}: Vector of strings containing labels, one  for each variable.
-Default is \code{NULL}.
+\itme \code{varlocations}: A character matrix of variable locations on a grid.
 \item \code{varbox_x_scaling}: A scalar that changes the default width of
 variable boxes. For example, \code{varbox_x_scaling = 1.5} makes each box
 1.5 times the default width.
@@ -51,13 +50,15 @@ default spacing.
 }}
 }
 \value{
-A list of two data frames:
+A list of two data frames and the original inputs lists. The returned
+data frames are:
 \itemize{
 \item \code{variables}: A data frame containing information for all variables.
 The data frame contains these columns:
 
 \itemize{
 \item \code{label}: The variable label as provided in the model specification.
+\item \code{id}: A numeric id for each variable.
 \item \code{name}: If provided, the full text for each variable.
 \item \code{xmin}: Left edge location of box.
 \item \code{xmax}: Right edge location of box.
@@ -65,7 +66,6 @@ The data frame contains these columns:
 \item \code{ymax}: Upper edge of location box.
 \item \code{xlabel}: Horizontal position (midpoint) of label.
 \item \code{ylabel}: Vertical position (midpoint) of label.
-\item \code{plot_label}: The text to be written into the box.
 \item \code{color}: Default outline color for the box.
 \item \code{fill}: Default fill color for the box.
 \item \verb{label color}: Default color for text label.
@@ -75,6 +75,7 @@ The data frame contains these columns:
 \item \code{flows}: A data frame containing information for all flows.
 The data frame contains these columns:
 \itemize{
+\item \code{id}: A numeric id for each flow.
 \item \code{to}: The variable to which the arrow will point. That is, the
 variable receiving the flow.
 \item \code{from}: The variable from which the arrow originate. That is, the
@@ -89,15 +90,15 @@ variable donating the flow.
 \item \code{curvature}: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.
 \item \code{type}: Type of flow. One of main, interaction, or external.
+\item \code{math}: The math from the flows specified by the user. Is a
+duplicate of \code{label} so that user can update \code{label} as desired but
+retain the original math for reference.
 \item \code{color}: Default color of the lines/arrows.
 \item \code{linetype}: Default linetype.
 \item \code{size}: Default size of the lines.
 \item \code{label_color}: Default label color.
 \item \code{label_size}: Default text size for label.
 \item \code{arrowsize}: Default arrow size.
-\item \code{math}: The math from the flows specified by the user. Is a
-duplicate of \code{label} so that user can update \code{label} as desired but
-retain the original math for reference.
 }
 }
 }
@@ -144,9 +145,9 @@ varnames <- c("Susceptible","Infected","Recovered")
 varlocations <-  matrix(data = c("S", "", "R",
                                  "", "I", "" ),
                         nrow = 2, ncol = 3, byrow = TRUE)
-mysettings <- list(varnames = varnames, use_varnames = TRUE,
-                   var_label_size = 4, varlocations = varlocations)
+mysettings <- list(varlocations = varlocations)
 diag_list <- prepare_diagram(model_list = mymodel, model_settings = mysettings)
+diagsetting <- list(var_label_text = varlocations, var_label_size = 4)
 mydiag <- make_diagram(diag_list)
 
 #another simple model
@@ -161,9 +162,9 @@ mydiag <- make_diagram(diag_list)
 varnames <- c("Pathogen","Immune Response")
 varlocations <-  matrix(data = c("Pat", "Imm"),
                         nrow = 2, byrow = TRUE)
-mysettings <- list(varnames = varnames, use_varnames = TRUE,
-                   var_label_size = 4, varlocations = varlocations)
+mysettings <- list(varlocations = varlocations)
 diag_list <- prepare_diagram(mymodel,mysettings)
+diagsettings <- list(var_label_text = varnames, var_label_size = 4)
 mydiag <- make_diagram(diag_list)
 
 }

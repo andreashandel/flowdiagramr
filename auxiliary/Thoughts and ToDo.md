@@ -12,19 +12,36 @@ My current thinking (up for discussion):
 
 * By default, the first (or, if present, lower left variable in varlocations matrix) is placed on a grid with the lower left corner of that box (xmin/ymin) at (0,0). By default, boxes are of size 1, with both horizontal and vertical spacing between boxes size 2.
 
+THIS IS DONE.
+
 * model_settings in prepare_diagram will take these inputs: varlocations, varbox_x_scaling, varbox_y_scaling, varspace_x_scaling, varspace_y_scaling. The first 2 scale the box size by a factor along that direction, e.g. varbox_x_scaling = 1.5 makes each box of size 1.5. Might be easiest to just push the max value out by that amount? varspace does the same for the empty space between boxes, e.g. it scales the default value of 2 to create more/less spacing between boxes. These settings determine the location of all boxes. Once all boxes are 'placed', arrows will then be drawn between boxes based on box start/end settings.
 
+THIS IS DONE. BUT SCALINGS ARE NOT VECTORIZED -- THEY CAN ONLY TAKE ONE VALUE AT THIS TIME.
+
 * varnames, use_varnames, var_label_size will be removed from model_settings
+
+DONE. I REMOVED USE_VARNAMES AND SIMPLY CHECK WHETHER VARNAMES ARE SUPPLIED AND ASSUME THE USER WANTS TO USE VARNAMES IF THEY PROVIDE THEM. THESE ARGUMENTS ARE NOW IN diagram_settings.
+
 * Also, let's call the low/high values for boxes and arrows the same. right now it's xmin and xstart for boxes and arrows respectively. That leads to extra cognitive load by the user :) Just pick one labeling and use the same for both boxes and arrows. I prefer min/max since it doesn't indicate directionality, but I'm ok with either (or something else).
 
--> Rewrite prepare_diagram to implement those changes. Also, streamline/simplify code. Remove "legacy code", e.g. the sdf/vdf/cdf/etc. distinctions. Make code as streamlined/simple/documented as possible, so I can follow :) and thus maintain/update. That also means changing variable names to something consistent (instead of renaming at end, like we are doing for some currently.)
+DONE.
+
+* Rewrite prepare_diagram to implement those changes. Also, streamline/simplify code. Remove "legacy code", e.g. the sdf/vdf/cdf/etc. distinctions. Make code as streamlined/simple/documented as possible, so I can follow :) and thus maintain/update. That also means changing variable names to something consistent (instead of renaming at end, like we are doing for some currently.)
+
+DONE. THOUGH THERE IS PROBABLY MORE REFACTORING THAT CAN BE IDENTIFIED DURING CODE REVIEW.
 
 
 * make_diagram gets a new entry for diagram_settings called var_label_text. The user provides a vector of text to be printed into the boxes (e.g. the variable names, or anything else). If provided, this is used, otherwise the default is to use varlabels from the model_list. This basically reproduces the varnames/use_varnames functionality in a more flexible way. It also reduces confusion about specifying var_label_size twice.
 
+DONE.
+
 * If a user specifies one of the entries in diagram_settings, it overwrites whatever is in diagram_list. If a user wants to do more detailed adjustments, they need to edit diagram_list and leave that entry of diagram_settings empty. Maybe (if easy to do) if code detects a non-default setting in diagram_list AND styling for that entry in diagram_settings, it could issue a warning message.
 
--> Rewrite make_diagram to implement those changes. Also, as for prepare diagram, streamline/simplify code.
+I THINK THIS IS DONE. BUT WILL REQUIRE TESTING THE SPECIFIC USE CASE YOU HAVE IN MIND.
+
+* Rewrite make_diagram to implement those changes. Also, as for prepare diagram, streamline/simplify code.
+
+DONE. MOST OF THE CODE IS RECYCLING VALUES FOR AESTHETICS. WE CAN MOVE ALL THOSE TO EXTERNAL FUNCTION IF YOU WANT TO CLEAN UP THE FUNCTION MORE.
 
 
 ******

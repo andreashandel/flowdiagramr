@@ -11,9 +11,9 @@ model_list = list(varlabels = varlabels, flows = flows)
 model_settings = list(
                       varlocations = matrix(data = c("S", "", "R",
                                          "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE),
-  varbox_x_scaling = 2,
-  varspace_x_scaling = 1.5,
-  varspace_y_scaling = 0.2)
+  varbox_x_scaling = 1,
+  varspace_x_scaling = 1,
+  varspace_y_scaling = 1)
 
 # make diagram
 diagram_list <- prepare_diagram(model_list, model_settings)
