@@ -13,8 +13,14 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_scaling,
                           varbox_y_scaling, varspace_x_scaling,
                           varspace_y_scaling) {
 
+  # Run this if user provided a matrix of locations in varlocations
+  # DO WE NEED THAT IF/ELSE WITH COMPLETELY SEPARATE TEXT BLOCKS?
+  # WOULDN'T IT BE EASIER IF VARLOCATIONS IS NULL,
+  #WE JUST CREATE A VARLOCATION MATRIX HERE WITH ALL VARIABLES IN A SINGLE ROW, AND THEN ONLY HAVE A SINGLE CODE BLOCK?
+
   if(is.null(varlocations)) {
     newvariables <- list()
+    #WHAT DOES THIS LOOP OVER?
     for(rid in unique(variables$row)) {
       tmp <- subset(variables, row == rid)
       tmp$xmin <- NA
@@ -22,6 +28,7 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_scaling,
       tmp$ymin <- NA
       tmp$ymax <- NA
       xstart <- 0
+      #I DON'T UNDERSTAND THE NEXT LINE, AND WHY IS THERE NO ADJUSTMENT TO IT, SIMILAR TO SPACE_X ADJUSTMENT?
       rowspace_y <- -3 #each row is -3 from the bottom of the other row: 2 spacing and 1 for size of box
       ystart <- (rid-1) * rowspace_y * varspace_y_scaling
       bumpout_x <- 1 * varbox_x_scaling

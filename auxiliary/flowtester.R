@@ -1,38 +1,30 @@
 library(flowdiagramr)
 
-
-
+#make model
 varlabels = c("S","I","R")
 flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              I_flows = c("+b*S*I","-g*I", "-m*I"),
              R_flows = c("g*I", "-m*R"))
-varnames = c("Susceptible","Infected","Recovered")
-
-varlocations = matrix(data = c("S", "", "R",
-                               "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
-
-# default spacing
 model_list = list(varlabels = varlabels, flows = flows)
-diagram_list <- prepare_diagram(model_list)
-make_diagram(diagram_list)
 
-
-# bigger boxes
+#model user settings
 model_settings = list(
+                      varlocations = matrix(data = c("S", "", "R",
+                                         "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE),
   varbox_x_scaling = 2,
-  varbox_y_scaling = 2,
-  varspace_x_scaling = 2,
-  varspace_y_scaling = 2)
+  varspace_x_scaling = 1.5,
+  varspace_y_scaling = 0.2)
+
+# make diagram
 diagram_list <- prepare_diagram(model_list, model_settings)
 make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
 
 
-# with var labels and user locations
-model_list = list(varlabels = varlabels, flows = flows)
-model_settings = list(
-  varlocations = varlocations)
-diagram_list <- prepare_diagram(model_list, model_settings)
-make_diagram(diagram_list, diagram_setting=list(var_label_text = c("Susc", "Inf", "Rec")))
+
+# with var labels
+make_diagram(diagram_list,
+             diagram_setting=list(var_label_text = c("Susceptible","Infected","Recovered"))
+            )
 
 
 # more complicated

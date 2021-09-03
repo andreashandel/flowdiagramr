@@ -57,23 +57,29 @@ mymodel = list(varlabels = c("L","P","B","Pl","R","Re"),
 model_settings = list(varlocations = matrix(data = c("L", "",
                                                      "P", "Pl",
                                                      "B", "R", 
-                                                     "Re","" ), ncol = 2, byrow = TRUE))
+                                                     "Re","" ), ncol = 2, byrow = TRUE),
+                      varbox_x_scaling = 2)
 ```
 
 Note that to make the diagram logic work, we have to define actual flows. For instance we can't just label the various flows with "Yes" or "No" like in the original diagram. If we did this, **`r pkg`** wouldn't know with which boxes/variables to associate the arrows with.   
 
 
-Now, it's the standard steps of preparing, making and plotting the diagram.
+Next, we prepare the diagram, then make and plot it.
 
 ```{r, fig.height = 5}
 diagram_list <- prepare_diagram(mymodel,model_settings)
-diagram_settings <- list(var_label_text = c("Lamp doesn't work","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp"),
-                       var_label_size = 6)
+diagram_settings <- list(var_label_text = c("Lamp doesn't work",
+                                            "Lamp plugged in?",
+                                            "Bulb burned out?",
+                                            "Plug in lamp",
+                                            "Replace bulb",
+                                            "Repair lamp"),
+                         var_label_size = 6)
 my_diagram <- make_diagram(diagram_list, diagram_settings = diagram_settings)
 plot(my_diagram)
 ```
 
-This looks somewhat similar to the original, but of course not quite as good. We can get fairly close with a few adjustments.
+This looks somewhat similar to the original, but of course not quite as good. We can get fairly close with a few adjustments. (Note the `\n` in the label text to get line breaks.)
 
 ```{r, fig.height = 5}
 modified_diagram_list <- diagram_list
@@ -85,7 +91,12 @@ modified_diagram_list$flows$label <- c("", "Yes", "No", "Yes", "No")
 diagram_settings <- list( var_fill_color = c("pink", "yellow", "yellow",
                                               "green", "green", "green"),
                           var_outline_color = "black",
-                          var_label_text = c("Lamp doesn't work","Lamp plugged in?","Bulb burned out?","Plug in lamp","Replace bulb","Repair lamp"),
+                          var_label_text = c("Lamp doesn't\nwork",
+                                             "Lamp\nplugged in?",
+                                             "Bulb\nburned out?",
+                                             "Plug in lamp",
+                                             "Replace bulb",
+                                             "Repair lamp"),
                           var_label_color = "black",
                           var_label_size = 3,
                           main_flow_label_size= 4
@@ -97,10 +108,77 @@ my_diagram <- make_diagram(
 plot(my_diagram)
 ```
 
-That looks pretty good. If you want to change the shapes of the boxes, you'll need to adjust the ggplot code, following the instructions of the []().
+That looks pretty good. If you want to change the shapes of the boxes, you'll need to adjust the ggplot code, as explained in [this vignette](./D_modify_ggplot_code.html).
 
 
 # Example 2
+
+Directed Acyclic Graphs (DAG) are flow diagrams without feedback loops. There are R packages that can create DAG diagrams. **`r pkg`** was created because we needed something more flexible that allowed feedback loops. That said, **`r pkg`** can also make DAGs. Here is an example from some recent work we did on influenza vaccines.
+The variables included in the DAG are vaccination (Vac), intrinsic host characteristics (Cha), HAI antibody titers (Hai), and protection from infection (Inf).
+First, we specify the model
+
+```{r}
+dag_model = list(varlabels = c("Vac","Cha","Hai","Inf"),
+                  flows = list(Vac_flows = c("-Vac_to_Inf","-Vac_to_Hai","Cha_to_Vac"),
+                               Cha_flows = c("-Cha_to_Vac","-Cha_to_Hai","-Cha_to_Inf"),
+                               Hai_flows = c("Vac_to_Hai", "Cha_to_Hai","-Hai_to_Inf"),
+                              Inf_flows = c("Vac_to_Inf","Cha_to_Inf","Hai_to_Inf")
+                              )          
+                )
+```
+
+Next, we provide settings to place the variables in locations we want, and adjust box size and spacing.
+
+```{r}
+dag_settings = list(varlocations = matrix(
+                                    data = c("Vac", "", "",
+                                             "", "Hai", "Inf",
+                                             "Cha", "", ""),
+                                    ncol = 3, byrow = TRUE),
+                    varbox_x_scaling = 4,
+                    varbox_y_scaling = 1.5,
+                    varspace_y_scaling = 0.3,
+                    varspace_x_scaling = 0.6
+)
+```
+
+
+Now we prepare the diagram
+
+```{r}
+dag_list <- prepare_diagram(dag_model, dag_settings)
+```
+
+We wanted a skinny diagram to save space. This would have resulted on some arrows crossing over the HAI box. To prevent that, we manually curve the arrows by editing the `dag_list` object. (Of course, we first looked at the whole `dag_list` object to figure out which flows we need to alter.)
+
+```{r}
+dag_list$flows$curvature[4] = -0.3
+dag_list$flows$curvature[5] = 0.3
+```
+
+Next, we specify some additional settings for `make_diagram()` to change the styling.
+
+```{r}
+diagram_settings = list(var_label_text = c("Vaccination",
+                                           "Intrinsic\nCharacteristics",
+                                           "HAI titer\npost-vac",
+                                           "Infection"),
+                        var_outline_color = "black",
+                        var_label_size = 6, 
+                        main_flow_label_on = FALSE,
+                        main_flow_size = 1,
+                        var_fill_color =  c("#56b4e9", "#56b4e9","#009e73","#E69F00"))
+```
+
+Now it's time to make and plot the diagram.
+
+```{r}
+dag_diagram <- make_diagram(diagram_list = dag_list, diagram_settings)
+plot(dag_diagram)
+```
+
+
+# Example 3
 
 TO COME. WANT TO SHOW SOME COMPLEX ONE WITH FEEDBACK LOOPS. IDEAS? MAYBE A (SIMPLE) FOOD WEB FROM ECOLOGY?
 

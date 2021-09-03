@@ -162,7 +162,8 @@ prepare_diagram <- function(model_list,
                               varbox_y_scaling = 1,
                               varspace_x_scaling = 1,
                               varspace_y_scaling = 1)
-                            ) {
+                            )
+{
 
   ######################################################################
   # check to make sure model_list is a properly specified model
@@ -172,6 +173,26 @@ prepare_diagram <- function(model_list,
     stop(check$msg)
   }
 
+  ######################################################################
+  # if user provides inputs in model_settings, run various checks
+  # to make sure the inputs are ok
+  ######################################################################
+  if (!is.null(model_settings))
+  {
+    # get default settings
+    defaults <- eval(formals(prepare_diagram)$model_settings)
+    #check if user-provided settings are ok
+    check <- check_model_settings(model_settings, model_list, defaults)
+    if(!is.null(check))
+    {
+      stop(check)
+    }
+  }
+
+
+  # IS THIS CODE BLOCK NEEDED? DOESN'T MODEL_SETTINGS AUTOMATICALLY CONTAIN
+  # EITHER THE DEFAULTS OR THE USER-PROVIDED VALUES?
+  # ALSO, LOOKS LIKE THIS THING IS DONE AGAIN BELOW?
   # update model settings if user provides any
   # assign default settings to be updated by user
   defaults <- eval(formals(prepare_diagram)$model_settings)
@@ -179,83 +200,21 @@ prepare_diagram <- function(model_list,
   model_settings <- defaults
   defaults <- NULL  # remove the defaults object
 
-
+  # I'M UNCLEAR WHAT THIS CODE CHUNK DOES
   # Extract model_settings to in scope objects
   for(i in 1:length(model_settings)) {
     assign(names(model_settings)[i], value = model_settings[[i]])
   }
 
-  # check to make sure scaling parameters are of length 1 or length of the
-  # the number of variables. hard error out if not
-  if(length(varbox_x_scaling) != 1) {
-    if(length(varbox_x_scaling) != length(model_list$varlabels)) {
-      stop("varbox_x_scaling must be of length 1 or length of the number of variables")
-    }
-  }
-  if(length(varbox_y_scaling) != 1) {
-    if(length(varbox_y_scaling) != length(model_list$varlabels)) {
-      stop("varbox_y_scaling must be of length 1 or length of the number of variables")
-    }
-  }
-  if(length(varspace_x_scaling) != 1) {
-    if(length(varspace_x_scaling) != length(model_list$varlabels)) {
-      stop("varspace_x_scaling must be of length 1 or length of the number of variables")
-    }
-  }
-  if(length(varspace_y_scaling) != 1) {
-    if(length(varspace_y_scaling) != length(model_list$varlabels)) {
-      stop("varspace_y_scaling must be of length 1 or length of the number of variables")
-    }
-  }
 
-  # repeat the space scalings if needed
-  # if(length(varbox_x_scaling) == 1) {
-  #   varbox_x_scaling <- recycle_values(varbox_x_scaling, n = length(model_list$varlabels))
-  # }
-  # if(length(varbox_y_scaling) == 1) {
-  #   varbox_y_scaling <- recycle_values(varbox_y_scaling, n = length(model_list$varlabels))
-  # }
-  # if(length(varspace_x_scaling) == 1) {
-  #   varspace_x_scaling <- recycle_values(varspace_x_scaling, n = length(model_list$varlabels))
-  # }
-  # if(length(varbox_y_scaling) == 1) {
-  #   varspace_y_scaling <- recycle_values(varspace_y_scaling, n = length(model_list$varlabels))
-  # }
 
-  # assign default settings to be updated by user
-  defaults <- eval(formals(prepare_diagram)$model_settings)
 
-  ######################################################################
-  # check user inputs provided in model_settings, if user supplies a non-recognized argument, stop
-  ######################################################################
-  if (!is.null(model_settings))
-  {
-    nonrecognized_inputs <- setdiff(names(model_settings),  names(defaults))
-    if (length(nonrecognized_inputs>0) )
-    {
-      stop('These elements of model_settings are not recognized: ', nonrecognized_inputs)
-    }
-    # update defaults with user settings
-    defaults[names(model_settings)] <- model_settings
-    model_settings <- defaults  # reassign
-  }
 
-  ######################################################################
-  # Check if varlocation matrix is provided
-  # Make sure the varlocations matrix entries match those in model_list
-  ######################################################################
-  varlocation_matrix <- model_settings$varlocations
-  if(!is.null(model_settings$varlocations))
-     {
-       varlocnames = as.vector(model_settings$varlocations)
-       varlocnames = varlocnames[varlocnames !=""] #remove empty entries
-       if (!setequal(varlocnames, model_list$varlabels))
-          {
-            # returns fatal error if variables do not match
-            stop("varlocation entries do not match varlabels in model_list.")
-       }
-  }
 
+  # COULD WE REFACTOR SOME TO MOVE SOME OF THESE MODEL/FLOW LOGIC PARSING THINGS
+  # INTO SEPARATE FUNCTIONS? ALSO, THIS WHOLE PARSING LOGIC IS NEEDED/USED BY MODELBUILDER
+  # SO I'D LIKE TO HAVE A FUNCTION THAT CAN DO THIS AS STAND-ALONE
+  # SHOULD DISCUSS THIS.
 
   # Extract relevant details from the model_list and make a matrix
   # of variables-by-flows for iterating and indexing the nodes and
@@ -267,11 +226,18 @@ prepare_diagram <- function(model_list,
   #labels for the nodes and what we expect to show up in the flow math
   varnames <- model_list$varlabels
 
+  # Create a data frame for all variables
+  variables <- data.frame(
+    id = 1:nvars,  # numeric id for nodes
+    label = varnames,  # labels for nodes
+    name = varnames,  # long names for labels
+    row = 1  # hard code for 1 row, will be updated below, if necessary
+  )
+
   #extract the flows list
   flows <- model_list$flows
 
   #add implicit + signs to make explicit before additional parsing
-  #flows <- add_plus_signs(flows)
   flows <- add_plus_signs(flows)
 
   #turns flow list into matrix, adding NA, found it online,
@@ -293,16 +259,8 @@ prepare_diagram <- function(model_list,
   #extract only the + or - signs from flows so we know the direction
   signmat <- gsub("(\\+|-).*","\\1",flowmat)
 
-  #define nodes data frame structure if not provided by user
-  # Create a node data frame
-  variables <- data.frame(
-    id = 1:nvars,  # numeric id for nodes
-    label = varnames,  # labels for nodes
-    name = varnames,  # long names for labels
-    row = 1  # hard code for 1 row, will be updated below, if necessary
-  )
 
-
+  # WHAT DOES THIS STRATIFICATION GUESSING PART DO? AREN'T WE BY DEFAULT PLACING ALL VARIABLES ALONG A SINGLE ROW, NO MATTER WHAT?
   # Split variables by rows if stratification implied by numbers at
   # the end of state variables. For example, two "S" compartments labeled
   # "S1" and "S2" will be split across rows, assuming some stratification.
@@ -334,16 +292,15 @@ prepare_diagram <- function(model_list,
 
     #start loop over all the flows in/out of the current variable (node)
     for(j in 1:length(varflows)) {
-      currentflowfull <- varflowsfull[j] #loop through all flows for variable
-      currentflow <- varflows[j] #loop through all flows for variable
-      currentsign <- varflowsigns[j] #loop through all flows for variable
+      currentflowfull <- varflowsfull[j]
+      currentflow <- varflows[j]
+      currentsign <- varflowsigns[j]
 
       # Find the variables for which the current flow appears, i.e., what
       # other rows of the matrix does it show up in.
       connectvars <- unname(which(flowmatred == currentflow, arr.ind = TRUE)[,1])
 
       # Extract the variable names in the flow expression
-      #varspars <- unique(get_vars_pars(currentflowfull))
       varspars <- unique(get_vars_pars(currentflowfull))
       varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
 

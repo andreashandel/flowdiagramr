@@ -44,6 +44,7 @@ my_diagram <- make_diagram(diagram_list = diagram_list)
 #plot diagram
 plot(my_diagram)
 ```
+
 Both `prepare_diagram()` and `make_diagram()` can be supplied with additional settings that allow you to customize your diagram rather easily.
 Let's look at both.
 
@@ -90,8 +91,7 @@ sir_diagram <- make_diagram(diagram_list = sir_diagram_list)
 plot(sir_diagram)
 ```
 
-For this simple model, having all compartments along a single row, the default setting of **`r pkg`**, would be ok. But unless your model is very simple, you likely do not want all variables/boxes on the same row. Thus, specifying `varlocations` is most often very useful and necessary to produce a decent looking diagram.
-
+For this simple model, the default setting of **`r pkg`** of having all compartments along a single row  would be ok. But unless your model is very simple, you likely do not want all variables/boxes on the same row. Thus, specifying `varlocations` is often very useful and necessary to produce a decent looking diagram.
 
 
 ### Example 2
@@ -100,7 +100,7 @@ Let's look at another example, one that might come up somewhat often, where you 
 
 
 ```{r}
-sirsettings = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
+sir_vertical_settings = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
                    varbox_y_scaling = 0.5,
                    varspace_y_scaling = 0.5
                    )
@@ -109,23 +109,46 @@ sirsettings = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byr
 With this setup, the diagram looks like this
 
 ```{r, fig.height=5}
-sir_diagram_list <- prepare_diagram(model_list = sirmodel, model_settings = sirsettings)
-sir_diagram <- make_diagram(diagram_list = sir_diagram_list)
+sir_vertical <- prepare_diagram(model_list = sirmodel, model_settings = sir_vertical_settings)
+sir_diagram <- make_diagram(diagram_list = sir_vertical)
 plot(sir_diagram)
 ggplot2::ggsave("sirdiagram1.png",sir_diagram)
 ```
 
-The placement of the labels could be improved, which is not hard to do with **`r pkg`** and you'll learn that in a future vignette.
+The placement of the flow labels could be improved, which is not hard to do with **`r pkg`** and you'll learn that in a future vignette.
 
-**MODEL CHECK. CHANGING Y SCALING HERE ALSO SEEMS TO CHANGE BOX SIZE, LABELS DON'T FIT ANYMORE. CAN ONE MAKE IT SUCH THAT THERE IS NO RELATIVE ADJUSTMENT OF SOME COMPONENTS AS OTHERS CHANGE? SAME ISSUE HAPPENS NOT ONLY FOR FIGURE DISPLAY INSIDE VIGNETTE BUT ALSO WHEN SAVED WITH GGSAVE.**
+**MODEL CHECK. CHANGING Y SCALING HERE ALSO SEEMS TO CHANGE BOX SIZE, LABELS DON'T FIT ANYMORE. CAN ONE MAKE IT SUCH THAT THERE IS NO RELATIVE ADJUSTMENT OF SOME COMPONENTS AS OTHERS CHANGE? SAME ISSUE HAPPENS NOT ONLY FOR FIGURE DISPLAY INSIDE VIGNETTE BUT ALSO WHEN SAVED WITH GGSAVE. ALSO, THE SPACING IN THE VARIABLES DATA FRAME IS NOT RIGHT - SEE BELOW.**
 
 ```{r, fig.height=5}
-sirsettings = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
+sir_vertical_settings2 = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
                    varbox_y_scaling = 0.5,
                    varspace_y_scaling = 1
                    )
-sir_diagram_list <- prepare_diagram(model_list = sirmodel, model_settings = sirsettings)
-sir_diagram <- make_diagram(diagram_list = sir_diagram_list)
+sir_vertical2 <- prepare_diagram(model_list = sirmodel, model_settings = sir_vertical_settings2)
+sir_diagram <- make_diagram(diagram_list = sir_vertical2)
+plot(sir_diagram)
+ggplot2::ggsave("sirdiagram2.png",sir_diagram)
+```
+
+
+```{r}
+print(sir_vertical$variables)
+print(sir_vertical2$variables)
+```
+
+
+**VECTORIZATION DOES NOT SEEM TO WORK.**
+
+The scaling arguments can be vectorized to allow different spacing and sizing of different boxes.
+
+```{r, eval = FALSE}
+sir_vertical_settings2 = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
+                   varbox_x_scaling = c(1.5,1,1.5),
+                   varbox_y_scaling = c(0.5,1,0.5),
+                   varspace_y_scaling = c(0.5,1,0.5)
+                   )
+sir_vertical2 <- prepare_diagram(model_list = sirmodel, model_settings = sir_vertical_settings2)
+sir_diagram <- make_diagram(diagram_list = sir_vertical2)
 plot(sir_diagram)
 ggplot2::ggsave("sirdiagram2.png",sir_diagram)
 ```
@@ -268,14 +291,14 @@ This prepares the diagram with those additional settings.
 diagram_list <- prepare_diagram(mymodel, mysettings)
 ```
 
-We also specify some optional settings for `make_diagram()` to influence the look of the diagram.
+We also specify some optional settings for `make_diagram()` to influence the look of the diagram. Note the `\n` elements in the text for the variables, this leads to the text being placed on multiple lines.
 
 ```{r, fig.height=5}
 diagram_settings <- list(
        var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
-       var_label_text = c("Susceptible Children","Infected Children","Recovered Children",
-                          "Susceptible adults","Infected adults","Recovered adults",
-                          "Pathogen in Environment"), 
+       var_label_text = c("Susceptible\nChildren","Infected\nChildren","Recovered\nChildren",
+                          "Susceptible\nadults","Infected\nadults","Recovered\nadults",
+                          "Pathogen in\nEnvironment"), 
        var_label_size = 4,
        interaction_flow_label_size = 4,
        interaction_flow_color = "blue"
@@ -291,6 +314,60 @@ plot(model_plot)
 ```
 
 This is getting better, though not quite publication quality yet. We'll get there, so read on.
+
+## Recap
+
+Both `prepare_diagram()` and `make_diagram()` take optional arguments that allow you to do a good bit of customizing of the diagrams in a fairly easy manner.
+The full workflow is as follows
+
+```{r}
+#specify model
+mymodel = list( varlabels = c("S","I","R"),
+                flows = list(S_flows = c("-b*S*I"), 
+                             I_flows = c("b*S*I","-g*I"), 
+                             R_flows = c("g*I"))
+              )
+#specify extra settings for prepare_diagram
+my_model_settings = list(  varbox_x_scaling = 4,
+                           varspace_x_scaling = 0.5
+                        )
+#prepare diagram
+diagram_list <- prepare_diagram(model_list = mymodel, model_settings = my_model_settings)
+#specify extra settings for make_diagram
+my_diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                          var_label_text = c("Susceptible","Infected","Recovered"))
+#make diagram
+my_diagram <- make_diagram(diagram_list = diagram_list, diagram_settings = my_diagram_settings)
+#plot diagram
+plot(my_diagram)
+```
+
+
+**NOT QUITE WORKING, ADJUSTING BOX IN X-DIRECTION DOES NOT FIT TEXT**
+
+
+```{r}
+#specify model
+mymodel = list( varlabels = c("S","I","R"),
+                flows = list(S_flows = c("-b*S*I"), 
+                             I_flows = c("b*S*I","-g*I"), 
+                             R_flows = c("g*I"))
+              )
+#specify extra settings for prepare_diagram
+my_model_settings = list(  varbox_x_scaling = 6,
+                           varspace_x_scaling = 0.5
+                        )
+#prepare diagram
+diagram_list2 <- prepare_diagram(model_list = mymodel, model_settings = my_model_settings)
+#specify extra settings for make_diagram
+my_diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                          var_label_text = c("Susceptible","Infected","Recovered"))
+#make diagram
+my_diagram <- make_diagram(diagram_list = diagram_list, diagram_settings = my_diagram_settings)
+#plot diagram
+plot(my_diagram)
+```
+
 
 
 ## Next steps
