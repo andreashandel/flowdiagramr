@@ -38,7 +38,7 @@ model_settings = list(
   varbox_y_scaling = 1,
   varspace_x_scaling = 1,
   varspace_y_scaling = 1)
-diagram_list <- prepare_diagram(model_list, model_settings)
+diagram_list <- prepare_diagram(model_list)
 make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
 
 
