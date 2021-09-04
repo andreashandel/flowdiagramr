@@ -1,16 +1,20 @@
-#' @description
-#' `check_model_settings` makes sure that all optional elements are properly specified.
-#'  This is an internal function.
+#' Check optional model_settings input for prepare_diagram for correctness.
 #'
-#' @param model_settings the optional input structure for the \code{\link{prepare_diagram}} function
-#' @param model_list model list structure, needed to do some computations
-#' @param defaults default values for model_settings
+#' @description
+#' This function checks the model_settings input argument for \code{\link{prepare_diagram}}.
+#' This is mainly an internal function, called by \code{\link{prepare_diagram}}.
+#'
+#' @param model_list model list structure, required input
+#' @param model_settings additional settings, optional input
 #' @return Either an error message or null
-#' @noRd
+#' @export
 
-check_model_settings <- function(model_settings, model_list, defaults) {
+check_model_settings <- function(model_list, model_settings) {
 
   msg <- NULL
+
+  # get default settings
+  defaults <- eval(formals(flowdiagramr::prepare_diagram)$model_settings)
 
   ######################################################################
   # check if user supplies a non-recognized argument, if yes, stop

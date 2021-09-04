@@ -32,7 +32,7 @@ math notation (e.g., +, -, *, /).
 \item{model_settings}{A list of optional model settings. The following
 elements are supported and default values are provided:
 \itemize{
-\itme \code{varlocations}: A character matrix of variable locations on a grid.
+\item \code{varlocations}: A character matrix of variable locations on a grid.
 \item \code{varbox_x_scaling}: A scalar that changes the default width of
 variable boxes. For example, \code{varbox_x_scaling = 1.5} makes each box
 1.5 times the default width.

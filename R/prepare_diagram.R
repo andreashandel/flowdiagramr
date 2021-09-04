@@ -33,7 +33,7 @@
 #' @param model_settings A list of optional model settings. The following
 #'     elements are supported and default values are provided:
 #' \itemize{
-#' \itme `varlocations`: A character matrix of variable locations on a grid.
+#' \item `varlocations`: A character matrix of variable locations on a grid.
 #' \item `varbox_x_scaling`: A scalar that changes the default width of
 #'     variable boxes. For example, `varbox_x_scaling = 1.5` makes each box
 #'     1.5 times the default width.
@@ -166,56 +166,56 @@ prepare_diagram <- function(model_list,
                             )
 {
 
+
+
+
   ######################################################################
-  # check to make sure model_list is a properly specified model
+  #check to make sure model_list is provided
+  #and is a properly specified model
   ######################################################################
-  check <- check_model_list(model_list)
-  if(check$bad == TRUE) {
-    stop(check$msg)
+  if (is.null(model_list))
+  {
+    stop('Argument model_list is required.')
   }
+  checkmsg <- check_model_list(model_list)
+  if(!is.null(checkmsg))
+  {
+    stop(checkmsg)
+  }
+
+
 
   ######################################################################
   # if user provides inputs in model_settings, run various checks
   # to make sure the inputs are ok
   ######################################################################
-  if (!is.null(model_settings))
-  {
-    # get default settings
-    defaults <- eval(formals(prepare_diagram)$model_settings)
-    #check if user-provided settings are ok
-    check <- check_model_settings(model_settings, model_list, defaults)
-    if(!is.null(check))
-    {
-      stop(check)
-    }
-  }
-
-
-  # IS THIS CODE BLOCK NEEDED? DOESN'T MODEL_SETTINGS AUTOMATICALLY CONTAIN
-  # EITHER THE DEFAULTS OR THE USER-PROVIDED VALUES?
-  # ALSO, LOOKS LIKE THIS THING IS DONE AGAIN BELOW?
-  # update model settings if user provides any
-  # assign default settings to be updated by user
-  # this is necessary to allow the user to provide just a single updated
-  # argument, rather than having to specify all list objects.
+  #get defaults for model_settings
   defaults <- eval(formals(prepare_diagram)$model_settings)
+  #replace with model_settings, which is either the default (so no change)
+  #or user-supplied
+  # this is necessary to allow the user to provide just some of the
+  # arguments, rather than having to specify all list objects.
   defaults[names(model_settings)] <- model_settings
   model_settings <- defaults
   defaults <- NULL  # remove the defaults object
 
-  # I'M UNCLEAR WHAT THIS CODE CHUNK DOES
-  # Extract model_settings to in scope objects. Loops over the model_settings
-  # list and assigns each value to an object with the name of the list object.
-  # E.g., if there is a list object named 'object1', then this code chunk
-  # takes the value of 'object1' in the list and assigns it to a variable
-  # in the local environment called 'object1'.
+  #check model_settings
+  #this is run no matter if the defaults are used or
+  #if user provided settings
+  #model_list is needed to cross-check with settings
+  checkmsg <- check_model_settings( model_list, model_settings)
+  if(!is.null(checkmsg))
+  {
+      stop(checkmsg)
+  }
+
+  # This pulls out all list elements in model_settings and assigns them
+  # to individual variables with their respective names
+  # this is done for convenience so we don't have to keep calling
+  # model_settings$varlocations etc and can just call varlocations
   for(i in 1:length(model_settings)) {
     assign(names(model_settings)[i], value = model_settings[[i]])
   }
-
-
-
-
 
 
   # COULD WE REFACTOR SOME TO MOVE SOME OF THESE MODEL/FLOW LOGIC PARSING THINGS
@@ -267,7 +267,7 @@ prepare_diagram <- function(model_list,
   signmat <- gsub("(\\+|-).*","\\1",flowmat)
 
 
-  # WHAT DOES THIS STRATIFICATION GUESSING PART DO? AREN'T WE BY DEFAULT PLACING ALL VARIABLES ALONG A SINGLE ROW, NO MATTER WHAT?
+  # AH: YES, LET'S REMOVE ANYTHING RELATED TO THIS, DEFAULT IS ONE ROW, ANYTHING ELSE USER HAS TO PROVIDE
   # ATT: We can put everything on one row, but for simple stratifications
   # we had originally included this to make a new row for each stratification.
   # E.g., if you had an SIR with two age classes, each age class would get

@@ -7,6 +7,10 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              R_flows = c("g*I", "-m*R"))
 model_list = list(varlabels = varlabels, flows = flows)
 
+# prepare diagram without extra settings
+diagram_list <- prepare_diagram(model_list)
+
+
 #model user settings
 model_settings = list(
                       varlocations = matrix(data = c("S", "", "R",

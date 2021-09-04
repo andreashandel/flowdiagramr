@@ -1,29 +1,35 @@
+#' Check model_list input for prepare_diagram for correctness.
+#'
 #' @description
-#' `check_model_list` makes sure that the necessary elements are included
-#' in the model list provided by the user. This is an internal function.
+#' This function makes sure that the model_list structure
+#' contains a properly specified model.
+#' This is an internal function.
 #'
 #' @param model_list the model input structure needed for the \code{\link{prepare_diagram}} function
 #' @return Either an error or nothing.
-#' @noRd
+#' @export
 
 check_model_list <- function(model_list) {
+
+
+  msg <- NULL
 
   # High level check for list elements
   elements <- names(model_list)
   if(!("varlabels" %in% elements)) {
     msg <- "The model_list object must contain a list element called varlabels."
-    return(list(bad = TRUE, msg = msg))
+    return(msg)
   }
 
   if(!("flows" %in% elements)) {
     msg <- "The model_list object must contain a list element called flows."
-    return(list(bad = TRUE, msg = msg))
+    return(msg)
   }
 
   # Make sure all varlabels are unique
   if(length(unique(model_list$varlabels)) != length(model_list$varlabels)) {
     msg <- "All varlabels need to be unique, you can't use a label more than once."
-    return(list(bad = TRUE, msg = msg))
+    return(msg)
   }
 
   # Check that there are the same number of varlabels and varnames, if
@@ -31,21 +37,21 @@ check_model_list <- function(model_list) {
   if(!is.null(model_list$varnames)) {
     if(length(model_list$varlabels) != length(model_list$varnames)) {
       msg <- "The varlabels and varnames elements must be the same length."
-      return(list(bad = TRUE, msg = msg))
+      return(msg)
     }
   }
 
   # Check that there are the same number of varlabels and X_flow entries
   if(length((model_list$varlabels)) != length(model_list$flows)) {
     msg <- "You need one flow entry for each variable, make sure the number of varlabels and X_flow entries are the same."
-    return(list(bad = TRUE, msg = msg))
+    return(msg)
   }
 
   # Check that each varlabels entry has a matched X_flow and the reverse
   flownamelabels = gsub("_flows","",names(model_list$flows))
   if( length(intersect(flownamelabels, model_list$varlabels)) != length(model_list$varlabels)) {
     msg <- "All flow names must match the varlables. Make sure all XYZ in your XYZ_flows names correspond to entries in varlabels."
-    return(list(bad = TRUE, msg = msg))
+    return(msg)
   }
 
   # Check that naming for varlabels is correct (all start with upper case, no blank)
@@ -71,7 +77,7 @@ check_model_list <- function(model_list) {
       msg <- paste0("flowdiagramr cannot currently process flows that include\n",
                     "an interaction between more than two variables. Consider\n",
                     "breaking flows apart.")
-      return(list(bad = TRUE, msg = msg))
+      return(msg)
     }
   }
 
@@ -86,8 +92,8 @@ check_model_list <- function(model_list) {
     msg <- paste0("The following variables were found in the flows but are not",
                  " in the varlabels vector: ", missing_vars, ".",
                  " Check your model.")
-    return(list(bad = TRUE, msg = msg))
+    return(msg)
   }
 
-  return(list(bad = FALSE))
+  return(NULL)
 }
