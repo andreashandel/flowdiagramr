@@ -1,6 +1,36 @@
+9/5 thoughts
+
+Maybe we rename the inputs to model_settings varbox_x_size, varbox_y_size, varspace_x_size, varspace_y_size? Reflects a bit better what they are, the actual size of the boxes and empty space. I can do a quick search and replace everywhere if you want to change names. Or you can if you got tools for that. (I use grepWin for that on Windows). And maybe default 1 for everything, so a box is by default size 1x1 and space between each box is by default 1 in each direction (so not the 2 I suggested below).
+
+For vectorizing those values, the varbox_ ones should be straightforward, the entries should correspond to the number and ordering in varlabels.  
+
+For vectorizing the varspace_ entry, it's a bit trickier how it applies. Let's say we had this for varlocations: 
+c("S", "", "R",
+  "", "I", "" )
+
+Then we need to figure out what it means to supply varspace_. There is always 1 row or 1 column less of spacing. For the example above, we  have a 2 x 3 matrix for varlocations. This will give us a 2 x 2 matrix for varspace_x and a 1 x 3 for varspace_y. 
+As example, we could have a these:
+varspace_x_size = matrix(c(1  ,2,
+                          0.5 ,3)) 
+That would say adding a spacing of 1 between S and "" and empty space of 2 between "" and R for the top row, and 0.5 between "" and I and 3 between I and "".
+
+And similar
+varspace_y_size = matrix(c(1,2,0.5)) means a spacing of 1 between S and "" a spacing of 2 between "" and I and a spacing of 0.5 between R and "".
+
+It seems to me that if we allow users to provide varbox_ as a single number or vector for each box, and varspace_ as a single number or matrix that's 1 row/column less than varlocations, we would be very general. 
+As a note, we can't allow varspace_ matrices unless user provides varlocations. In the case where the user wants the default single row placement for boxes but still wants to adjust spacing between each, e.g. 0.5 between S and I and 1.5 between I and R, we might just need to force them to supply a 1xN matrix as varlocations. In this case, varspace_x would be 1 x (N-1) and varspace_y not allowed. (Same for a fully vertical diagram).
+
+Main question: How difficult will this flexible framework make any adjustments downstream? Is it currently set up that once the boxes/variables are placed, the flows are placed automatically, so things should be easy? Or is this going to cause major problems?
+
+Now I'm also wondering again where to place (0,0). Bottom left makes sense to me. But then we need to decide which order the spacing matrices go, do they start in the bottom left of the matrix, or the top left, which is sort of the usual way to read it (and how I wrote it above.) Or we place (0,0) to the top left. It's less consistent with x-y diagrams, but it's more consistent how humans read those matrices, we start in the top left and go bottom right. Thoughts?
+
+
+
+
 9/2 updates
 
 * Rewrote vignettes A and B. One issue might be box sizing, see ALL CAPS text in vignette B. Might need some discussion.
+
 
 
 
