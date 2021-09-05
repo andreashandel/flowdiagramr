@@ -4,12 +4,12 @@
 \alias{check_model_settings}
 \title{Check optional model_settings input for prepare_diagram for correctness.}
 \usage{
-check_model_settings(model_settings, model_list)
+check_model_settings(model_list, model_settings)
 }
 \arguments{
-\item{model_settings}{additional settings, optional input}
-
 \item{model_list}{model list structure, required input}
+
+\item{model_settings}{additional settings, optional input}
 }
 \value{
 Either an error message or null

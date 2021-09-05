@@ -32,25 +32,12 @@ check_model_list <- function(model_list) {
     return(msg)
   }
 
-  # Check that there are the same number of varlabels and varnames, if
-  # varnames is provided
-  if(!is.null(model_list$varnames)) {
-    if(length(model_list$varlabels) != length(model_list$varnames)) {
-      msg <- "The varlabels and varnames elements must be the same length."
-      return(msg)
-    }
-  }
-
-  # Check that there are the same number of varlabels and X_flow entries
-  if(length((model_list$varlabels)) != length(model_list$flows)) {
-    msg <- "You need one flow entry for each variable, make sure the number of varlabels and X_flow entries are the same."
-    return(msg)
-  }
-
   # Check that each varlabels entry has a matched X_flow and the reverse
+  # Also ensure they are in the same order
   flownamelabels = gsub("_flows","",names(model_list$flows))
-  if( length(intersect(flownamelabels, model_list$varlabels)) != length(model_list$varlabels)) {
-    msg <- "All flow names must match the varlables. Make sure all XYZ in your XYZ_flows names correspond to entries in varlabels."
+  if (sum(flownamelabels != model_list$varlabels) > 0)
+  {
+    msg <- "All flow names must follow the varlabel naming and order. Make sure all XYZ in your XYZ_flows names correspond to entries in varlabels in the right order."
     return(msg)
   }
 

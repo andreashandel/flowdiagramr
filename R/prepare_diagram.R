@@ -1,7 +1,7 @@
 #' Create data frames for plotting from model elements.
 #'
 #' @description
-#' This function takes as input a (typically) compartmental model
+#' This function takes as input a model
 #' consisting of variables/compartments and flows
 #' and creates a list of data frames with label and
 #' position information for plotting a flow diagram.
@@ -156,6 +156,24 @@
 #' @export
 
 
+# this function calls the following internal helper functions
+# add_locations()
+# add_plus_signs()
+# check_model_list()
+# check_model_settings()
+# fix_arrow_pos()
+# make_vdf_angled()
+# remove_na_rows()
+# set_curvature()
+# set_feedback_curvature()
+# set_node_to_na()
+# update_external_interaction_positions()
+# update_interactions()
+# update_straight_labels()
+# update_tofroms()
+
+
+
 prepare_diagram <- function(model_list,
                             model_settings = list(
                               varlocations = NULL,
@@ -182,8 +200,6 @@ prepare_diagram <- function(model_list,
   {
     stop(checkmsg)
   }
-
-
 
   ######################################################################
   # if user provides inputs in model_settings, run various checks
@@ -212,21 +228,14 @@ prepare_diagram <- function(model_list,
   # This pulls out all list elements in model_settings and assigns them
   # to individual variables with their respective names
   # this is done for convenience so we don't have to keep calling
-  # model_settings$varlocations etc and can just call varlocations
+  # model_settings$varlocations and can just call varlocations, etc
   for(i in 1:length(model_settings)) {
     assign(names(model_settings)[i], value = model_settings[[i]])
   }
 
-
-  # COULD WE REFACTOR SOME TO MOVE SOME OF THESE MODEL/FLOW LOGIC PARSING THINGS
-  # INTO SEPARATE FUNCTIONS? ALSO, THIS WHOLE PARSING LOGIC IS NEEDED/USED BY MODELBUILDER
-  # SO I'D LIKE TO HAVE A FUNCTION THAT CAN DO THIS AS STAND-ALONE
-  # SHOULD DISCUSS THIS.
-
-  # Extract relevant details from the model_list and make a matrix
-  # of variables-by-flows for iterating and indexing the nodes and
-  # connections. Variables will go along rows and flows along columns.
-
+  #############################################
+  # Process variables, place in data frame
+  #############################################
   #number of variables/compartments in model
   nvars <- length(model_list$varlabels)
 
@@ -241,6 +250,10 @@ prepare_diagram <- function(model_list,
     row = 1  # hard code for 1 row, will be updated below, if necessary
   )
 
+
+  #############################################
+  # Process flows, create several matrices
+  #############################################
   #extract the flows list
   flows <- model_list$flows
 
@@ -267,30 +280,13 @@ prepare_diagram <- function(model_list,
   signmat <- gsub("(\\+|-).*","\\1",flowmat)
 
 
-  # AH: YES, LET'S REMOVE ANYTHING RELATED TO THIS, DEFAULT IS ONE ROW, ANYTHING ELSE USER HAS TO PROVIDE
-  # ATT: We can put everything on one row, but for simple stratifications
-  # we had originally included this to make a new row for each stratification.
-  # E.g., if you had an SIR with two age classes, each age class would get
-  # it's own row. We can remove if you want.
-
-  # Split variables by rows if stratification implied by numbers at
-  # the end of state variables. For example, two "S" compartments labeled
-  # "S1" and "S2" will be split across rows, assuming some stratification.
-  # Note that stratification up to 9 is currently supported.
-
-  #find any characters that are NOT numbers (0-9) and replace any
-  #non-number characters with blanks
-  strats <- gsub("[^0-9.]", "",  varnames)
-  #add implicit 1 if no strats
-  strats <- ifelse(strats == "", 1, strats)
-  #convert to numeric and make the stratifications encoded as rows
-  variables$row <- as.numeric(strats)
-
-
   # Create the edge data frame by looping through the variables
   # and associated flows.
   flows <- list()  #an empty list to be coerced to a data frame via rbind
 
+  ############################################################
+  #Loop over all variables, for each variable, loop over flows
+  ############################################################
   #start loop over variables (rows in the flowmatred matrix)
   for(i in 1:nrow(flowmatred)) {
     varflowsfull <- flowmat[i, ] #all flows with sign for current variable
@@ -625,6 +621,8 @@ prepare_diagram <- function(model_list,
     variables <- rbind(variables, exnodes)
   }
 
+  browser()
+
   # Add location information
   variables <- add_locations(variables, varlocations, varbox_x_scaling,
                              varbox_y_scaling, varspace_x_scaling,
@@ -825,6 +823,8 @@ prepare_diagram <- function(model_list,
 
   # update flow labels for straight connecting flows that run vertically
   flows <- update_straight_labels(flows)
+
+
 
   # remove the row column
   variables$row <- NULL

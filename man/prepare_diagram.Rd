@@ -103,7 +103,7 @@ retain the original math for reference.
 }
 }
 \description{
-This function takes as input a (typically) compartmental model
+This function takes as input a model
 consisting of variables/compartments and flows
 and creates a list of data frames with label and
 position information for plotting a flow diagram.
