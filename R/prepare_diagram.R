@@ -318,7 +318,7 @@ prepare_diagram <- function(model_list,
       #extract the numeric ids for the variables in this flow
       varsids <- variables[which(variables$label %in% vars), "id"]
 
-      # add a connecting var if the expression is only in one row but
+      # add a connecting variable if the expression is only in one row but
       # the flow math contains another state variable (node)
       if(length(varsids) == 1){
         if(length(unique(connectvars)) == 1) {
@@ -582,46 +582,86 @@ prepare_diagram <- function(model_list,
   #   -999* = dummy comparments for flows into the system (e.g., birth pool)
   #   555* = dummy compartments for interaction links
   # These are just used to create empty nodes for arrows to originate from
-  # or go to.
+  # or go to. We need these to start placing arrows in the correct spots, the
+  # start and end positions.
 
   # Out of the system
-  outdummies <- NULL
+  outdummies <- NULL  # make a null object so it can be checked easily later
+  # find the number of outflows external from the system, which is the
+  # length of the "to" column once the flows are subsetted to rows
+  # that have NA in the "to" column (i.e., that don't go to a variable in the
+  # system) and the interaction flag is FALSE
   numnas <- length(flows[is.na(flows$to) & flows$interaction == FALSE, "to"])
   if(numnas > 0) {
+    # vectorized approach for making a numeric sequence starting at
+    # 9991 and going through 999n, where n i numnas.
+    # NOTE: The implicit assumption here is that there are no more than
+    #       nine (9) outflows external to system.
     outdummies <- as.numeric(paste0("999", c(1:numnas)))
+
+    # assign the new numeric ids to the subset of flows that are outflows
+    # external of the system (same subset as above to get the number
+    # of outflows)
     flows[is.na(flows$to) & flows$interaction == FALSE, "to"] <- outdummies
   }
 
   # In to the system
-  indummies <- NULL
+  indummies <- NULL # make a null object so it can be checked easily later
+  # here we find the number of inflows, defined by flows that do not have a
+  # "from" (from = NA) and are not interactions
   numnas <- length(flows[is.na(flows$from) & flows$interaction == FALSE, "from"])
   if(numnas > 0) {
+    # inflows start with numeric id -9991 and go through -999n, where
+    # n is numnas.
+    # NOTE: The implicit assumption here is that there are no more than
+    #       nine (9) inflows external to system.
     indummies <- as.numeric(paste0("-999", c(1:numnas)))
+
+    # assign the new numeric ids to the subset of flows that are inflows
+    # external of the system (same subset as above to get the number
+    # of inflows)
     flows[is.na(flows$from) & flows$interaction == FALSE, "from"] <- indummies
   }
 
   # Make dummy compartment for "links" in interactions
-  linkdummies <- NULL
+  linkdummies <- NULL  # make a null object so it can be checked easily later
+  # links are arrows that have no "to" because they intersect another arrow.
+  # so to = NA AND interation = TRUE AND linto is not NA defines links
   numlinks <- length(flows[is.na(flows$to) &
                            flows$interaction == TRUE &
                            !is.na(flows$linkto), "to"])
   if(numlinks > 0) {
+    # linkdummies start with numeric id 5551 and go through -555n, where
+    # n is numlinks.
+    # NOTE: The implicit assumption here is that there are no more than
+    #       nine (9) links.
     linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
-    flows[is.na(flows$to) & flows$interaction == TRUE, "to"] <- linkdummies
+
+    # assign the new numeric ids to the subset of flows that are links
+    # between a variable and a flow (same subset as above to get the number
+    # of links)
+    flows[is.na(flows$to) &
+            flows$interaction == TRUE &
+            !is.na(flows$linkto), "to"] <- linkdummies
   }
 
 
   # Add dummy compartments to nodes dataframe
+  # only do this is at least one of the objects created above is numeric
+  # since we made all the objects exist and NULL, this works regardless
+  # of how many of the objects actually have new ids
   if(is.numeric(outdummies) | is.numeric(indummies) | is.numeric(linkdummies)) {
-    exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),
-                          label = "",
-                          name = NA,
-                          row = 1)
-    exnodes[setdiff(names(variables), names(exnodes))] <- NA
+    exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),  # the new ids
+                          label = "",  # none of these get labels because they are dummies
+                          name = NA,  # no names because they are dummies
+                          row = 1)  # assume they are on row 1, this gets updated later if needed, but we need a value here for rbinding
+
+    # TODO: Remove line below after testing, might not be needed
+    # exnodes[setdiff(names(variables), names(exnodes))] <- NA
     variables <- rbind(variables, exnodes)
   }
 
-  browser()
+  # browser()
 
   # Add location information
   variables <- add_locations(variables, varlocations, varbox_x_scaling,
