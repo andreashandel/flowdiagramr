@@ -661,50 +661,97 @@ prepare_diagram <- function(model_list,
     variables <- rbind(variables, exnodes)
   }
 
-  # Add location information
+  # Add location information, see comments within function for details
+  # this function only adds location information to "named" variables
+  # provided by the user. Location information for "dummy" variables that
+  # were created above are added below.
   variables <- add_locations(variables, varlocations, varbox_x_scaling,
                              varbox_y_scaling, varspace_x_scaling,
                              varspace_y_scaling)
 
 
   # update inflow node positions from nowhere (e.g. births)
+  # these are identified by any id less than -9990
   inflownodes <- subset(variables, id < -9990)$id
+  # loop over the inflownode ids and find the flow that connects to the
+  # current id. Then extract the id of the variable to which the flow
+  # goes to. The location of each "dummy" variable is then defined relative
+  # to the "real" variable to which the flow goes in to. By default, we place
+  # the dummy variable box 2 units above the real variable box.
   for(id in inflownodes) {
+    # find the id of the variable to which this dummy goes in to
     newxyid <- flows[which(flows$from == id), "to"]
+    # extract the location information of the "to" variable
     newxy <- variables[which(variables$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
+    # update box locations by moving the y locations up 2 units
+    # also scales by the varpsace_y_scaling argument
     newxy$ymax <- newxy$ymax + (varspace_y_scaling * 2)  # above the variable
     newxy$ymin <- newxy$ymin + (varspace_y_scaling * 2)  # above the variable
+
+    # add in the new location information to replace the NAs
     variables[which(variables$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
 
+    # caluclate midpoints for labels as the means
     newmids <- c((newxy$xmin+newxy$xmax)/2, (newxy$ymin+newxy$ymax)/2)
+
+    # add in the new midpoints as label locations to replace the NAs
     variables[which(variables$id == id), c("xlabel", "ylabel")] <- newmids
   }
 
-  # update outflow node positions to nowhere
+  # update outflow node positions to nowhere (e.g., deaths)
+  # these are identified by any id greater than -9990
   outflownodes <- subset(variables, id > 9990)$id
+  # loop over the outflownode ids and find the flow that connects to the
+  # current id. Then extract the id of the variable from which the flow
+  # originates. The location of each "dummy" variable is then defined relative
+  # to the "real" variable from which the flow originates. By default, we place
+  # the dummy variable box 2 units below the real variable box.
   for(id in outflownodes) {
+    # find the id of the variable from which the dummy originates
     newxyid <- flows[which(flows$to == id), "from"]
+    # extract the location information of the "from" variable
     newxy <- variables[which(variables$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
+    # update box locations by moving the y locations down 2 units
+    # also scales by the varpsace_y_scaling argument
     newxy$ymax <- newxy$ymax - (varspace_y_scaling * 2)  # below the variable
     newxy$ymin <- newxy$ymin - (varspace_y_scaling * 2)  # below the variable
+
+    # add in the new location information to replace the NAs
     variables[which(variables$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
 
+    # caluclate midpoints for labels as the means
     newmids <- c((newxy$xmin+newxy$xmax)/2, (newxy$ymin+newxy$ymax)/2)
+
+    # add in the new midpoints as label locations to replace the NAs
     variables[which(variables$id == id), c("xlabel", "ylabel")] <- newmids
   }
 
   # update invisible interaction link nodes, i.e., nodes that need to sit
   # at the midpoint of some other arrow, but not be drawn
+  # these are identified by ids that are greater than 5550 and less than 9990
   linknodes <- subset(variables, id > 5550 & id < 9990)$id
+  # loop over the linknode ids and find the variables that the arrow is linking
+  # e.g., if there is a flow from S -> I and that flow is mediated by the
+  # number in S and I, there is the a solid flow of mass (->) from S to I and
+  # a linking arrow that goes from I to the middle of the arrow from S to I.
+  # So our goal here is to find the mass flow arrow and define a node at the
+  # midpoint so the linking arrow has an end point.
   for(id in linknodes) {
+    # find the starting point for the mass flow arrow
     start <- flows[which(flows$to == id), "linkfrom"]
+    # find the end point for the mass flow arrow
     end <- flows[which(flows$to == id), "linkto"]
-    newx1 <- variables[which(variables$id == start), "xlabel"]
-    newx2 <- variables[which(variables$id == end), "xlabel"]
+    # the new x location is the midpoint, which we can define as the mean
+    # of the midpoints (label locations) of the two variable nodes that
+    # are being connected. This is done in both the x and y positions.
+    newx1 <- variables[which(variables$id == start), "xlabel"] #middle of from node
+    newx2 <- variables[which(variables$id == end), "xlabel"] #middle fo to node
     newx <- (newx1+newx2)/2  # midpoint of the physical arrow
-    newy1 <- variables[which(variables$id == start), "ylabel"]
-    newy2 <- variables[which(variables$id == end), "ylabel"]
+    newy1 <- variables[which(variables$id == start), "ylabel"] #middle of from node
+    newy2 <- variables[which(variables$id == end), "ylabel"] #middle of to node
     newy <- (newy1+newy2)/2  # midpoint of the physical arrow
+
+    # replace the NA locations with the new x,y locations
     variables[which(variables$id == id), c("xlabel", "ylabel")] <- c(newx, newy)
 
     # set min/max to midpoint for ease because these are not actually
@@ -713,28 +760,42 @@ prepare_diagram <- function(model_list,
     variables[which(variables$id == id), c("xmax", "ymax")] <- c(newx, newy)
   }
 
+
   # Subset out interactions to in/out flows
+  # these are arrows that are drawn from a variable to an external (birth/death)
+  # or feedback flow. The predator-prey model is an example of this. These
+  # are defined in our flows data frame as flows that are interactions
+  # but do not have a "linkto" id because they only come from a variable.
+  # the external interactions are subsetted out and given some id information
+  # to be processed later and then binded back to the "core" flows after they
+  # have been processed, too.
   extints <- subset(flows, interaction == TRUE & is.na(linkto))
-  if(nrow(extints) > 0) {
+  if(nrow(extints) > 0) {  #only do this loop if there is something to loop over, avoids errors
     for(i in 1:nrow(extints)) {
-      tmp <- extints[i, ]
-      v <- get_vars_pars(tmp$label)
-      vf <- substr(v, start = 1, stop = 1)  #get first letters
-      v <- v[which(vf %in% LETTERS)]
-      ids <- subset(variables, label %in% v)[ , "id"]
-      id <- ids[which(ids != tmp$from)]
-      extints[i, "to"] <- id
+      tmp <- extints[i, ]  #get the row to process
+      v <- get_vars_pars(tmp$label)  #remove the math notation
+      vf <- substr(v, start = 1, stop = 1)  #get first letters of each character element
+      v <- v[which(vf %in% LETTERS)]  #subett v to just variables (no parameters)
+      ids <- subset(variables, label %in% v)[ , "id"] #get the ids for all variables in the flow notation
+      id <- ids[which(ids != tmp$from)] #subset to the id that does not equal the id from which the flow originates
+      extints[i, "to"] <- id #set the "to" column to the id at whcih the flow should terminate
     }
   }
 
 
   # Create segment coordinates by merging with node locations
+  # first merge by the from locations (starts)
   flows <- merge(flows, variables[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
                by.x = "from", by.y = "id")
+  # now merge by the to locations (ends). the suffixres arguments adds start
+  # and end to duplicate columns.
   flows <- merge(flows, variables[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
                by.x = "to", by.y = "id", suffixes = c("start", "end"))
 
-  # add columns to be populated
+  # add columns to be populated. these will be population by either the
+  # "start" or "end" positions defined above by the merge, depenind on the
+  # relationships between the start and end positions themselves. see below
+  # for logic
   flows$xmin <- NA_real_
   flows$xmax <- NA_real_
   flows$ymin <- NA_real_
@@ -744,6 +805,11 @@ prepare_diagram <- function(model_list,
   # and from positions
   for(i in 1:nrow(flows)) {
     tmp <- flows[i, ]
+    # if the start and end variables are in the same row (y = y) AND
+    # the start and end variables are in different columns (x != x), then
+    # we set the y values for start and end to the mean of the y start
+    # variable box (the middle) and the xmin location is the max x of
+    # the left-most (starting) box and the min x of the right-most (ending) box
     if(tmp$yminstart == tmp$yminend & tmp$xminstart != tmp$xminend) {
       flows[i, "xmin"] <- tmp$xmaxstart
       flows[i, "xmax"] <- tmp$xminend
@@ -751,6 +817,11 @@ prepare_diagram <- function(model_list,
       flows[i, "ymax"] <- mean(c(tmp$yminstart, tmp$ymaxstart))
     }
 
+    # if the start variable is above the end variable (y1 > y2) AND
+    # the start and end variables are in the same column (x = x), then
+    # we set the ymin of the arrow the bottom of the originating box and
+    # the ymax of the arrow to the top of the terminating box. the x location
+    # for start and end is set to the middle of the box (mean of top and bottom)
     if(tmp$yminstart > tmp$yminend & tmp$xminstart == tmp$xminend) {
       flows[i, "xmin"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
       flows[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
@@ -758,6 +829,11 @@ prepare_diagram <- function(model_list,
       flows[i, "ymax"] <- tmp$ymaxend
     }
 
+    # if the start variable is below the end variable (y1 < y2) AND
+    # the start and end variables are in the same column (x = x), then
+    # we set the ymin of the arrow the top of the originating box and
+    # the ymax of the arrow to the bottom of the terminating box. the x location
+    # for start and end is set to the middle of the box (mean of top and bottom)
     if(tmp$yminstart < tmp$yminend & tmp$xminstart == tmp$xminend) {
       flows[i, "xmin"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
       flows[i, "xmax"] <- mean(c(tmp$xminstart, tmp$xmaxstart))
@@ -765,32 +841,47 @@ prepare_diagram <- function(model_list,
       flows[i, "ymax"] <- tmp$yminend
     }
 
+    # if the flow is a non-direct interaction (e.g., intersects a mass flow),
+    # then the flow starts at the top-middle of the originating box and
+    # the pre-defined end point of the dummy variable
     if(tmp$interaction == TRUE & tmp$direct_interaction == FALSE) {
-      flows[i, "xmin"] <- tmp$xlabelstart
-      flows[i, "xmax"] <- tmp$xminend
-      flows[i, "ymin"] <- tmp$ymaxstart
-      flows[i, "ymax"] <- tmp$ylabelend
+      flows[i, "xmin"] <- tmp$xlabelstart  # middle of originating box
+      flows[i, "xmax"] <- tmp$xminend  # middle of arrow, based on preprocessing
+      flows[i, "ymin"] <- tmp$ymaxstart  # top of originating box
+      flows[i, "ymax"] <- tmp$ylabelend  # middle of arrow, based on preprocessing
     }
 
+    # if the start variable is above the ending variable (y1 > y2) AND
+    # the start variable is to the left of the ending variable (x1 > x2), then
+    # the flow start is set to the right-middle of the originating box and
+    # the flow end is set to the left-middle of the terminating box. this
+    # creates an angled flow arrow pointing down and to the right.
     if(tmp$yminstart > tmp$ymaxend & tmp$xmaxstart < tmp$xminend) {
-      flows[i, "xmin"] <- tmp$xmaxstart
-      flows[i, "xmax"] <- tmp$xminend
-      flows[i, "ymin"] <- tmp$ylabelstart
-      flows[i, "ymax"] <- tmp$ylabelend
+      flows[i, "xmin"] <- tmp$xmaxstart # right side of originating box
+      flows[i, "xmax"] <- tmp$xminend  # left side of terminating box
+      flows[i, "ymin"] <- tmp$ylabelstart # middle of originating box
+      flows[i, "ymax"] <- tmp$ylabelend # middle of terminating box
     }
 
+    # if the start variable is below the ending variable (y1 < y2) AND
+    # the start variable is to the right of the ending variable (x1 < x2), then
+    # the flow start is set to the left-middle of the originating box and
+    # the flow end is set to the right-middle of the terminating box. this
+    # creates an angled flow arrow pointing up and to the left.
     if(tmp$yminstart < tmp$ymaxend & tmp$xmaxstart < tmp$xminend) {
-      flows[i, "xmin"] <- tmp$xmaxstart
-      flows[i, "xmax"] <- tmp$xminend
-      flows[i, "ymin"] <- tmp$ylabelstart
-      flows[i, "ymax"] <- tmp$ylabelend
+      flows[i, "xmin"] <- tmp$xmaxstart # left side of originating box
+      flows[i, "xmax"] <- tmp$xminend # right side of terminating box
+      flows[i, "ymin"] <- tmp$ylabelstart # middle of originating box
+      flows[i, "ymax"] <- tmp$ylabelend # middle of terminating box
     }
 
+    # if the flow starts and ends in the same place, this is a feedback
+    # flow that needs minor offsets in the x direction.
     if(tmp$xmaxstart == tmp$xmaxend & tmp$ymaxstart == tmp$ymaxend) {
-      flows[i, "xmin"] <- tmp$xlabelstart - 0.25
-      flows[i, "xmax"] <- tmp$xlabelend + 0.25
-      flows[i, "ymin"] <- tmp$ymaxend
-      flows[i, "ymax"] <- tmp$ymaxend
+      flows[i, "xmin"] <- tmp$xlabelstart - 0.25  # minor offset to the left for start
+      flows[i, "xmax"] <- tmp$xlabelend + 0.25  # minor offset to the right for end
+      flows[i, "ymin"] <- tmp$ymaxend  # top of the originating box
+      flows[i, "ymax"] <- tmp$ymaxend  # top of the originating box
     }
   }
 
@@ -800,10 +891,18 @@ prepare_diagram <- function(model_list,
            "yminend", "ymaxend", "xlabelend", "ylabelend")] <- NULL
 
 
-  # label locations are mid points
+  # label locations are mid points, which are means of the start and end positions
+  # a minor offset is applied to the ylabel location to get the label slightly
+  # above arrows. This tends to work OK regardless of flow direction
   flows$xlabel <- with(flows, (xmax + xmin) / 2)
   flows$ylabel <- with(flows, (ymax + ymin) / 2) + 0.25  # label slightly above the arrrow
+
+  # add a diff column so we can identify flows that traverse more than
+  # one variable. these will be updated to have curvature that goes over
+  # or under the nodes it is bypassing. works best with just a couple. if there
+  # is lots of traversing, then manual intervention will be required by the user
   flows$diff <- with(flows, abs(to-from))
+
 
   ## TODO Remove after exhaustive testing...don't think it is needed
   ##      anymore.

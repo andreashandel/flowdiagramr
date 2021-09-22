@@ -6,6 +6,12 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              I_flows = c("+b*S*I","-g*I", "-m*I"),
              R_flows = c("g*I", "-m*R"))
 model_list = list(varlabels = varlabels, flows = flows)
+model_settings = list(
+  varlocations = NULL,
+  varbox_x_scaling = 1,
+  varbox_y_scaling = 1,
+  varspace_x_scaling = 1,
+  varspace_y_scaling = 1)
 
 # prepare diagram without extra settings
 diagram_list <- prepare_diagram(model_list)

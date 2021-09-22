@@ -1,7 +1,7 @@
-#' Adjust arrow positions to avoid overlaps
+#' Adjust arrow positions to avoid overlaps. helper function for prepare_diagram
 #'
-#' @param edf The edges data frame.
-#' @noRd
+#' @param edf The edges (flows) data frame.
+#' @expoert
 
 fix_arrow_pos <- function(edf) {
   sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
