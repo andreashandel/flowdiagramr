@@ -656,12 +656,10 @@ prepare_diagram <- function(model_list,
                           name = NA,  # no names because they are dummies
                           row = 1)  # assume they are on row 1, this gets updated later if needed, but we need a value here for rbinding
 
-    # TODO: Remove line below after testing, might not be needed
+    # TODO: Remove commented line below after testing, might not be needed
     # exnodes[setdiff(names(variables), names(exnodes))] <- NA
     variables <- rbind(variables, exnodes)
   }
-
-  # browser()
 
   # Add location information
   variables <- add_locations(variables, varlocations, varbox_x_scaling,
