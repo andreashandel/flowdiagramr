@@ -1,5 +1,9 @@
 #' Find midpoints
 #' https://stackoverflow.com/questions/49327247/add-labels-to-the-center-of-a-geom-curve-line-ggplot
+#' This function had not been touched from the copied version from
+#' stack overflow. Not exporting since we don't have full documentation
+#' of author, etc.
+
 #' @noRd
 
 calc_control_points <- function(x1, y1, x2, y2, curvature, angle, ncp,

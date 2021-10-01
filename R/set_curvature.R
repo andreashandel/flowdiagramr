@@ -3,7 +3,7 @@
 #' @param edf Edges df
 #' @param ndf Nodes df
 #' @return A data frame
-#' @noRd
+#' export
 
 set_curvature <- function(edf, ndf) {
   # default for all to start

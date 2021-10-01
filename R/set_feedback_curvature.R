@@ -2,7 +2,7 @@
 #'
 #' @param edf Edges df
 #' @return A data frame
-#' @noRd
+#' @export
 
 set_feedback_curvature <- function(edf) {
   # first find the feedback edges by iterative subsetting
@@ -13,6 +13,8 @@ set_feedback_curvature <- function(edf) {
     # now adjust the xs to get arrow above and feeding back into the node
     fdf$curvature <- -2  # default value for big loop
     fdf$ylabel <- fdf$ylabel + 0.4  # this gets the label just above the loop
+
+    # just replace the rows in edf that are in fdf (our updates)
     toreplace <- match(paste0(edf$to, edf$from), paste0(fdf$to, fdf$from))
     toreplace <- which(!is.na(toreplace))
     edf[toreplace, ] <- fdf

@@ -1,9 +1,9 @@
 #' Update the x,y positions for external interaction flows
 #'
-#' @param ext The subsetting external interactions (extints).
+#' @param ext The subsetted external interactions (extints).
 #' @param ndf The variables (nodes) data frame.
 #' @return The extints data frame with location information.
-#' @noRd
+#' @export
 
 update_external_interaction_positions <- function(ext, ndf) {
 
@@ -14,8 +14,8 @@ update_external_interaction_positions <- function(ext, ndf) {
 
     # loop over the exts and apply xmin based on direction of flow
     for (i in 1:nrow(ext)) {
-      tmp <- ext[i,]
-      dir <- tmp$from - tmp$to
+      tmp <- ext[i,]  # work with one row at a time
+      dir <- tmp$from - tmp$to  # this defines the direction of the arrow
       if(sign(dir) == -1) {
         # if going left to right, then set xmin to the xmax of the from node
         tmp$xmin <- tmp$xmax
@@ -40,8 +40,8 @@ update_external_interaction_positions <- function(ext, ndf) {
     # loop over the exts and apply xmax and ymax based on direction of flow
     newext <- list()
     for (i in 1:nrow(ext)) {
-      tmp <- ext[i,]
-      dir <- tmp$from - tmp$to
+      tmp <- ext[i,]  # work with one row at a time
+      dir <- tmp$from - tmp$to  # defines direction of arrow
       if(sign(dir) == -1) {
         # if going left to right, then set xmin to the xmax of the from node
         tmp$xmax <- tmp$xmin.var
@@ -63,7 +63,7 @@ update_external_interaction_positions <- function(ext, ndf) {
     newext$xmin <- newext$xmin.flow
     newext$ymin <- newext$ymin.flow
 
-    # define the label positions as mean of x,y plus a bump to get above the line
+    # define the label positions as mean of x,y
     # must loop over each row to get means correct
     for(i in 1:nrow(newext)) {
       newext[i, "xlabel"] <- mean(c(newext[i,"xmin"], newext[i, "xmax"]))
@@ -74,7 +74,7 @@ update_external_interaction_positions <- function(ext, ndf) {
     newext$diff <- with(newext, abs(to-from))
 
     # add the external interaction curvature specification
-    newext$curvature <- 0.1
+    newext$curvature <- 0.1  # this is slightly low curvature by default
 
     # add row column as NA just to keep column names
     newext$row <- NA_real_

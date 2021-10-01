@@ -931,7 +931,7 @@ prepare_diagram <- function(model_list,
   flows <- set_curvature(flows, variables)
 
   # set curvature of feedback loops. this is pretty different from the
-  # "regular" curvature settings, so we made a separat function for this
+  # "regular" curvature settings, so we made a separate function for this
   # operation.
   flows <- set_feedback_curvature(flows)
 
@@ -945,7 +945,7 @@ prepare_diagram <- function(model_list,
   # now drop "hidden" nodes without labels
   variables <- subset(variables, label != "")
 
-  # set to/from columns to NA if value is not in node dataframe
+  # set to/from columns in flows to NA if value is not in node dataframe
   flows <- set_node_to_na(flows, variables)
 
   # remove rows with no location information
@@ -956,6 +956,8 @@ prepare_diagram <- function(model_list,
   flows <- update_interactions(flows)
 
   # update all to and froms such that each is the variable label
+  # until now, the to/from in flows has just been numeric. these
+  # need to be character strings for the variable labels for plotting
   flows <- update_tofroms(flows, variables)
 
   # update flow labels for straight connecting flows that run vertically
@@ -963,20 +965,24 @@ prepare_diagram <- function(model_list,
 
 
 
-  # remove the row column
+  # remove the row column from both data frames
   variables$row <- NULL
   flows$row <- NULL
 
   # update interaction column to be type column, one of
-  # main, interaction, or external.
-  flows$type <- "main"
+  # main, interaction, or external. this is needed for plotting
+  flows$type <- "main"  # intialize the column as all "main" flows
+  # set the interaction flows according to the interaction flag
   flows$type <- ifelse(flows$interaction == TRUE, "interaction", flows$type)
+  # external flows are not interactions and either the to or from location is dummy (NA)
   flows$type <- ifelse(flows$interaction == FALSE & (is.na(flows$to) | is.na(flows$from)),
                        "external", flows$type)
-  flows$interaction <- NULL
+  flows$interaction <- NULL  # remove the interaction column
 
   #sort flows by type, main/external/interaction
-  flows = rbind(flows[flows$type=="main",],flows[flows$type=="external",],flows[flows$type=="interaction",])
+  flows = rbind(flows[flows$type=="main",],
+                flows[flows$type=="external",],
+                flows[flows$type=="interaction",])
 
   #add a row id so it's easier for users to know which row to alter
   flows$id = 1:nrow(flows)
