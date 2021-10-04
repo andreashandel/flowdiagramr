@@ -2,16 +2,40 @@
 #'
 #' @param variables The nodes (variables) data frame.
 #' @param varlocations The varlocations matrix. Default is NULL.
-#' @param varbox_x_scaling Scaler for box width, from `model_settings`.
-#' @param varbox_y_scaling Scaler for box height, from `model_settings`.
-#' @param varspace_x_scaling Scaler for horizontal spacing, from `model_settings`.
-#' @param varspace_y_scaling Scaler for vertical spacing, from `model_settings`.
+#' @param varbox_x_size Scaler for box width, from `model_settings`.
+#' @param varbox_y_size Scaler for box height, from `model_settings`.
+#' @param varspace_x_size Scaler for horizontal spacing, from `model_settings`.
+#' @param varspace_y_size Scaler for vertical spacing, from `model_settings`.
 #' @return The variables data frame with location information.
 #' @export
 
-add_locations <- function(variables, varlocations = NULL, varbox_x_scaling,
-                          varbox_y_scaling, varspace_x_scaling,
-                          varspace_y_scaling) {
+add_locations <- function(variables, varlocations = NULL, varbox_x_size,
+                          varbox_y_size, varspace_x_size,
+                          varspace_y_size) {
+
+  # get number of variables that will be plotted
+  nvars <- length(which(variables$label != ""))  # number of variables with a name
+
+  # if varbox_*_size is a vector, make sure it is the same length as nvars
+  if(length(varbox_x_size) > 1) {
+    if(length(varbox_x_size != nvars)) {
+      stop("The length of varbox_x_size must be 1 or the number of variables.")
+    }
+  }
+  if(length(varbox_y_size) > 1) {
+    if(length(varbox_y_size != nvars)) {
+      stop("The length of varbox_y_size must be 1 or the number of variables.")
+    }
+  }
+
+  # repeat values for varbox_* if a scalar
+  # if(length(varbox_x_size) == 1) {
+  #   varbox_x_size <- recycle_values(varbox_x_size, nvars)
+  # }
+  # if(length(varbox_y_size) == 1) {
+  #   varbox_y_size <- recycle_values(varbox_y_size, nvars)
+  # }
+
 
   # create a varlocations matrix if the user does not provide one.
   # this simplifies processing by having just one chunk of code that
@@ -43,11 +67,11 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_scaling,
                       pos = positions,
                       label = ids)
   #each row is 3 from the top of the other row: 2 spacing and 1 for size of box
-  #this gets scaled by the varspace_y_scaling factor
-  rowspace_y <- 3 * varspace_y_scaling  #default spacing times the factor
-  bumpout_x <- 1 * varbox_x_scaling  #default spacing times the factor
-  bumpout_y <- 1 * varbox_y_scaling  #default spacing times the factor
-  space_x <- 2 * varspace_x_scaling  #default spacing times the factor
+  #this gets scaled by the varspace_y_size factor
+  rowspace_y <- 3 * varspace_y_size  #default spacing times the factor
+  bumpout_x <- 1 * varbox_x_size  #default spacing times the factor
+  bumpout_y <- 1 * varbox_y_size  #default spacing times the factor
+  space_x <- 2 * varspace_x_size  #default spacing times the factor
   newvariables <- list()  # create an empty list to store the grid coordinates
 
   # the process is:

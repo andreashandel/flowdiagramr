@@ -258,7 +258,7 @@ Not all model bugs return informative error messages. There are likely instances
 Now, let's go back to the first, proper model specification. We'll first prepare the diagram, Similar to the prior example where we provided `make_diagram()` with optional settings, we do the same here for `prepare_diagram()`. This is just meant as another quick preview. The next vignette will discuss this in detail.
 
 ```{r}
-model_settings = list(varbox_x_scaling = 2)
+model_settings = list(varbox_x_size = 2)
 diagram_list <- prepare_diagram(mymodel, model_settings)
 ```
 

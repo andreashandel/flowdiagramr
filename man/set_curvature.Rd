@@ -13,7 +13,6 @@ set_curvature(edf, ndf)
 }
 \value{
 A data frame
-export
 }
 \description{
 Sets the curvature values for curved arrows. used by prepare_diagram

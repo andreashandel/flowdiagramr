@@ -7,10 +7,10 @@
 add_locations(
   variables,
   varlocations = NULL,
-  varbox_x_scaling,
-  varbox_y_scaling,
-  varspace_x_scaling,
-  varspace_y_scaling
+  varbox_x_size,
+  varbox_y_size,
+  varspace_x_size,
+  varspace_y_size
 )
 }
 \arguments{
@@ -18,13 +18,13 @@ add_locations(
 
 \item{varlocations}{The varlocations matrix. Default is NULL.}
 
-\item{varbox_x_scaling}{Scaler for box width, from \code{model_settings}.}
+\item{varbox_x_size}{Scaler for box width, from \code{model_settings}.}
 
-\item{varbox_y_scaling}{Scaler for box height, from \code{model_settings}.}
+\item{varbox_y_size}{Scaler for box height, from \code{model_settings}.}
 
-\item{varspace_x_scaling}{Scaler for horizontal spacing, from \code{model_settings}.}
+\item{varspace_x_size}{Scaler for horizontal spacing, from \code{model_settings}.}
 
-\item{varspace_y_scaling}{Scaler for vertical spacing, from \code{model_settings}.}
+\item{varspace_y_size}{Scaler for vertical spacing, from \code{model_settings}.}
 }
 \value{
 The variables data frame with location information.

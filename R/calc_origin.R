@@ -1,4 +1,6 @@
 #' Calc origin
+#' This has not been altered from the stackoverflow code. So, not exporting
+#' since it was not a function created by "us".
 #' https://stackoverflow.com/questions/49327247/add-labels-to-the-center-of-a-geom-curve-line-ggplot
 #' @noRd
 

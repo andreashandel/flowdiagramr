@@ -2,7 +2,7 @@
 #'
 #' @param flows A list of flows. Each list element is a vector of flows for a specific variable.
 #' @return The same list of flows that was sent into the function, but with explicit plus signs in front of positive flow terms.
-#' @noRd
+#' @export
 
 add_plus_signs <- function(flows) {
   for(i in 1:length(flows)) {

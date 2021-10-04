@@ -42,7 +42,7 @@ make_vdf_angled <- function(edf, ndf, model_settings) {
 
   # update locations in the data frame
   vdf[innies, "xmin"] <- inx
-  vdf[innies, "ymin"] <- iny + (model_settings$varspace_y_scaling/2)
+  vdf[innies, "ymin"] <- iny + (model_settings$varspace_y_size/2)
   # take means of the x locations for the midpoint for label
   vdf[innies, "xlabel"] <- as.numeric(rowMeans(as.matrix(vdf[innies, c("xmin", "xmax")])))
   # take means of the y locations for midpoint for lable
@@ -52,9 +52,9 @@ make_vdf_angled <- function(edf, ndf, model_settings) {
 
   # update locations in the data frame
   vdf[outies, "xmax"] <- outx
-  vdf[outies, "xmin"] <- outx - (model_settings$varbox_x_scaling/2)
+  vdf[outies, "xmin"] <- outx - (model_settings$varbox_x_size/2)
   vdf[outies, "ymin"] <- outy
-  vdf[outies, "ymax"] <- outy - (model_settings$varspace_y_scaling/2)
+  vdf[outies, "ymax"] <- outy - (model_settings$varspace_y_size/2)
   # take means of the x locations for the midpoint for label
   vdf[outies, "xlabel"] <- as.numeric(rowMeans(as.matrix(vdf[outies, c("xmin", "xmax")])))
   # take means of the y locations for midpoint for lable

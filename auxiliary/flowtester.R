@@ -8,13 +8,14 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
 model_list = list(varlabels = varlabels, flows = flows)
 model_settings = list(
   varlocations = NULL,
-  varbox_x_scaling = 1,
-  varbox_y_scaling = 1,
-  varspace_x_scaling = 1,
-  varspace_y_scaling = 1)
+  varbox_x_size = 1,
+  varbox_y_size = 1,
+  varspace_x_size = 1,
+  varspace_y_size = 1)
 
 # prepare diagram without extra settings
 diagram_list <- prepare_diagram(model_list)
+make_diagram(diagram_list)
 
 
 #model user settings

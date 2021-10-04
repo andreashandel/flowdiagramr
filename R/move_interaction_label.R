@@ -1,4 +1,5 @@
 #' Moves interaction label to main flow label.
+#' NOT CURRENTLY USED.
 #'
 #' @param flows The flows data frame.
 #' @return The flows data frame.

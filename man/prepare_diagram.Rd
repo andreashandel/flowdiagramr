@@ -6,8 +6,8 @@
 \usage{
 prepare_diagram(
   model_list,
-  model_settings = list(varlocations = NULL, varbox_x_scaling = 1, varbox_y_scaling =
-    1, varspace_x_scaling = 1, varspace_y_scaling = 1)
+  model_settings = list(varlocations = NULL, varbox_x_size = 1, varbox_y_size = 1,
+    varspace_x_size = 1, varspace_y_size = 1)
 )
 }
 \arguments{
@@ -33,18 +33,22 @@ math notation (e.g., +, -, *, /).
 elements are supported and default values are provided:
 \itemize{
 \item \code{varlocations}: A character matrix of variable locations on a grid.
-\item \code{varbox_x_scaling}: A scalar that changes the default width of
-variable boxes. For example, \code{varbox_x_scaling = 1.5} makes each box
-1.5 times the default width.
-\item \code{varbox_y_scaling}: A scalar that changes the default height of
-variable boxes. For example, \code{varbox_y_scaling = 1.5} makes each box
-1.5 times the default height.
-\item \code{varspace_x_scaling}: A scalar that changes the default spacing between
-variable boxes in the x dimension. For example, \code{varspace_x_scaling = 1.5}
+\item \code{varbox_x_size}: Either a scalar or a vector that changes the default
+width of variable boxes. For example, \code{varbox_x_size = 1.5} makes each box
+1.5 units in width. If a scalar, the value is used for all variables.
+If a vector, the values are applied to the variables in the order
+provided in \code{model_list$varlabels}.
+\item \code{varbox_y_size}: Either a scalar or a vector that changes the default
+height of variable boxes. For example, \code{varbox_y_size = 1.5} makes each box
+1.5 units in height. If a scalar, the value is used for all variables.
+If a vector, the values are applied to the variables in the order
+provided in \code{model_list$varlabels}.
+\item \code{varspace_x_size}: A scalar that changes the default spacing between
+variable boxes in the x dimension. For example, \code{varspace_x_size = 1.5}
 makes each box 1.5 times farther apart in the x dimension than the
 default spacing.
-\item \code{varspace_y_scaling}: A scalar that changes the default spacing between
-variable boxes in the y dimension. For example, \code{varspace_y_scaling = 1.5}
+\item \code{varspace_y_size}: A scalar that changes the default spacing between
+variable boxes in the y dimension. For example, \code{varspace_y_size = 1.5}
 makes each box 1.5 times farther apart in the y dimension than the
 default spacing.
 }}

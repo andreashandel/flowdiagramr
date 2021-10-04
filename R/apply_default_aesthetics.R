@@ -5,7 +5,7 @@
 #'
 #' @param diagram_list A list of data frames.
 #' @return A list of data frames.
-#' @noRd
+#' @export
 
 apply_default_aesthetics <- function(diagram_list) {
   # assign default settings to be updated by user

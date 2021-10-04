@@ -9,7 +9,7 @@
 #' @param flow A modelbuilder flow, which is a character string.
 #' @return A character vector of the variables and parameters, in order.
 #' @author Andrew Tredennick and Andreas Handel
-#' @noRd
+#' @export
 
 get_vars_pars <- function(flow) {
   #extract just the variables and parameters, in order, from the flows

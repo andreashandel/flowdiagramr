@@ -1,6 +1,6 @@
 #' Returns the ggplot2 code so that this can be in one place
 #'
-#' @noRd
+#' @export
 
 get_code <- function() {
   code <- '
