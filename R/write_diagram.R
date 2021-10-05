@@ -254,8 +254,8 @@ write_diagram <- function(model_list = NULL,
   }
 
   if(!is.null(diagram_list)) {
-    df_block <- character(length(diagram_list))
-    for(i in 1:length(diagram_list)) {
+    df_block <- 2  # this is always 2, one for variables and one for flows
+    for(i in 1:2) {
       dfname <- names(diagram_list)[i]
       start <- paste(dfname, "<- data.frame(")
       end <- ")"

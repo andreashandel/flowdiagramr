@@ -37,7 +37,7 @@ for(i in 1:nrow(variables)) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = variables[i, ],
-      aes(x = xlabel, y = ylabel, label = plot_label),
+      aes(x = xlabel, y = ylabel, label = label),
       size = variables[i, "label_size"],
       color = variables[i, "label_color"]
     )

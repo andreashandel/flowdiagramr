@@ -3,15 +3,22 @@ library(flowdiagramr)
 
 model_list <- list(varlabels = c("S", "I", "R"), flows = list(S_flows = "-b*S*I", I_flows = c("b*S*I", "-g*I"), R_flows = "g*I"))
 
-model_settings <- list(varnames = NULL, use_varnames = FALSE, var_label_size = 10, varlocations = NULL)
+model_settings <- list(varlocations = NULL, varbox_x_size = 1, varbox_y_size = 1, varspace_x_size = 1, varspace_y_size = 1)
 
 diagram_list <- prepare_diagram(model_list = model_list, model_settings = model_settings)
 
 variables <- diagram_list$variables
 flows <- diagram_list$flows
 
+# setup linetypes mapping from numeric to text
+ltys <- data.frame(code = 0:6,
+                   text = c("blank", "solid", "dashed",
+                            "dotted", "dotdash", "longdash",
+                            "twodash"))
+
 var_outline_color <- NA
 var_fill_color <- '#6aa4c8'
+var_label_text <- NA
 var_label_on <- TRUE
 var_label_color <- 'white'
 var_label_size <- NA
@@ -39,41 +46,41 @@ external_flow_label_size <- 5
 with_grid <- FALSE
 
 # recycle values as needed
-variables$color <- flowdiagramr:::recycle_values(var_outline_color, nrow(variables))
-variables$fill <- flowdiagramr:::recycle_values(var_fill_color, nrow(variables))
-variables$label_color <- flowdiagramr:::recycle_values(var_label_color, nrow(variables))
-variables$label_size <- flowdiagramr:::recycle_values(var_label_size, nrow(variables))
+variables$color <- recycle_values(var_outline_color, nrow(variables))
+variables$fill <- recycle_values(var_fill_color, nrow(variables))
+variables$label_color <- recycle_values(var_label_color, nrow(variables))
+variables$label_size <- recycle_values(var_label_size, nrow(variables))
 variables$plot_label_size <- NULL
 
 mains <- subset(flows, type == "main")
-mains$color <- flowdiagramr:::recycle_values(main_flow_color, nrow(mains))
+mains$color <- recycle_values(main_flow_color, nrow(mains))
 if(is.numeric(main_flow_linetype)) {
   main_flow_linetype <- subset(ltys, code == main_flow_linetype)[,"text"]
 }
-mains$linetype <- flowdiagramr:::recycle_values(main_flow_linetype, nrow(mains))
-mains$size <- flowdiagramr:::recycle_values(main_flow_size, nrow(mains))
-mains$label_color <- flowdiagramr:::recycle_values(main_flow_label_color, nrow(mains))
-mains$label_size <- flowdiagramr:::recycle_values(main_flow_label_size, nrow(mains))
+mains$linetype <- recycle_values(main_flow_linetype, nrow(mains))
+mains$size <- recycle_values(main_flow_size, nrow(mains))
+mains$label_color <- recycle_values(main_flow_label_color, nrow(mains))
+mains$label_size <- recycle_values(main_flow_label_size, nrow(mains))
 
 ints <- subset(flows, type == "interaction")
-ints$color <- flowdiagramr:::recycle_values(interaction_flow_color, nrow(ints))
+ints$color <- recycle_values(interaction_flow_color, nrow(ints))
 if(is.numeric(interaction_flow_linetype)) {
   interaction_flow_linetype <- subset(ltys, code == interaction_flow_linetype)[,"text"]
 }
-ints$linetype <- flowdiagramr:::recycle_values(interaction_flow_linetype, nrow(ints))
-ints$size <- flowdiagramr:::recycle_values(interaction_flow_size, nrow(ints))
-ints$label_color <- flowdiagramr:::recycle_values(interaction_flow_label_color, nrow(ints))
-ints$label_size <- flowdiagramr:::recycle_values(interaction_flow_label_size, nrow(ints))
+ints$linetype <- recycle_values(interaction_flow_linetype, nrow(ints))
+ints$size <- recycle_values(interaction_flow_size, nrow(ints))
+ints$label_color <- recycle_values(interaction_flow_label_color, nrow(ints))
+ints$label_size <- recycle_values(interaction_flow_label_size, nrow(ints))
 
 exts <- subset(flows, type == "external")
-exts$color <- flowdiagramr:::recycle_values(external_flow_color, nrow(exts))
+exts$color <- recycle_values(external_flow_color, nrow(exts))
 if(is.numeric(external_flow_linetype)){
   external_flow_linetype <- subset(ltys, code == external_flow_linetype)[,"text"]
 }
-exts$linetype <- flowdiagramr:::recycle_values(external_flow_linetype, nrow(exts))
-exts$size <- flowdiagramr:::recycle_values(external_flow_size, nrow(exts))
-exts$label_color <- flowdiagramr:::recycle_values(external_flow_label_color, nrow(exts))
-exts$label_size <- flowdiagramr:::recycle_values(external_flow_label_size, nrow(exts))
+exts$linetype <- recycle_values(external_flow_linetype, nrow(exts))
+exts$size <- recycle_values(external_flow_size, nrow(exts))
+exts$label_color <- recycle_values(external_flow_label_color, nrow(exts))
+exts$label_size <- recycle_values(external_flow_label_size, nrow(exts))
 
 # recombine flows data frame with aesthetics as columns
  flows <- rbind(mains, ints, exts)
@@ -142,7 +149,7 @@ for(i in 1:nrow(variables)) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = variables[i, ],
-      aes(x = labelx, y = labely, label = plot_label),
+      aes(x = xlabel, y = ylabel, label = label),
       size = variables[i, "label_size"],
       color = variables[i, "label_color"]
     )
@@ -152,10 +159,10 @@ for(i in 1:nrow(flows)) {
   diagram_plot <- diagram_plot +
     geom_curve(
       data = flows[i, ],
-      aes(x = xstart,
-          y = ystart,
-          xend = xend,
-          yend = yend),
+      aes(x = xmin,
+          y = ymin,
+          xend = xmax,
+          yend = ymax),
       linetype = flows[i, "linetype"],
       arrow = arrow(length = unit(flows[i, "arrowsize"],"cm"), type = "closed"),
       color = flows[i, "color"],
@@ -171,7 +178,7 @@ for(i in 1:nrow(flows)) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = flows[i, ],
-      aes(x = labelx, y = labely, label = label),
+      aes(x = xlabel, y = ylabel, label = label),
       size = flows[i, "label_size"],
       color = flows[i, "label_color"])
 }

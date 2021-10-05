@@ -57,8 +57,9 @@ mymodel = list(varlabels = c("L","P","B","Pl","R","Re"),
 model_settings = list(varlocations = matrix(data = c("L", "",
                                                      "P", "Pl",
                                                      "B", "R", 
-                                                     "Re","" ), ncol = 2, byrow = TRUE),
-                      varbox_x_scaling = 2)
+                                                     "Re","" ), 
+                                            ncol = 2, byrow = TRUE),
+                      varbox_x_size = 2)
 ```
 
 Note that to make the diagram logic work, we have to define actual flows. For instance we can't just label the various flows with "Yes" or "No" like in the original diagram. If we did this, **`r pkg`** wouldn't know with which boxes/variables to associate the arrows with.   
@@ -135,10 +136,10 @@ dag_settings = list(varlocations = matrix(
                                              "", "Hai", "Inf",
                                              "Cha", "", ""),
                                     ncol = 3, byrow = TRUE),
-                    varbox_x_scaling = 4,
-                    varbox_y_scaling = 1.5,
-                    varspace_y_scaling = 0.3,
-                    varspace_x_scaling = 0.6
+                    varbox_x_size = 4,
+                    varbox_y_size = 1.5,
+                    varspace_y_size = 0.3,
+                    varspace_x_size = 0.6
 )
 ```
 

@@ -49,6 +49,8 @@ $$
 
 This is the same information formatted as a structure that can be used as input for `prepare_diagram`.
 
+**THIS CURRENTLY ERRORS OUT**
+
 ```{r, error = TRUE}
 varlabels = c("H","F","T","B","A")
 #varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")
@@ -147,14 +149,17 @@ As you can see, not showing the interactions or not labeling some of the flows d
 
 Here is another example, the model shown with vertical alignment
 
+**THIS LOOKS PRETTY BAD AT THE MOMENT**
+
 ```{r, fig.height = 4}
 varnames <- c("Bacteria","Immune Response")
 varlocations <-  matrix(data = c("B", "I"),
                         nrow = 2, byrow = TRUE)
-mysettings <- list(varnames = varnames, use_varnames = TRUE,
-                   var_label_size = 4, varlocations = varlocations)
+mysettings <- list(varlocations = varlocations)
 diag_list <- prepare_diagram(ppmodel, mysettings)
-mydiag <- make_diagram(diag_list)
+mydiag <- make_diagram(diag_list, 
+                       diagram_settings = list(var_label_text = varnames,
+                                               var_label_size = 4))
 plot(mydiag)
 ```
 

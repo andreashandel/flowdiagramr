@@ -219,12 +219,12 @@ make_diagram <- function (diagram_list,
     # if the var_label_text is not provided (NA), then use the labels
     # in the data frame. otherwise, override.
     if(anyNA(var_label_text)) {
-      variables$plot_label <- variables$label
+      variables$label <- variables$label
     } else {
       #original version
       #variables$plot_label <- gsub(" ", "\n", var_label_text)
       #new version, don't automatically put words on new lines
-      variables$plot_label <- var_label_text
+      variables$label <- var_label_text
     }
 
     # if text size is not provided (NA), then use text sizes in the data
