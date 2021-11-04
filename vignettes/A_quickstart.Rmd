@@ -76,7 +76,7 @@ mymodel = list(varlabels = varlabels, flows = flows)
 * A model consists of variables and parameters, combined by basic mathematical expressions. Currently allowed are `+, -, *, (),/,^`. Mathematical operations such as `log`, `sin`, etc. are currently not supported. 
 * All variable labels need to start with an upper-case letter and can be any combination of letters and numbers.
 * All parameters need to start with a lower-case letter and can be any combination of letters and numbers.
-* The flows for each variable need to be named `NN_flows` where NN corresponds to the variable label. 
+* The flows for each variable need to be named `NN_flows` where `NN` corresponds to the variable label. 
 * Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write `b*S*I`, writing it as `bSI` will not work.
 * Minus signs for outflows are required, plus signs for inflows are optional.
 

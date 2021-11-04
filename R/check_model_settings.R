@@ -45,9 +45,9 @@ check_model_settings <- function(model_list, model_settings) {
   }
 
   ######################################################################
-  #check the scaling settings
+  #check the box scaling settings
   ######################################################################
-  # check to make sure scaling parameters are of length 0 (not there) or 1
+  # check to make sure box scaling parameters are of length 0 (not there) or 1
   # (same scaling for all boxes)
   # or length of the number of variables. hard error out if not
   nvars = length(model_list$varlabels)
@@ -62,14 +62,33 @@ check_model_settings <- function(model_list, model_settings) {
     msg <- "varbox_y_scaling must be of length 1 or length of the number of variables"
     return(msg)
   }
-  if( !(length(model_settings$varspace_x_scaling) %in% c(0,1,nvars) ) )
+
+
+  ######################################################################
+  #check the space scaling settings
+  ######################################################################
+  # check to make sure box scaling parameters are of length 0 (not there) or 1
+  # (same scaling for all boxes)
+  # or length-1 of varlocations matrix rows/columns. hard error out if not
+  if( !is.null(model_settings$varspace_x_scaling) && is.null(model_settings$varlocations) )
   {
-    msg <- "varspace_x_scaling must be of length 1 or length of the number of variables"
+    msg <- "to use varspace_x_scaling, you must provide a varlocations matrix."
     return(msg)
   }
-  if( !(length(model_settings$varspace_y_scaling) %in% c(0,1,nvars) ) )
+  if( !(length(model_settings$varspace_x_scaling) %in% c(0,1,ncol(model_settings$varlocations)-1) ) )
   {
-    msg <- "varspace_y_scaling must be of length 1 or length of the number of variables"
+    msg <- "varspace_x_scaling must be of length 1 or length of one less than varlocation matrix columns"
+    return(msg)
+  }
+
+  if( !is.null(model_settings$varspace_y_scaling) && is.null(model_settings$varlocations) )
+  {
+    msg <- "to use varspace_y_scaling, you must provide a varlocations matrix."
+    return(msg)
+  }
+  if( !(length(model_settings$varspace_y_scaling) %in% c(0,1,nrow(model_settings$varlocations)-1) ) )
+  {
+    msg <- "varspace_y_scaling must be of length 1 or length of one less than varlocation matrix rows"
     return(msg)
   }
 

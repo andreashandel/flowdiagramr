@@ -1,6 +1,19 @@
-9/5 thoughts
+11/4/ Notes from Andreas
 
-Maybe we rename the inputs to model_settings varbox_x_size, varbox_y_size, varspace_x_size, varspace_y_size? Reflects a bit better what they are, the actual size of the boxes and empty space. I can do a quick search and replace everywhere if you want to change names. Or you can if you got tools for that. (I use grepWin for that on Windows). And maybe default 1 for everything, so a box is by default size 1x1 and space between each box is by default 1 in each direction (so not the 2 I suggested below).
+
+Changed prepare_diagram inputs for scaling. Updated function documentation to explain updates. Not yet fully implemented in code.
+
+
+* I changed code in add_locations() to allow different defaults for box and spacing size. I tried with having a default of 1 for each. 
+
+* I made changes in prepare_diagram regarding spacing.
+
+* Examples in prepare_diagram need updating to show all possible inputs
+
+
+
+
+9/5 thoughts
 
 For vectorizing those values, the varbox_ ones should be straightforward, the entries should correspond to the number and ordering in varlabels.  
 

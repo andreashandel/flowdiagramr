@@ -1,17 +1,18 @@
-#' Add x,y location informations
+#' Add x,y location information
 #'
 #' @param variables The nodes (variables) data frame.
 #' @param varlocations The varlocations matrix. Default is NULL.
-#' @param varbox_x_size Scaler for box width, from `model_settings`.
-#' @param varbox_y_size Scaler for box height, from `model_settings`.
-#' @param varspace_x_size Scaler for horizontal spacing, from `model_settings`.
-#' @param varspace_y_size Scaler for vertical spacing, from `model_settings`.
+#' @param varbox_x_size Scalar for box width, from `model_settings`.
+#' @param varbox_y_size Scalar for box height, from `model_settings`.
+#' @param varspace_x_size Scalar for horizontal spacing, from `model_settings`.
+#' @param varspace_y_size Scalar for vertical spacing, from `model_settings`.
 #' @return The variables data frame with location information.
 #' @export
 
 add_locations <- function(variables, varlocations = NULL, varbox_x_size,
                           varbox_y_size, varspace_x_size,
                           varspace_y_size) {
+
 
   # get number of variables that will be plotted
   nvars <- length(which(variables$label != ""))  # number of variables with a name
@@ -66,12 +67,12 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_size,
                       col_id = cids,
                       pos = positions,
                       label = ids)
-  #each row is 3 from the top of the other row: 2 spacing and 1 for size of box
-  #this gets scaled by the varspace_y_size factor
-  rowspace_y <- 3 * varspace_y_size  #default spacing times the factor
-  bumpout_x <- 1 * varbox_x_size  #default spacing times the factor
-  bumpout_y <- 1 * varbox_y_size  #default spacing times the factor
-  space_x <- 2 * varspace_x_size  #default spacing times the factor
+
+  #assign spacing based on either defaults or user-provided information
+  rowspace_y <-  varspace_y_size
+  bumpout_x <-  varbox_x_size
+  bumpout_y <-  varbox_y_size
+  space_x <-  varspace_x_size
   newvariables <- list()  # create an empty list to store the grid coordinates
 
   # the process is:

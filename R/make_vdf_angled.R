@@ -62,6 +62,8 @@ make_vdf_angled <- function(edf, ndf, model_settings) {
   # add a minor y offset to move the label up a bit, just for visually pleasing effect
   vdf[outies, "ylabel"] <- vdf[outies, "ylabel"] - 0.25
 
+  browser()
+
   # just replace the rows in the flows (edf) dataframe that have been changed
   toreplace <- match(paste0(edf$to, edf$from), paste0(vdf$to, vdf$from))
   toreplace <- which(!is.na(toreplace))

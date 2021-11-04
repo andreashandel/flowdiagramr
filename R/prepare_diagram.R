@@ -33,25 +33,27 @@
 #' @param model_settings A list of optional model settings. The following
 #'     elements are supported and default values are provided:
 #' \itemize{
-#' \item `varlocations`: A character matrix of variable locations on a grid.
+#' \item `varlocations`: A matrix containing all `model_list$varlabels` entries in specific locations on a grid. See examples.
 #' \item `varbox_x_size`: Either a scalar or a vector that changes the default
 #'     width of variable boxes. For example, `varbox_x_size = 1.5` makes each box
 #'     1.5 units in width. If a scalar, the value is used for all variables.
 #'     If a vector, the values are applied to the variables in the order
 #'     provided in `model_list$varlabels`.
-#' \item `varbox_y_size`: Either a scalar or a vector that changes the default
-#'     height of variable boxes. For example, `varbox_y_size = 1.5` makes each box
-#'     1.5 units in height. If a scalar, the value is used for all variables.
-#'     If a vector, the values are applied to the variables in the order
-#'     provided in `model_list$varlabels`.
-#' \item `varspace_x_size`: A scalar that changes the default spacing between
-#'     variable boxes in the x dimension. For example, `varspace_x_size = 1.5`
-#'     makes each box 1.5 times farther apart in the x dimension than the
-#'     default spacing.
-#' \item `varspace_y_size`: A scalar that changes the default spacing between
-#'     variable boxes in the y dimension. For example, `varspace_y_size = 1.5`
-#'     makes each box 1.5 times farther apart in the y dimension than the
-#'     default spacing.
+#' \item `varbox_y_size`: Same as `varbox_x_size` but for the height of the boxes.
+#' \item `varspace_x_size`:  Either a scalar or a vector that changes the spacing between
+#'     variable boxes in the x/horizontal dimension.
+#'     To use this, you need to provide a `varlocations` matrix.
+#'     If `varspace_x_size` is a scalar, all spaces between boxes in the x direction will be the same.
+#'     For example, `varspace_x_size = 1.5` puts 1.5 units of space in the x direction between boxes.
+#'     If you provide a vector, it needs to be of dimension one less than the number of columns in `varlocations`.
+#'     Spacing starts at the left, thus the first number is the spacing between the first column and second column, etc.
+#' \item `varspace_y_size`:  Either a scalar or a vector that changes the spacing between
+#'     variable boxes in the y/vertical dimension.
+#'     To use this, you need to provide a `varlocations` matrix.
+#'     If `varspace_y_size` is a scalar, all spaces between boxes in the y direction will be the same.
+#'     For example, `varspace_y_size = 1.5` puts 1.5 units of space in the y direction between boxes.
+#'     If you provide a vector, it needs to be of dimension one less than the number of rows in `varlocations`.
+#'     Spacing starts at the bottom, thus the first number is the spacing between the lowest and second lowest row, etc.
 #' }
 #'
 #' @return A list of two data frames and the original inputs lists. The returned
@@ -80,10 +82,10 @@
 #'   The data frame contains these columns:
 #'   \itemize{
 #'     \item `id`: A numeric id for each flow.
-#'     \item `to`: The variable to which the arrow will point. That is, the
-#'     variable receiving the flow.
 #'     \item `from`: The variable from which the arrow originate. That is, the
 #'     variable donating the flow.
+#'     \item `to`: The variable to which the arrow will point. That is, the
+#'     variable receiving the flow.
 #'     \item `label`: The label of the flow. Typically a mathematical expression.
 #'     \item `xmin`: The starting horizontal position of the arrow.
 #'     \item `xmax`: The ending horizontal position of the arrow.
@@ -181,10 +183,10 @@
 prepare_diagram <- function(model_list,
                             model_settings = list(
                               varlocations = NULL,
-                              varbox_x_size = 1,
-                              varbox_y_size = 1,
-                              varspace_x_size = 1,
-                              varspace_y_size = 1)
+                              varbox_x_size = NULL,
+                              varbox_y_size = NULL,
+                              varspace_x_size = NULL,
+                              varspace_y_size = NULL)
                             )
 {
 
@@ -229,6 +231,16 @@ prepare_diagram <- function(model_list,
       stop(checkmsg)
   }
 
+  # If user did not provide values for sizing/spacing, we set them to the default of 1
+  # note that we assign it to model_settings.
+  # this is needed to be passed into helper functions like make_vdf_angled
+  # by setting it this,the original input argument is potentially overwritten
+  if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = 1}
+  if (is.null(model_settings$varbox_y_size)) {model_settings$varbox_y_size = 1}
+  if (is.null(model_settings$varspace_x_size)) {model_settings$varspace_x_size = 1}
+  if (is.null(model_settings$varspace_y_size)) {model_settings$varspace_y_size = 1}
+
+
   # This pulls out all list elements in model_settings and assigns them
   # to individual variables with their respective names
   # this is done for convenience so we don't have to keep calling
@@ -236,6 +248,8 @@ prepare_diagram <- function(model_list,
   for(i in 1:length(model_settings)) {
     assign(names(model_settings)[i], value = model_settings[[i]])
   }
+
+
 
   #############################################
   # Process variables, place in data frame
@@ -541,7 +555,6 @@ prepare_diagram <- function(model_list,
     # of the physical flow arrow.
     for(i in 1:nrow(ints)) {
       tmp <- ints[i, ]
-      #v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
       v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
@@ -681,16 +694,15 @@ prepare_diagram <- function(model_list,
   # current id. Then extract the id of the variable to which the flow
   # goes to. The location of each "dummy" variable is then defined relative
   # to the "real" variable to which the flow goes in to. By default, we place
-  # the dummy variable box 2 units above the real variable box.
+  # the dummy variable box varspace_y_size units above the real variable box.
   for(id in inflownodes) {
     # find the id of the variable to which this dummy goes in to
     newxyid <- flows[which(flows$from == id), "to"]
     # extract the location information of the "to" variable
     newxy <- variables[which(variables$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
-    # update box locations by moving the y locations up 2 units
-    # also scales by the varpsace_y_scaling argument
-    newxy$ymax <- newxy$ymax + (varspace_y_size * 2)  # above the variable
-    newxy$ymin <- newxy$ymin + (varspace_y_size * 2)  # above the variable
+    # update box locations by moving the y locations up
+    newxy$ymax <- newxy$ymax + varspace_y_size  # above the variable
+    newxy$ymin <- newxy$ymin + varspace_y_size  # above the variable
 
     # add in the new location information to replace the NAs
     variables[which(variables$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
@@ -700,7 +712,7 @@ prepare_diagram <- function(model_list,
 
     # add in the new midpoints as label locations to replace the NAs
     variables[which(variables$id == id), c("xlabel", "ylabel")] <- newmids
-  }
+  } #end loop over inflownodes
 
   # update outflow node positions to nowhere (e.g., deaths)
   # these are identified by any id greater than -9990
@@ -708,17 +720,16 @@ prepare_diagram <- function(model_list,
   # loop over the outflownode ids and find the flow that connects to the
   # current id. Then extract the id of the variable from which the flow
   # originates. The location of each "dummy" variable is then defined relative
-  # to the "real" variable from which the flow originates. By default, we place
-  # the dummy variable box 2 units below the real variable box.
+  # to the "real" variable to which the flow goes in to. By default, we place
+  # the dummy variable box varspace_y_size units above the real variable box.
   for(id in outflownodes) {
     # find the id of the variable from which the dummy originates
     newxyid <- flows[which(flows$to == id), "from"]
     # extract the location information of the "from" variable
     newxy <- variables[which(variables$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
-    # update box locations by moving the y locations down 2 units
-    # also scales by the varpsace_y_scaling argument
-    newxy$ymax <- newxy$ymax - (varspace_y_size * 2)  # below the variable
-    newxy$ymin <- newxy$ymin - (varspace_y_size * 2)  # below the variable
+    # update box locations by moving the y locations down
+    newxy$ymax <- newxy$ymax - varspace_y_size   # below the variable
+    newxy$ymin <- newxy$ymin - varspace_y_size   # below the variable
 
     # add in the new location information to replace the NAs
     variables[which(variables$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
@@ -728,7 +739,7 @@ prepare_diagram <- function(model_list,
 
     # add in the new midpoints as label locations to replace the NAs
     variables[which(variables$id == id), c("xlabel", "ylabel")] <- newmids
-  }
+  } #end loop over outflownodes
 
   # update invisible interaction link nodes, i.e., nodes that need to sit
   # at the midpoint of some other arrow, but not be drawn
@@ -765,6 +776,13 @@ prepare_diagram <- function(model_list,
   }
 
 
+  #########################
+  # At this point, all variables, both real ones and dummy ones, have been processed.
+  # The remaining code deals with creating and placing the flows into/out-of variables, as well as interaction flows.
+  # The variables will only be manipulated one more time below to remove the dummy variables
+  #########################
+
+
   # Subset out interactions to in/out flows
   # these are arrows that are drawn from a variable to an external (birth/death)
   # or feedback flow. The predator-prey model is an example of this. These
@@ -779,10 +797,10 @@ prepare_diagram <- function(model_list,
       tmp <- extints[i, ]  #get the row to process
       v <- get_vars_pars(tmp$label)  #remove the math notation
       vf <- substr(v, start = 1, stop = 1)  #get first letters of each character element
-      v <- v[which(vf %in% LETTERS)]  #subett v to just variables (no parameters)
+      v <- v[which(vf %in% LETTERS)]  #subset v to just variables (no parameters)
       ids <- subset(variables, label %in% v)[ , "id"] #get the ids for all variables in the flow notation
       id <- ids[which(ids != tmp$from)] #subset to the id that does not equal the id from which the flow originates
-      extints[i, "to"] <- id #set the "to" column to the id at whcih the flow should terminate
+      extints[i, "to"] <- id #set the "to" column to the id at which the flow should terminate
     }
   }
 
@@ -791,13 +809,13 @@ prepare_diagram <- function(model_list,
   # first merge by the from locations (starts)
   flows <- merge(flows, variables[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
                by.x = "from", by.y = "id")
-  # now merge by the to locations (ends). the suffixres arguments adds start
+  # now merge by the to locations (ends). the suffixes arguments adds start
   # and end to duplicate columns.
   flows <- merge(flows, variables[,c("xmin", "xmax", "ymin", "ymax", "xlabel", "ylabel", "id")],
                by.x = "to", by.y = "id", suffixes = c("start", "end"))
 
   # add columns to be populated. these will be population by either the
-  # "start" or "end" positions defined above by the merge, depenind on the
+  # "start" or "end" positions defined above by the merge, dependent on the
   # relationships between the start and end positions themselves. see below
   # for logic
   flows$xmin <- NA_real_
@@ -925,6 +943,7 @@ prepare_diagram <- function(model_list,
   #   }
   # }
 
+
   # update vertical edges to go in and out at angles
   flows <- make_vdf_angled(flows, variables, model_settings)
 
@@ -995,7 +1014,7 @@ prepare_diagram <- function(model_list,
   flows$math <- flows$label
 
   # update flows column ordering
-  flows <- flows[, c("id", "to", "from", "label", "xmin", "xmax", "ymin", "ymax",
+  flows <- flows[, c("id", "from", "to", "label", "xmin", "xmax", "ymin", "ymax",
                      "xlabel", "ylabel", "curvature", "type", "math")]
 
 

@@ -66,6 +66,15 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
 sirmodel = list(varlabels = varlabels, flows = flows)
 ```
 
+We can again turn this model into a diagram with just a few lines of code.
+
+```{r}
+diagram_list <- prepare_diagram(model_list = sirmodel)
+my_diagram <- make_diagram(diagram_list = diagram_list)
+plot(my_diagram)
+```
+
+
 
 
 We now specify an additional `model_settings` argument called `varlocations`. 
