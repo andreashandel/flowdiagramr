@@ -28,8 +28,10 @@ for(i in 1:nrow(variables)) {
     geom_rect(
       data = variables[i, ],
       aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-      color = variables[i, "color"],
-      fill = variables[i, "fill"]
+      color = ds$var_outline_color[i],
+      fill = ds$var_fill_color[i]
+      #color = variables[i, "var_outline_color"],
+      #fill = variables[i, "var_fill_color"]
     )
 }
 
@@ -38,26 +40,32 @@ for(i in 1:nrow(variables)) {
     geom_text(
       data = variables[i, ],
       aes(x = xlabel, y = ylabel, label = label),
-      size = variables[i, "label_size"],
-      color = variables[i, "label_color"]
+      size = ds$var_label_size[i],
+      color = ds$var_label_color[i]
+      #size = variables[i, "var_label_size"],
+      #color = variables[i, "var_label_color"]
     )
 }
 
-for(i in 1:nrow(flows)) {
+# process all main flows
+
+mainflows <- flows[flows$type=="main",]
+
+for(i in 1:nrow(mainflows)) {
   diagram_plot <- diagram_plot +
     geom_curve(
-      data = flows[i, ],
+      data = mainflows[i, ],
       aes(x = xmin,
           y = ymin,
           xend = xmax,
           yend = ymax),
-      linetype = flows[i, "linetype"],
-      arrow = arrow(length = unit(flows[i, "arrowsize"],"cm"), type = "closed"),
-      color = flows[i, "color"],
-      arrow.fill = flows[i, "color"],
+      linetype = ds$main_flow_linetype[i],
+      arrow = arrow(length = unit(ds$main_flow_arrow_size[i],"cm"), type = "closed"),
+      color = ds$main_flow_color[i],
+      arrow.fill = ds$main_flow_color[i],
       lineend = "round",
-      size = flows[i, "size"],
-      curvature = flows[i, "curvature"],
+      size = ds$main_flow_size[i],
+      curvature = mainflows[i, "curvature"],
       ncp = 1000
     )
 }
@@ -65,11 +73,81 @@ for(i in 1:nrow(flows)) {
 for(i in 1:nrow(flows)) {
   diagram_plot <- diagram_plot +
     geom_text(
-      data = flows[i, ],
+      data = mainflows[i, ],
       aes(x = xlabel, y = ylabel, label = label),
-      size = flows[i, "label_size"],
-      color = flows[i, "label_color"])
+      size = ds$main_flow_label_size[i],
+      color = ds$main_flow_label_color[i])
 }
+
+# repeat for interaction flows
+
+
+interactionflows <- flows[flows$type=="interaction",]
+
+for(i in 1:nrow(interactionflows)) {
+  diagram_plot <- diagram_plot +
+    geom_curve(
+      data = interactionflows[i, ],
+      aes(x = xmin,
+          y = ymin,
+          xend = xmax,
+          yend = ymax),
+      linetype = ds$interaction_flow_linetype[i],
+      arrow = arrow(length = unit(ds$interaction_flow_arrow_size[i],"cm"), type = "closed"),
+      color = ds$interaction_flow_color[i],
+      arrow.fill = ds$interaction_flow_color[i],
+      lineend = "round",
+      size = ds$interaction_flow_size[i],
+      curvature = interactionflows[i, "curvature"],
+      ncp = 1000
+    )
+}
+
+for(i in 1:nrow(flows)) {
+  diagram_plot <- diagram_plot +
+    geom_text(
+      data = interactionflows[i, ],
+      aes(x = xlabel, y = ylabel, label = label),
+      size = ds$interaction_flow_label_size[i],
+      color = ds$interaction_flow_label_color[i])
+}
+
+
+
+# repeat for external flows
+
+externalflows <- flows[flows$type=="external",]
+
+for(i in 1:nrow(externalflows)) {
+  diagram_plot <- diagram_plot +
+    geom_curve(
+      data = externalflows[i, ],
+      aes(x = xmin,
+          y = ymin,
+          xend = xmax,
+          yend = ymax),
+      linetype = ds$external_flow_linetype[i],
+      arrow = arrow(length = unit(ds$external_flow_arrow_size[i],"cm"), type = "closed"),
+      color = ds$external_flow_color[i],
+      arrow.fill = ds$external_flow_color[i],
+      lineend = "round",
+      size = ds$external_flow_size[i],
+      curvature = externalflows[i, "curvature"],
+      ncp = 1000
+    )
+}
+
+for(i in 1:nrow(flows)) {
+  diagram_plot <- diagram_plot +
+    geom_text(
+      data = externalflows[i, ],
+      aes(x = xlabel, y = ylabel, label = label),
+      size = ds$external_flow_label_size[i],
+      color = ds$external_flow_label_color[i])
+}
+
+
+
 
 # If with_grid == FALSE (default) then void out the theme
 # otherwise keep the grey background with grid

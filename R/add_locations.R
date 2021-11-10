@@ -1,15 +1,15 @@
 #' Add x,y location information
 #'
 #' @param variables The nodes (variables) data frame.
-#' @param varlocations The varlocations matrix. Default is NULL.
-#' @param varbox_x_size Scalar for box width, from `model_settings`.
-#' @param varbox_y_size Scalar for box height, from `model_settings`.
-#' @param varspace_x_size Scalar for horizontal spacing, from `model_settings`.
-#' @param varspace_y_size Scalar for vertical spacing, from `model_settings`.
-#' @return The variables data frame with location information.
+#' @param varlocations The varlocations matrix.
+#' @param varbox_x_size Vector of box width for each variable, from `model_settings`.
+#' @param varbox_y_size Vector for box height for each variable, from `model_settings`.
+#' @param varspace_x_size Vector for horizontal spacing, length variable numbers - 1, from `model_settings`.
+#' @param varspace_y_size Vector for vertical spacing, length variable numbers - 1, from `model_settings`.
+#' @return The variables data frame with location information added.
 #' @export
 
-add_locations <- function(variables, varlocations = NULL, varbox_x_size,
+add_locations <- function(variables, varlocations, varbox_x_size,
                           varbox_y_size, varspace_x_size,
                           varspace_y_size) {
 
@@ -17,38 +17,27 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_size,
   # get number of variables that will be plotted
   nvars <- length(which(variables$label != ""))  # number of variables with a name
 
-  # if varbox_*_size is a vector, make sure it is the same length as nvars
-  if(length(varbox_x_size) > 1) {
-    if(length(varbox_x_size != nvars)) {
-      stop("The length of varbox_x_size must be 1 or the number of variables.")
-    }
-  }
-  if(length(varbox_y_size) > 1) {
-    if(length(varbox_y_size != nvars)) {
-      stop("The length of varbox_y_size must be 1 or the number of variables.")
-    }
-  }
 
-  # repeat values for varbox_* if a scalar
-  # if(length(varbox_x_size) == 1) {
+  # This bit of code is now taken care of in start of prepare_diagram, can be removed here
+  # if varbox_*_size is a vector, make sure it is the same length as nvars
+  # if(length(varbox_x_size) > 1) {
+  #   if(length(varbox_x_size) != nvars) {
+  #     stop("The length of varbox_x_size must be 1 or the number of variables.")
+  #   }
+  # } else
+  # {
   #   varbox_x_size <- recycle_values(varbox_x_size, nvars)
   # }
-  # if(length(varbox_y_size) == 1) {
+  #
+  #
+  # if(length(varbox_y_size) > 1) {
+  #   if(length(varbox_y_size) != nvars) {
+  #     stop("The length of varbox_y_size must be 1 or the number of variables.")
+  #   }
+  # } else
+  # {
   #   varbox_y_size <- recycle_values(varbox_y_size, nvars)
   # }
-
-
-  # create a varlocations matrix if the user does not provide one.
-  # this simplifies processing by having just one chunk of code that
-  # relies on the varlocations matrix and works whether the user
-  # provides the varlocations matrix or not.
-  if(is.null(varlocations)) {
-    # get variable names, defined as variables that have names that are not NA
-    varnames <- variables$name[which(!is.na(variables$name))]
-    nvars <- length(varnames)  # for defining the number of columns in the matrix
-    # create the varlocations matrix, assuming everything is on one row
-    varlocations <- matrix(data = varnames, ncol = nvars, nrow = 1)
-  }
 
   # create the locations
   num_rows <- nrow(varlocations)  # number of rows for the grid
@@ -68,11 +57,6 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_size,
                       pos = positions,
                       label = ids)
 
-  #assign spacing based on either defaults or user-provided information
-  rowspace_y <-  varspace_y_size
-  bumpout_x <-  varbox_x_size
-  bumpout_y <-  varbox_y_size
-  space_x <-  varspace_x_size
   newvariables <- list()  # create an empty list to store the grid coordinates
 
   # the process is:
@@ -83,7 +67,7 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_size,
   #   4. Bind the coordinates dataframe
   #   5. Iteratively updates y starts (each row) and x starts (each column)
   for(ri in sort(unique(rids))){
-    ystart <- (ri-1) * rowspace_y  # update y start position based on row id
+    ystart <- (ri-1) + varspace_y_size[ri]  # update y start position based on row id
     xstart <- 0  # xstart is always zero for the first column in a row
     for(ci in sort(unique(cids))) {
       tmp <- data.frame(row_id = ri,
@@ -93,11 +77,12 @@ add_locations <- function(variables, varlocations = NULL, varbox_x_size,
                         ymin = NA,
                         ymax = NA)
       tmp$xmin <- xstart
-      tmp$xmax <- xstart + bumpout_x
+      tmp$xmax <- xstart + varbox_x_size[ci]
       tmp$ymin <- ystart
-      tmp$ymax <- ystart + bumpout_y
-      xstart <- xstart + bumpout_x + space_x
+      tmp$ymax <- ystart + varbox_y_size[ri]
+      xstart <-  tmp$xmax + varspace_x_size[ci]
       newvariables <- rbind(newvariables, tmp)
+#      browser()
     }
   }
 

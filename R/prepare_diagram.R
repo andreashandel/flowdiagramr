@@ -72,10 +72,6 @@
 #'     \item `ymax`: Upper edge of location box.
 #'     \item `xlabel`: Horizontal position (midpoint) of label.
 #'     \item `ylabel`: Vertical position (midpoint) of label.
-#'     \item `color`: Default outline color for the box.
-#'     \item `fill`: Default fill color for the box.
-#'     \item `label color`: Default color for text label.
-#'     \item `label_size`: Size of text to be written into the box.
 #'   }
 #'
 #'   \item `flows`: A data frame containing information for all flows.
@@ -96,15 +92,9 @@
 #'     \item `curvature`: The amount of curvature applied to arrow.
 #'     Higher numbers indicate more curvature; 0 = straight line.
 #'     \item `type`: Type of flow. One of main, interaction, or external.
-#'     \item `math`: The math from the flows specified by the user. Is a
+#'     \item `math`: The math from the flows specified by the user. This is a
 #'     duplicate of `label` so that user can update `label` as desired but
 #'     retain the original math for reference.
-#'     \item `color`: Default color of the lines/arrows.
-#'     \item `linetype`: Default linetype.
-#'     \item `size`: Default size of the lines.
-#'     \item `label_color`: Default label color.
-#'     \item `label_size`: Default text size for label.
-#'     \item `arrowsize`: Default arrow size.
 #'   }
 #' }
 #' @details `varlabels` needs to be specified as a vector of model variables,
@@ -207,39 +197,48 @@ prepare_diagram <- function(model_list,
     stop(checkmsg)
   }
 
-  ######################################################################
-  # if user provides inputs in model_settings, run various checks
-  # to make sure the inputs are ok
-  ######################################################################
-  #get defaults for model_settings
-  defaults <- eval(formals(prepare_diagram)$model_settings)
-  #replace with model_settings, which is either the default (so no change)
-  #or user-supplied
-  # this is necessary to allow the user to provide just some of the
-  # arguments, rather than having to specify all list objects.
-  defaults[names(model_settings)] <- model_settings
-  model_settings <- defaults
-  defaults <- NULL  # remove the defaults object
 
-  #check model_settings
-  #this is run no matter if the defaults are used or
-  #if user provided settings
-  #model_list is needed to cross-check with settings
-  checkmsg <- check_model_settings( model_list, model_settings)
-  if(!is.null(checkmsg))
-  {
-      stop(checkmsg)
-  }
-
-  # If user did not provide values for sizing/spacing, we set them to the default of 1
+  ######################################################################
+  # Set model_settings components that are not provided
+  ######################################################################
+  # For each model_settings component, if user didn't set it,
+  # we set a default here
+  # default for varlocations is a matrix with a single row
+  # If user did not provide values for sizing/spacing,
+  # we set vectors of length nvars and nvars-1 for box and space sizing
+  # each with the default of 1
   # note that we assign it to model_settings.
   # this is needed to be passed into helper functions like make_vdf_angled
-  # by setting it this,the original input argument is potentially overwritten
-  if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = 1}
-  if (is.null(model_settings$varbox_y_size)) {model_settings$varbox_y_size = 1}
-  if (is.null(model_settings$varspace_x_size)) {model_settings$varspace_x_size = 1}
-  if (is.null(model_settings$varspace_y_size)) {model_settings$varspace_y_size = 1}
+  nvars = length(model_list$varlabels)
+  if (is.null(model_settings$varlocations)) {model_settings$varlocations = matrix(model_list$varlabels,nrow=1)}
+  if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = rep(1,nvars)}
+  if (is.null(model_settings$varbox_y_size)) {model_settings$varbox_y_size = rep(1,nvars)}
+  if (is.null(model_settings$varspace_x_size)) {model_settings$varspace_x_size = rep(1,nvars-1)}
+  if (is.null(model_settings$varspace_y_size)) {model_settings$varspace_y_size = rep(1,nvars-1)}
 
+  ######################################################################
+  # Vectorize all entries box/space size entries
+  # If user provided a single number for box and space size, we turn it into vectors here
+  # this way we can consistently operate on vectors of the right size everywhere
+  if (length(model_settings$varbox_x_size)==1) {model_settings$varbox_x_size = rep(model_settings$varbox_x_size,nvars)}
+  if (length(model_settings$varbox_y_size)==1) {model_settings$varbox_y_size = rep(model_settings$varbox_y_size,nvars)}
+  if (length(model_settings$varspace_x_size)==1) {model_settings$varspace_x_size = rep(model_settings$varspace_x_size,nvars-1)}
+  if (length(model_settings$varspace_y_size)==1) {model_settings$varspace_y_size = rep(model_settings$varspace_y_size,nvars-1)}
+
+
+  ######################################################################
+  # check model_settings
+  # this is run no matter if the defaults are used or
+  # if user provided settings
+  ######################################################################
+  if (!is.null(model_settings))
+  {
+    checkmsg <- check_model_settings(model_list, model_settings)
+    if(!is.null(checkmsg))
+    {
+      stop(checkmsg)
+    }
+  }
 
   # This pulls out all list elements in model_settings and assigns them
   # to individual variables with their respective names
@@ -248,7 +247,6 @@ prepare_diagram <- function(model_list,
   for(i in 1:length(model_settings)) {
     assign(names(model_settings)[i], value = model_settings[[i]])
   }
-
 
 
   #############################################
@@ -264,9 +262,20 @@ prepare_diagram <- function(model_list,
   variables <- data.frame(
     id = 1:nvars,  # numeric id for nodes
     label = varnames,  # labels for nodes
-    name = varnames,  # long names for labels
-    row = 1  # hard code for 1 row, will be updated below, if necessary
+    name = varnames  # long names for labels
+  #  row = 1  # hard code for 1 row, will be updated below, if necessary
   )
+
+  #############################################
+  # Add variable location, place in data frame
+  # Add location information, see comments within function for details
+  # this function only adds location information to "named" variables
+  # provided by the user. Location information for "dummy" variables that
+  # were created above are added below.
+  variables <- add_locations(variables, varlocations, varbox_x_size,
+                             varbox_y_size, varspace_x_size,
+                             varspace_y_size)
+
 
 
   #############################################
@@ -285,8 +294,8 @@ prepare_diagram <- function(model_list,
 
   # if there are just two variables and a single flow between them,
   # the flowmat is oriented incorrectly (nodes across columns). this
-  # can be diagnosed by checking to see if flowmat has rownames. if not,
-  # the then matrix needs to be transposed.
+  # can be diagnosed by checking to see if flowmat has rownames.
+  # if not, the matrix needs to be transposed.
   if(is.null(rownames(flowmat))) {
     flowmat <- t(flowmat)
   }
@@ -485,6 +494,8 @@ prepare_diagram <- function(model_list,
   # in the data frame for edges (segments/arrows/flows).
   flows <- unique(flows)
 
+
+
   # Parse the meaning of duplicate labels. Usually this is a complex mix
   # of a direct, physical flows and interactions from several other
   # state variables. We assume that the "main" flow among the "auxilliary"
@@ -532,8 +543,8 @@ prepare_diagram <- function(model_list,
   # set up columns needed to define interactions and subset out for interaction
   # settings separate from other flows. these are all merged back together
   # after interactions are given appropriate settings.
-  flows$linkto <- NA  #empty column for interaction flows, but needed for binding
   flows$linkfrom <- NA  #empty column for interaction flows, but needed for binding
+  flows$linkto <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(flows, interaction == TRUE)
   flows <- subset(flows, interaction == FALSE)
 
@@ -590,6 +601,7 @@ prepare_diagram <- function(model_list,
 
   # Keep only distinct rows
   flows <- unique(flows)
+
 
 
   # Make dummy compartment for all flows in and out of the system.
@@ -663,6 +675,7 @@ prepare_diagram <- function(model_list,
   }
 
 
+
   # Add dummy compartments to nodes dataframe
   # only do this is at least one of the objects created above is numeric
   # since we made all the objects exist and NULL, this works regardless
@@ -670,21 +683,17 @@ prepare_diagram <- function(model_list,
   if(is.numeric(outdummies) | is.numeric(indummies) | is.numeric(linkdummies)) {
     exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),  # the new ids
                           label = "",  # none of these get labels because they are dummies
-                          name = NA,  # no names because they are dummies
-                          row = 1)  # assume they are on row 1, this gets updated later if needed, but we need a value here for rbinding
+                          name = NA) #,  # no names because they are dummies
+                          #row = 1)  # assume they are on row 1, this gets updated later if needed, but we need a value here for rbinding
 
     # TODO: Remove commented line below after testing, might not be needed
     # exnodes[setdiff(names(variables), names(exnodes))] <- NA
-    variables <- rbind(variables, exnodes)
+    #variables <- rbind(variables, exnodes)
+    #switching to bind_rows so I can combine data frames with unequal number of columns
+    #missing columns in exnodes are set to NA
+    variables <- dplyr::bind_rows(variables, exnodes)
   }
 
-  # Add location information, see comments within function for details
-  # this function only adds location information to "named" variables
-  # provided by the user. Location information for "dummy" variables that
-  # were created above are added below.
-  variables <- add_locations(variables, varlocations, varbox_x_size,
-                             varbox_y_size, varspace_x_size,
-                             varspace_y_size)
 
 
   # update inflow node positions from nowhere (e.g. births)
@@ -823,6 +832,8 @@ prepare_diagram <- function(model_list,
   flows$ymin <- NA_real_
   flows$ymax <- NA_real_
 
+
+
   # update arrow start and end points based on relationship between to
   # and from positions
   for(i in 1:nrow(flows)) {
@@ -907,6 +918,8 @@ prepare_diagram <- function(model_list,
     }
   }
 
+
+
   # remove unneeded columns
   flows[ , c("xminstart", "xmaxstart", "yminstart", "ymaxstart",
            "xlabelstart", "ylabelstart", "xminend", "xmaxend",
@@ -951,7 +964,8 @@ prepare_diagram <- function(model_list,
   flows <- fix_arrow_pos(flows)
 
   # set default curvature of all flows
-  flows <- set_curvature(flows, variables)
+  flows <- set_curvature(variables, flows)
+
 
   # set curvature of feedback loops. this is pretty different from the
   # "regular" curvature settings, so we made a separate function for this
@@ -961,6 +975,7 @@ prepare_diagram <- function(model_list,
   # update external interaction arrows now that all other positioning
   # is final
   extints <- update_external_interaction_positions(extints, variables)
+
 
   # combine all flows
   flows <- rbind(flows, extints)
@@ -1022,9 +1037,11 @@ prepare_diagram <- function(model_list,
   rownames(flows) <- NULL
   rownames(variables) <- NULL
 
+  # combine variables and flows into list
   # apply default aesthetics
-  dflist <- apply_default_aesthetics(list(variables = variables,
-                                          flows = flows))
+  # realized that we can disable this and only let user set it through diagram_settings
+  #dflist <- apply_default_aesthetics(list(variables = variables, flows = flows))
+  dflist <- list(variables = variables, flows = flows)
 
   # Add inputs to return list.
   dflist$inputs <- list(model_list = model_list,

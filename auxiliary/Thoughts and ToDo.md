@@ -1,16 +1,29 @@
 11/4/ Notes from Andreas
 
+* Used dplyr's bind_cols/bind_rows at some places due to better handling of cases when one data frame has no entries. Added dplyr to dependency.
 
-Changed prepare_diagram inputs for scaling. Updated function documentation to explain updates. Not yet fully implemented in code.
+* Removed aesthetics from the prepare_diagram outputs. If a user an provide settings to make_diagram in a vectorized format, it's the same as manipulating entries in the diagram_list for aesthetics. So we can simply only allow it in one place. Then diagram_list will only contain entries that can't be supplied as settings to make_diagram.
 
+* Need to figure out how to best vectorize inputs to make_diagram.
 
-* I changed code in add_locations() to allow different defaults for box and spacing size. I tried with having a default of 1 for each. 
+* Changed prepare_diagram inputs for scaling/spacing. Updated function documentation to explain updates. Not yet fully implemented in code.
 
-* I made changes in prepare_diagram regarding spacing.
+* All optional settings for prepare_diagram are now by default NULL, and if not user-supplied, generated at start of prepare_diagram function.
+
+* Need to update set_curvature code (and any other place) to not use row information but work with only values in xmin/xmax/ymin/ymax. Also, need to avoid hard-coding any offsets/shifts and instead use them based on x/y-coordinates of the to/from boxes (or arrow dimensions).
+
+* If there are more than 10 out/in/interaction flows, does the current numbering system work? E.g. is there flow 55512 or how's the labeling? Will code work? Sounds from comments in code right now that max is 9. If true, need to recode to remove any hard limit.
 
 * Examples in prepare_diagram need updating to show all possible inputs
 
 
+* Minor: I prefer a from-to order/logic everywhere, both in entry/column order and code.
+
+* Minor: Should do order of variables first, then flows in all functions, etc.
+
+* Minor: Unclear what interaction/direct_interaction/out_interaction are, can you clarify? E.g. add comment in code first time those are created/show up.
+
+* Minor: Can we restructure prepare_diagram code as much as possible to first do all variable-related processing, then all flow-related?
 
 
 9/5 thoughts

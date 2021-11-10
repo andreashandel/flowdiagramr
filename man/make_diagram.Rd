@@ -6,17 +6,18 @@
 \usage{
 make_diagram(
   diagram_list,
-  diagram_settings = list(var_outline_color = NA, var_fill_color = "#6aa4c8",
+  diagram_settings = list(var_outline_color = "black", var_fill_color = "#6aa4c8",
     var_label_text = NA, var_label_on = TRUE, var_label_color = "white", var_label_size =
-    NA, main_flow_on = TRUE, main_flow_color = "grey25", main_flow_linetype = "solid",
+    10, main_flow_on = TRUE, main_flow_color = "grey25", main_flow_linetype = "solid",
     main_flow_size = 0.7, main_flow_label_on = TRUE, main_flow_label_color = "black",
-    main_flow_label_size = 5, interaction_flow_on = TRUE, interaction_flow_color =
-    "grey25", interaction_flow_linetype = "dashed", interaction_flow_size = 0.7,
-    interaction_flow_label_on = TRUE, interaction_flow_label_color = "black",     
-    interaction_flow_label_size = 5, external_flow_on = TRUE, external_flow_color =
+    main_flow_label_size = 5, main_flow_arrow_size = 0.25, interaction_flow_on = TRUE,
+    interaction_flow_color = "grey25", interaction_flow_linetype = "dashed",
+    interaction_flow_size = 0.7, interaction_flow_label_on = TRUE,     
+    interaction_flow_label_color = "black", interaction_flow_label_size = 5,
+    interaction_flow_arrow_size = 0.25, external_flow_on = TRUE, external_flow_color =
     "grey25", external_flow_linetype = "solid", external_flow_size = 0.7,
     external_flow_label_on = TRUE, external_flow_label_color = "black",
-    external_flow_label_size = 5, with_grid = FALSE)
+    external_flow_label_size = 5, external_flow_arrow_size = 0.25, with_grid = FALSE)
 )
 }
 \arguments{
@@ -74,6 +75,7 @@ be recycled in the order of the flows in the supplied data frame.
 \item \code{main_flow_label_size}: A scalar or numeric vector
 specifying the text size for main flow labels. If a vector, the values will
 be recycled in the order of the flows in the supplied data frame.
+\item \code{main_flow_arrow_size}: A scalar or numeric vector specifying size of arrow
 
 \item \code{interaction_flow_on}: A logical indicating if the interaction flow arrows should be plotted.
 \item \code{interaction_flow_color}: A character string or vector of character strings
@@ -101,6 +103,7 @@ be recycled in the order of the flows in the supplied data frame.
 \item \code{interaction_flow_label_size}: A scalar or numeric vector
 specifying the text size for interaction flow labels. If a vector, the values will
 be recycled in the order of the flows in the supplied data frame.
+\item \code{interaction_flow_arrow_size}: A scalar or numeric vector specifying size of arrow
 
 \item \code{external_flow_on}: A logical indicating if the external flow arrows should be plotted.
 \item \code{external_flow_color}: A character string or vector of character strings
@@ -128,6 +131,7 @@ be recycled in the order of the flows in the supplied data frame.
 \item \code{external_flow_label_size}: A scalar or numeric vector
 specifying the text size for external flow labels. If a vector, the values will
 be recycled in the order of the flows in the supplied data frame.
+\item \code{external_flow_arrow_size}: A scalar or numeric vector specifying size of arrow
 \item \code{with_grid} A logical indicating whether to return the ggplot
 with a grid. Default is FALSE. The grid can be helpful if you
 want/need to move items around.

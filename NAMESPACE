@@ -2,7 +2,6 @@
 
 export(add_locations)
 export(add_plus_signs)
-export(apply_default_aesthetics)
 export(check_model_list)
 export(check_model_settings)
 export(convert_from_modelbuilder)

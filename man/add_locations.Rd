@@ -2,11 +2,11 @@
 % Please edit documentation in R/add_locations.R
 \name{add_locations}
 \alias{add_locations}
-\title{Add x,y location informations}
+\title{Add x,y location information}
 \usage{
 add_locations(
   variables,
-  varlocations = NULL,
+  varlocations,
   varbox_x_size,
   varbox_y_size,
   varspace_x_size,
@@ -18,17 +18,17 @@ add_locations(
 
 \item{varlocations}{The varlocations matrix. Default is NULL.}
 
-\item{varbox_x_size}{Scaler for box width, from \code{model_settings}.}
+\item{varbox_x_size}{Scalar for box width, from \code{model_settings}.}
 
-\item{varbox_y_size}{Scaler for box height, from \code{model_settings}.}
+\item{varbox_y_size}{Scalar for box height, from \code{model_settings}.}
 
-\item{varspace_x_size}{Scaler for horizontal spacing, from \code{model_settings}.}
+\item{varspace_x_size}{Scalar for horizontal spacing, from \code{model_settings}.}
 
-\item{varspace_y_size}{Scaler for vertical spacing, from \code{model_settings}.}
+\item{varspace_y_size}{Scalar for vertical spacing, from \code{model_settings}.}
 }
 \value{
 The variables data frame with location information.
 }
 \description{
-Add x,y location informations
+Add x,y location information
 }

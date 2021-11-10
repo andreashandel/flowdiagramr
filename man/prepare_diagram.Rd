@@ -6,8 +6,8 @@
 \usage{
 prepare_diagram(
   model_list,
-  model_settings = list(varlocations = NULL, varbox_x_size = 1, varbox_y_size = 1,
-    varspace_x_size = 1, varspace_y_size = 1)
+  model_settings = list(varlocations = NULL, varbox_x_size = NULL, varbox_y_size =
+    NULL, varspace_x_size = NULL, varspace_y_size = NULL)
 )
 }
 \arguments{
@@ -32,25 +32,27 @@ math notation (e.g., +, -, *, /).
 \item{model_settings}{A list of optional model settings. The following
 elements are supported and default values are provided:
 \itemize{
-\item \code{varlocations}: A character matrix of variable locations on a grid.
+\item \code{varlocations}: A matrix containing all \code{model_list$varlabels} entries in specific locations on a grid. See examples.
 \item \code{varbox_x_size}: Either a scalar or a vector that changes the default
 width of variable boxes. For example, \code{varbox_x_size = 1.5} makes each box
 1.5 units in width. If a scalar, the value is used for all variables.
 If a vector, the values are applied to the variables in the order
 provided in \code{model_list$varlabels}.
-\item \code{varbox_y_size}: Either a scalar or a vector that changes the default
-height of variable boxes. For example, \code{varbox_y_size = 1.5} makes each box
-1.5 units in height. If a scalar, the value is used for all variables.
-If a vector, the values are applied to the variables in the order
-provided in \code{model_list$varlabels}.
-\item \code{varspace_x_size}: A scalar that changes the default spacing between
-variable boxes in the x dimension. For example, \code{varspace_x_size = 1.5}
-makes each box 1.5 times farther apart in the x dimension than the
-default spacing.
-\item \code{varspace_y_size}: A scalar that changes the default spacing between
-variable boxes in the y dimension. For example, \code{varspace_y_size = 1.5}
-makes each box 1.5 times farther apart in the y dimension than the
-default spacing.
+\item \code{varbox_y_size}: Same as \code{varbox_x_size} but for the height of the boxes.
+\item \code{varspace_x_size}:  Either a scalar or a vector that changes the spacing between
+variable boxes in the x/horizontal dimension.
+To use this, you need to provide a \code{varlocations} matrix.
+If \code{varspace_x_size} is a scalar, all spaces between boxes in the x direction will be the same.
+For example, \code{varspace_x_size = 1.5} puts 1.5 units of space in the x direction between boxes.
+If you provide a vector, it needs to be of dimension one less than the number of columns in \code{varlocations}.
+Spacing starts at the left, thus the first number is the spacing between the first column and second column, etc.
+\item \code{varspace_y_size}:  Either a scalar or a vector that changes the spacing between
+variable boxes in the y/vertical dimension.
+To use this, you need to provide a \code{varlocations} matrix.
+If \code{varspace_y_size} is a scalar, all spaces between boxes in the y direction will be the same.
+For example, \code{varspace_y_size = 1.5} puts 1.5 units of space in the y direction between boxes.
+If you provide a vector, it needs to be of dimension one less than the number of rows in \code{varlocations}.
+Spacing starts at the bottom, thus the first number is the spacing between the lowest and second lowest row, etc.
 }}
 }
 \value{
@@ -70,20 +72,16 @@ The data frame contains these columns:
 \item \code{ymax}: Upper edge of location box.
 \item \code{xlabel}: Horizontal position (midpoint) of label.
 \item \code{ylabel}: Vertical position (midpoint) of label.
-\item \code{color}: Default outline color for the box.
-\item \code{fill}: Default fill color for the box.
-\item \verb{label color}: Default color for text label.
-\item \code{label_size}: Size of text to be written into the box.
 }
 
 \item \code{flows}: A data frame containing information for all flows.
 The data frame contains these columns:
 \itemize{
 \item \code{id}: A numeric id for each flow.
-\item \code{to}: The variable to which the arrow will point. That is, the
-variable receiving the flow.
 \item \code{from}: The variable from which the arrow originate. That is, the
 variable donating the flow.
+\item \code{to}: The variable to which the arrow will point. That is, the
+variable receiving the flow.
 \item \code{label}: The label of the flow. Typically a mathematical expression.
 \item \code{xmin}: The starting horizontal position of the arrow.
 \item \code{xmax}: The ending horizontal position of the arrow.
@@ -94,15 +92,9 @@ variable donating the flow.
 \item \code{curvature}: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.
 \item \code{type}: Type of flow. One of main, interaction, or external.
-\item \code{math}: The math from the flows specified by the user. Is a
+\item \code{math}: The math from the flows specified by the user. This is a
 duplicate of \code{label} so that user can update \code{label} as desired but
 retain the original math for reference.
-\item \code{color}: Default color of the lines/arrows.
-\item \code{linetype}: Default linetype.
-\item \code{size}: Default size of the lines.
-\item \code{label_color}: Default label color.
-\item \code{label_size}: Default text size for label.
-\item \code{arrowsize}: Default arrow size.
 }
 }
 }

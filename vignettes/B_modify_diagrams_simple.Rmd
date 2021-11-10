@@ -32,17 +32,17 @@ To re-cap, the simple workflow is like this
 
 ```{r}
 #specify model
-mymodel = list( varlabels = c("S","I","R"),
+sirmodel1 = list( varlabels = c("S","I","R"),
                 flows = list(S_flows = c("-b*S*I"), 
                              I_flows = c("b*S*I","-g*I"), 
                              R_flows = c("g*I"))
               )
 #prepare diagram
-diagram_list <- prepare_diagram(model_list = mymodel)
+diagram_list1 <- prepare_diagram(model_list = sirmodel1)
 #make diagram
-my_diagram <- make_diagram(diagram_list = diagram_list)
+sir_diagram1 <- make_diagram(diagram_list = diagram_list1)
 #plot diagram
-plot(my_diagram)
+plot(sir_diagram1)
 ```
 
 Both `prepare_diagram()` and `make_diagram()` can be supplied with additional settings that allow you to customize your diagram rather easily.
@@ -50,43 +50,26 @@ Let's look at both.
 
 ## Setting arguments in `prepare_diagram()`
 
-You always need to provide a `model_list` input to `prepare_diagram`. In addition, you can provide an optional `model_settings` argument, which allows you to influence the placement of the variables/boxes and arrows. Check the help file with `help('prepare_diagram')` for all the details. Here we explore some of the options through a few examples.
+You always need to provide a `model_list` input to `prepare_diagram`. In addition, you can provide an optional `model_settings` argument, which allows you to influence the placement and sizing of the variables/boxes and arrows. Check the help file with `help('prepare_diagram')` for all the details. Here we explore some of the options through a few examples.
+
 
 
 ### Example 1
 
-We will explore an extension of the SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
+We'll take the model defined above, and now specify an additional `model_settings` argument called `varlocations`. This allows you to specify the placement of the variable boxes. 
 
-```{r}
-# specify the model
-varlabels = c("S","I","R")
-flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
-             I_flows = c("+b*S*I","-g*I", "-m*I"), 
-             R_flows = c("g*I", "-m*R"))
-sirmodel = list(varlabels = varlabels, flows = flows)
-```
+For simple models, the default setting of **`r pkg`** of having all compartments/boxes along a single row might be ok. But unless your model is very simple, you likely do not want all variables/boxes on the same row. Thus, specifying `varlocations` is often very useful and necessary to produce a decent looking diagram.
 
-We can again turn this model into a diagram with just a few lines of code.
+The `varlocations` argument is a matrix and should contain the model variables aligned in a grid of rows and columns. This will correspond to their placement in the diagram. 
+In this example, we decided that instead of having all three variables on a single row (the default), we want **S** and **R** on a bottom row in the left and right corners, and **I** on a top row in the middle. 
 
-```{r}
-diagram_list <- prepare_diagram(model_list = sirmodel)
-my_diagram <- make_diagram(diagram_list = diagram_list)
-plot(my_diagram)
-```
-
-
-
-
-We now specify an additional `model_settings` argument called `varlocations`. 
-This argument is a matrix and should contain the model variables aligned in a grid of rows and columns. This will correspond to their placement in the diagram. 
-In this example, we decided that instead of having all three variables on a single row (the default), we want **S** and **R** on a top row in the left and right corners, and **I** on a row below in the middle. 
-
-To accomplish that, we define a grid/matrix with 2 rows and 3 columns and in that matrix, we place the **S** and **R** compartments in the left and right corner of the top row and the **I** compartment in the middle of the bottom row. All other slots are empty, and need to be specified as empty strings. The following code accomplishes that.
+To accomplish that, we define a grid/matrix with 2 rows and 3 columns and in that matrix, we place the **S** and **R** compartments in the left and right corner of the bottom row and the **I** compartment in the middle of the top row. All other slots are empty, and need to be specified as empty strings. The following code accomplishes that.
 
 ```{r}
 #optional list of settings
-sirsettings = list(varlocations = matrix(data = c("S", "", "R",
-                                                  "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
+sirsettings1 = list(varlocations = matrix(data = c("",  "I", "",
+                                                  "S", "",  "R" ),
+                                         nrow = 2, ncol = 3, byrow = TRUE)
                   )
 ```
 
@@ -94,13 +77,52 @@ With these additional settings, the model diagram looks as follows
 
 ```{r, fig.height=4}
 # prepare inputs 
-sir_diagram_list <- prepare_diagram(model_list = sirmodel, model_settings = sirsettings)
+diagram_list2 <- prepare_diagram(model_list = sirmodel1, model_settings = sirsettings1)
 # make  diagram
-sir_diagram <- make_diagram(diagram_list = sir_diagram_list)
-plot(sir_diagram)
+sir_diagram2 <- make_diagram(diagram_list = diagram_list2)
+plot(sir_diagram2)
 ```
 
-For this simple model, the default setting of **`r pkg`** of having all compartments along a single row  would be ok. But unless your model is very simple, you likely do not want all variables/boxes on the same row. Thus, specifying `varlocations` is often very useful and necessary to produce a decent looking diagram.
+
+
+
+### Example 2
+
+Let's look at a slightly extended SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
+
+```{r}
+# specify the model
+varlabels = c("S","I","R")
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
+             I_flows = c("+b*S*I","-g*I", "-m*I"), 
+             R_flows = c("g*I", "-m*R"))
+sirmodel2 = list(varlabels = varlabels, flows = flows)
+```
+
+We'll make two diagrams, one with the default placement of all compartments in a single row, and one where we suppyl `varlocations`. For this example, we'll place **S** and **R** in a left column on the top and bottom, and move **I** to a right column in the middle.
+
+```{r}
+#optional list of settings
+sirsettings2 = list(varlocations = matrix(data = c("S", "",
+                                                   "", "I",
+                                                   "R", "" ),
+                                         nrow = 3, ncol = 2, byrow = TRUE)
+                  )
+```
+
+This prepares and plots both versions of the diagram.
+
+```{r}
+diagram_list3 <- prepare_diagram(model_list = sirmodel2)
+diagram_list4 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings2)
+sir_diagram3 <- make_diagram(diagram_list = diagram_list3)
+sir_diagram4 <- make_diagram(diagram_list = diagram_list4)
+plot(sir_diagram3)
+plot(sir_diagram4)
+```
+
+
+
 
 
 ### Example 2
@@ -111,14 +133,14 @@ Let's look at another example, one that might come up somewhat often, where you 
 ```{r}
 sir_vertical_settings = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
                    varbox_y_size = 0.5,
-                   varspace_y_size = 0.5
+                   varspace_y_size = 1
                    )
 ```
 
 With this setup, the diagram looks like this
 
 ```{r, fig.height=5}
-sir_vertical <- prepare_diagram(model_list = sirmodel, model_settings = sir_vertical_settings)
+sir_vertical <- prepare_diagram(model_list = sirmodel2, model_settings = sir_vertical_settings)
 sir_diagram <- make_diagram(diagram_list = sir_vertical)
 plot(sir_diagram)
 ggplot2::ggsave("sirdiagram1.png",sir_diagram)
@@ -133,7 +155,7 @@ sir_vertical_settings2 = list(varlocations = matrix(data = c("S", "I", "R"), nro
                    varbox_y_size = 0.5,
                    varspace_y_size = 1
                    )
-sir_vertical2 <- prepare_diagram(model_list = sirmodel, model_settings = sir_vertical_settings2)
+sir_vertical2 <- prepare_diagram(model_list = sirmodel2, model_settings = sir_vertical_settings2)
 sir_diagram <- make_diagram(diagram_list = sir_vertical2)
 plot(sir_diagram)
 ggplot2::ggsave("sirdiagram2.png",sir_diagram)
@@ -146,7 +168,7 @@ sir_vertical_settings2 = list(varlocations = matrix(data = c("S", "I", "R"), nro
                    varbox_y_size = 1,
                    varspace_y_size = 0.5
                    )
-sir_vertical2 <- prepare_diagram(model_list = sirmodel, model_settings = sir_vertical_settings2)
+sir_vertical2 <- prepare_diagram(model_list = sirmodel2, model_settings = sir_vertical_settings2)
 sir_diagram <- make_diagram(diagram_list = sir_vertical2)
 plot(sir_diagram)
 ggplot2::ggsave("sirdiagram2.png",sir_diagram)
@@ -167,11 +189,11 @@ The scaling arguments can be vectorized to allow different spacing and sizing of
 
 ```{r, eval = FALSE}
 sir_vertical_settings2 = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
-                   varbox_x_size = c(1.5,1,1.5),
-                   varbox_y_size = c(0.5,1,0.5),
-                   varspace_y_size = c(0.5,1,0.5)
+                   varbox_x_size = c(1.5, 1, 1.5),
+                   varbox_y_size = c(0.5, 1, 0.5),
+                   varspace_y_size = c(0.5, 1, 0.5)
                    )
-sir_vertical2 <- prepare_diagram(model_list = sirmodel, model_settings = sir_vertical_settings2)
+sir_vertical2 <- prepare_diagram(model_list = sirmodel2, model_settings = sir_vertical_settings2)
 sir_diagram <- make_diagram(diagram_list = sir_vertical2)
 plot(sir_diagram)
 ggplot2::ggsave("sirdiagram2.png",sir_diagram)

@@ -4,13 +4,13 @@
 \alias{set_feedback_curvature}
 \title{Sets the curvature values for feedback arrows}
 \usage{
-set_feedback_curvature(edf)
+set_feedback_curvature(flows)
 }
 \arguments{
-\item{edf}{Edges df}
+\item{flows}{flows data frame}
 }
 \value{
-A data frame
+Updated flows data frame
 }
 \description{
 Sets the curvature values for feedback arrows

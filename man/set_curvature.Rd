@@ -4,15 +4,15 @@
 \alias{set_curvature}
 \title{Sets the curvature values for curved arrows. used by prepare_diagram}
 \usage{
-set_curvature(edf, ndf)
+set_curvature(variables, flows)
 }
 \arguments{
-\item{edf}{Edges df}
+\item{variables}{variable data frame}
 
-\item{ndf}{Nodes df}
+\item{flows}{flow data frame}
 }
 \value{
-A data frame
+An updated flow data frame
 }
 \description{
 Sets the curvature values for curved arrows. used by prepare_diagram
