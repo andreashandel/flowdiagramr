@@ -31,7 +31,7 @@ The data frames returned from prepare_diagram will be big if we change as outlin
 
 * Rewrote check_model_list function, but might not work, haven't fully tested/debugged yet.
 
-* Working through prepare_diagram step by step and updating, so far done checks, currently on add_locations
+* Working through prepare_diagram step by step and updating, so far done checks, currently on add_locations and starting looking at flow processing part.
 
 
 11/4/ Notes from Andreas
