@@ -287,8 +287,8 @@ prepare_diagram <- function(model_list,
   )
 
   #############################################
-  # Add variable location, place in data frame
-  # Add location information, see comments within function for details
+  # Add location information for each variable and add todata frame
+  # See comments within function for details
   # this function only adds location information to real/named variables
   # provided by the user.
   vardf <- add_locations(vardf, varlocations, varbox_x_size,
@@ -297,17 +297,21 @@ prepare_diagram <- function(model_list,
 
 
 
+
   #############################################
-  # Process flows, create several matrices
   #############################################
-  #extract the flows list
-  flows <- model_list$flows
+  # Code block that starts processing flows
+  # This code block uses these helper functions:
+  # add_plus_signs()
+  # get_vars_pars()
+  #############################################
+  #############################################
 
   #add implicit + signs to make explicit before additional parsing
   flows <- add_plus_signs(flows)
 
-  #turns flow list into matrix, adding NA, found it online,
-  #not sure how exactly it works (from AH and modelbuilder code base)
+  #turns flow list into matrix, adding NA
+  #(from modelbuilder code base)
   #variables are along rows and flows along columns.
   flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
 
@@ -324,11 +328,6 @@ prepare_diagram <- function(model_list,
 
   #extract only the + or - signs from flows so we know the direction
   signmat <- gsub("(\\+|-).*","\\1",flowmat)
-
-
-  # Create the edge data frame by looping through the variables
-  # and associated flows.
-  flows <- list()  #an empty list to be coerced to a data frame via rbind
 
   ############################################################
   #Loop over all variables, for each variable, loop over flows
@@ -355,14 +354,15 @@ prepare_diagram <- function(model_list,
       connectvars <- unname(which(flowmatred == currentflow, arr.ind = TRUE)[,1])
 
       # Extract the variable names in the flow expression
-      varspars <- unique(get_vars_pars(currentflowfull))
+      varspars <- unique( get_vars_pars(currentflowfull))
       varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
 
       #vars is now a vector of the variables that are in the flow math
-      vars <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
+      # AH: DOES THIS WORK OF VARIABLES HAVE THE SAME STARTING LETTER, SAY P1, P2, P3?
+      varvec <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
 
       #extract the numeric ids for the variables in this flow
-      varsids <- variables[which(variables$label %in% vars), "id"]
+      varsids <- variables[which(variables$name %in% varvec), "id"]
 
       # add a connecting variable if the expression is only in one row but
       # the flow math contains another state variable (node)
@@ -383,7 +383,7 @@ prepare_diagram <- function(model_list,
         # If the flow does not show up in any other rows (connectvars == 1)
         # and there are no variables in the flow math, then the only connecting
         # variable is the current (i) variable
-        if(length(connectvars) == 1 & length(vars) == 0) {
+        if(length(connectvars) == 1 & length(varvec) == 0) {
           connectvars <- i
         }
 
@@ -392,19 +392,19 @@ prepare_diagram <- function(model_list,
         # connecting variable(s) will either be the current variable once
         # (indicating an inflow like births) or the current variable twice
         # (indicating a feedback flow)
-        if(length(connectvars) == 1 & length(vars) >= 1){
+        if(length(connectvars) == 1 & length(varvec) >= 1){
 
           # if the current (i) variable does not show up in the flow math
           # then the connecting variable is just the current variable once,
           # indicating a independent inflow from out of the system (e.g., birth)
-          if(!varnames[i] %in% vars) {
+          if(!variables[i] %in% varvec) {
             connectvars <- i
           }
 
           # is the the current (i) variables shows up in the flow math, then
           # the connecting variables are the current variable twice, indicating
           # a feedback loop
-          if(varnames[i] %in% vars) {
+          if(variables[i] %in% varvec) {
             connectvars <- c(i, i)
           }
         }
@@ -415,7 +415,7 @@ prepare_diagram <- function(model_list,
         if(length(connectvars) > 1) {
           connectvars <- connectvars
         }
-      }
+      } #end function block for inflows
 
 
       # If current sign is negative, it is an outflow and goes either to the
@@ -438,8 +438,8 @@ prepare_diagram <- function(model_list,
                           direct_interaction = FALSE)
 
         # Bind to edge data frame for flows
-        flows <- rbind(flows, tmp)
-      }
+        flowdf <- rbind(flowdf, tmp)
+      } #end function block for outflows
 
       # If the current sign is positive AND the flow only shows up in
       # one row of the flow matrix, then this is an inflow external to the
@@ -453,7 +453,7 @@ prepare_diagram <- function(model_list,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
-          flows <- rbind(flows, tmp)
+          flowdf <- rbind(flowdf, tmp)
         }
       }
 

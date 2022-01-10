@@ -82,14 +82,10 @@ check_model_list <- function(model_list) {
     {
       nowflow = varflows[nf]
 
-      # take the flow apart by splitting on any math symbols that connect
-      # what should be left over is a collection of variable and parameter names
-      # we can currently only deal with basic math operations
-      pattern = "[-+\\++\\*+\\(+\\)+\\^+/+]"
-      #get individual variable/parameter symbols by splitting on math operators
-      flowsymbols = unlist(strsplit(nowflow,pattern))
-      #there might be a leading empty one, remove that
-      flowsymbols = flowsymbols[nchar(flowsymbols)>0]
+      # uses small helper function to get names of individal parameters
+      # and variables for a flow
+      flowsymbols = get_vars_pars(nowflow)
+
       #look at any symbols that are not variables, those should be parameter names
       #nothing else (e.g. sin() or such) is currently allowed
       parnames = setdiff(flowsymbols, variables)
