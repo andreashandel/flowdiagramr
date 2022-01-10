@@ -47,9 +47,10 @@ check_model_settings <- function(model_list, model_settings) {
   ######################################################################
   #check the box scaling settings
   ######################################################################
-  # check to make sure box scaling parameters are of length 0 (not there) or 1
-  # (same scaling for all boxes)
-  # or length of the number of variables. hard error out if not
+  # check to make sure box scaling parameters are one of
+  # length 0 (NULL/not there) or
+  # 1 (same scaling for all boxes) or
+  # length of the number of variables. hard error out if not
   nvars = length(model_list$varlabels)
 
   if( !(length(model_settings$varbox_x_scaling) %in% c(0,1,nvars) ) )

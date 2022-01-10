@@ -15,30 +15,31 @@
 #' @param model_list A list of model elements. This list is required and
 #' must contain these two elements:
 #' \itemize{
-#' \item `varlabels`: A character vector with labels for each variable.
-#' \item `flows`: A list that is the same length as `varlabels`. Each sub-list
+#' \item `variables`: A character vector specifying the names of all variables.
+#' \item `flows`: A list that is the same length as `variables`. Each sub-list
 #'     element is a character vector of any length specifying the flows into
 #'     and out of the variable. Note that **flowdiagramr** assumes that the
-#'     order of `flows` and `varlabels` match.
-#' \item IMPORTANT: All varlabel entries must start with an upper case letter,
+#'     order of `flows` and `variables` match.
+#' \item IMPORTANT: All `variables` entries must start with an upper case letter,
 #' followed by any combination of letters and numbers (e.g.,
-#' S, Si, or Aml2). All parameters contained in the flows
+#' S, Si, or Aml2). All parameters contained in `flows`
 #' must start with a lower case letter
 #' followed by any combination of letters and numbers (e.g.,
 #' b, bBmax, kS, p21S). All variables and parameters MUST be separated by
 #' math notation (e.g., +, -, *, /).
+#' Most math functions (e.g., `sin`, `cos`) are currently not supported.
 #' \item See examples and details below and vignettes.
 #' }
 #'
 #' @param model_settings A list of optional model settings. The following
 #'     elements are supported and default values are provided:
 #' \itemize{
-#' \item `varlocations`: A matrix containing all `model_list$varlabels` entries in specific locations on a grid. See examples.
+#' \item `varlocations`: A matrix containing all `model_list$vars` entries in specific locations on a grid. See examples.
 #' \item `varbox_x_size`: Either a scalar or a vector that changes the default
 #'     width of variable boxes. For example, `varbox_x_size = 1.5` makes each box
 #'     1.5 units in width. If a scalar, the value is used for all variables.
 #'     If a vector, the values are applied to the variables in the order
-#'     provided in `model_list$varlabels`.
+#'     provided in `model_list$vars`.
 #' \item `varbox_y_size`: Same as `varbox_x_size` but for the height of the boxes.
 #' \item `varspace_x_size`:  Either a scalar or a vector that changes the spacing between
 #'     variable boxes in the x/horizontal dimension.
@@ -47,34 +48,31 @@
 #'     For example, `varspace_x_size = 1.5` puts 1.5 units of space in the x direction between boxes.
 #'     If you provide a vector, it needs to be of dimension one less than the number of columns in `varlocations`.
 #'     Spacing starts at the left, thus the first number is the spacing between the first column and second column, etc.
-#' \item `varspace_y_size`:  Either a scalar or a vector that changes the spacing between
-#'     variable boxes in the y/vertical dimension.
-#'     To use this, you need to provide a `varlocations` matrix.
-#'     If `varspace_y_size` is a scalar, all spaces between boxes in the y direction will be the same.
-#'     For example, `varspace_y_size = 1.5` puts 1.5 units of space in the y direction between boxes.
+#' \item `varspace_y_size`:  Same as `varspace_y_size` but for the vertical dimension.
 #'     If you provide a vector, it needs to be of dimension one less than the number of rows in `varlocations`.
 #'     Spacing starts at the bottom, thus the first number is the spacing between the lowest and second lowest row, etc.
 #' }
 #'
-#' @return A list of two data frames and the original inputs lists. The returned
-#'     data frames are:
+#' @return A list of four data frames. Two data frames containing information on variables/boxes and flows/arrows.
+#'         The original two input data frames are also returned.
+#'         The new data frames are:
 #' \itemize{
-#'   \item `variables`: A data frame containing information for all variables.
+#'   \item `varsettings`: A data frame containing information for all variables.
 #'   The data frame contains these columns:
 #'
 #'   \itemize{
-#'     \item `label`: The variable label as provided in the model specification.
+#'     \item `name`: The name of the variable as provided in the model specification.
+#'     \item `label`: A potential alternative label for the box. By default same as `name`.
 #'     \item `id`: A numeric id for each variable.
-#'     \item `name`: If provided, the full text for each variable.
-#'     \item `xmin`: Left edge location of box.
-#'     \item `xmax`: Right edge location of box.
-#'     \item `ymin`: Lower edge of location box.
-#'     \item `ymax`: Upper edge of location box.
+#'     \item `xmin`: Left edge location of variable box.
+#'     \item `xmax`: Right edge location of variable  box.
+#'     \item `ymin`: Lower edge of location variable box.
+#'     \item `ymax`: Upper edge of location variable  box.
 #'     \item `xlabel`: Horizontal position (midpoint) of label.
 #'     \item `ylabel`: Vertical position (midpoint) of label.
 #'   }
 #'
-#'   \item `flows`: A data frame containing information for all flows.
+#'   \item `flowsettings`: A data frame containing information for all flows.
 #'   The data frame contains these columns:
 #'   \itemize{
 #'     \item `id`: A numeric id for each flow.
@@ -97,15 +95,15 @@
 #'     retain the original math for reference.
 #'   }
 #' }
-#' @details `varlabels` needs to be specified as a vector of model variables,
-#' e.g., varlabels <- c("Pred","Prey").
+#' @details `variables` needs to be specified as a vector of model variables,
+#' e.g., vars <- c("Pred","Prey").
 #' `flows` need to be specified as a list, with each list entry containing the
 #' flows/processes for each variable in the order in which the variables appear.
 #' Flows need to be named according to VARLABEL_flows.
 #' Example: flows <- list(Pred_flows = c(`r*Pred`, `-k1*Pred*Prey`),
 #'                        Prey_flows = c(`g*Prey`, `-k2*Pred*Prey`) )
 #' Each flow, i.e. each entry in the flow vector, needs to be a valid
-#' mathematical expression made up of varlabels and parameters.
+#' mathematical expression made up of vars and parameters.
 #' The rules are as described above.
 #' As an example, the following includes a parameter *b* and two variables, *S*
 #' and *I*: `b*S*I`. The following includes a parameter *s* and two
@@ -114,45 +112,41 @@
 #'
 #' @examples
 #' #basic model specification
-#' varlabels <- c("S","I","R")
+#' variables <- c("S","I","R")
 #' flows <- list(S_flows = c("-b*S*I"),
 #'               I_flows = c("b*S*I","-g*I"),
 #'               R_flows = c("g*I"))
-#' mymodel <- list(varlabels = varlabels, flows = flows)
+#' mymodel <- list(variables = variables, flows = flows)
 #' diag_list <- prepare_diagram(model_list = mymodel)
 #' mydiag <- make_diagram(diag_list)
 #'
 #' #adding optional specifications
-#' varnames <- c("Susceptible","Infected","Recovered")
 #' varlocations <-  matrix(data = c("S", "", "R",
 #'                                  "", "I", "" ),
 #'                         nrow = 2, ncol = 3, byrow = TRUE)
 #' mysettings <- list(varlocations = varlocations)
 #' diag_list <- prepare_diagram(model_list = mymodel, model_settings = mysettings)
-#' diagsetting <- list(var_label_text = varlocations, var_label_size = 4)
 #' mydiag <- make_diagram(diag_list)
 #'
-#' #another simple model
-#' varlabels = c("Pat","Imm")
+#' #another simple model for pathogen (prey) and immune response (predator)
+#' variables = c("Pat","Imm")
 #' flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
 #'                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-#' mymodel = list(varlabels = varlabels, flows = flows)
+#' mymodel = list(variables = variables, flows = flows)
 #' diag_list <- prepare_diagram(mymodel)
 #' mydiag <- make_diagram(diag_list)
 #'
-#' #options to switch to vertical layout and adding names
-#' varnames <- c("Pathogen","Immune Response")
+#' #manually switch to vertical layout
 #' varlocations <-  matrix(data = c("Pat", "Imm"),
 #'                         nrow = 2, byrow = TRUE)
 #' mysettings <- list(varlocations = varlocations)
 #' diag_list <- prepare_diagram(mymodel,mysettings)
-#' diagsettings <- list(var_label_text = varnames, var_label_size = 4)
 #' mydiag <- make_diagram(diag_list)
 #'
 #' @export
 
 
-# this function calls the following internal helper functions
+# this function calls the following helper functions
 # add_locations()
 # add_plus_signs()
 # check_model_list()
@@ -180,6 +174,14 @@ prepare_diagram <- function(model_list,
                             )
 {
 
+  #############################################
+  #############################################
+  # Code block that does various checks and processing of input
+  # This code block uses these helper functions:
+  # check_model_list()
+  # check_model_settings()
+  #############################################
+  #############################################
 
 
 
@@ -197,9 +199,20 @@ prepare_diagram <- function(model_list,
     stop(checkmsg)
   }
 
+  ######################################################################
+  # check all user-provided model_settings to make sure entries are what they should be
+  ######################################################################
+  if (!is.null(model_settings))
+  {
+    checkmsg <- check_model_settings(model_list, model_settings)
+    if(!is.null(checkmsg))
+    {
+      stop(checkmsg)
+    }
+  }
 
   ######################################################################
-  # Set model_settings components that are not provided
+  # Set model_settings components that are not user-provided
   ######################################################################
   # For each model_settings component, if user didn't set it,
   # we set a default here
@@ -209,8 +222,9 @@ prepare_diagram <- function(model_list,
   # each with the default of 1
   # note that we assign it to model_settings.
   # this is needed to be passed into helper functions like make_vdf_angled
-  nvars = length(model_list$varlabels)
-  if (is.null(model_settings$varlocations)) {model_settings$varlocations = matrix(model_list$varlabels,nrow=1)}
+  # these updated settings will also be returned as part of the list of values this function returns
+  nvars = length(model_list$variables)
+  if (is.null(model_settings$varlocations)) {model_settings$varlocations = matrix(model_list$variables,nrow=1)}
   if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = rep(1,nvars)}
   if (is.null(model_settings$varbox_y_size)) {model_settings$varbox_y_size = rep(1,nvars)}
   if (is.null(model_settings$varspace_x_size)) {model_settings$varspace_x_size = rep(1,nvars-1)}
@@ -226,19 +240,20 @@ prepare_diagram <- function(model_list,
   if (length(model_settings$varspace_y_size)==1) {model_settings$varspace_y_size = rep(model_settings$varspace_y_size,nvars-1)}
 
 
-  ######################################################################
-  # check model_settings
-  # this is run no matter if the defaults are used or
-  # if user provided settings
-  ######################################################################
-  if (!is.null(model_settings))
-  {
-    checkmsg <- check_model_settings(model_list, model_settings)
-    if(!is.null(checkmsg))
-    {
-      stop(checkmsg)
-    }
-  }
+  #############################################
+  #############################################
+  # At this stage, all input checking should be done
+  #############################################
+  #############################################
+
+
+
+
+  #############################################
+  # Some processing/definitions to make code below
+  # more concise
+  #############################################
+
 
   # This pulls out all list elements in model_settings and assigns them
   # to individual variables with their respective names
@@ -248,31 +263,35 @@ prepare_diagram <- function(model_list,
     assign(names(model_settings)[i], value = model_settings[[i]])
   }
 
+  #assign to variables outside of model_list
+  #basically same as above for model_settings
+  variables <- model_list$variables
+  flows <- model_list$flows
 
-  #############################################
-  # Process variables, place in data frame
-  #############################################
   #number of variables/compartments in model
-  nvars <- length(model_list$varlabels)
+  nvars <- length(variables)
 
-  #labels for the nodes and what we expect to show up in the flow math
-  varnames <- model_list$varlabels
+
+  #############################################
+  #############################################
+  # Code block that starts processing variables
+  # This code block uses these helper functions:
+  # add_locations()
+  #############################################
+  #############################################
 
   # Create a data frame for all variables
-  variables <- data.frame(
+  vardf <- data.frame(
     id = 1:nvars,  # numeric id for nodes
-    label = varnames,  # labels for nodes
-    name = varnames  # long names for labels
-  #  row = 1  # hard code for 1 row, will be updated below, if necessary
+    name = variables  # names for labels
   )
 
   #############################################
   # Add variable location, place in data frame
   # Add location information, see comments within function for details
-  # this function only adds location information to "named" variables
-  # provided by the user. Location information for "dummy" variables that
-  # were created above are added below.
-  variables <- add_locations(variables, varlocations, varbox_x_size,
+  # this function only adds location information to real/named variables
+  # provided by the user.
+  vardf <- add_locations(vardf, varlocations, varbox_x_size,
                              varbox_y_size, varspace_x_size,
                              varspace_y_size)
 

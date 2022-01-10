@@ -1,43 +1,29 @@
 #' Add x,y location information
+#' Helper function called by prepare_diagram.
+#' Likely not useful for direct calling.
 #'
-#' @param variables The nodes (variables) data frame.
+#' @param vardf The nodes (variables) data frame.
 #' @param varlocations The varlocations matrix.
-#' @param varbox_x_size Vector of box width for each variable, from `model_settings`.
-#' @param varbox_y_size Vector for box height for each variable, from `model_settings`.
-#' @param varspace_x_size Vector for horizontal spacing, length variable numbers - 1, from `model_settings`.
-#' @param varspace_y_size Vector for vertical spacing, length variable numbers - 1, from `model_settings`.
-#' @return The variables data frame with location information added.
+#' @param varbox_x_size Vector of box width for each variable.
+#' @param varbox_y_size Vector for box height for each variable.
+#' @param varspace_x_size Vector for horizontal spacing.
+#' @param varspace_y_size Vector for vertical spacing.
+#' @return The original variables data frame with location information added.
+#' @details `varlocations` needs to be a matrix.
+#'          `varbox_x_size` and `varbox_y_size` need to be vectors
+#'          of length corresponding number of variables.
+#'          `varspace_x_size` and `varspace_y_size` need to be vectors
+#'          of length corresponding to cols/rows in varlocations minus 1.
+#'          `prepare_diagram` ensures inputs are provided in the required form.
 #' @export
 
-add_locations <- function(variables, varlocations, varbox_x_size,
+add_locations <- function(vardf, varlocations, varbox_x_size,
                           varbox_y_size, varspace_x_size,
                           varspace_y_size) {
 
-
   # get number of variables that will be plotted
-  nvars <- length(which(variables$label != ""))  # number of variables with a name
+  nvars <- length(which(vardf$name != ""))  # number of variables with a name
 
-
-  # This bit of code is now taken care of in start of prepare_diagram, can be removed here
-  # if varbox_*_size is a vector, make sure it is the same length as nvars
-  # if(length(varbox_x_size) > 1) {
-  #   if(length(varbox_x_size) != nvars) {
-  #     stop("The length of varbox_x_size must be 1 or the number of variables.")
-  #   }
-  # } else
-  # {
-  #   varbox_x_size <- recycle_values(varbox_x_size, nvars)
-  # }
-  #
-  #
-  # if(length(varbox_y_size) > 1) {
-  #   if(length(varbox_y_size) != nvars) {
-  #     stop("The length of varbox_y_size must be 1 or the number of variables.")
-  #   }
-  # } else
-  # {
-  #   varbox_y_size <- recycle_values(varbox_y_size, nvars)
-  # }
 
   # create the locations
   num_rows <- nrow(varlocations)  # number of rows for the grid
@@ -55,7 +41,7 @@ add_locations <- function(variables, varlocations, varbox_x_size,
   idmap <- data.frame(row_id = rids,
                       col_id = cids,
                       pos = positions,
-                      label = ids)
+                      name = ids)
 
   newvariables <- list()  # create an empty list to store the grid coordinates
 
@@ -82,9 +68,8 @@ add_locations <- function(variables, varlocations, varbox_x_size,
       tmp$ymax <- ystart + varbox_y_size[ri]
       xstart <-  tmp$xmax + varspace_x_size[ci]
       newvariables <- rbind(newvariables, tmp)
-#      browser()
-    }
-  }
+    } #end loop over columns
+  } #end loop over rows
 
   # now we map the variable names to the coordinates based on row
   # and column ids
@@ -93,17 +78,17 @@ add_locations <- function(variables, varlocations, varbox_x_size,
   tmpvars <- merge(newvariables, tmpvars, by = c("row_id", "col_id"))
 
   # subset to just the columns of interest for further processing and output
-  tmpvars <- tmpvars[, c("label", "xmin", "xmax", "ymin", "ymax")]
+  tmpvars <- tmpvars[, c("name", "xmin", "xmax", "ymin", "ymax")]
 
   # now merge into the variables dataframe
-  variables <- merge(variables, tmpvars, by = "label", all.x = TRUE)
+  vardf <- merge(vardf, tmpvars, by = "name", all.x = TRUE)
 
   # calculate midpoints for label locations
   # simple means for now that get updated as needed with further processing
-  variables$xlabel <- rowMeans(variables[ , c("xmin", "xmax")])
-  variables$ylabel <- rowMeans(variables[ , c("ymin", "ymax")])
+  vardf$xlabel <- rowMeans(variables[ , c("xmin", "xmax")])
+  vardf$ylabel <- rowMeans(variables[ , c("ymin", "ymax")])
 
   # order by the assigned numeric ids
-  variables <- variables[order(variables$id), ]
-  return(variables)  # return the variables data frame for further processing
+  vardf <- vardf[order(vardf$id), ]
+  return(vardf)  # return the variables data frame for further processing
 }

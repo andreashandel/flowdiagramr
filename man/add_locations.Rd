@@ -2,10 +2,12 @@
 % Please edit documentation in R/add_locations.R
 \name{add_locations}
 \alias{add_locations}
-\title{Add x,y location information}
+\title{Add x,y location information
+Helper function called by prepare_diagram.
+Likely not useful for direct calling.}
 \usage{
 add_locations(
-  variables,
+  vardf,
   varlocations,
   varbox_x_size,
   varbox_y_size,
@@ -14,21 +16,31 @@ add_locations(
 )
 }
 \arguments{
-\item{variables}{The nodes (variables) data frame.}
+\item{vardf}{The nodes (variables) data frame.}
 
-\item{varlocations}{The varlocations matrix. Default is NULL.}
+\item{varlocations}{The varlocations matrix.}
 
-\item{varbox_x_size}{Scalar for box width, from \code{model_settings}.}
+\item{varbox_x_size}{Vector of box width for each variable.}
 
-\item{varbox_y_size}{Scalar for box height, from \code{model_settings}.}
+\item{varbox_y_size}{Vector for box height for each variable.}
 
-\item{varspace_x_size}{Scalar for horizontal spacing, from \code{model_settings}.}
+\item{varspace_x_size}{Vector for horizontal spacing.}
 
-\item{varspace_y_size}{Scalar for vertical spacing, from \code{model_settings}.}
+\item{varspace_y_size}{Vector for vertical spacing.}
 }
 \value{
-The variables data frame with location information.
+The original variables data frame with location information added.
 }
 \description{
 Add x,y location information
+Helper function called by prepare_diagram.
+Likely not useful for direct calling.
+}
+\details{
+\code{varlocations} needs to be a matrix.
+\code{varbox_x_size} and \code{varbox_y_size} need to be vectors
+of length corresponding number of variables.
+\code{varspace_x_size} and \code{varspace_y_size} need to be vectors
+of length corresponding to cols/rows in varlocations minus 1.
+\code{prepare_diagram} ensures inputs are provided in the required form.
 }

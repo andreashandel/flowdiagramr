@@ -62,23 +62,27 @@ The purpose of **`r pkg`** is to automatically create this diagram for you if yo
 **`r pkg`** requires that the model is specified as a simple list structure. This list needs to have 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this looks as follows:
 
 ```{r}
-varlabels = c("S","I","R")
+variables = c("S","I","R")
 flows = list(S_flows = c("-b*S*I"), 
              I_flows = c("b*S*I","-g*I"), 
              R_flows = c("g*I"))
-mymodel = list(varlabels = varlabels, flows = flows)
+mymodel = list(variables = variables, flows = flows)
 ```
 
 **Model specification conventions and requirements:**
 
 * The main list (called `mymodel` above) can have any name. 
-* The elements inside the list need to be called `varlabels` and `flows`. 
+* The elements inside the list need to be called `variables` and `flows`. 
 * A model consists of variables and parameters, combined by basic mathematical expressions. Currently allowed are `+, -, *, (),/,^`. Mathematical operations such as `log`, `sin`, etc. are currently not supported. 
-* All variable labels need to start with an upper-case letter and can be any combination of letters and numbers.
+* Variables need to be supplied as a vector of strings, and need to start with an upper-case letter and can be any combination of letters and numbers.
 * All parameters need to start with a lower-case letter and can be any combination of letters and numbers.
-* The flows for each variable need to be named `NN_flows` where `NN` corresponds to the variable label. 
+* The flows for each variable need to be named `NN_flows` where `NN` corresponds to the variable name. 
 * Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write `b*S*I`, writing it as `bSI` will not work.
+* Flows need to be provided as a list, with flows for each variable as a vector.
 * Minus signs for outflows are required, plus signs for inflows are optional.
+
+_If these specifications sound confusing, just look at several of the examples and you'll quickly understand the whole setup._
+
 
 ### Create elements needed for diagram generation
 
@@ -119,7 +123,7 @@ To re-cap, these lines of code allowed us to specify and make a fairly simple fl
 
 ```{r, eval = FALSE}
 #specify model
-mymodel = list( varlabels = c("S","I","R"),
+mymodel = list( variables = c("S","I","R"),
                 flows = list(S_flows = c("-b*S*I"), 
                              I_flows = c("b*S*I","-g*I"), 
                              R_flows = c("g*I"))
@@ -148,10 +152,10 @@ To generate the diagram, you follow the same steps as above.
 First, create the model structure
 
 ```{r}
-varlabels = c("Pat","Imm")
+variables = c("Pat","Imm")
 flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-mymodel = list(varlabels = varlabels, flows = flows)
+mymodel = list(variables = variables, flows = flows)
 ```
 
 Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into `R`, they would work (provided you assigned numerical values to each variable and parameter).

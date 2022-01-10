@@ -1,8 +1,44 @@
+2022-01-10 Andreas Notes
+
+***
+
+* New idea: Have prepare_diagram return a data frame that has columns for all possible settings (e.g. also things like `var_fill_color`, etc.). Have a new helper function called `update_diagram` (or such) that takes the variable and flows dataframes returned by prepare_diagram and updates settings. Alternatively, user can manipulate specific elements "by hand" by directly replacing entries in data frame. As such the 'update' function is just a convenience function.
+
+With that change, the make_diagram function does not do any modifications anymore, it just turns the provided input, diagram_list, into ggplot code.
+
+Basically:
+diagram_list <- prepare_diagram(mymodel, mysettings)
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+make_diagram(diagram_list_new)
+
+Questions/Thoughts: 
+
+Does it make sense to send the full diagram_list into the update function, or should one have update functions for vars and flows separately. And should the input be the whole diagram_list (4 data frames) or just the part to be updated? 
+
+Is it still useful/necessary to have prepare_diagram return the original mymodel/mysettings input? Or just the 2 prepared data frames?
+
+The data frames returned from prepare_diagram will be big if we change as outlined above. is that a problem?
+
+***
+
+* Moved all but first vignettes into 'oldvignettes' to allow package to compile easier (still not working, code is still broken)
+
+* Changed inputs to model list. This will impact everything.
+
+* Should add ability to have more then 2 variables in a flows - is it actually 3 distinct variables that we can't handle (e.g. S*I*R or also something like S*I^2)?
+
+* Should think through what is provided as output by prepare_diagram and what is not. One option is to provide every possible setting, including all that can be changed through make_diagram. Another option is to not provide any by default that can be updated with make_diagram, but allow user to add them. Or simply keep what make_diagram does completely away from prepare_diagram.
+
+* Rewrote check_model_list function, but might not work, haven't fully tested/debugged yet.
+
+* Working through prepare_diagram step by step and updating, so far done checks, currently on add_locations
+
+
 11/4/ Notes from Andreas
 
 * Used dplyr's bind_cols/bind_rows at some places due to better handling of cases when one data frame has no entries. Added dplyr to dependency.
 
-* Removed aesthetics from the prepare_diagram outputs. If a user an provide settings to make_diagram in a vectorized format, it's the same as manipulating entries in the diagram_list for aesthetics. So we can simply only allow it in one place. Then diagram_list will only contain entries that can't be supplied as settings to make_diagram.
+* Removed aesthetics from the prepare_diagram outputs. If a user can provide settings to make_diagram in a vectorized format, it's the same as manipulating entries in the diagram_list for aesthetics. So we can simply only allow it in one place. Then diagram_list will only contain entries that can't be supplied as settings to make_diagram.
 
 * Need to figure out how to best vectorize inputs to make_diagram.
 

@@ -14,73 +14,113 @@ check_model_list <- function(model_list) {
 
   msg <- NULL
 
+  # to reduce typing
+  # also helps if someone like AH tries to rename everything again in the future :)
+  variables <- model_list$variables
+  flows <- model_list$flows
+
+
+  ################################
+  # Check things for variables
+  ################################
+
   # High level check for list elements
   elements <- names(model_list)
-  if(!("varlabels" %in% elements)) {
-    msg <- "The model_list object must contain a list element called varlabels."
+  if(!("variables" %in% elements))
+  {
+    msg <- "The model_list object must contain a list element called variables."
     return(msg)
   }
 
-  if(!("flows" %in% elements)) {
+  # Make sure all variables are unique
+  if(length(unique(variables)) != length(variables))
+  {
+    msg <- "All variable names need to be unique."
+    return(msg)
+  }
+
+  #check that naming for variables is correct (all start with upper case, no blank)
+  varpattern = "^[A-Z]+[A-Za-z0-9_]*$"
+  if (sum(!grepl(varpattern,variables))>0)
+  {
+    mberror = "Please start with a upper case letter and use only use letters and numbers for variables"
+    return(msg)
+  }
+
+
+  ################################
+  # Check things for flows
+  ################################
+
+
+  if(!("flows" %in% elements))
+  {
     msg <- "The model_list object must contain a list element called flows."
     return(msg)
   }
 
-  # Make sure all varlabels are unique
-  if(length(unique(model_list$varlabels)) != length(model_list$varlabels)) {
-    msg <- "All varlabels need to be unique, you can't use a label more than once."
-    return(msg)
-  }
-
-  # Check that each varlabels entry has a matched X_flow and the reverse
+  # Check that each variables entry has a matched X_flow and the reverse
   # Also ensure they are in the same order
-  flownamelabels = gsub("_flows","",names(model_list$flows))
-  if (sum(flownamelabels != model_list$varlabels) > 0)
+  flownamelabels = gsub("_flows","",names(flows))
+  if (sum(flownamelabels != variables) > 0)
   {
-    msg <- "All flow names must follow the varlabel naming and order. Make sure all XYZ in your XYZ_flows names correspond to entries in varlabels in the right order."
+    msg <- "All flow names must follow the variables naming and order. Make sure all XYZ in your XYZ_flows names correspond to entries in variables in the right order."
     return(msg)
   }
 
-  # Check that naming for varlabels is correct (all start with upper case, no blank)
-  # Check that naming for parameters is correct (all start with lower case, no blank)
-  # THERE IS ALREADY CODE FOR THIS IN check_model IN modelbuilder.
+  # more detailed flow checking to try and catch anything that doesn't make sense
+  # or that contains unsupported syntax
 
-  # Check that each flow has no more than 2 variables, current limitation
-  # of the package until we write a parser.
-  flows <- model_list$flows
-  #turns flow list into matrix, adding NA, found it online,
-  #not sure how exactly it works (from AH and modelbuilder code base)
-  #variables are along rows and flows along columns.
-  flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
-  #strip leading +/- from flows and replace with no space
-  flowmatred <- sub("\\+|-","",flowmat)
-  #convert to character vector
-  flowtext <- as.character(flowmatred)
-  for(i in 1:length(flowtext)) {
-    tmp <- flowtext[i]
-    vps <- get_vars_pars(tmp)
-    vars_in_flows <- unique(vps[which(vps %in% model_list$varlabels)])
-    if(length(vars_in_flows) > 2){
-      msg <- paste0("flowdiagramr cannot currently process flows that include\n",
-                    "an interaction between more than two variables. Consider\n",
-                    "breaking flows apart.")
-      return(msg)
-    }
-  }
+  #loop over each variable
+  #then for each variable loop over all flows and check them
+  #could likely be written more efficient, but speed doesn't matter here
+  #and a flow at a time is easy to follow along
+  for (nv in 1:length(variables))
+  {
+    varflows = flows[[nv]]
+    for (nf in 1:length(varflows))
+    {
+      nowflow = varflows[nf]
 
+      # take the flow apart by splitting on any math symbols that connect
+      # what should be left over is a collection of variable and parameter names
+      # we can currently only deal with basic math operations
+      pattern = "[-+\\++\\*+\\(+\\)+\\^+/+]"
+      #get individual variable/parameter symbols by splitting on math operators
+      flowsymbols = unlist(strsplit(nowflow,pattern))
+      #there might be a leading empty one, remove that
+      flowsymbols = flowsymbols[nchar(flowsymbols)>0]
+      #look at any symbols that are not variables, those should be parameter names
+      #nothing else (e.g. sin() or such) is currently allowed
+      parnames = setdiff(flowsymbols, variables)
+      # check that parameter names follow the right naming convention
+      parpattern = "^[a-z]+[A-Za-z0-9_]*$"
+      if (sum(!grepl(parpattern,parnames))>0)
+      {
+        msg = "Please start with a lower case letter and use only use letters and numbers for parameters";
+        return(msg)
+      }
+      # these are allowed, nothing else
+      math_symbols <- c("+", "-", "*", "^", "/", "(", ")", " ","")
+      allsymbols = c(math_symbols,variables, parnames, 0:9)
+      if (sum(!(flowsymbols %in% allsymbols)) >0)
+      {
+        msg = paste0("Your flows for variable ",variables[n], " contain these non-allowed symbols: ", paste0(wrongflows, collapse = ", "));
+        return(msg)
+      }
 
-  # Make sure all variables in flows are in the varlabels
-  allflows <- paste(unlist(model_list$flows), collapse = "+")
-  vps <- get_vars_pars(allflows)
-  vars_in_flows <- unique(vps[which(vps %in% LETTERS)])
-  badids <- which(!(vars_in_flows %in% model_list$varlabels))
-  if(length(badids) != 0) {
-    missing_vars <- paste(vars_in_flows[badids], collapse = ", ")
-    msg <- paste0("The following variables were found in the flows but are not",
-                 " in the varlabels vector: ", missing_vars, ".",
-                 " Check your model.")
-    return(msg)
-  }
+      # this checks if a flow has more than 3 variables - can't do that right now, but should implement
+      # note that this doesn't catch something like s*I^2
+      # figuring out that I^2 is really I*I seems hard (is it necessary or is it really 3 distinct variables?)
+      varnames = intersect(flowsymbols, variables)
+      if (length(varnames)>2)
+      {
+        msg <- "flowdiagramr cannot currently process flows that include an interaction between more than two variables.\n Consider breaking flows apart."
+        return(msg)
+      }
+    } #end loop over flows
+  } #end loop over variables
 
+  # if not problem occured above, return NULL as an indication that all is ok
   return(NULL)
 }
