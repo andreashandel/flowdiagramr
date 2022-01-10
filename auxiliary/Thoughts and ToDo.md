@@ -177,6 +177,14 @@ https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-varia
 * Currently, combining flow terms doesn't work. I'm ok for now forcing the user to write them explicitly one by one. One could consider adding parsing logic that can take e.g. S1*(b11*I2 + b12*I2) and parses out the 2 terms. But low priority/not now.
 
 
+* Branched flows currently dont work (I think). E.g. -bSI leaving a compartment and fbSI arriving in one and (1-f)bSI in another are not allowed. Those flows need to be written explicitly currently as 2 independent flows both on inflow and outflow.
+
+    #STILL NEED TO WRITE THE FOLLOWING CHECK
+    #make sure each parameter name is only used in disticnt flows, either once
+    #or twice in a inflow/outflow pair
+
+
+
 ******
 # General
 ******

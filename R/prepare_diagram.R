@@ -333,7 +333,8 @@ prepare_diagram <- function(model_list,
   #Loop over all variables, for each variable, loop over flows
   ############################################################
   #start loop over variables (rows in the flowmatred matrix)
-  for(i in 1:nrow(flowmatred)) {
+  for(i in 1:nrow(flowmatred))
+  {
     varflowsfull <- flowmat[i, ] #all flows with sign for current variable
     varflows <- flowmatred[i, ] #all flows for current variable
     varflowsigns <- signmat[i, ] #signs of flows for current variable
@@ -488,7 +489,7 @@ prepare_diagram <- function(model_list,
             rm(flag)
           }
         }
-        flows <- rbind(flows, tmp)
+        flowdf <- rbind(flowdf, tmp)
       }
 
       # interaction flag if two variables are in the flow
@@ -496,24 +497,34 @@ prepare_diagram <- function(model_list,
         if(length(unique(connectvars)) > 1) {
           # this means that the flow connects two variables and both
           # are present in the flow math
-          flows[nrow(flows), "interaction"] <- TRUE
+          flowdf[nrow(flowdf), "interaction"] <- TRUE
         } else {
           # this means that the flow comes from or goes to somewhere out
           # of the system, and only 1 variable is included in the
           # flow math. this is designated as an "out_interaction"
-          flows[nrow(flows), "out_interaction"] <- TRUE
+          flowdf[nrow(flowdf), "out_interaction"] <- TRUE
         }
       }
 
-    }  #end flow loop
-  }  #end variable loop
+    }  #end loop over all flows for a given variable
+  }  #end loop over all variables
+
+  ############################################################
+  ############################################################
+  # finished creating all flows for dataframe
+  ############################################################
+  ############################################################
+
+
+  ############################################################
+  # some cleanup of flow data frame
+  # things that the code above didn't do quite right
+  ############################################################
 
   # Keep only distinct rows; duplication occurs because one variable's
   # inflow can be another variable's outflow, but we only want these once
   # in the data frame for edges (segments/arrows/flows).
-  flows <- unique(flows)
-
-
+  flowdf <- unique(flowdf)
 
   # Parse the meaning of duplicate labels. Usually this is a complex mix
   # of a direct, physical flows and interactions from several other
