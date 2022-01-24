@@ -1,11 +1,11 @@
 library(flowdiagramr)
 
 #make model
-varlabels = c("S","I","R")
+variables = c("S","I","R")
 flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              I_flows = c("+b*S*I","-g*I", "-m*I"),
              R_flows = c("g*I", "-m*R"))
-model_list = list(varlabels = varlabels, flows = flows)
+model_list = list(variables = variables, flows = flows)
 model_settings = list(
   varlocations = NULL,
   varbox_x_size = 1,

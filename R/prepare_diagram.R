@@ -265,11 +265,11 @@ prepare_diagram <- function(model_list,
 
   #assign to variables outside of model_list
   #basically same as above for model_settings
-  variables <- model_list$variables
-  flows <- model_list$flows
+  variable_names <- model_list$variables  # vector of names
+  flows_list <- model_list$flows  # a list flows for each variable
 
   #number of variables/compartments in model
-  nvars <- length(variables)
+  nvars <- length(variable_names)
 
 
   #############################################
@@ -281,19 +281,24 @@ prepare_diagram <- function(model_list,
   #############################################
 
   # Create a data frame for all variables
-  vardf <- data.frame(
+  variables <- data.frame(
     id = 1:nvars,  # numeric id for nodes
-    name = variables  # names for labels
+    name = variable_names  # names for labels
   )
 
   #############################################
-  # Add location information for each variable and add todata frame
+  # Add location information for each variable and add to data frame
   # See comments within function for details
   # this function only adds location information to real/named variables
   # provided by the user.
-  vardf <- add_locations(vardf, varlocations, varbox_x_size,
-                             varbox_y_size, varspace_x_size,
-                             varspace_y_size)
+  variables <- add_locations(
+    variables,
+    varlocations,
+    varbox_x_size,
+    varbox_y_size,
+    varspace_x_size,
+    varspace_y_size
+  )
 
 
 
@@ -308,12 +313,12 @@ prepare_diagram <- function(model_list,
   #############################################
 
   #add implicit + signs to make explicit before additional parsing
-  flows <- add_plus_signs(flows)
+  flows_list <- add_plus_signs(flows_list)
 
   #turns flow list into matrix, adding NA
   #(from modelbuilder code base)
   #variables are along rows and flows along columns.
-  flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
+  flowmat <- t(sapply(flows_list, `length<-`, max(lengths(flows_list))))
 
   # if there are just two variables and a single flow between them,
   # the flowmat is oriented incorrectly (nodes across columns). this
@@ -332,6 +337,9 @@ prepare_diagram <- function(model_list,
   ############################################################
   #Loop over all variables, for each variable, loop over flows
   ############################################################
+  #create a flows data frame for storing the flow information
+  flows <- data.frame()  # empty until binded to during first iteration of loop
+
   #start loop over variables (rows in the flowmatred matrix)
   for(i in 1:nrow(flowmatred))
   {
@@ -360,6 +368,10 @@ prepare_diagram <- function(model_list,
 
       #vars is now a vector of the variables that are in the flow math
       # AH: DOES THIS WORK OF VARIABLES HAVE THE SAME STARTING LETTER, SAY P1, P2, P3?
+      # ATT: Yes. This bit of code is designed simply to extract any variables
+      #      that start with an upper case letter (state variable) and are
+      #      present in the current flow. So, if P1 and P2 are in this flow
+      #      they both will be found.
       varvec <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
 
       #extract the numeric ids for the variables in this flow
@@ -439,7 +451,7 @@ prepare_diagram <- function(model_list,
                           direct_interaction = FALSE)
 
         # Bind to edge data frame for flows
-        flowdf <- rbind(flowdf, tmp)
+        flows <- dplyr::bind_rows(flows, tmp)
       } #end function block for outflows
 
       # If the current sign is positive AND the flow only shows up in
@@ -454,7 +466,7 @@ prepare_diagram <- function(model_list,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
-          flowdf <- rbind(flowdf, tmp)
+          flows <- dplyr::bind_rows(flows, tmp)
         }
       }
 
@@ -489,7 +501,7 @@ prepare_diagram <- function(model_list,
             rm(flag)
           }
         }
-        flowdf <- rbind(flowdf, tmp)
+        flows <- dplyr::bind_rows(flows, tmp)
       }
 
       # interaction flag if two variables are in the flow
@@ -497,12 +509,12 @@ prepare_diagram <- function(model_list,
         if(length(unique(connectvars)) > 1) {
           # this means that the flow connects two variables and both
           # are present in the flow math
-          flowdf[nrow(flowdf), "interaction"] <- TRUE
+          flows[nrow(flows), "interaction"] <- TRUE
         } else {
           # this means that the flow comes from or goes to somewhere out
           # of the system, and only 1 variable is included in the
           # flow math. this is designated as an "out_interaction"
-          flowdf[nrow(flowdf), "out_interaction"] <- TRUE
+          flows[nrow(flows), "out_interaction"] <- TRUE
         }
       }
 
@@ -524,7 +536,7 @@ prepare_diagram <- function(model_list,
   # Keep only distinct rows; duplication occurs because one variable's
   # inflow can be another variable's outflow, but we only want these once
   # in the data frame for edges (segments/arrows/flows).
-  flowdf <- unique(flowdf)
+  flows <- unique(flows)
 
   # Parse the meaning of duplicate labels. Usually this is a complex mix
   # of a direct, physical flows and interactions from several other

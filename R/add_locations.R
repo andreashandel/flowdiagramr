@@ -73,7 +73,7 @@ add_locations <- function(vardf, varlocations, varbox_x_size,
 
   # now we map the variable names to the coordinates based on row
   # and column ids
-  tmpvars <- subset(idmap, label != "")  # ignore empty boxes on the grid
+  tmpvars <- subset(idmap, name != "")  # ignore empty boxes on the grid
   # merge by row and column ids
   tmpvars <- merge(newvariables, tmpvars, by = c("row_id", "col_id"))
 
@@ -85,8 +85,8 @@ add_locations <- function(vardf, varlocations, varbox_x_size,
 
   # calculate midpoints for label locations
   # simple means for now that get updated as needed with further processing
-  vardf$xlabel <- rowMeans(variables[ , c("xmin", "xmax")])
-  vardf$ylabel <- rowMeans(variables[ , c("ymin", "ymax")])
+  vardf$xlabel <- rowMeans(vardf[ , c("xmin", "xmax")])
+  vardf$ylabel <- rowMeans(vardf[ , c("ymin", "ymax")])
 
   # order by the assigned numeric ids
   vardf <- vardf[order(vardf$id), ]
