@@ -223,6 +223,13 @@ prepare_diagram <- function(model_list,
   # note that we assign it to model_settings.
   # this is needed to be passed into helper functions like make_vdf_angled
   # these updated settings will also be returned as part of the list of values this function returns
+
+
+  ## TODO(andrew,andreas): Finalize varspace* and varbox* usage
+  ## This does not work because we dynamically create "boxes"
+  ## for in and out flows. It is required for add_locations(), but
+  ## we could drop its usage there or simplify...
+
   nvars = length(model_list$variables)
   if (is.null(model_settings$varlocations)) {model_settings$varlocations = matrix(model_list$variables,nrow=1)}
   if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = rep(1,nvars)}
@@ -505,7 +512,7 @@ prepare_diagram <- function(model_list,
       }
 
       # interaction flag if two variables are in the flow
-      if(length(vars) > 1) {
+      if(length(varvec) > 1) {
         if(length(unique(connectvars)) > 1) {
           # this means that the flow connects two variables and both
           # are present in the flow math
@@ -611,7 +618,7 @@ prepare_diagram <- function(model_list,
       v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
-      ids <- subset(variables, label %in% v)[ , "id"]  #extract the relevant numeric ids
+      ids <- subset(variables, name %in% v)[ , "id"]  #extract the relevant numeric ids
 
       if(is.na(ints[i, "to"])){
         # If the receiving node is NA, then this is an interaction
@@ -638,7 +645,7 @@ prepare_diagram <- function(model_list,
     }
 
     # Recombine the edge data frame
-    flows <- rbind(flows, ints, intflows)
+    flows <- dplyr::bind_rows(flows, ints, intflows)
   }
 
   # Keep only distinct rows
@@ -724,7 +731,6 @@ prepare_diagram <- function(model_list,
   # of how many of the objects actually have new ids
   if(is.numeric(outdummies) | is.numeric(indummies) | is.numeric(linkdummies)) {
     exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),  # the new ids
-                          label = "",  # none of these get labels because they are dummies
                           name = NA) #,  # no names because they are dummies
                           #row = 1)  # assume they are on row 1, this gets updated later if needed, but we need a value here for rbinding
 
@@ -752,8 +758,11 @@ prepare_diagram <- function(model_list,
     # extract the location information of the "to" variable
     newxy <- variables[which(variables$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
     # update box locations by moving the y locations up
-    newxy$ymax <- newxy$ymax + varspace_y_size  # above the variable
-    newxy$ymin <- newxy$ymin + varspace_y_size  # above the variable
+
+    ## TODO(andrew): the mean() usage here is a workaround. update once
+    ## decision is made about varspace* and varbox*
+    newxy$ymax <- newxy$ymax + mean(varspace_y_size)  # above the variable
+    newxy$ymin <- newxy$ymin + mean(varspace_y_size)  # above the variable
 
     # add in the new location information to replace the NAs
     variables[which(variables$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
@@ -779,8 +788,11 @@ prepare_diagram <- function(model_list,
     # extract the location information of the "from" variable
     newxy <- variables[which(variables$id == newxyid), c("xmin", "xmax", "ymin", "ymax")]
     # update box locations by moving the y locations down
-    newxy$ymax <- newxy$ymax - varspace_y_size   # below the variable
-    newxy$ymin <- newxy$ymin - varspace_y_size   # below the variable
+
+    ## TODO(andrew): the mean() usage here is a workaround. update once
+    ## decision is made about varspace* and varbox*
+    newxy$ymax <- newxy$ymax - mean(varspace_y_size)   # below the variable
+    newxy$ymin <- newxy$ymin - mean(varspace_y_size)   # below the variable
 
     # add in the new location information to replace the NAs
     variables[which(variables$id == id), c("xmin", "xmax", "ymin", "ymax")] <- newxy
@@ -981,7 +993,7 @@ prepare_diagram <- function(model_list,
   flows$diff <- with(flows, abs(to-from))
 
 
-  ## TODO Remove after exhaustive testing...don't think it is needed
+  ## TODO(andrew): Remove after exhaustive testing...don't think it is needed
   ##      anymore.
   # if(!is.null(varlocation_matrix)) {
   #   xdiffs <- with(flows, abs(xmin - xmax))
@@ -1020,10 +1032,10 @@ prepare_diagram <- function(model_list,
 
 
   # combine all flows
-  flows <- rbind(flows, extints)
+  flows <- dplyr::bind_rows(flows, extints)
 
   # now drop "hidden" nodes without labels
-  variables <- subset(variables, label != "")
+  variables <- subset(variables, !is.na(name))
 
   # set to/from columns in flows to NA if value is not in node dataframe
   flows <- set_node_to_na(flows, variables)
@@ -1044,11 +1056,6 @@ prepare_diagram <- function(model_list,
   flows <- update_straight_labels(flows)
 
 
-
-  # remove the row column from both data frames
-  variables$row <- NULL
-  flows$row <- NULL
-
   # update interaction column to be type column, one of
   # main, interaction, or external. this is needed for plotting
   flows$type <- "main"  # intialize the column as all "main" flows
@@ -1060,9 +1067,11 @@ prepare_diagram <- function(model_list,
   flows$interaction <- NULL  # remove the interaction column
 
   #sort flows by type, main/external/interaction
-  flows = rbind(flows[flows$type=="main",],
-                flows[flows$type=="external",],
-                flows[flows$type=="interaction",])
+  flows <- dplyr::bind_rows(
+    flows[flows$type == "main", ],
+    flows[flows$type == "external", ],
+    flows[flows$type == "interaction", ]
+  )
 
   #add a row id so it's easier for users to know which row to alter
   flows$id = 1:nrow(flows)
@@ -1085,9 +1094,10 @@ prepare_diagram <- function(model_list,
   #dflist <- apply_default_aesthetics(list(variables = variables, flows = flows))
   dflist <- list(variables = variables, flows = flows)
 
+  ## TODO(andrew,andreas): Confirm we don't want to track inputs
   # Add inputs to return list.
-  dflist$inputs <- list(model_list = model_list,
-                        model_settings = model_settings)
+  # dflist$inputs <- list(model_list = model_list,
+  #                       model_settings = model_settings)
 
   return(dflist)
 }
