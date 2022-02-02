@@ -1,4 +1,4 @@
-library(flowdiagramr)
+# library(flowdiagramr)
 
 #make model
 variables = c("S","I","R")
@@ -15,6 +15,9 @@ model_settings = list(
 
 # prepare diagram without extra settings
 diagram_list <- prepare_diagram(model_list)
+diagram_settings <-
+diagram_list_new <- update_diagram(model_list)
+
 make_diagram(diagram_list)
 
 

@@ -1088,11 +1088,8 @@ prepare_diagram <- function(model_list,
   rownames(flows) <- NULL
   rownames(variables) <- NULL
 
-  # combine variables and flows into list
-  # apply default aesthetics
-  # realized that we can disable this and only let user set it through diagram_settings
-  #dflist <- apply_default_aesthetics(list(variables = variables, flows = flows))
-  dflist <- list(variables = variables, flows = flows)
+  # add default aesthetics
+  dflist <- add_default_aes(variables, flows)
 
   ## TODO(andrew,andreas): Confirm we don't want to track inputs
   # Add inputs to return list.
