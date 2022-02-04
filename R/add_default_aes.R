@@ -17,7 +17,7 @@ add_default_aes <- function(variables, flows) {
 
   # the default settings for flows
   flows$color <- "grey25"
-  flows$size <- 7
+  flows$size <- 0.7
   lines <- data.frame(
     type = c("main", "external", "interaction"),
     linetype = c("solid", "solid", "dashed")

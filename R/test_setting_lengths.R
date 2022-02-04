@@ -11,10 +11,12 @@
 #' @export
 
 test_setting_lengths <- function(diagram_settings, names, n) {
+  msg <- NULL
   for(dovar in names) {
     tmp <- diagram_settings[[dovar]]
     if(!length(tmp) %in% c(1, n)) {
-      stop(paste("Length of", dovar, "must be either 1 or", n))
+      msg <- paste("Length of", dovar, "must be either 1 or", n)
     }
   }
+  return(msg)
 }

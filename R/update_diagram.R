@@ -93,7 +93,6 @@ update_diagram <- function(diagram_list,
                             diagram_settings = list(
                               var_outline_color = "black",
                               var_fill_color = "#6aa4c8",
-                              var_label_text = NA,
                               var_label_color = "white",
                               var_label_size = 10,
                               main_flow_color = "grey25",
@@ -143,9 +142,11 @@ update_diagram <- function(diagram_list,
 
   # check if anything is different from the defaults. if not, warn the
   # user that no changes were requested and the the diagram_list is
-  # returned with no updates.
+  # returned with no updates. all.equal will return a vector of messages,
+  # so long as the first element is not TRUE, we know that the user
+  # has provided unique inputs different than the defaults.
   check_diff <- all.equal(diagram_settings, ds)
-  if(check_diff == TRUE) {
+  if(check_diff[1] == TRUE) {
     warning("Settings provided are the same as defautls; returning diagram_list without updates.")
     return(diagram_list)
   }  # otherwise, carry on
@@ -169,6 +170,11 @@ update_diagram <- function(diagram_list,
   variables <- diagram_list$variables
   flows <- diagram_list$flows
 
+  # update defaults with user settings
+  user_settings <- diagram_settings  # these are the user settings
+  diagram_settings <- ds  # these are the defaults
+  diagram_settings[names(user_settings)] <- user_settings  # updates
+
   # determine number of variables and each flow
   nvars <- nrow(variables)
   nmain <- sum(flows$type == "main")
@@ -183,17 +189,22 @@ update_diagram <- function(diagram_list,
   var_settings_names <- grep("var_", names(diagram_settings), value = TRUE)
 
   # test that all entries are of length 1 or nvars
-  test_setting_lengths(diagram_settings, var_settings_names, nvars)
+  checkmsg <- test_setting_lengths(diagram_settings, var_settings_names, nvars)
+  if(!is.null(checkmsg))
+  {
+    stop(checkmsg)
+  }
+
 
   # make a data frame of settings. number of rows is equal to nvars
   var_df_names <- c("color", "fill", "label_color", "label_size")
   new_var_settings <- make_new_settings_df(nvars,
                                            diagram_settings,
                                            var_settings_names,
-                                           var_settings_column_names)
+                                           var_df_names)
 
   # now update the columns in the variables df
-  variables[var_settings_columns] <- new_var_settings[var_settings_columns]
+  variables[var_df_names] <- new_var_settings[var_df_names]
 
 
 
@@ -206,7 +217,12 @@ update_diagram <- function(diagram_list,
     main_settings_names <- grep("main_", names(diagram_settings), value = TRUE)
 
     # test that all entries are of length 1 or nvars
-    test_setting_lengths(diagram_settings, main_settings_names, nmain)
+    checkmsg <- test_setting_lengths(diagram_settings, main_settings_names, nmain)
+    if(!is.null(checkmsg))
+    {
+      stop(checkmsg)
+    }
+
 
     # make a data frame of settings. number of rows is equal to nmain
     flow_df_names <- unlist(strsplit(main_settings_names, split = "main_flow_"))
@@ -231,7 +247,11 @@ update_diagram <- function(diagram_list,
     ext_settings_names <- grep("external_", names(diagram_settings), value = TRUE)
 
     # test that all entries are of length 1 or nvars
-    test_setting_lengths(diagram_settings, ext_settings_names, nexternal)
+    checkmsg <- test_setting_lengths(diagram_settings, ext_settings_names, nexternal)
+    if(!is.null(checkmsg))
+    {
+      stop(checkmsg)
+    }
 
     # make a data frame of settings. number of rows is equal to nmain
     new_ext_settings <- make_new_settings_df(nexternal,
@@ -253,7 +273,11 @@ update_diagram <- function(diagram_list,
     int_settings_names <- grep("interaction_", names(diagram_settings), value = TRUE)
 
     # test that all entries are of length 1 or nvars
-    test_setting_lengths(diagram_settings, int_settings_names, ninteraction)
+    checkmsg <- test_setting_lengths(diagram_settings, int_settings_names, ninteraction)
+    if(!is.null(checkmsg))
+    {
+      stop(checkmsg)
+    }
 
     # make a data frame of settings. number of rows is equal to nmain
     new_int_settings <- make_new_settings_df(ninteraction,

@@ -8,16 +8,35 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
 model_list = list(variables = variables, flows = flows)
 model_settings = list(
   varlocations = NULL,
-  varbox_x_size = 1,
-  varbox_y_size = 1,
+  varbox_x_size = 0.5,
+  varbox_y_size = 0.5,
   varspace_x_size = 1,
   varspace_y_size = 1)
 
 # prepare diagram without extra settings
-diagram_list <- prepare_diagram(model_list)
-diagram_list_new <- update_diagram(model_list)
+diagram_list <- prepare_diagram(model_list, model_settings)
+diagram_list_new <- update_diagram(diagram_list)
+
+diagram_settings <- list(var_outline_color = c("black", "white", "red"),
+                         var_fill_color = c("red"))
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+
+# this should error out
+# diagram_settings <- list(var_outline_color = c("black", "red"))
+# diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
 make_diagram(diagram_list)
+
+
+
+
+
+
+
+
+
+
+
 
 
 #model user settings

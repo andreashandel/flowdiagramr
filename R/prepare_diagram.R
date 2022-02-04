@@ -147,6 +147,7 @@
 
 
 # this function calls the following helper functions
+# add_default_aes()
 # add_locations()
 # add_plus_signs()
 # check_model_list()
@@ -226,8 +227,7 @@ prepare_diagram <- function(model_list,
 
 
   ## TODO(andrew,andreas): Finalize varspace* and varbox* usage
-  ## This does not work because we dynamically create "boxes"
-  ## for in and out flows. It is required for add_locations(), but
+  ## It is required for add_locations(), but
   ## we could drop its usage there or simplify...
 
   nvars = length(model_list$variables)

@@ -139,198 +139,20 @@
 #' @export
 #'
 
-make_diagram <- function (diagram_list,
-                          diagram_settings = list(
-                            var_outline_color = "black",
-                            var_fill_color = "#6aa4c8",
-                            var_label_text = NA,
-                            var_label_on = TRUE,
-                            var_label_color = c("white", "red"),
-                            var_label_size = 10,
-                            main_flow_on = TRUE,
-                            main_flow_color = "grey25",
-                            main_flow_linetype = "solid",
-                            main_flow_size = 0.7,
-                            main_flow_label_on = TRUE,
-                            main_flow_label_color = "black",
-                            main_flow_label_size = 5,
-                            main_flow_arrow_size = 0.25,
-                            interaction_flow_on = TRUE,
-                            interaction_flow_color = "grey25",
-                            interaction_flow_linetype = "dashed",
-                            interaction_flow_size = 0.7,
-                            interaction_flow_label_on = TRUE,
-                            interaction_flow_label_color = "black",
-                            interaction_flow_label_size = 5,
-                            interaction_flow_arrow_size =  0.25,
-                            external_flow_on = TRUE,
-                            external_flow_color = "grey25",
-                            external_flow_linetype = "solid",
-                            external_flow_size = 0.7,
-                            external_flow_label_on = TRUE,
-                            external_flow_label_color = "black",
-                            external_flow_label_size = 5,
-                            external_flow_arrow_size =  0.25,
-                            with_grid = FALSE)
-                          ) {
+make_diagram <- function (diagram_list, with_grid = FALSE) {
 
   # unlist the data frames to objects
   variables <- diagram_list$variables
   flows <- diagram_list$flows
 
   # assign the plot_label column, can be updated below if specified
-  variables$plot_label <- variables$label
+  # variables$plot_label <- variables$label
 
-  # determine number of variables and each flow
-  nvars = nrow(variables)
-  nmain = sum(flows$type == "main")
-  ninteraction = sum(flows$type == "interaction")
-  nexternal = sum(flows$type == "external")
-
-
-
-  # get defaults for diagram_settings, will be updated based on user information below
-  ds <- eval(formals(make_diagram)$diagram_settings)
-
-  # check user inputs provided in diagram_settings, if user supplies a non-recognized argument, stop
-  nonrecognized_inputs <- setdiff(names(diagram_settings),  names(ds))
-  if (length(nonrecognized_inputs>0) )
-  {
-    stop('These elements of diagram_settings are not recognized: ', nonrecognized_inputs)
-  }
-
-  # update diagram settings with user settings
-  ds[names(diagram_settings)] <- diagram_settings
-
-
-  # vectorize all settings, for variables and each flow type
-  var_settings = grep("var_",names(ds), value = TRUE)
-  for (n in var_settings)
-  {
-    ds[[n]] = rep(ds[[n]],nvars)
-  }
-
-  main_settings = grep("main_",names(ds), value = TRUE)
-  for (n in main_settings)
-  {
-    ds[[n]] = rep(ds[[n]],nmain)
-  }
-
-
-  # check whether defaults are updated, except for with_grid
-  # with_grid <- defaults$with_grid
-  # defaults$with_grid <- NULL
-  # def2 <- eval(formals(make_diagram)$diagram_settings)
-  # def2$with_grid <- NULL
-  # check <- all.equal(def2, defaults)
-
-
-  # if the two lists are different, user wants to update the settings,
-  # so we do so. otherwise we can just use the settings already in the
-  # dataframes.
-  # if(check[1] != TRUE) {
-  #   # assign settings list to objects
-  #   for(i in 1:length(defaults)) {
-  #     assign(names(defaults)[i], defaults[[i]])
-  #   }
-  #
-  #   # if(interaction_flow_label_on == FALSE) {
-  #   #   # This removes interaction segments and puts the flow label
-  #   #   # back with the physical flow.
-  #   #   flows <- move_interaction_label(flows)
-  #   # }
-  #
-  #   # if the var_label_text is not provided (NA), then use the labels
-  #   # in the data frame. otherwise, override.
-  #   if(anyNA(var_label_text)) {
-  #     variables$label <- variables$label
-  #   } else {
-  #     variables$label <- var_label_text
-  #   }
-  #
-  #   # if text size is not provided (NA), then use text sizes in the data
-  #   # frames. otherwise, override and use the provided sizes for all.
-  #   if(is.na(var_label_size)) {
-  #     var_label_size <- variables$label_size
-  #   } else {
-  #     var_label_size <- recycle_values(var_label_size, nrow(variables))
-  #   }
-  #
-  #   # setup linetypes mapping from numeric to text
-  #   ltys <- data.frame(code = 0:6,
-  #                      text = c("blank", "solid", "dashed",
-  #                               "dotted", "dotdash", "longdash",
-  #                               "twodash"))
-  #
-  #   # recycle values as needed
-  #   variables$color <- recycle_values(var_outline_color, nrow(variables))
-  #   variables$fill <- recycle_values(var_fill_color, nrow(variables))
-  #   variables$label_color <- recycle_values(var_label_color, nrow(variables))
-  #   variables$label_size <- recycle_values(var_label_size, nrow(variables))
-  #   variables$plot_label_size <- NULL
-  #
-  #   mains <- subset(flows, type == "main")
-  #   mains$color <- recycle_values(main_flow_color, nrow(mains))
-  #   if(is.numeric(main_flow_linetype)){
-  #     main_flow_linetype <- subset(ltys, code == main_flow_linetype)[,"text"]
-  #   }
-  #   mains$linetype <- recycle_values(main_flow_linetype, nrow(mains))
-  #   mains$size <- recycle_values(main_flow_size, nrow(mains))
-  #   mains$label_color <- recycle_values(main_flow_label_color, nrow(mains))
-  #   mains$label_size <- recycle_values(main_flow_label_size, nrow(mains))
-  #
-  #   ints <- subset(flows, type == "interaction")
-  #   ints$color <- recycle_values(interaction_flow_color, nrow(ints))
-  #   if(is.numeric(interaction_flow_linetype)){
-  #     interaction_flow_linetype <- subset(ltys, code == interaction_flow_linetype)[,"text"]
-  #   }
-  #   ints$linetype <- recycle_values(interaction_flow_linetype, nrow(ints))
-  #   ints$size <- recycle_values(interaction_flow_size, nrow(ints))
-  #   ints$label_color <- recycle_values(interaction_flow_label_color, nrow(ints))
-  #   ints$label_size <- recycle_values(interaction_flow_label_size, nrow(ints))
-  #
-  #   exts <- subset(flows, type == "external")
-  #   exts$color <- recycle_values(external_flow_color, nrow(exts))
-  #   if(is.numeric(external_flow_linetype)){
-  #     external_flow_linetype <- subset(ltys, code == external_flow_linetype)[,"text"]
-  #   }
-  #   exts$linetype <- recycle_values(external_flow_linetype, nrow(exts))
-  #   exts$size <- recycle_values(external_flow_size, nrow(exts))
-  #   exts$label_color <- recycle_values(external_flow_label_color, nrow(exts))
-  #   exts$label_size <- recycle_values(external_flow_label_size, nrow(exts))
-  #
-  #   # recombine flows data frame with aesthetics as columns
-  #   flows <- rbind(mains, ints, exts)
-  #   flows$arrow_size <- 0.25  # default arrow size
-  #
-  #   # turn off flows completely by setting linetype to blank as needed
-  #   if(main_flow_on == FALSE) {
-  #     flows[flows$type == "main", "flow_linetype"] <- "blank"
-  #     flows[flows$type == "main", "flow_arrow_size"] <- 0
-  #   }
-  #   if(interaction_flow_on == FALSE) {
-  #     flows[flows$type == "interaction", "flow_linetype"] <- "blank"
-  #     flows[flows$type == "interaction", "flow_arrow_size"] <- 0
-  #   }
-  #   if(external_flow_on == FALSE) {
-  #     flows[flows$type == "external", "flow_linetype"] <- "blank"
-  #     flows[flows$type == "external", "flow_arrow_size"] <- 0
-  #   }
-  #
-  #   # set label to "" to suppress label if requested
-  #   # also don't show label if the flow itself is turned off
-  #   flows$math <- flows$label
-  #   if(main_flow_on == FALSE || main_flow_label_on == FALSE) {
-  #     flows[flows$type == "main", "label"] <- ""
-  #   }
-  #   if(interaction_flow_on == FALSE || interaction_flow_label_on == FALSE) {
-  #     flows[flows$type == "interaction", "label"] <- ""
-  #   }
-  #   if(external_flow_on == FALSE || external_flow_label_on == FALSE) {
-  #     flows[flows$type == "external", "label"] <- ""
-  #   }
-  # } #ends code that updates settings based on user specifications
-
+  # # determine number of variables and each flow
+  # nvars = nrow(variables)
+  # nmain = sum(flows$type == "main")
+  # ninteraction = sum(flows$type == "interaction")
+  # nexternal = sum(flows$type == "external")
 
   # get the ggplot2 code as text
   code <- get_code()
