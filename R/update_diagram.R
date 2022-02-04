@@ -89,7 +89,7 @@
 #'     length 1 or the number of external flows.
 #' }
 
-update_settings <- function(diagram_list,
+update_diagram <- function(diagram_list,
                             diagram_settings = list(
                               var_outline_color = "black",
                               var_fill_color = "#6aa4c8",
@@ -130,7 +130,7 @@ update_settings <- function(diagram_list,
 
 
   # load the defaults
-  ds <- eval(formals(update_settings)$diagram_settings)
+  ds <- eval(formals(update_diagram)$diagram_settings)
 
   # check user inputs provided in diagram_settings,
   # if user supplies a non-recognized argument, stop
@@ -144,9 +144,23 @@ update_settings <- function(diagram_list,
   # check if anything is different from the defaults. if not, warn the
   # user that no changes were requested and the the diagram_list is
   # returned with no updates.
+  check_diff <- all.equal(diagram_settings, ds)
+  if(check_diff == TRUE) {
+    warning("Settings provided are the same as defautls; returning diagram_list without updates.")
+    return(diagram_list)
+  }  # otherwise, carry on
 
 
 
+  ###
+  ###
+  # at this point, we have determined that at least one thing in the
+  # diagram_list provided by the user is different than the defaults.
+  # therefore, we can now update the settings columns in the variables
+  # flows diagrams accordingly, after making sure the diagram_settings
+  # provided by the user pass a few extra checks.
+  ###
+  ###
 
   ###
   # preliminaries for bookkeeping
@@ -169,22 +183,91 @@ update_settings <- function(diagram_list,
   var_settings_names <- grep("var_", names(diagram_settings), value = TRUE)
 
   # test that all entries are of length 1 or nvars
-  for(dovar in var_settings_names) {
-    tmp <- diagram_settings[[dovar]]
-    if(!length(tmp) %in% c(1, nvars)) {
-      stop(paste("Length of", dovar, "must be either 1 or", nvars))
-    }
-  }
+  test_setting_lengths(diagram_settings, var_settings_names, nvars)
 
   # make a data frame of settings. number of rows is equal to nvars
-  var_settings <- data.frame(id = 1:nvars)
+  var_df_names <- c("color", "fill", "label_color", "label_size")
+  new_var_settings <- make_new_settings_df(nvars,
+                                           diagram_settings,
+                                           var_settings_names,
+                                           var_settings_column_names)
 
-  var_settings <- as.data.frame(t(unlist(diagram_settings[var_settings_names])))
-  # check to make sure var_settings is 1 row or nvars rows
-  if(!nrow(var_settings) %in% c(1, nvars)) {
-    stop("Length of variable settings must be one or ")
+  # now update the columns in the variables df
+  variables[var_settings_columns] <- new_var_settings[var_settings_columns]
+
+
+
+  ###
+  # update main flow settings
+  ###
+  # only execute if there are main flows
+  if(nmain > 0) {
+    # extract list names for variable settings
+    main_settings_names <- grep("main_", names(diagram_settings), value = TRUE)
+
+    # test that all entries are of length 1 or nvars
+    test_setting_lengths(diagram_settings, main_settings_names, nmain)
+
+    # make a data frame of settings. number of rows is equal to nmain
+    flow_df_names <- unlist(strsplit(main_settings_names, split = "main_flow_"))
+    flow_df_names <- flow_df_names[which(flow_df_names != "")]
+    new_main_settings <- make_new_settings_df(nmain,
+                                              diagram_settings,
+                                              main_settings_names,
+                                              flow_df_names)
+
+    # now update the columns in the flows data frame for type == "main"
+    flows[flows$type == "main", flow_df_names] <- new_main_settings[flow_df_names]
   }
 
 
 
+  ###
+  # update external flow settings
+  ###
+  # only execute if there are external flows
+  if(nexternal > 0) {
+    # extract list names for variable settings
+    ext_settings_names <- grep("external_", names(diagram_settings), value = TRUE)
+
+    # test that all entries are of length 1 or nvars
+    test_setting_lengths(diagram_settings, ext_settings_names, nexternal)
+
+    # make a data frame of settings. number of rows is equal to nmain
+    new_ext_settings <- make_new_settings_df(nexternal,
+                                             diagram_settings,
+                                             ext_settings_names,
+                                             flow_df_names)
+
+    # now update the columns in the flows data frame for type == "main"
+    flows[flows$type == "external", flow_df_names] <- new_ext_settings[flow_df_names]
+  }
+
+
+  ###
+  # update interaction flow settings
+  ###
+  # only execute if there are interaction flows
+  if(ninteraction > 0) {
+    # extract list names for variable settings
+    int_settings_names <- grep("interaction_", names(diagram_settings), value = TRUE)
+
+    # test that all entries are of length 1 or nvars
+    test_setting_lengths(diagram_settings, int_settings_names, ninteraction)
+
+    # make a data frame of settings. number of rows is equal to nmain
+    new_int_settings <- make_new_settings_df(ninteraction,
+                                             diagram_settings,
+                                             int_settings_names,
+                                             flow_df_names)
+
+    # now update the columns in the flows data frame for type == "main"
+    flows[flows$type == "interaction", flow_df_names] <- new_int_settings[flow_df_names]
+  }
+
+
+  ###
+  # all settings have been updated, return the new diagram_list
+  ###
+  return(list(variables = variables, flows = flows))
 }
