@@ -232,8 +232,8 @@ prepare_diagram <- function(model_list,
 
   nvars = length(model_list$variables)
   if (is.null(model_settings$varlocations)) {model_settings$varlocations = matrix(model_list$variables,nrow=1)}
-  if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = rep(1,nvars)}
-  if (is.null(model_settings$varbox_y_size)) {model_settings$varbox_y_size = rep(1,nvars)}
+  if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = rep(0.5,nvars)}
+  if (is.null(model_settings$varbox_y_size)) {model_settings$varbox_y_size = rep(0.5,nvars)}
   if (is.null(model_settings$varspace_x_size)) {model_settings$varspace_x_size = rep(1,nvars-1)}
   if (is.null(model_settings$varspace_y_size)) {model_settings$varspace_y_size = rep(1,nvars-1)}
 

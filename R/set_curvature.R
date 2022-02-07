@@ -128,7 +128,7 @@ set_curvature <- function(variables, flows) {
                                     curvature = tmp$curvature,
                                     ncp = 1)
         flows[i, "xlabel"] <- mids$x
-        flows[i, "ylabel"] <- mids$y
+        flows[i, "ylabel"] <- mids$y + 0.15  # move above the midpoint
         if(flows[i, "curvature"] == 0.7) {
           # this indicates vertical alignment, so x location of label
           # needs to be nudged away from the larger curve.
@@ -141,14 +141,13 @@ set_curvature <- function(variables, flows) {
         s <- flows[i, "xmin"]
         e <- flows[i, "xmax"]
         if(s < e) {
-          flows[i, "xlabel"] <- tmp$xend - 0.25
-          flows[i, "ylabel"] <- tmp$yend - 0.25
+          flows[i, "xlabel"] <- tmp$xmax - 0.25
+          flows[i, "ylabel"] <- tmp$ymax - 0.25
         }
         if(s > e) {
-          flows[i, "xlabel"] <- tmp$xend + 0.15
-          flows[i, "ylabel"] <- tmp$yend + 0.05
+          flows[i, "xlabel"] <- tmp$xmax + 0.15
+          flows[i, "ylabel"] <- tmp$ymax + 0.15
         }
-
       }
     }
   }

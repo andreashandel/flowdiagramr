@@ -41,9 +41,9 @@ check_model_list <- function(model_list) {
 
   #check that naming for variables is correct (all start with upper case, no blank)
   varpattern = "^[A-Z]+[A-Za-z0-9_]*$"
-  if (sum(!grepl(varpattern,variables))>0)
+  if (sum(!grepl(varpattern,substr(variables, 1, 1)))>0)
   {
-    mberror = "Please start with a upper case letter and use only use letters and numbers for variables"
+    msg = "Please start with a upper case letter and use only use letters and numbers for variables"
     return(msg)
   }
 
@@ -90,6 +90,7 @@ check_model_list <- function(model_list) {
       #nothing else (e.g. sin() or such) is currently allowed
       parnames = setdiff(flowsymbols, variables)
       # check that parameter names follow the right naming convention
+      ## TODO(andrew,andreas): numbers ok?
       parpattern = "^[a-z]+[A-Za-z0-9_]*$"
       if (sum(!grepl(parpattern,parnames))>0)
       {

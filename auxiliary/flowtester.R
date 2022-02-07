@@ -25,11 +25,15 @@ diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 # diagram_settings <- list(var_outline_color = c("black", "red"))
 # diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
+diagram_list <- prepare_diagram(model_list)
 make_diagram(diagram_list)
 
 
-
-
+varlabels = c("Pat","Imm")
+flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
+                 Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
+model_list = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(model_list)
 
 
 
