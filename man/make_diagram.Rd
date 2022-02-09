@@ -4,21 +4,7 @@
 \alias{make_diagram}
 \title{Make a ggplot2 model diagram.}
 \usage{
-make_diagram(
-  diagram_list,
-  diagram_settings = list(var_outline_color = "black", var_fill_color = "#6aa4c8",
-    var_label_text = NA, var_label_on = TRUE, var_label_color = "white", var_label_size =
-    10, main_flow_on = TRUE, main_flow_color = "grey25", main_flow_linetype = "solid",
-    main_flow_size = 0.7, main_flow_label_on = TRUE, main_flow_label_color = "black",
-    main_flow_label_size = 5, main_flow_arrow_size = 0.25, interaction_flow_on = TRUE,
-    interaction_flow_color = "grey25", interaction_flow_linetype = "dashed",
-    interaction_flow_size = 0.7, interaction_flow_label_on = TRUE,     
-    interaction_flow_label_color = "black", interaction_flow_label_size = 5,
-    interaction_flow_arrow_size = 0.25, external_flow_on = TRUE, external_flow_color =
-    "grey25", external_flow_linetype = "solid", external_flow_size = 0.7,
-    external_flow_label_on = TRUE, external_flow_label_color = "black",
-    external_flow_label_size = 5, external_flow_arrow_size = 0.25, with_grid = FALSE)
-)
+make_diagram(diagram_list, with_grid = FALSE)
 }
 \arguments{
 \item{diagram_list}{A required list of data frames returned from the

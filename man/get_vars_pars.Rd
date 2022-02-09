@@ -7,18 +7,18 @@
 get_vars_pars(flow)
 }
 \arguments{
-\item{flow}{A modelbuilder flow, which is a character string.}
+\item{flow}{A flow, which is a character string.}
 }
 \value{
 A character vector of the variables and parameters, in order.
 }
 \description{
-The flow must be a character string of typical modelbuilder
-model structure.
+The flow must be a character string as used in flowdiagramr
+and modelbuilder.
 }
 \details{
-This function takes as input a modelbuilder flow and
-extracts the variables and parameters (excludes the
+This function takes as input a single flow expression
+and extracts the variables and parameters (excludes the
 math notation).
 }
 \author{

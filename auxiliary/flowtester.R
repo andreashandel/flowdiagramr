@@ -6,6 +6,7 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              I_flows = c("+b*S*I","-g*I", "-m*I"),
              R_flows = c("g*I", "-m*R"))
 model_list = list(variables = variables, flows = flows)
+
 model_settings = list(
   varlocations = NULL,
   varbox_x_size = 0.5,
@@ -13,20 +14,60 @@ model_settings = list(
   varspace_x_size = 1,
   varspace_y_size = 1)
 
-# prepare diagram without extra settings
-diagram_list <- prepare_diagram(model_list, model_settings)
-diagram_list_new <- update_diagram(diagram_list)
+#####################
+# check prepare_diagram
+#####################
 
+# prepare diagram without extra settings
+diagram_list_orig <- prepare_diagram(model_list)
+
+# prepare diagram with extra settings - currently doesn't seem to work
+diagram_list2 <- prepare_diagram(model_list, model_settings)
+
+#####################
+# check update_diagram
+#####################
+
+#eventually this should probably just throw an error
+diagram_list_new <- update_diagram(diagram_list2)
+
+#this should work
+diagram_settings <- list(var_outline_color = c("black", "white", "red"))
+diagram_list_ok <- update_diagram(diagram_list2, diagram_settings)
+
+#this should work
 diagram_settings <- list(var_outline_color = c("black", "white", "red"),
                          var_fill_color = c("red"))
+diagram_list_ok <- update_diagram(diagram_list2, diagram_settings)
+
+# this should error out - it does
+diagram_settings <- list(var_outline_color = c("black", "red"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
-# this should error out
-# diagram_settings <- list(var_outline_color = c("black", "red"))
-# diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+# this should also error out - wrong number of entries again
+# currently runs without error
+diagram_settings <- list(var_outline_color = c("solid", "solid","dashed"))
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
-diagram_list <- prepare_diagram(model_list)
-make_diagram(diagram_list)
+# this should also error out - or be caught later, when doing make_diagram
+# currently does not, and instead runs. That will break make_diagram
+diagram_settings <- list(main_flow_linetype = c("black", "red"))
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+
+
+
+#####################
+# check make_diagram
+#####################
+
+make_diagram(diagram_list_orig)
+
+#this fails, but should work based on the way diagram_list_ok looks
+# when I do this setdiff(diagram_list_orig$flows,diagram_list_ok$flows)
+# or look at the str() of the flow df, I see that some previously numeric columns
+# turned into characters (size, label_size, arrow_size). Which is likely why it fails.
+make_diagram(diagram_list_ok)
+
 
 
 varlabels = c("Pat","Imm")

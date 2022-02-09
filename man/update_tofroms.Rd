@@ -4,12 +4,12 @@
 \alias{update_tofroms}
 \title{Updates the numeric to/from ids to the variable label}
 \usage{
-update_tofroms(targ, nodes)
+update_tofroms(flows, variables)
 }
 \arguments{
-\item{targ}{The target data frame, typically the flows df.}
+\item{flows}{The flows data frame.}
 
-\item{nodes}{The nodes data frame.}
+\item{variables}{The variables data frame.}
 }
 \description{
 Updates the numeric to/from ids to the variable label

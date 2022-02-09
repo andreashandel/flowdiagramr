@@ -1,5 +1,10 @@
 #' Updates the aesthetics settings in the variables and flows data frames
 #'
+#' @description
+#' This function takes a list as created by \code{\link{prepare_diagram}}
+#' and allows the user to update the styling of the boxes and arrows by setting
+#' the different arguments in the input list of this function.
+#'
 #' @param diagram_list A required list of data frames returned from the
 #'     \code{prepare_diagram} function. See that function for details
 #'     about this object.
@@ -88,6 +93,32 @@
 #'     specifying the text size for external flow labels. Must either be of
 #'     length 1 or the number of external flows.
 #' }
+#' @return The same list of data frames that was sent into the function
+#'         With updated style settings
+#'         (different values in the updated columns/variables) of the data frames
+#' @details more here
+#' @examples
+#' #basic model specification
+#' variables <- c("S","I","R")
+#' flows <- list(S_flows = c("-b*S*I"),
+#'               I_flows = c("b*S*I","-g*I"),
+#'               R_flows = c("g*I"))
+#' mymodel <- list(variables = variables, flows = flows)
+#' diag_list <- prepare_diagram(model_list = mymodel)
+#' diag_list2 <- update_diagram(diag_list, diagram_settings = list(var_fill_color = "green"))
+#'
+#' # more extensive updates
+#' newsettings <- list(var_label_color = c("green","blue","red"),
+#'                       interaction_flow_size = 1.5,
+#'                        external_flow_size = c(0.7,0.9)
+#'                       )
+#' diag_list3 <- update_diagram(diag_list, diagram_settings = newsettings)
+#'
+#' @export
+
+
+
+
 
 update_diagram <- function(diagram_list,
                             diagram_settings = list(
@@ -118,6 +149,9 @@ update_diagram <- function(diagram_list,
 
   ###
   # checks
+  # make sure diagram_list is a valid object
+  # make sure any provided input in diagram_settings is a valid column in diagram_list
+  # if a setting is provided as vector, make sure length matches number of entities of that type (e.g. number of interaction flows)
   ###
 
   # if the user does not provide any settings, warn them

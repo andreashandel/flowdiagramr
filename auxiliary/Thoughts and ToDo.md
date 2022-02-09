@@ -1,3 +1,33 @@
+2022-02-09 Andreas Notes
+
+* Currently, data frames returned from prepare_diagram do not contain all columns/settings that can be changed. Add them or not?
+
+* Need to make sure matching between column names in diagram_list data frames and inputs to update_diagram() is obvious. E.g. suggest to change color -> border_color (or outline_color) and fill -> fill_color in variable dataframe (and same names in update_diagram)
+
+* Not sure we want to have default values in update_diagram. Defaults should be spit out after prepare_diagram. Then in update_, only whatever the user provides is processed/updated, everything else remains untouched.
+
+* Why are the logicals (show/hide) for arrows not part of update_?
+
+* Right now, update_diagram allows for nonsensical entries (e.g. linetype = "green"). Such nonsense can also arise if user manipulates data frames by hand. Thus, we might need a function at start of make_diagram that makes sure all columns in diag_list have the right names, and all entries are ok ones (e.g. anything that's numeric needs to be a number), color needs to be a color, etc. We could then also run that function during update_diagram to prevent nonsense (or ignore for update diagram and just do the check before making diagram).
+
+* Maybe just throw an error if user doesn't provide proper diagram_list and diagram_settings entries for update_diagram()? So basically at least one entry to be updated in diagram_settings, and must match column/variable in diagram_list, otherwise fail.
+
+* It somehow seems "dangerous" to produce the plot in make_diagram by evaluating it with environmental variables. Are we sure that might not lead to some unforeseen bad consequences if user has an unexpected local environment? Not sure, maybe ok because environment is only what's inside the function?
+
+* Is there an advantage to having the get_code() function instead of just storing the ggplot skeleton code in a string variable, either inside make_diagram or somewhere else, and just loading it?
+
+* Seems like extra model_settings in prepare diagram that determine size/spacing currently don't work?
+
+* make_diagram fails on a data frame that I think should work. see flowtester.R. Seems to be due to update_diagram() altering some column types from numeric to character.
+
+* Any further code simplification is good :) E.g. some of the helper functions one might be able to write simpler? And in general I think having the helper functions is good, but if it's only a 1-2 lines of code that isn't used too often, I think we can move into the calling function instead (e.g. without trying to think through it, it seems to me something like remove_na_rows could be done with some built-in function and maybe just 1 line of code? (but maybe not, i didn't try to work my way through the function)). Also, helper functions could use some more commenting/documentation. Sometimes hard to see what's going on without spending a good bit of time working through the code.
+
+* Need to update documentation, examples, etc. for all functions to match with new setup.
+
+* Once working, prepare_diagram function needs an example showing full use of model_settings, including vectorization.
+
+***
+
 2022-01-10 Andreas Notes
 
 ***
@@ -34,17 +64,9 @@ The data frames returned from prepare_diagram will be big if we change as outlin
 * Working through prepare_diagram step by step and updating, so far done checks, currently on add_locations and starting looking at flow processing part.
 
 
+
 11/4/ Notes from Andreas
 
-* Used dplyr's bind_cols/bind_rows at some places due to better handling of cases when one data frame has no entries. Added dplyr to dependency.
-
-* Removed aesthetics from the prepare_diagram outputs. If a user can provide settings to make_diagram in a vectorized format, it's the same as manipulating entries in the diagram_list for aesthetics. So we can simply only allow it in one place. Then diagram_list will only contain entries that can't be supplied as settings to make_diagram.
-
-* Need to figure out how to best vectorize inputs to make_diagram.
-
-* Changed prepare_diagram inputs for scaling/spacing. Updated function documentation to explain updates. Not yet fully implemented in code.
-
-* All optional settings for prepare_diagram are now by default NULL, and if not user-supplied, generated at start of prepare_diagram function.
 
 * Need to update set_curvature code (and any other place) to not use row information but work with only values in xmin/xmax/ymin/ymax. Also, need to avoid hard-coding any offsets/shifts and instead use them based on x/y-coordinates of the to/from boxes (or arrow dimensions).
 
@@ -89,58 +111,9 @@ Now I'm also wondering again where to place (0,0). Bottom left makes sense to me
 
 
 
-9/2 updates
-
-* Rewrote vignettes A and B. One issue might be box sizing, see ALL CAPS text in vignette B. Might need some discussion.
-
-
-
-
-******
-# Urgent/Next
-******
-
-My current thinking (up for discussion):
-
-* By default, the first (or, if present, lower left variable in varlocations matrix) is placed on a grid with the lower left corner of that box (xmin/ymin) at (0,0). By default, boxes are of size 1, with both horizontal and vertical spacing between boxes size 2.
-
-THIS IS DONE.
-
-* model_settings in prepare_diagram will take these inputs: varlocations, varbox_x_scaling, varbox_y_scaling, varspace_x_scaling, varspace_y_scaling. The first 2 scale the box size by a factor along that direction, e.g. varbox_x_scaling = 1.5 makes each box of size 1.5. Might be easiest to just push the max value out by that amount? varspace does the same for the empty space between boxes, e.g. it scales the default value of 2 to create more/less spacing between boxes. These settings determine the location of all boxes. Once all boxes are 'placed', arrows will then be drawn between boxes based on box start/end settings.
-
-THIS IS DONE. BUT SCALINGS ARE NOT VECTORIZED -- THEY CAN ONLY TAKE ONE VALUE AT THIS TIME.
-
-* varnames, use_varnames, var_label_size will be removed from model_settings
-
-DONE. I REMOVED USE_VARNAMES AND SIMPLY CHECK WHETHER VARNAMES ARE SUPPLIED AND ASSUME THE USER WANTS TO USE VARNAMES IF THEY PROVIDE THEM. THESE ARGUMENTS ARE NOW IN diagram_settings.
-
-* Also, let's call the low/high values for boxes and arrows the same. right now it's xmin and xstart for boxes and arrows respectively. That leads to extra cognitive load by the user :) Just pick one labeling and use the same for both boxes and arrows. I prefer min/max since it doesn't indicate directionality, but I'm ok with either (or something else).
-
-DONE.
-
-* Rewrite prepare_diagram to implement those changes. Also, streamline/simplify code. Remove "legacy code", e.g. the sdf/vdf/cdf/etc. distinctions. Make code as streamlined/simple/documented as possible, so I can follow :) and thus maintain/update. That also means changing variable names to something consistent (instead of renaming at end, like we are doing for some currently.)
-
-DONE. THOUGH THERE IS PROBABLY MORE REFACTORING THAT CAN BE IDENTIFIED DURING CODE REVIEW.
-
-
-* make_diagram gets a new entry for diagram_settings called var_label_text. The user provides a vector of text to be printed into the boxes (e.g. the variable names, or anything else). If provided, this is used, otherwise the default is to use varlabels from the model_list. This basically reproduces the varnames/use_varnames functionality in a more flexible way. It also reduces confusion about specifying var_label_size twice.
-
-DONE.
-
-* If a user specifies one of the entries in diagram_settings, it overwrites whatever is in diagram_list. If a user wants to do more detailed adjustments, they need to edit diagram_list and leave that entry of diagram_settings empty. Maybe (if easy to do) if code detects a non-default setting in diagram_list AND styling for that entry in diagram_settings, it could issue a warning message.
-
-I THINK THIS IS DONE. BUT WILL REQUIRE TESTING THE SPECIFIC USE CASE YOU HAVE IN MIND.
-
-* Rewrite make_diagram to implement those changes. Also, as for prepare diagram, streamline/simplify code.
-
-DONE. MOST OF THE CODE IS RECYCLING VALUES FOR AESTHETICS. WE CAN MOVE ALL THOSE TO EXTERNAL FUNCTION IF YOU WANT TO CLEAN UP THE FUNCTION MORE.
-
-
 ******
 # Important/Later
 ******
-
-* In vignette C, last plot of example 1 the I label should be red, i.e. preserved from diagram_list modification. It is not, needs fixing. -- UPDATED TO WORK. BUT WE NEED TO DISCUSS DETAILS.
 
 * Arrow placing for last plot in vignette F is poor. Might not be an easy fix.
 
@@ -158,7 +131,9 @@ https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-varia
 
 * Document/briefly describe all functions (both exported and internal) in documentation.md inside docsfordevelopers. Big picture, i.e. what function does and how it's called is enough. More detailed explanations should be in each function. Basically anything a new person working on this package needs to know to quickly pick up on things.
 
-* Example 2 in vignette G does not look right, some arrows don't start/end at boxes.
+
+
+
 
 ******
 # Less Important/Later
@@ -176,12 +151,10 @@ https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-varia
 
 * Currently, combining flow terms doesn't work. I'm ok for now forcing the user to write them explicitly one by one. One could consider adding parsing logic that can take e.g. S1*(b11*I2 + b12*I2) and parses out the 2 terms. But low priority/not now.
 
-
 * Branched flows currently dont work (I think). E.g. -bSI leaving a compartment and fbSI arriving in one and (1-f)bSI in another are not allowed. Those flows need to be written explicitly currently as 2 independent flows both on inflow and outflow.
 
-    #STILL NEED TO WRITE THE FOLLOWING CHECK
-    #make sure each parameter name is only used in disticnt flows, either once
-    #or twice in a inflow/outflow pair
+* #make sure each parameter name is only used in distinct flows, either once or twice in a inflow/outflow pair
+
 
 
 

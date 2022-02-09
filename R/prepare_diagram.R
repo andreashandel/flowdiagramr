@@ -32,9 +32,9 @@
 #' }
 #'
 #' @param model_settings A list of optional model settings. The following
-#'     elements are supported and default values are provided:
+#'     elements are supported. If not provided, all default to a value of 1.
 #' \itemize{
-#' \item `varlocations`: A matrix containing all `model_list$vars` entries in specific locations on a grid. See examples.
+#' \item `varlocations`: A matrix containing all `model_list$variables` entries in specific locations on a grid. See examples.
 #' \item `varbox_x_size`: Either a scalar or a vector that changes the default
 #'     width of variable boxes. For example, `varbox_x_size = 1.5` makes each box
 #'     1.5 units in width. If a scalar, the value is used for all variables.
@@ -51,13 +51,15 @@
 #' \item `varspace_y_size`:  Same as `varspace_y_size` but for the vertical dimension.
 #'     If you provide a vector, it needs to be of dimension one less than the number of rows in `varlocations`.
 #'     Spacing starts at the bottom, thus the first number is the spacing between the lowest and second lowest row, etc.
+#' \item See examples and details below and vignettes.
 #' }
 #'
-#' @return A list of four data frames. Two data frames containing information on variables/boxes and flows/arrows.
-#'         The original two input data frames are also returned.
-#'         The new data frames are:
+#' @return A list of two data frames containing all necessary information
+#'         for the model variables/boxes and flows/arrows to be plotted
+#'         by the \code{\link{make_diagram}} function.
+#'         The data frames are:
 #' \itemize{
-#'   \item `varsettings`: A data frame containing information for all variables.
+#'   \item `variables`: A data frame containing information for all variables.
 #'   The data frame contains these columns:
 #'
 #'   \itemize{
@@ -72,9 +74,10 @@
 #'     \item `ylabel`: Vertical position (midpoint) of label.
 #'   }
 #'
-#'   \item `flowsettings`: A data frame containing information for all flows.
+#'   \item `flows`: A data frame containing information for all flows.
 #'   The data frame contains these columns:
 #'   \itemize{
+#'     \item `type`: Type of flow. One of main, interaction, or external.
 #'     \item `id`: A numeric id for each flow.
 #'     \item `from`: The variable from which the arrow originate. That is, the
 #'     variable donating the flow.
@@ -89,17 +92,16 @@
 #'     \item `ylabel`: Vertical position (midpoint) of label.
 #'     \item `curvature`: The amount of curvature applied to arrow.
 #'     Higher numbers indicate more curvature; 0 = straight line.
-#'     \item `type`: Type of flow. One of main, interaction, or external.
 #'     \item `math`: The math from the flows specified by the user. This is a
 #'     duplicate of `label` so that user can update `label` as desired but
 #'     retain the original math for reference.
 #'   }
 #' }
 #' @details `variables` needs to be specified as a vector of model variables,
-#' e.g., vars <- c("Pred","Prey").
+#' e.g., variables <- c("Pred","Prey").
 #' `flows` need to be specified as a list, with each list entry containing the
 #' flows/processes for each variable in the order in which the variables appear.
-#' Flows need to be named according to VARLABEL_flows.
+#' Flows need to be named according to VARIABLENAME_flows.
 #' Example: flows <- list(Pred_flows = c(`r*Pred`, `-k1*Pred*Prey`),
 #'                        Prey_flows = c(`g*Prey`, `-k2*Pred*Prey`) )
 #' Each flow, i.e. each entry in the flow vector, needs to be a valid
@@ -220,7 +222,7 @@ prepare_diagram <- function(model_list,
   # default for varlocations is a matrix with a single row
   # If user did not provide values for sizing/spacing,
   # we set vectors of length nvars and nvars-1 for box and space sizing
-  # each with the default of 1
+  # each with the default value of 1
   # note that we assign it to model_settings.
   # this is needed to be passed into helper functions like make_vdf_angled
   # these updated settings will also be returned as part of the list of values this function returns
@@ -249,7 +251,7 @@ prepare_diagram <- function(model_list,
 
   #############################################
   #############################################
-  # At this stage, all input checking should be done
+  # At this stage, all input checking and processing should be done
   #############################################
   #############################################
 
