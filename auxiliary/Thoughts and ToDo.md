@@ -1,3 +1,30 @@
+2022-02-23 Andrew and Andreas notes
+
+* Add `show_arrow` column to flows data frame; all TRUE by default.
+
+* For the update list, make a 1:1 correspondence between column names and list arguments that can be used by users.
+
+* Remove defaults for the default settings to look for differences when updating aes. Instead, just use column names.
+
+* Add a final check function inside `make_diagram()`. Check for:
+  - nonsense in update settings
+  - column names are correct
+  - check values for basic conformity (chr, str, num, etc.)
+  - add to end of `update_diagram()`
+  - add to beginning of `make_diagram()`
+  
+* Check varspacing: must be length 1 or n-1
+
+* Make interaction and external arrow lengths depend on the box size (e.g., go from center out at 45 degree angle until the "edge" of the box is found).
+
+* Enforce that user must supply both `var_locs` and `var_spacing`, or NEITHER.
+
+* Remove code that guesses about rows. User must encode multiple rows via `var_locations` matrix if they wish.
+
+* `flows` data frame needs "math" and "label_text" columns; default is they are the same.
+
+
+***
 2022-02-09 Andreas Notes
 
 * Currently, data frames returned from prepare_diagram do not contain all columns/settings that can be changed. Add them or not?
