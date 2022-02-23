@@ -1093,10 +1093,5 @@ prepare_diagram <- function(model_list,
   # add default aesthetics
   dflist <- add_default_aes(variables, flows)
 
-  ## TODO(andrew,andreas): Confirm we don't want to track inputs
-  # Add inputs to return list.
-  # dflist$inputs <- list(model_list = model_list,
-  #                       model_settings = model_settings)
-
   return(dflist)
 }

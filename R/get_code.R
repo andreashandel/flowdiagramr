@@ -45,7 +45,8 @@ for(i in 1:nrow(variables)) {
 
 ## add in all the flows
 for(i in 1:nrow(flows)) {
-  diagram_plot <- diagram_plot +
+  if(flows[i, "show_arrow"] = TRUE) {
+    diagram_plot <- diagram_plot +
     geom_curve(
       data = flows[i, ],
       aes(x = xmin,
@@ -61,7 +62,9 @@ for(i in 1:nrow(flows)) {
       curvature = flows[i, "curvature"],
       ncp = 1000
     )
+  }
 }
+
 for(i in 1:nrow(flows)) {
   diagram_plot <- diagram_plot +
     geom_text(

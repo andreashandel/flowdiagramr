@@ -120,31 +120,7 @@
 
 
 
-update_diagram <- function(diagram_list,
-                            diagram_settings = list(
-                              var_outline_color = "black",
-                              var_fill_color = "#6aa4c8",
-                              var_label_color = "white",
-                              var_label_size = 10,
-                              main_flow_color = "grey25",
-                              main_flow_linetype = "solid",
-                              main_flow_size = 0.7,
-                              main_flow_label_color = "black",
-                              main_flow_label_size = 5,
-                              main_flow_arrow_size = 0.25,
-                              interaction_flow_color = "grey25",
-                              interaction_flow_linetype = "dashed",
-                              interaction_flow_size = 0.7,
-                              interaction_flow_label_color = "black",
-                              interaction_flow_label_size = 5,
-                              interaction_flow_arrow_size =  0.25,
-                              external_flow_color = "grey25",
-                              external_flow_linetype = "solid",
-                              external_flow_size = 0.7,
-                              external_flow_label_color = "black",
-                              external_flow_label_size = 5,
-                              external_flow_arrow_size =  0.25)
-                            ) {
+update_diagram <- function(diagram_list, diagram_settings = NULL) {
 
 
   ###
@@ -154,6 +130,9 @@ update_diagram <- function(diagram_list,
   # if a setting is provided as vector, make sure length matches number of entities of that type (e.g. number of interaction flows)
   ###
 
+  variables <- diagram_list$variables
+  flows <- diagram_list$flows
+
   # if the user does not provide any settings, warn them
   # and return the data frames
   if(is.null(diagram_settings)) {
@@ -161,53 +140,46 @@ update_diagram <- function(diagram_list,
     return(diagram_list)
   }  # otherwise, carry on
 
+  # possible settings are the following
+  var_setting_names <- paste0("var_",
+                              c(
+                                "outline_color",
+                                "fill_color",
+                                "label_text",
+                                "label_color",
+                                "label_size"
+                              ))
 
-  # load the defaults
-  ds <- eval(formals(update_diagram)$diagram_settings)
+  flow_setting_names <- c(
+    "color",
+    "linetype",
+    "size",
+    "label_color",
+    "label_size",
+    "arrow_size",
+    "show_arrow"
+  )
+  flow_setting_names <- c(
+    paste0("main_flow_", flow_setting_names),
+    paste0("interaction_flow_", flow_setting_names),
+    paste0("external_flow_", flow_setting_names)
+  )
+
+  setting_names <- c(var_setting_names, flow_setting_names)
+
 
   # check user inputs provided in diagram_settings,
   # if user supplies a non-recognized argument, stop
-  nonrecognized_inputs <- setdiff(names(diagram_settings),  names(ds))
+  nonrecognized_inputs <- setdiff(names(diagram_settings),  setting_names)
   if (length(nonrecognized_inputs>0) )
   {
     stop('These elements of diagram_settings are not recognized: ', nonrecognized_inputs)
   }
 
 
-  # check if anything is different from the defaults. if not, warn the
-  # user that no changes were requested and the the diagram_list is
-  # returned with no updates. all.equal will return a vector of messages,
-  # so long as the first element is not TRUE, we know that the user
-  # has provided unique inputs different than the defaults.
-  check_diff <- all.equal(diagram_settings, ds)
-  if(check_diff[1] == TRUE) {
-    warning("Settings provided are the same as defautls; returning diagram_list without updates.")
-    return(diagram_list)
-  }  # otherwise, carry on
-
-
-
-  ###
-  ###
-  # at this point, we have determined that at least one thing in the
-  # diagram_list provided by the user is different than the defaults.
-  # therefore, we can now update the settings columns in the variables
-  # flows diagrams accordingly, after making sure the diagram_settings
-  # provided by the user pass a few extra checks.
-  ###
-  ###
-
   ###
   # preliminaries for bookkeeping
   ###
-  # unlist the data frames to objects
-  variables <- diagram_list$variables
-  flows <- diagram_list$flows
-
-  # update defaults with user settings
-  user_settings <- diagram_settings  # these are the user settings
-  diagram_settings <- ds  # these are the defaults
-  diagram_settings[names(user_settings)] <- user_settings  # updates
 
   # determine number of variables and each flow
   nvars <- nrow(variables)

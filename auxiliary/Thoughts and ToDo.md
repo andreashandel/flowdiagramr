@@ -1,10 +1,10 @@
 2022-02-23 Andrew and Andreas notes
 
-* Add `show_arrow` column to flows data frame; all TRUE by default.
+* ~~Add `show_arrow` column to flows data frame; all TRUE by default.~~ **DONE.**
 
-* For the update list, make a 1:1 correspondence between column names and list arguments that can be used by users.
+* ~~For the update list, make a 1:1 correspondence between column names and list arguments that can be used by users.~~ **DONE.**
 
-* Remove defaults for the default settings to look for differences when updating aes. Instead, just use column names.
+* ~~Remove defaults for the default settings to look for differences when updating aes. Instead, just use column names.~~ **DONE.**
 
 * Add a final check function inside `make_diagram()`. Check for:
   - nonsense in update settings
@@ -19,7 +19,7 @@
 
 * Enforce that user must supply both `var_locs` and `var_spacing`, or NEITHER.
 
-* Remove code that guesses about rows. User must encode multiple rows via `var_locations` matrix if they wish.
+* ~~Remove code that guesses about rows. User must encode multiple rows via `var_locations` matrix if they wish.~~ **DONE.**
 
 * `flows` data frame needs "math" and "label_text" columns; default is they are the same.
 

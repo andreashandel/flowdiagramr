@@ -9,8 +9,8 @@
 add_default_aes <- function(variables, flows) {
 
   # the default settings for variables
-  variables$color <- "black"
-  variables$fill <- "#6aa4c8"
+  variables$outline_color <- "black"
+  variables$fill_color <- "#6aa4c8"
   variables$label_text <- variables$name
   variables$label_color <- "white"
   variables$label_size <- 10
@@ -26,6 +26,7 @@ add_default_aes <- function(variables, flows) {
   flows$label_color <- "black"
   flows$label_size <- 5
   flows$arrow_size <- 0.25
+  flows$show_arrow <- TRUE
 
   return(list(variables = variables,
               flows = flows))
