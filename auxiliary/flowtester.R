@@ -24,6 +24,45 @@ diagram_list_orig <- prepare_diagram(model_list)
 # prepare diagram with extra settings - currently doesn't seem to work
 diagram_list2 <- prepare_diagram(model_list, model_settings)
 
+
+
+varlocs = matrix(
+  data = c("S", "", "R",
+           "", "I", ""),
+  nrow = 2,
+  ncol = 3,
+  byrow = TRUE
+)
+
+model_settings = list(
+  varlocations = varlocs,
+  varbox_x_size = 0.5,
+  varbox_y_size = 0.5,
+  varspace_x_size = 1,
+  varspace_y_size = 1)
+
+# no errors
+prepare_diagram(model_list, model_settings)
+
+# error
+model_settings = list(
+  varlocations = varlocs,
+  varbox_x_size = 0.5,
+  varbox_y_size = 0.5,
+  varspace_x_size = c(1, 1, 1),
+  varspace_y_size = 1)
+prepare_diagram(model_list, model_settings)
+
+# no error
+model_settings = list(
+  varlocations = varlocs,
+  varbox_x_size = 0.5,
+  varbox_y_size = 0.5,
+  varspace_x_size = c(1, 1),
+  varspace_y_size = c(0.1, 0.1))
+make_diagram(prepare_diagram(model_list, model_settings))
+
+
 #####################
 # check update_diagram
 #####################

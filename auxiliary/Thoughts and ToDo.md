@@ -13,15 +13,15 @@
   - add to end of `update_diagram()`
   - add to beginning of `make_diagram()`
   
-* Check varspacing: must be length 1 or n-1
+* ~~Check varspacing: must be length 1 or n-1~~ DONE.
 
 * Make interaction and external arrow lengths depend on the box size (e.g., go from center out at 45 degree angle until the "edge" of the box is found).
 
-* Enforce that user must supply both `var_locs` and `var_spacing`, or NEITHER.
+* ~~Enforce that user must supply both `var_locs` and `var_spacing`, or neither.~~ DONE.
 
 * ~~Remove code that guesses about rows. User must encode multiple rows via `var_locations` matrix if they wish.~~ **DONE.**
 
-* `flows` data frame needs "math" and "label_text" columns; default is they are the same.
+* ~~`flows` data frame needs "math" and "label_text" columns; default is they are the same.~~ DONE.
 
 
 ***

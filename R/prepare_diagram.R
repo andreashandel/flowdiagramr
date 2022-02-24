@@ -227,6 +227,29 @@ prepare_diagram <- function(model_list,
   # this is needed to be passed into helper functions like make_vdf_angled
   # these updated settings will also be returned as part of the list of values this function returns
 
+  # Check that if either both varlocations or varspace* arguments are provided
+  # or neither are provided.
+  if(!is.null(model_settings$varlocations) &
+     (is.null(model_settings$varspace_x_size) |
+      is.null(model_settings$varspace_y_size)) |
+     is.null(model_settings$varlocations) &
+     (!is.null(model_settings$varspace_x_size) |
+      !is.null(model_settings$varspace_y_size))) {
+    stop("varlocations and varspace arguments in model_settings must both be provided if providing one or the other.")
+  }
+
+  # Check that the length of all varspace arguments are one less than
+  # the number of variables
+  nsizes <- length(model_list$variables) - 1
+  if(!(is.null(model_settings$varspace_x_size)) |
+     !(is.null(model_settings$varbox_y_size))) {
+    if(!length(model_settings$varspace_x_size) %in% c(1, nsizes) |
+       !length(model_settings$varspace_y_size) %in%  c(1,nsizes)) {
+      stop("varspace arguments must be of length 1 or the number of variables minus 1.")
+    }
+  }
+
+
 
   ## TODO(andrew,andreas): Finalize varspace* and varbox* usage
   ## It is required for add_locations(), but

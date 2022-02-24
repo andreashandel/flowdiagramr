@@ -9,13 +9,14 @@
 add_default_aes <- function(variables, flows) {
 
   # the default settings for variables
+  variables$label_text <- variables$name
   variables$outline_color <- "black"
   variables$fill_color <- "#6aa4c8"
-  variables$label_text <- variables$name
   variables$label_color <- "white"
   variables$label_size <- 10
 
   # the default settings for flows
+  flows$label_text <- flows$math
   flows$color <- "grey25"
   flows$size <- 0.7
   lines <- data.frame(

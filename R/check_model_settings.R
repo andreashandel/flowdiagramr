@@ -36,7 +36,7 @@ check_model_settings <- function(model_list, model_settings) {
   {
     varlocnames = as.vector(model_settings$varlocations)
     varlocnames = varlocnames[varlocnames !=""] #remove empty entries
-    if (!setequal(varlocnames, model_list$varlabels))
+    if (!setequal(varlocnames, model_list$variables))
     {
       # returns fatal error if variables do not match
       msg <- "varlocation entries do not match varlabels in model_list."

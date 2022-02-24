@@ -28,8 +28,8 @@ for(i in 1:nrow(variables)) {
     geom_rect(
       data = variables[i, ],
       aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-      color = variables[i, "color"],
-      fill = variables[i, "fill"]
+      color = variables[i, "outline_color"],
+      fill = variables[i, "fill_color"]
     )
 }
 
@@ -45,7 +45,7 @@ for(i in 1:nrow(variables)) {
 
 ## add in all the flows
 for(i in 1:nrow(flows)) {
-  if(flows[i, "show_arrow"] = TRUE) {
+  if(flows[i, "show_arrow"] == TRUE) {
     diagram_plot <- diagram_plot +
     geom_curve(
       data = flows[i, ],
