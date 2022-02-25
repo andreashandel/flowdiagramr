@@ -10,6 +10,7 @@
   - nonsense in update settings
   - column names are correct
   - check values for basic conformity (chr, str, num, etc.)
+    - DO WE WANT TO ALLOW CHR and NUM for some (like linetypes)?
   - add to end of `update_diagram()`
   - add to beginning of `make_diagram()`
   

@@ -4,21 +4,28 @@
 #' flows or variables data frame based on the new values in diagram_settings.
 #' @param n The number of variables or flows.
 #' @param diagram_settings The diagram_settings list.
-#' @param list_names The names of the list elements relevant for the current operation.
-#' @param column_names The column names that map to each list name in diagram_settings.
-#'     Must be in the correct order.
 
 make_new_settings_df <- function(n,
-                                 diagram_settings,
-                                 list_names,
-                                 column_names) {
+                                 diagram_settings) {
   seq_to_max <- 1:n
-  var_mat <- sapply(diagram_settings[list_names], "[", i = seq_to_max)
-  if(is.vector(var_mat)) {
-    var_mat <- t(as.matrix(var_mat))
+  mat <- sapply(diagram_settings, "[", i = seq_to_max)
+  if(is.vector(mat)) {
+    mat <- t(as.matrix(mat))
   }
-  var_df <- as.data.frame(var_mat)
-  new_var_settings <- fill_down_rows(var_df)
-  colnames(new_var_settings) <- column_names
-  return(new_var_settings)
+  df <- as.data.frame(mat)
+
+  # fill down the rows if na after first element
+  for(i in 1:ncol(df)) {
+    tmp <- df[,i]
+    tmp[is.na(tmp)] <- tmp[1]
+    df[,i] <- tmp
+  }
+
+  # update column name
+  cnames <- colnames(df)
+  new_names <- unlist(strsplit(cnames, "var_|main_flow_|external_flow_|interaction_flow_"))
+  new_names <- new_names[which(new_names != "")]
+  colnames(df) <- new_names
+
+  return(df)
 }

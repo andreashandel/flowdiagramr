@@ -68,16 +68,17 @@ make_diagram(prepare_diagram(model_list, model_settings))
 #####################
 
 #eventually this should probably just throw an error
-diagram_list_new <- update_diagram(diagram_list2)
+diagram_list <- prepare_diagram(model_list)
+diagram_list_new <- update_diagram(diagram_list)
 
 #this should work
 diagram_settings <- list(var_outline_color = c("black", "white", "red"))
-diagram_list_ok <- update_diagram(diagram_list2, diagram_settings)
+diagram_list_ok <- update_diagram(diagram_list, diagram_settings)
 
 #this should work
 diagram_settings <- list(var_outline_color = c("black", "white", "red"),
                          var_fill_color = c("red"))
-diagram_list_ok <- update_diagram(diagram_list2, diagram_settings)
+diagram_list_ok <- update_diagram(diagram_list, diagram_settings)
 
 # this should error out - it does
 diagram_settings <- list(var_outline_color = c("black", "red"))
@@ -85,12 +86,17 @@ diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
 # this should also error out - wrong number of entries again
 # currently runs without error
-diagram_settings <- list(var_outline_color = c("solid", "solid","dashed"))
+diagram_settings <- list(var_outline_color = c("solid", "solid"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
 # this should also error out - or be caught later, when doing make_diagram
 # currently does not, and instead runs. That will break make_diagram
+# ATT: this works because there are 2 main flows
 diagram_settings <- list(main_flow_linetype = c("black", "red"))
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+
+# ATT: this breaks
+diagram_settings <- list(main_flow_linetype = c("black", "red", "orange"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
 
