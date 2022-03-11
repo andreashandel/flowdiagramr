@@ -130,6 +130,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   # if a setting is provided as vector, make sure length matches number of entities of that type (e.g. number of interaction flows)
   ###
 
+  # extract the list elements as separate data frames
   variables <- diagram_list$variables
   flows <- diagram_list$flows
 
@@ -140,7 +141,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
     return(diagram_list)
   }  # otherwise, carry on
 
-  # possible settings are the following
+  # possible variable (var) settings are the following
   var_setting_names <- paste0("var_",
                               c(
                                 "outline_color",
@@ -150,6 +151,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
                                 "label_size"
                               ))
 
+  # possible flow settings are the following
   flow_setting_names <- c(
     "color",
     "linetype",
@@ -159,12 +161,15 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
     "arrow_size",
     "show_arrow"
   )
+
+  # append flow type to each possible setting
   flow_setting_names <- c(
     paste0("main_flow_", flow_setting_names),
     paste0("interaction_flow_", flow_setting_names),
     paste0("external_flow_", flow_setting_names)
   )
 
+  # concatenate into one character vector of setting names
   setting_names <- c(var_setting_names, flow_setting_names)
 
 
@@ -181,7 +186,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   # preliminaries for bookkeeping
   ###
 
-  # determine number of variables and each flow
+  # determine number of variables and number of each flow type
   nvars <- nrow(variables)
   nmain <- sum(flows$type == "main")
   ninteraction <- sum(flows$type == "interaction")
