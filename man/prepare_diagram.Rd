@@ -31,9 +31,9 @@ Most math functions (e.g., \code{sin}, \code{cos}) are currently not supported.
 }}
 
 \item{model_settings}{A list of optional model settings. The following
-elements are supported and default values are provided:
+elements are supported. If not provided, all default to a value of 1.
 \itemize{
-\item \code{varlocations}: A matrix containing all \code{model_list$vars} entries in specific locations on a grid. See examples.
+\item \code{varlocations}: A matrix containing all \code{model_list$variables} entries in specific locations on a grid. See examples.
 \item \code{varbox_x_size}: Either a scalar or a vector that changes the default
 width of variable boxes. For example, \code{varbox_x_size = 1.5} makes each box
 1.5 units in width. If a scalar, the value is used for all variables.
@@ -50,14 +50,16 @@ Spacing starts at the left, thus the first number is the spacing between the fir
 \item \code{varspace_y_size}:  Same as \code{varspace_y_size} but for the vertical dimension.
 If you provide a vector, it needs to be of dimension one less than the number of rows in \code{varlocations}.
 Spacing starts at the bottom, thus the first number is the spacing between the lowest and second lowest row, etc.
+\item See examples and details below and vignettes.
 }}
 }
 \value{
-A list of four data frames. Two data frames containing information on variables/boxes and flows/arrows.
-The original two input data frames are also returned.
-The new data frames are:
+A list of two data frames containing all necessary information
+for the model variables/boxes and flows/arrows to be plotted
+by the \code{\link{make_diagram}} function.
+The data frames are:
 \itemize{
-\item \code{varsettings}: A data frame containing information for all variables.
+\item \code{variables}: A data frame containing information for all variables.
 The data frame contains these columns:
 
 \itemize{
@@ -72,9 +74,10 @@ The data frame contains these columns:
 \item \code{ylabel}: Vertical position (midpoint) of label.
 }
 
-\item \code{flowsettings}: A data frame containing information for all flows.
+\item \code{flows}: A data frame containing information for all flows.
 The data frame contains these columns:
 \itemize{
+\item \code{type}: Type of flow. One of main, interaction, or external.
 \item \code{id}: A numeric id for each flow.
 \item \code{from}: The variable from which the arrow originate. That is, the
 variable donating the flow.
@@ -89,7 +92,6 @@ variable receiving the flow.
 \item \code{ylabel}: Vertical position (midpoint) of label.
 \item \code{curvature}: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.
-\item \code{type}: Type of flow. One of main, interaction, or external.
 \item \code{math}: The math from the flows specified by the user. This is a
 duplicate of \code{label} so that user can update \code{label} as desired but
 retain the original math for reference.
@@ -110,10 +112,10 @@ in the vignettes.
 }
 \details{
 \code{variables} needs to be specified as a vector of model variables,
-e.g., vars <- c("Pred","Prey").
+e.g., variables <- c("Pred","Prey").
 \code{flows} need to be specified as a list, with each list entry containing the
 flows/processes for each variable in the order in which the variables appear.
-Flows need to be named according to VARLABEL_flows.
+Flows need to be named according to VARIABLENAME_flows.
 Example: flows <- list(Pred_flows = c(\code{r*Pred}, \code{-k1*Pred*Prey}),
 Prey_flows = c(\code{g*Prey}, \code{-k2*Pred*Prey}) )
 Each flow, i.e. each entry in the flow vector, needs to be a valid

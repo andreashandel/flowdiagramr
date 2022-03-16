@@ -7,60 +7,77 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              R_flows = c("g*I", "-m*R"))
 model_list = list(variables = variables, flows = flows)
 
-model_settings = list(
-  varlocations = NULL,
+varlocs1 = matrix(c("S","","R","","I",""),byrow=TRUE,nrow=2)
+varlocs2 = matrix(c("S","I","R"),byrow=TRUE,nrow=3)
+
+# these settings are good model settings, should work
+model_settings1g = list(
+  varbox_x_size = 0.5,
+  varbox_y_size = 2)
+
+model_settings2g = list(
+  varlocations = varlocs1,
   varbox_x_size = 0.5,
   varbox_y_size = 0.5,
   varspace_x_size = 1,
   varspace_y_size = 1)
+
+model_settings3g = list(
+  varlocations = varlocs1,
+  varbox_x_size = c(1,2,1),
+  varbox_y_size = c(0.5,0.5,2),
+  varspace_x_size = 1,
+  varspace_y_size = 1)
+
+
+model_settings4g = list(
+  varlocations = varlocs1,
+  varbox_x_size = c(1,2,1),
+  varbox_y_size = c(0.5,0.5,2)
+  )
+
+model_settings5g = list(
+  varlocations = varlocs2,
+  varbox_x_size = c(1,0.5,1),
+  varbox_y_size = c(0.5,2,2)
+)
+
+model_settings6g = list(
+  varlocations = varlocs2,
+  varspace_y_size = c(1,2)
+)
+
 
 #####################
 # check prepare_diagram
 #####################
 
-# prepare diagram without extra settings
 diagram_list_orig <- prepare_diagram(model_list)
+diagram_list1g <- prepare_diagram(model_list, model_settings1g)
+diagram_list2g <- prepare_diagram(model_list, model_settings2g)
+diagram_list3g <- prepare_diagram(model_list, model_settings3g)
+diagram_list4g <- prepare_diagram(model_list, model_settings4g)
+# these models should work but don't
+diagram_list5g <- prepare_diagram(model_list, model_settings5g)
+diagram_list6g <- prepare_diagram(model_list, model_settings6g)
 
-# prepare diagram with extra settings - currently doesn't seem to work
-diagram_list2 <- prepare_diagram(model_list, model_settings)
 
 
 
-varlocs = matrix(
-  data = c("S", "", "R",
-           "", "I", ""),
-  nrow = 2,
-  ncol = 3,
-  byrow = TRUE
-)
-
-model_settings = list(
-  varlocations = varlocs,
-  varbox_x_size = 0.5,
-  varbox_y_size = 0.5,
-  varspace_x_size = 1,
-  varspace_y_size = 1)
-
-# no errors
-prepare_diagram(model_list, model_settings)
-
-# error
-model_settings = list(
-  varlocations = varlocs,
-  varbox_x_size = 0.5,
-  varbox_y_size = 0.5,
-  varspace_x_size = c(1, 1, 1),
-  varspace_y_size = 1)
-prepare_diagram(model_list, model_settings)
-
-# no error
-model_settings = list(
+# these are bad settings, should fail
+model_settings1b = list(
   varlocations = varlocs,
   varbox_x_size = 0.5,
   varbox_y_size = 0.5,
   varspace_x_size = c(1, 1),
   varspace_y_size = c(0.1, 0.1))
+
+
+
+
 make_diagram(prepare_diagram(model_list, model_settings))
+
+
 
 
 #####################

@@ -124,7 +124,7 @@
 #'
 #' @return A ggplot2 object.
 #' @examples
-#' mymodel = list(varlabels = c("S","I","R"),
+#' mymodel = list(variables = c("S","I","R"),
 #'                flows = list(S_flows = c("-b*S*I"),
 #'                             I_flows = c("b*S*I","-g*I"),
 #'                             R_flows = c("g*I") ) )

@@ -31,19 +31,21 @@
 #' \item See examples and details below and vignettes.
 #' }
 #'
-#' @param model_settings A list of optional model settings. The following
-#'     elements are supported. If not provided, all default to a value of 1.
+#' @param model_settings A list of optional settings to adjust layout.
+#'                       The following elements are supported.
+#'                       If not provided, they default to a single row and all sizes of 1.
 #' \itemize{
 #' \item `varlocations`: A matrix containing all `model_list$variables` entries in specific locations on a grid. See examples.
 #' \item `varbox_x_size`: Either a scalar or a vector that changes the default
 #'     width of variable boxes. For example, `varbox_x_size = 1.5` makes each box
 #'     1.5 units in width. If a scalar, the value is used for all variables.
-#'     If a vector, the values are applied to the variables in the order
+#'     If a vector, the length must correspond to number of variables,
+#'     and the provided values are applied to the variables in the order
 #'     provided in `model_list$vars`.
 #' \item `varbox_y_size`: Same as `varbox_x_size` but for the height of the boxes.
 #' \item `varspace_x_size`:  Either a scalar or a vector that changes the spacing between
 #'     variable boxes in the x/horizontal dimension.
-#'     To use this, you need to provide a `varlocations` matrix.
+#'     To use this, you need to also provide a `varlocations` matrix.
 #'     If `varspace_x_size` is a scalar, all spaces between boxes in the x direction will be the same.
 #'     For example, `varspace_x_size = 1.5` puts 1.5 units of space in the x direction between boxes.
 #'     If you provide a vector, it needs to be of dimension one less than the number of columns in `varlocations`.
@@ -216,6 +218,7 @@ prepare_diagram <- function(model_list,
 
   ######################################################################
   # Set model_settings components that are not user-provided
+  # also, vectorize all entries box/space size entries
   ######################################################################
   # For each model_settings component, if user didn't set it,
   # we set a default here
@@ -227,49 +230,29 @@ prepare_diagram <- function(model_list,
   # this is needed to be passed into helper functions like make_vdf_angled
   # these updated settings will also be returned as part of the list of values this function returns
 
-  # Check that if either both varlocations or varspace* arguments are provided
-  # or neither are provided.
-  if(!is.null(model_settings$varlocations) &
-     (is.null(model_settings$varspace_x_size) |
-      is.null(model_settings$varspace_y_size)) |
-     is.null(model_settings$varlocations) &
-     (!is.null(model_settings$varspace_x_size) |
-      !is.null(model_settings$varspace_y_size))) {
-    stop("varlocations and varspace arguments in model_settings must both be provided if providing one or the other.")
-  }
-
-  # Check that the length of all varspace arguments are one less than
-  # the number of variables
-  nsizes <- length(model_list$variables) - 1
-  if(!(is.null(model_settings$varspace_x_size)) |
-     !(is.null(model_settings$varbox_y_size))) {
-    if(!length(model_settings$varspace_x_size) %in% c(1, nsizes) |
-       !length(model_settings$varspace_y_size) %in%  c(1,nsizes)) {
-      stop("varspace arguments must be of length 1 or the number of variables minus 1.")
-    }
-  }
-
-
-
-  ## TODO(andrew,andreas): Finalize varspace* and varbox* usage
-  ## It is required for add_locations(), but
-  ## we could drop its usage there or simplify...
-
-  nvars = length(model_list$variables)
+  #first, if varlocations matrix is not provided, make a single-row matrix
   if (is.null(model_settings$varlocations)) {model_settings$varlocations = matrix(model_list$variables,nrow=1)}
-  if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = rep(0.5,nvars)}
-  if (is.null(model_settings$varbox_y_size)) {model_settings$varbox_y_size = rep(0.5,nvars)}
-  if (is.null(model_settings$varspace_x_size)) {model_settings$varspace_x_size = rep(1,nvars-1)}
-  if (is.null(model_settings$varspace_y_size)) {model_settings$varspace_y_size = rep(1,nvars-1)}
 
-  ######################################################################
-  # Vectorize all entries box/space size entries
+  # determine number of variables, rows and columns
+  nvars = length(model_list$variables)
+  nrows = nrow(model_settings$varlocations)
+  ncols = ncol(model_settings$varlocations)
+
+  # if user didn't provide a value, we use default of 1
+  # as many box size numbers as there are boxes/variables
+  if (is.null(model_settings$varbox_x_size)) {model_settings$varbox_x_size = rep(1,nvars)}
+  if (is.null(model_settings$varbox_y_size)) {model_settings$varbox_y_size = rep(1,nvars)}
+  # one more row/column less for spacing than is in the matrix
+  if (is.null(model_settings$varspace_x_size)) {model_settings$varspace_x_size = rep(1,ncols-1)}
+  if (is.null(model_settings$varspace_y_size)) {model_settings$varspace_y_size = rep(1,nrows-1)}
+
   # If user provided a single number for box and space size, we turn it into vectors here
   # this way we can consistently operate on vectors of the right size everywhere
   if (length(model_settings$varbox_x_size)==1) {model_settings$varbox_x_size = rep(model_settings$varbox_x_size,nvars)}
   if (length(model_settings$varbox_y_size)==1) {model_settings$varbox_y_size = rep(model_settings$varbox_y_size,nvars)}
-  if (length(model_settings$varspace_x_size)==1) {model_settings$varspace_x_size = rep(model_settings$varspace_x_size,nvars-1)}
-  if (length(model_settings$varspace_y_size)==1) {model_settings$varspace_y_size = rep(model_settings$varspace_y_size,nvars-1)}
+
+  if (length(model_settings$varspace_x_size)==1) {model_settings$varspace_x_size = rep(model_settings$varspace_x_size,ncols-1)}
+  if (length(model_settings$varspace_y_size)==1) {model_settings$varspace_y_size = rep(model_settings$varspace_y_size,nrows-1)}
 
 
   #############################################
@@ -676,6 +659,11 @@ prepare_diagram <- function(model_list,
   # Keep only distinct rows
   flows <- unique(flows)
 
+  #########################################
+  # At this stage, the flows dataframe has the following columns:
+  # from, to, label, interaction, direct_interaction, linkfrom, linkto
+  #########################################
+
 
 
   # Make dummy compartment for all flows in and out of the system.
@@ -910,7 +898,6 @@ prepare_diagram <- function(model_list,
   flows$xmax <- NA_real_
   flows$ymin <- NA_real_
   flows$ymax <- NA_real_
-
 
 
   # update arrow start and end points based on relationship between to

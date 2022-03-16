@@ -1,10 +1,23 @@
+2022-03-04 Andreas notes
+
+
+* flow data frame right now has columns label, math and label_text. Are all 3 needed/used? How do they differ?
+
+* Just to confirm: for flow data frame, the from/to columns are just so users can easier understand, but if they were to edit those, nothing would happen, only actual xmin/xmax, etc. values are used for making the diagram, correct? Should probably be mentioned in the help file which columns user could/should add and which ones they should leave alone.
+
+* flow data frame has columns color and size. not sure what they refer to. arrows? if yes, there is another arrow_size coming later. should maybe be first all columns related to arrows and naming as arrow_color, arrow_size, arrow_type, show_arrow, then all columns related to label? 
+
+* general comment: sometimes hard for me to figure out what happens if code and help text are not in sync. would be good if after each round of modifications, you can check that roxygen header/help text agrees with the latest code. otherwise i'm at times lost and need to go fishing in the code to figure out what is actually the new correct way of using the functions.
+
+* Maybe a simpler way to add locations to variables? add_locations seems very complicated. Should be a way to multiply matrix with size/spacing vectors. Need to think through it.
+
+* Are these dummy compartments needed? It strikes me as rather complicated right now.
+
+
+
+
 2022-02-23 Andrew and Andreas notes
 
-* ~~Add `show_arrow` column to flows data frame; all TRUE by default.~~ **DONE.**
-
-* ~~For the update list, make a 1:1 correspondence between column names and list arguments that can be used by users.~~ **DONE.**
-
-* ~~Remove defaults for the default settings to look for differences when updating aes. Instead, just use column names.~~ **DONE.**
 
 * Add a final check function inside `make_diagram()`. Check for:
   - nonsense in update settings
@@ -13,16 +26,9 @@
     - DO WE WANT TO ALLOW CHR and NUM for some (like linetypes)?
   - add to end of `update_diagram()`
   - add to beginning of `make_diagram()`
-  
-* ~~Check varspacing: must be length 1 or n-1~~ DONE.
 
 * Make interaction and external arrow lengths depend on the box size (e.g., go from center out at 45 degree angle until the "edge" of the box is found).
 
-* ~~Enforce that user must supply both `var_locs` and `var_spacing`, or neither.~~ DONE.
-
-* ~~Remove code that guesses about rows. User must encode multiple rows via `var_locations` matrix if they wish.~~ **DONE.**
-
-* ~~`flows` data frame needs "math" and "label_text" columns; default is they are the same.~~ DONE.
 
 
 ***

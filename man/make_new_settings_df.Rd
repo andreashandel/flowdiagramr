@@ -4,17 +4,12 @@
 \alias{make_new_settings_df}
 \title{Updates specified columns in a data frame with new values from a list.}
 \usage{
-make_new_settings_df(n, diagram_settings, list_names, column_names)
+make_new_settings_df(n, diagram_settings)
 }
 \arguments{
 \item{n}{The number of variables or flows.}
 
 \item{diagram_settings}{The diagram_settings list.}
-
-\item{list_names}{The names of the list elements relevant for the current operation.}
-
-\item{column_names}{The column names that map to each list name in diagram_settings.
-Must be in the correct order.}
 }
 \description{
 Helper function that updates all settings columns in a
