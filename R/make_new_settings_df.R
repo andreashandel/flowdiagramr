@@ -7,11 +7,15 @@
 
 make_new_settings_df <- function(n,
                                  diagram_settings) {
+  # create a matrix from the diagram_settings list
+  # this is coerced to a data frame that is used in the main function
   seq_to_max <- 1:n
   mat <- sapply(diagram_settings, "[", i = seq_to_max)
+  # need to transpose if there is only one setting applied so that dimensions are correct
   if(is.vector(mat)) {
     mat <- t(as.matrix(mat))
   }
+  # coerce to data frame for easy use
   df <- as.data.frame(mat)
 
   # fill down the rows if na after first element
