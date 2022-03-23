@@ -2,7 +2,7 @@
 #' Helper function called by prepare_diagram.
 #' Likely not useful for direct calling.
 #'
-#' @param vardf The nodes (variables) data frame.
+#' @param variables The nodes (variables) data frame.
 #' @param varlocations The varlocations matrix.
 #' @param varbox_x_size Vector of box width for each variable.
 #' @param varbox_y_size Vector for box height for each variable.
@@ -17,10 +17,101 @@
 #'          `prepare_diagram` ensures inputs are provided in the required form.
 #' @export
 
-add_locations <- function(vardf, varlocations, varbox_x_size,
+add_locations <- function(variables, varlocations, varbox_x_size,
                           varbox_y_size, varspace_x_size,
                           varspace_y_size) {
 
+  # #### extract dimensions of the grid
+  # num_rows <- nrow(varlocations)
+  # num_cols <- ncol(varlocations)
+  # num_vars <- length(which(varlocations != ""))
+  #
+  #
+  # #### box sizes on grid
+  # # to start, make a matrix of the size of each variable, one for
+  # # x size and one for y size
+  # xsize_mat <- matrix(data = varbox_x_size,
+  #                     nrow = num_rows,
+  #                     ncol = num_cols,
+  #                     byrow = TRUE)
+  # ysize_mat <- matrix(data = varbox_y_size,
+  #                     nrow = num_rows,
+  #                     ncol = num_cols,
+  #                     byrow = TRUE)
+  #
+  # #### x mins, mids, and maxs
+  # # create a vector of distances, assuming start point is 0. This is a vector
+  # # that starts with the first box size and then alternates between box size
+  # # and spacing between boxes
+  # vec_length_x <- length(c(varbox_x_size, varspace_x_size))
+  # dist_vector <- vector(class(varbox_x_size), vec_length_x)
+  # dist_vector[c(TRUE, FALSE)] <- varbox_x_size
+  # dist_vector[c(FALSE, TRUE)] <- varspace_x_size
+  #
+  # # take cumulative sum of the distance vector to get distance from 0
+  # x_from_zero <- cumsum(dist_vector)
+  #
+  # # every odd element is the end of a box, which we can use to fill
+  # # in the locations matrix elements by row with x-max locations
+  # xmaxs <- matrix(x_from_zero[c(TRUE, FALSE)],
+  #                 nrow = nrow(varlocations),
+  #                 ncol = ncol(varlocations),
+  #                 byrow = TRUE)
+  #
+  # # xmid is xmax minus 1/2 of the size of the box
+  # # xmin is xmax minus size of the box
+  # xmids <- xmaxs - xsize_mat/2
+  # xmins <- xmaxs - xsize_mat
+  #
+  #
+  # #### y mins, mids, and maxs
+  # ## First process is if there is more than one row
+  # if(num_rows > 1) {
+  #   # add row(s) in ysize_mat for spacing in y direction
+  #   space_rows <- matrix(varspace_y_size, num_rows-1, num_cols)
+  #   ymat <- matrix(data = NA, nrow = num_rows + nrow(space_rows), num_cols)
+  #   ymat[c(TRUE,FALSE), ] <- ysize_mat
+  #   ymat[c(FALSE, TRUE), ] <- space_rows
+  #
+  #   # reverse of the cumulate sum within columns is the y-distance from 0
+  #   y_from_zero <- apply(ymat, MARGIN = 1, cumsum)[nrow(ymat):1, ]
+  #
+  #   # the odd rows are the tops of each box
+  #   ymaxs <- y_from_zero[c(TRUE, FALSE), ]
+  #
+  #   # ymid is ymax minus 1/2 of the y size of the box
+  #   # ymin is ymax minus y size of the box
+  #   ymids <- ymaxs - ysize_mat/2
+  #   ymins <- ymaxs - ysize_mat
+  # } else {
+  #   # if one row, then the y locations are simply a function of the y box size
+  #   ymins <- matrix(data = 0, nrow = 1, ncol = num_cols)
+  #   ymids <- matrix(data = varbox_y_size/2, nrow = 1, ncol = num_cols)
+  #   ymaxs <- matrix(data = varbox_y_size, nrow = 1, ncol = num_cols)
+  # }
+  #
+  #
+  # #### insert the location information in the data frame based on variable name
+  # variables$xmin <- xmins[which(varlocations == variables$name)]
+  # variables$xmid <- xmids[which(varlocations == variables$name)]
+  # variables$xmax <- xmaxs[which(varlocations == variables$name)]
+  # variables$ymin <- ymins[which(varlocations == variables$name)]
+  # variables$ymid <- ymids[which(varlocations == variables$name)]
+  # variables$ymax <- ymaxs[which(varlocations == variables$name)]
+  #
+  # #### rename mids as label positions
+  # names(variables)[names(variables) %in% c("xmid", "ymid")] <- c("xlabel", "ylabel")
+  #
+  # return(variables)
+
+
+
+
+
+
+  ##### OLD FUNCTION #####
+  ##### DELETE AFTER TESTING ######
+  vardf = variables
   # get number of variables that will be plotted
   nvars <- length(which(vardf$name != ""))  # number of variables with a name
 
