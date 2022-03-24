@@ -1,3 +1,25 @@
+****************************
+2022-03-24 Andreas notes
+
+* Is it possible/easy to reshuffle code in prepare_diagram.R such that first all variables are processed and the variables data frame completed, and then move on to flows? Seems just easier to follow along. Basically, move whatever code is needed to complete variable DF before (current) line 330. Could also consider to refactor things to have a make_variables_df() function that has all the parts for making the variables data frame. But only if easy and if it makes code more readable, so let's contemplate first if useful.
+
+
+Quick recap of overall structure (so I don't forget). 
+
+Main user-facing functions are:
+diagram_list <- prepare_diagram(model_list, model_settings)
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+diag <- make_diagram(diagram_list_new, with_grid)
+write_diagram(diagram_list_new, "filename",...)
+
+
+Helper-functions for users:
+convert_from_modelbuilder()
+
+
+All other .R files/functions are internal helpers.
+
+****************************
 2022-03-04 Andreas notes
 
 

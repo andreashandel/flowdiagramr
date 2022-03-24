@@ -265,8 +265,10 @@ prepare_diagram <- function(model_list,
 
 
   #############################################
-  # Some processing/definitions to make code below
-  # more concise
+  #############################################
+  # Code block that does some processing
+  # to make rest of code more concise
+  #############################################
   #############################################
 
 
@@ -286,10 +288,19 @@ prepare_diagram <- function(model_list,
   #number of variables/compartments in model
   nvars <- length(variable_names)
 
+  #############################################
+  #############################################
+  # End code block that does some processing
+  #############################################
+  #############################################
+
+
+
 
   #############################################
   #############################################
-  # Code block that starts processing variables
+  # Code block that goes through all variables and
+  # creates the variables data frame
   # This code block uses these helper functions:
   # add_locations()
   #############################################
@@ -314,6 +325,20 @@ prepare_diagram <- function(model_list,
     varspace_x_size,
     varspace_y_size
   )
+
+
+  #############################################
+  #############################################
+  # End code block that processes variables
+  # At this stage, the variable data frame is complete and done
+  #############################################
+  #############################################
+
+
+
+
+
+
 
 
 
@@ -382,8 +407,7 @@ prepare_diagram <- function(model_list,
       varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
 
       #vars is now a vector of the variables that are in the flow math
-      # AH: DOES THIS WORK OF VARIABLES HAVE THE SAME STARTING LETTER, SAY P1, P2, P3?
-      # ATT: Yes. This bit of code is designed simply to extract any variables
+      # extract any variables
       #      that start with an upper case letter (state variable) and are
       #      present in the current flow. So, if P1 and P2 are in this flow
       #      they both will be found.
@@ -469,6 +493,10 @@ prepare_diagram <- function(model_list,
         flows <- dplyr::bind_rows(flows, tmp)
       } #end function block for outflows
 
+
+      # AH: WHY IS THERE AN IF-STATEMENT CODE BLOCK FOR CURRENTSIGN == + ABOVE
+      # AND IT SHOWS UP HERE AGAIN? COULDN'T THEY BE COMBINED?
+
       # If the current sign is positive AND the flow only shows up in
       # one row of the flow matrix, then this is an inflow external to the
       # system or as a function of the current variable itself.
@@ -538,7 +566,11 @@ prepare_diagram <- function(model_list,
 
   ############################################################
   ############################################################
-  # finished creating all flows for dataframe
+  # finished creating all flows for the flows dataframe
+  # not all information is present or correct yet
+  # code block below further update the flows DF
+  # At this stage, the flows dataframe has the following columns:
+  # from, to, label, interaction, out_interaction, direct_interaction
   ############################################################
   ############################################################
 
@@ -660,9 +692,12 @@ prepare_diagram <- function(model_list,
   flows <- unique(flows)
 
   #########################################
+  #########################################
   # At this stage, the flows dataframe has the following columns:
   # from, to, label, interaction, direct_interaction, linkfrom, linkto
   #########################################
+  #########################################
+
 
 
 
@@ -754,6 +789,7 @@ prepare_diagram <- function(model_list,
     #missing columns in exnodes are set to NA
     variables <- dplyr::bind_rows(variables, exnodes)
   }
+
 
 
 
@@ -850,7 +886,6 @@ prepare_diagram <- function(model_list,
     variables[which(variables$id == id), c("xmin", "ymin")] <- c(newx, newy)
     variables[which(variables$id == id), c("xmax", "ymax")] <- c(newx, newy)
   }
-
 
   #########################
   # At this point, all variables, both real ones and dummy ones, have been processed.
