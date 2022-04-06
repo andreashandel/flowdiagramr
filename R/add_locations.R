@@ -27,6 +27,12 @@ add_locations <- function(variables, varlocations, varbox_x_size,
   num_vars <- length(which(varlocations != ""))
 
 
+  #### box midpoints on grid
+  xsize_mat <- matrix(data = 1:(num_rows*num_cols),  # default size
+                      nrow = num_rows,
+                      ncol = num_cols,
+                      byrow = TRUE)
+
   #### box sizes on grid
   # to start, make a matrix of the size of each variable, one for
   # x size and one for y size

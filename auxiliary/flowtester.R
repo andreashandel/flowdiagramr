@@ -7,8 +7,13 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              R_flows = c("g*I", "-m*R"))
 model_list = list(variables = variables, flows = flows)
 
-varlocs1 = matrix(c("S","","R","","I",""),byrow=TRUE,nrow=2)
+dfs <- prepare_diagram(model_list)
+make_diagram(dfs)
+
+varlocs1 = matrix(c("S","","R","I","",""),byrow=TRUE,nrow=2)
 varlocs2 = matrix(c("S","I","R"),byrow=TRUE,nrow=3)
+
+model_settings = list(varlocations = varlocs1)
 
 # these settings are good model settings, should work
 model_settings1g = list(
@@ -16,7 +21,7 @@ model_settings1g = list(
   varbox_y_size = 2)
 
 model_settings2g = list(
-  varlocations = varlocs1,
+  varlocations = varlocs2,
   varbox_x_size = 0.5,
   varbox_y_size = 0.5,
   varspace_x_size = 1,
@@ -36,8 +41,8 @@ model_settings4g = list(
   varbox_y_size = c(0.5,0.5,2)
   )
 
-model_settings5g = list(
-  varlocations = varlocs2,
+model_settings = list(
+  varlocations = varlocs1,
   varbox_x_size = c(1,0.5,1),
   varbox_y_size = c(0.5,2,2)
 )
