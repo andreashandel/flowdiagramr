@@ -30,19 +30,21 @@ Most math functions (e.g., \code{sin}, \code{cos}) are currently not supported.
 \item See examples and details below and vignettes.
 }}
 
-\item{model_settings}{A list of optional model settings. The following
-elements are supported. If not provided, all default to a value of 1.
+\item{model_settings}{A list of optional settings to adjust layout.
+The following elements are supported.
+If not provided, they default to a single row and all sizes of 1.
 \itemize{
 \item \code{varlocations}: A matrix containing all \code{model_list$variables} entries in specific locations on a grid. See examples.
 \item \code{varbox_x_size}: Either a scalar or a vector that changes the default
 width of variable boxes. For example, \code{varbox_x_size = 1.5} makes each box
 1.5 units in width. If a scalar, the value is used for all variables.
-If a vector, the values are applied to the variables in the order
+If a vector, the length must correspond to number of variables,
+and the provided values are applied to the variables in the order
 provided in \code{model_list$vars}.
 \item \code{varbox_y_size}: Same as \code{varbox_x_size} but for the height of the boxes.
 \item \code{varspace_x_size}:  Either a scalar or a vector that changes the spacing between
 variable boxes in the x/horizontal dimension.
-To use this, you need to provide a \code{varlocations} matrix.
+To use this, you need to also provide a \code{varlocations} matrix.
 If \code{varspace_x_size} is a scalar, all spaces between boxes in the x direction will be the same.
 For example, \code{varspace_x_size = 1.5} puts 1.5 units of space in the x direction between boxes.
 If you provide a vector, it needs to be of dimension one less than the number of columns in \code{varlocations}.

@@ -821,11 +821,23 @@ prepare_diagram <- function(model_list,
       }
 
       # if the start variable is below the ending variable (y1 < y2) AND
-      # the start variable is to the right of the ending variable (x1 < x2), then
+      # the start variable is to the left of the ending variable (x1 < x2), then
+      # the flow start is set to the right-middle of the originating box and
+      # the flow end is set to the left-middle of the terminating box. this
+      # creates an angled flow arrow pointing up and to the right.
+      if(from_node$ymin < to_node$ymin & from_node$xmin < to_node$xmin) {
+        simple_flows[i, "xmin"] <- from_node$xmax # right edge
+        simple_flows[i, "xmax"] <- to_node$xmin # left edge
+        simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
+        simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
+      }
+
+      # if the start variable is below the ending variable (y1 < y2) AND
+      # the start variable is to the right of the ending variable (x1 > x2), then
       # the flow start is set to the left-middle of the originating box and
       # the flow end is set to the right-middle of the terminating box. this
       # creates an angled flow arrow pointing up and to the left.
-      if(from_node$ymin < to_node$ymin & from_node$xmin < to_node$xmin) {
+      if(from_node$ymin < to_node$ymin & from_node$xmin > to_node$xmin) {
         simple_flows[i, "xmin"] <- from_node$xmin # left edge
         simple_flows[i, "xmax"] <- to_node$xmax # right edge
         simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
@@ -979,7 +991,7 @@ prepare_diagram <- function(model_list,
   straight_int <- (!is.na(flows$from) & !is.na(flows$to)) | flows$interaction == TRUE
   flows[straight_int, "ylabel"] <- flows[straight_int, "ylabel"] + 0.25
   flows[!straight_int, "xlabel"] <- flows[!straight_int, "xlabel"] + 0.25
-
+  # TODO(andrew): make this look better when diagram is vertical
 
   # add a diff column so we can identify flows that traverse more than
   # one variable. these will be updated to have curvature that goes over
@@ -987,16 +999,11 @@ prepare_diagram <- function(model_list,
   # is lots of traversing, then manual intervention will be required by the user
   flows$diff <- with(flows, abs(to-from))
 
-
-  # update vertical edges to go in and out at angles
-  # flows <- make_vdf_angled(flows, variables, model_settings)
-
   # update vertical edges to avoid overlaps
   flows <- fix_arrow_pos(flows)
 
   # set default curvature of all flows
   flows <- set_curvature(variables, flows)
-
 
   # set curvature of feedback loops. this is pretty different from the
   # "regular" curvature settings, so we made a separate function for this
@@ -1015,11 +1022,17 @@ prepare_diagram <- function(model_list,
   flows <- set_node_to_na(flows, variables)
 
   # remove rows with no location information
-  flows <- remove_na_rows(flows)
+  flows <- flows[!is.na(flows$xmin) & !is.na(flows$xmax) &
+                   !is.na(flows$ymin) & !is.na(flows$ymax), ]
 
   # convert direct interaction to flag to regular interaction flag,
   # now only relevant for plotting
-  flows <- update_interactions(flows)
+  # get row ids for the "direct interactions"
+  ids <- which(flows$interaction == FALSE & flows$direct_interaction == TRUE)
+  # set interaction to TRUE since this now is just for plotting aesthetics
+  flows[ids, "interaction"] <- TRUE
+  # remove the direct_interaction column because all processing is complete
+  flows$direct_interaction <- NULL  # delete the flagging column
 
   # update all to and froms such that each is the variable label
   # until now, the to/from in flows has just been numeric. these
@@ -1027,7 +1040,12 @@ prepare_diagram <- function(model_list,
   flows <- update_tofroms(flows, variables)
 
   # update flow labels for straight connecting flows that run vertically
-  flows <- update_straight_labels(flows)
+  # find the rows where flows are straight and the xmin == xmax, this
+  # implies a vertical arrow
+  ids <- which(flows$curvature == 0 & flows$xmin == flows$xmax)
+  # add a small offset to move the label to the right of the arrow,
+  # otherwise the label is right on top of the arrow.
+  flows[ids, "xlabel"] <- flows[ids, "xlabel"] + 0.5
 
 
   # update interaction column to be type column, one of

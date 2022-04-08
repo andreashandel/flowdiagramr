@@ -89,11 +89,14 @@ add_locations <- function(variables, varlocations, varbox_x_size,
     # add row(s) in ysize_mat for spacing in y direction
     space_rows <- matrix(varspace_y_size, num_rows-1, num_cols)
     ymat <- matrix(data = NA, nrow = num_rows + nrow(space_rows), num_cols)
-    ymat[c(TRUE,FALSE), ] <- ysize_mat
+    ymat[c(TRUE, FALSE), ] <- ysize_mat
     ymat[c(FALSE, TRUE), ] <- space_rows
 
     # reverse of the cumulate sum within columns is the y-distance from 0
-    y_from_zero <- apply(ymat, MARGIN = 1, cumsum)[nrow(ymat):1, ]
+    y_from_zero <- ymat
+    y_from_zero[] <- apply(ymat, MARGIN = 2, cumsum)[nrow(ymat):1, ]
+
+    # make sure it is a matrix
 
     # the odd rows are the tops of each box
     ymaxs <- y_from_zero[c(TRUE, FALSE), ]

@@ -1,4 +1,4 @@
-# library(flowdiagramr)
+library(flowdiagramr)
 
 #make model
 variables = c("S","I","R")
@@ -10,10 +10,11 @@ model_list = list(variables = variables, flows = flows)
 dfs <- prepare_diagram(model_list)
 make_diagram(dfs)
 
-varlocs1 = matrix(c("S","","R","I","",""),byrow=TRUE,nrow=2)
+varlocs1 = matrix(c("S","","R","","I",""),byrow=TRUE,nrow=2)
 varlocs2 = matrix(c("S","I","R"),byrow=TRUE,nrow=3)
 
-model_settings = list(varlocations = varlocs1)
+model_settings = list(varlocations = varlocs2, varspace_y_size = 1)
+make_diagram(prepare_diagram(model_list, model_settings), with_grid = F)
 
 # these settings are good model settings, should work
 model_settings1g = list(
@@ -41,7 +42,7 @@ model_settings4g = list(
   varbox_y_size = c(0.5,0.5,2)
   )
 
-model_settings = list(
+model_settings5g = list(
   varlocations = varlocs1,
   varbox_x_size = c(1,0.5,1),
   varbox_y_size = c(0.5,2,2)
@@ -62,10 +63,14 @@ diagram_list1g <- prepare_diagram(model_list, model_settings1g)
 diagram_list2g <- prepare_diagram(model_list, model_settings2g)
 diagram_list3g <- prepare_diagram(model_list, model_settings3g)
 diagram_list4g <- prepare_diagram(model_list, model_settings4g)
-# these models should work but don't
 diagram_list5g <- prepare_diagram(model_list, model_settings5g)
 diagram_list6g <- prepare_diagram(model_list, model_settings6g)
 
+make_diagram(diagram_list_orig)
+make_diagram(diagram_list1g)
+make_diagram(diagram_list2g)
+make_diagram(diagram_list3g)
+make_diagram(diagram_list4g)
 
 
 
@@ -77,10 +82,6 @@ model_settings1b = list(
   varspace_x_size = c(1, 1),
   varspace_y_size = c(0.1, 0.1))
 
-
-
-
-make_diagram(prepare_diagram(model_list, model_settings))
 
 
 

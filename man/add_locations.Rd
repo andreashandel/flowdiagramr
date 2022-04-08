@@ -7,7 +7,7 @@ Helper function called by prepare_diagram.
 Likely not useful for direct calling.}
 \usage{
 add_locations(
-  vardf,
+  variables,
   varlocations,
   varbox_x_size,
   varbox_y_size,
@@ -16,7 +16,7 @@ add_locations(
 )
 }
 \arguments{
-\item{vardf}{The nodes (variables) data frame.}
+\item{variables}{The nodes (variables) data frame.}
 
 \item{varlocations}{The varlocations matrix.}
 
