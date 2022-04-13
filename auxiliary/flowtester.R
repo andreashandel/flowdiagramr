@@ -1,4 +1,4 @@
-library(flowdiagramr)
+# library(flowdiagramr)
 
 #make model
 variables = c("S","I","R")
@@ -15,6 +15,7 @@ varlocs2 = matrix(c("S","I","R"),byrow=TRUE,nrow=3)
 
 model_settings = list(varlocations = varlocs2, varspace_y_size = 1)
 make_diagram(prepare_diagram(model_list, model_settings), with_grid = F)
+
 
 # these settings are good model settings, should work
 model_settings1g = list(
@@ -138,7 +139,7 @@ make_diagram(diagram_list_ok)
 
 
 
-varlabels = c("Pat","Imm")
+variables = c("Pat","Imm")
 flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
 model_list = list(variables = varlabels, flows = flows)
@@ -231,27 +232,28 @@ make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
 #
 #
 #
-# varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-# varnames = c("Susceptible Children","Infected Children","Recovered Children",
-#              "Susceptible adults","Infected adults","Recovered adults",
-#              "Pathogen in Environment")
-# flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
-#              Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
-#              Rc_flows = c("gc*Ic"),
-#              Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),
-#              Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"),
-#              Ra_flows = c("ga*Ia"),
-#              P_flows = c("sc*Ic","sa*Ia","-d*P")
-# )
-# varlocations = matrix(data = c("Sc", "Ic", "Rc",
-#                                "",   "P",   "",
-#                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-# model_list = list(varlabels = varlabels, flows = flows)
-# model_settings = list(varlocations = NULL, varbox_x_scaling = 1,
-#                       varbox_y_scaling = 1,
-#                       varspace_x_scaling = 1,
-#                       varspace_y_scaling = 1)
-# diagram_list <- prepare_diagram(model_list,model_settings)
+varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+varnames = c("Susceptible Children","Infected Children","Recovered Children",
+             "Susceptible adults","Infected adults","Recovered adults",
+             "Pathogen in Environment")
+flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
+             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),
+             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"),
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+)
+varlocations = matrix(data = c("Sc", "Ic", "Rc",
+                               "",   "P",   "",
+                               "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
+model_list = list(variables = varlabels, flows = flows)
+model_settings = list(varlocations = NULL, varbox_x_scaling = 1,
+                      varbox_y_scaling = 1,
+                      varspace_x_scaling = 1,
+                      varspace_y_scaling = 1)
+diagram_list <- prepare_diagram(model_list)
+make_diagram(diagram_list)
 #
 # diagram_settings <- list(
 #   var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),

@@ -90,8 +90,7 @@ check_model_list <- function(model_list) {
       #nothing else (e.g. sin() or such) is currently allowed
       parnames = setdiff(flowsymbols, variables)
       # check that parameter names follow the right naming convention
-      ## TODO(andrew,andreas): numbers ok?
-      parpattern = "^[a-z]+[A-Za-z0-9_]*$"
+      parpattern = "^[a-z0-9]+[A-Za-z0-9_]*$"
       if (sum(!grepl(parpattern,parnames))>0)
       {
         msg = "Please start with a lower case letter and use only use letters and numbers for parameters";

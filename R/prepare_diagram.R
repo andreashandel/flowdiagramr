@@ -985,13 +985,34 @@ prepare_diagram <- function(model_list,
   flows$xlabel <- with(flows, (xmax + xmin) / 2)
   flows$ylabel <- with(flows, (ymax + ymin) / 2)
 
+  # set default curvature of all flows, this also applies label updates
+  # to curved arrows, so we do this before making minor adjustments below
+  flows <- set_curvature(variables, flows)
+
   # apply a minor offset to move the label away from the line
-  # for direct flows and interactions, bump up the y pos by 0.25
-  # for all others, bump over the x pos by 0.25
-  straight_int <- (!is.na(flows$from) & !is.na(flows$to)) | flows$interaction == TRUE
-  flows[straight_int, "ylabel"] <- flows[straight_int, "ylabel"] + 0.25
-  flows[!straight_int, "xlabel"] <- flows[!straight_int, "xlabel"] + 0.25
-  # TODO(andrew): make this look better when diagram is vertical
+  # this is done flow by flow to determine if it is vertical or horizontal
+  for(i in 1:nrow(flows)) {
+    tmp <- flows[i, ]
+    # processing for direct flows
+    if(tmp$interaction == FALSE & is.na(tmp$from) == FALSE & is.na(tmp$to) == FALSE) {
+      if(tmp$xmin == tmp$xmax) { # vertical
+        flows[i, "xlabel"] <- flows[i, "xlabel"] - 0.25  # go to the left
+      } else { # horizontal
+        flows[i, "ylabel"] <- flows[i, "ylabel"] + 0.1
+      }
+    } else if(is.na(tmp$from) | is.na(tmp$to)) { # processing for in/out flows
+      flows[i, "xlabel"] <- flows[i, "xlabel"] + 0.3
+    }
+
+    # processing for interactions
+    if(tmp$interaction == TRUE) {
+      if(tmp$xmax == tmp$xmin) {  # vertical
+        flows[i, "xlabel"] <- flows[i, "xlabel"] + 0.02
+      } else { # horizontal
+        flows[i, "ylabel"] <- flows[i, "ylabel"] + 0.2
+      }
+    }
+  }
 
   # add a diff column so we can identify flows that traverse more than
   # one variable. these will be updated to have curvature that goes over
@@ -1001,9 +1022,6 @@ prepare_diagram <- function(model_list,
 
   # update vertical edges to avoid overlaps
   flows <- fix_arrow_pos(flows)
-
-  # set default curvature of all flows
-  flows <- set_curvature(variables, flows)
 
   # set curvature of feedback loops. this is pretty different from the
   # "regular" curvature settings, so we made a separate function for this
@@ -1042,10 +1060,10 @@ prepare_diagram <- function(model_list,
   # update flow labels for straight connecting flows that run vertically
   # find the rows where flows are straight and the xmin == xmax, this
   # implies a vertical arrow
-  ids <- which(flows$curvature == 0 & flows$xmin == flows$xmax)
-  # add a small offset to move the label to the right of the arrow,
-  # otherwise the label is right on top of the arrow.
-  flows[ids, "xlabel"] <- flows[ids, "xlabel"] + 0.5
+  # ids <- which(flows$curvature == 0 & flows$xmin == flows$xmax)
+  # # add a small offset to move the label to the right of the arrow,
+  # # otherwise the label is right on top of the arrow.
+  # flows[ids, "xlabel"] <- flows[ids, "xlabel"] + 0.5
 
 
   # update interaction column to be type column, one of
