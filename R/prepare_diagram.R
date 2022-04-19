@@ -474,7 +474,7 @@ prepare_diagram <- function(model_list,
           connectvars <- i
         }
 
-        # If the flow does not show up in any other rows (connectvars == 1)
+        # If the flow does not show up in any other rows (length(connectvars) == 1)
         # and there is at least one variable in the flow math, then the
         # connecting variable(s) will either be the current variable once
         # (indicating an inflow like births) or the current variable twice
@@ -484,14 +484,14 @@ prepare_diagram <- function(model_list,
           # if the current (i) variable does not show up in the flow math
           # then the connecting variable is just the current variable once,
           # indicating a independent inflow from out of the system (e.g., birth)
-          if(!variables[i] %in% varvec) {
+          if(!variables$name[i] %in% varvec) {
             connectvars <- i
           }
 
           # is the the current (i) variables shows up in the flow math, then
           # the connecting variables are the current variable twice, indicating
           # a feedback loop
-          if(variables[i] %in% varvec) {
+          if(variables$name[i] %in% varvec) {
             connectvars <- c(i, i)
           }
         }
@@ -885,7 +885,9 @@ prepare_diagram <- function(model_list,
   ## Out flows
   ####
   # These flows only have a from id and to is NA
-  out_flows <- subset(flows, !is.na(from) & is.na(to) & is.na(linkfrom))
+  # also cannot be a interaction
+  out_flows <- subset(flows, !is.na(from) & is.na(to) &
+                              is.na(linkfrom) & interaction == FALSE)
 
   if(nrow(out_flows) > 0) { # only execute if these exist
     # The xlabel, ymin locations define the bottom/middle of the node, which
@@ -949,10 +951,128 @@ prepare_diagram <- function(model_list,
 
 
   ####
+  ## External interaction flows
+  ####
+  # These are interaction arrows that go from a state variable (node) to
+  # another arrow that is either an outflow, inflow, or feedback flow.
+  # Regular interactions for physical flows between variables are already
+  # handled above. These external interaction flows are special, and we
+  # treat them as such.
+  # External flows are identified as having the interaction as TRUE and
+  # the linkto is NA.
+  ext_flows <- subset(flows, interaction == TRUE & is.na(linkto))
+  # We also need to know the locations of all the other flows, so create
+  # a temporary flows dataframe here
+  other_flows <- dplyr::bind_rows(simple_flows, in_flows, out_flows, int_flows)
+  # Now loop through the ext_flows for spatial processing, if there is at least 1 row
+  if(nrow(ext_flows) > 0) {
+    # add columns for to-be added information
+    ext_flows$xmin <- NA_real_
+    ext_flows$xmax <- NA_real_
+    ext_flows$ymin <- NA_real_
+    ext_flows$ymax <- NA_real_
+    for(i in 1:nrow(ext_flows)) {
+      tmp <- ext_flows[i,]
+
+      # use the flow math to determine if this is associated with an
+      # outflow or inflow
+      direction <- signmat[which(flowmatred == tmp$label)]
+
+      if(direction == "-") {
+        # if an outflow (direction == "-"), then this is associated with a
+        # row in the other_flows data frame where the from location
+        # is different than the from location in the tmp data frame AND
+        # the label is empty
+        to_flow <- NULL  # null out to avoid errors
+        to_flow <- other_flows[other_flows$from != tmp$from &
+                                 is.na(other_flows$to) &
+                                 other_flows$label == "", ]
+        # this can sometimes produce a data frame with an NA row because of
+        # an NA in the fields used above in the logical constraint, that
+        # row is dropped here
+        drops <- which(is.na(to_flow$from) & is.na(to_flow$to))
+        if(length(drops) > 0){
+          to_flow <- to_flow[-drops, ]
+        }
+
+
+        # And it is associated with the variable in the from element
+        from_node <- NULL  # null this out to avoid errors
+        from_node <- variables[variables$id == tmp$from, ]
+
+        # For these complex interactions, we assume a horizontal flow
+        # arrangment, user must update if more complex
+        if(from_node$xlabel > mean(c(to_flow$xmax, to_flow$xmax))) {
+          # this implies and arrow going from right to left
+          tmp$xmin <- from_node$xmin # left edge
+          tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
+          tmp$ymin <- from_node$ylabel # middle
+          tmp$ymax <- mean(c(to_flow$ymin, to_flow$ymax)) # middle
+        } else { # assume left to right
+          tmp$xmin <- from_node$xmax # right edge
+          tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
+          tmp$ymin <- from_node$ylabel # middle
+          tmp$ymax <- mean(c(to_flow$ymin, to_flow$ymax)) # middle
+        } # end left-right if/then
+      } # end direction "-" if
+
+      if(direction == "+") {
+        # if the flow is a "+", then this associated with either a feedback
+        # flow or an external flow into the system
+        # first find the to_flow, which will be the flow with a to variable
+        # that is not the current from variable and the label is empty
+        to_flow <- NULL  # null out to avoid errors
+        to_flow <- other_flows[other_flows$to != tmp$from &
+                                 other_flows$label == "", ]
+        # this can sometimes produce a data frame with an NA row because of
+        # an NA in the fields used above in the logical constraint, that
+        # row is dropped here
+        drops <- which(is.na(to_flow$from) & is.na(to_flow$to))
+        if(length(drops) > 0){
+          to_flow <- to_flow[-drops, ]
+        }
+
+        # And it is associated with the variable in the from element
+        from_node <- NULL  # null this out to avoid errors
+        from_node <- variables[variables$id == tmp$from, ]
+
+        # For these complex interactions, we assume a horizontal flow
+        # arrangment, user must update if more complex
+        if(from_node$xlabel > mean(c(to_flow$xmax, to_flow$xmax))) {
+          # this implies and arrow going from right to left
+          tmp$xmin <- from_node$xmin # left edge
+          tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
+          tmp$ymin <- from_node$ylabel # middle
+          tmp$ymax <- mean(c(to_flow$ymin, to_flow$ymax)) # middle
+        } else { # assume left to right
+          tmp$xmin <- from_node$xmax # right edge
+          tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
+          tmp$ymin <- from_node$ylabel # middle
+          tmp$ymax <- mean(c(to_flow$ymin, to_flow$ymax)) # middle
+        } # end left-right if/then
+
+        # Last, the "+" flows can be either an external entry or a feedback.
+        # External entries will have no "from", feedbacks will. If the flow
+        # is pointing to an external entry, then all location information is
+        # fine. If it is pointing to a feedback loop, we need to update it
+        # slightly to hit the curve. Manual adjustments will be required by the
+        # user, still.
+        if(!is.na(tmp$from)) {
+          tmp$ymax <- tmp$ymax + 0.5  # this hits the top of the curve, generally
+        }
+
+      } # end direction "+"
+      loc_cols <- c("xmin", "xmax", "ymin", "ymax")
+      ext_flows[i, loc_cols] <- tmp[ , loc_cols]
+    } # end external flow loop
+  } # end external flow if
+
+
+  ####
   ## Combine flows back together
   ####
   flows <- NULL # set original df to null to avoid it lingering...
-  flows <- dplyr::bind_rows(simple_flows, in_flows, out_flows, int_flows)
+  flows <- dplyr::bind_rows(simple_flows, in_flows, out_flows, int_flows, ext_flows)
 
 
 
@@ -1028,6 +1148,7 @@ prepare_diagram <- function(model_list,
   # operation.
   flows <- set_feedback_curvature(flows)
 
+  # TODO(andrew): delete?
   # update external interaction arrows now that all other positioning
   # is final
   # extints <- update_external_interaction_positions(extints, variables)

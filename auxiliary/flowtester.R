@@ -98,18 +98,20 @@ diagram_list_new <- update_diagram(diagram_list)
 #this should work
 diagram_settings <- list(var_outline_color = c("black", "white", "red"))
 diagram_list_ok <- update_diagram(diagram_list, diagram_settings)
+make_diagram(diagram_list_ok)
 
 #this should work
 diagram_settings <- list(var_outline_color = c("black", "white", "red"),
                          var_fill_color = c("red"))
 diagram_list_ok <- update_diagram(diagram_list, diagram_settings)
+make_diagram(diagram_list_ok)
 
 # this should error out - it does
 diagram_settings <- list(var_outline_color = c("black", "red"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
 # this should also error out - wrong number of entries again
-# currently runs without error
+# it does error out
 diagram_settings <- list(var_outline_color = c("solid", "solid"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
@@ -131,19 +133,18 @@ diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
 make_diagram(diagram_list_orig)
 
-#this fails, but should work based on the way diagram_list_ok looks
-# when I do this setdiff(diagram_list_orig$flows,diagram_list_ok$flows)
-# or look at the str() of the flow df, I see that some previously numeric columns
-# turned into characters (size, label_size, arrow_size). Which is likely why it fails.
+# this works
 make_diagram(diagram_list_ok)
 
 
 
+# test predator prey model
 variables = c("Pat","Imm")
 flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-model_list = list(variables = varlabels, flows = flows)
+model_list = list(variables = variables, flows = flows)
 diagram_list <- prepare_diagram(model_list)
+make_diagram(diagram_list)
 
 
 
@@ -153,39 +154,6 @@ diagram_list <- prepare_diagram(model_list)
 
 
 
-#model user settings
-model_settings = list(
-                      varlocations = matrix(data = c("S", "", "R",
-                                         "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE),
-  varbox_x_scaling = 1,
-  varspace_x_scaling = 1,
-  varspace_y_scaling = 1)
-
-# make diagram
-diagram_list <- prepare_diagram(model_list, model_settings)
-make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
-
-
-
-# with var labels
-make_diagram(diagram_list,
-             diagram_setting=list(var_label_text = c("Susceptible","Infected","Recovered"))
-            )
-
-
-# more complicated
-varlabels = c("Pat","Imm")
-flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
-                 Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-model_list = list(varlabels = varlabels, flows = flows)
-model_settings = list(
-  varlocations = NULL,
-  varbox_x_scaling = 1,
-  varbox_y_scaling = 1,
-  varspace_x_scaling = 1,
-  varspace_y_scaling = 1)
-diagram_list <- prepare_diagram(model_list)
-make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
 
 
 #
