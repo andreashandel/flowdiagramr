@@ -934,7 +934,7 @@ prepare_diagram <- function(model_list,
       this_xmax <- mean(c(simple_tmp$xmin, simple_tmp$xmax)) # middle of direct flow
 
       # get the from variable for start positions
-      var_tmp <- subset(variables, id == int_tmp$linkto)
+      var_tmp <- subset(variables, id == int_tmp$from)
       this_ymin <- var_tmp$ymax # top of box
       this_xmin <- mean(c(var_tmp$xmin, var_tmp$xmax)) # middle of box
 

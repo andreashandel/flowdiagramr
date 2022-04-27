@@ -6,10 +6,10 @@
 helper function for prepare_diagram that is only applied to
 arrows from nowhere or to nowhere (e.g., birth or death arrows).}
 \usage{
-fix_arrow_pos(edf)
+fix_arrow_pos(flows)
 }
 \arguments{
-\item{edf}{The edges (flows) data frame.}
+\item{flows}{The flows data frame.}
 }
 \description{
 Adjust arrow positions to avoid overlaps.

@@ -141,6 +141,9 @@
 
 make_diagram <- function (diagram_list, with_grid = FALSE) {
 
+  # check input data frames for conformity
+  check_dataframes(diagram_list)
+
   # unlist the data frames to objects
   variables <- diagram_list$variables
   flows <- diagram_list$flows

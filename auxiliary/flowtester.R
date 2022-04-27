@@ -121,7 +121,7 @@ diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 diagram_settings <- list(main_flow_linetype = c("black", "red"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
-# ATT: this breaks
+# ATT: this breaks, good.
 diagram_settings <- list(main_flow_linetype = c("black", "red", "orange"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
@@ -147,7 +147,22 @@ diagram_list <- prepare_diagram(model_list)
 make_diagram(diagram_list)
 
 
+# environmental transmission
+variables = c("S","I","R","P")
+flows = list(S_flows = c("n","-m*S","-bI*S*I", "-bP*S*P"),
+             I_flows = c("bI*S*I", "bP*S*P", "-g*I", "-m*I"),
+             R_flows = c("g*I", "-m*R"),
+             P_flows = c("q*I", "-c*P")
+)
 
+mymodel = list(variables = variables, flows = flows)
+diagram_list = prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+## BROKEN!
+myvarlocs = matrix(c("","P","","S","I","R"),byrow=TRUE,nrow=2)
+model_settings = list(varlocations = myvarlocs)
+make_diagram(prepare_diagram(mymodel, model_settings = model_settings))
 
 
 

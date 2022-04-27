@@ -295,6 +295,10 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   }
 
 
+  ###
+  # Check the data frames for conformity
+  ###
+  check_dataframes(list(variables = variables, flows = flows))
 
   ###
   # all settings have been updated, return the new diagram_list
