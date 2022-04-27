@@ -12,7 +12,7 @@ set_feedback_curvature <- function(flows) {
   if(nrow(fdf) > 0) {
     # now adjust the xs to get arrow above and feeding back into the node
     fdf$curvature <- -2  # default value for big loop
-    fdf$ylabel <- fdf$ylabel + 0.4  # this gets the label just above the loop
+    fdf$ylabel <- fdf$ylabel + 0.5  # this gets the label just above the loop
 
     # just replace the rows in flows that are in fdf (our updates)
     toreplace <- match(paste0(flows$to, flows$from), paste0(fdf$to, fdf$from))

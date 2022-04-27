@@ -18,7 +18,12 @@ set_curvature <- function(variables, flows) {
     # set to lower curvature if the arrow is going from an "invisible" node
     # to another flow
     if(flows[i, "interaction"] == TRUE & is.na(flows[i, "linkfrom"])) {
-      flows[i, "curvature"] <- 0.1
+      # # have the arrow bend down if pointing up (-1); otherwise bend up
+      ## FROM ATT: I REMOVED THIS FUNCTIONALITY FOR NOW, BUT AM LEAVING
+      ## IN CASE WE WANT TO CHANGE TO AESTHETICS AT SOME POINT
+      # bend <- ifelse(flows[i, "ymin"] < flows[i, "ymax"], -1, 1)
+      bend <- -1  # bend up
+      flows[i, "curvature"] <- 0.2*bend
     }
 
     # set to higher values if the arrow is going from one node to

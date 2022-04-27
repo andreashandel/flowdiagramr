@@ -964,6 +964,8 @@ prepare_diagram <- function(model_list,
   # We also need to know the locations of all the other flows, so create
   # a temporary flows dataframe here
   other_flows <- dplyr::bind_rows(simple_flows, in_flows, out_flows, int_flows)
+  # update vertical edges to avoid overlaps
+  other_flows <- fix_arrow_pos(other_flows)
   # Now loop through the ext_flows for spatial processing, if there is at least 1 row
   if(nrow(ext_flows) > 0) {
     # add columns for to-be added information
@@ -1071,31 +1073,8 @@ prepare_diagram <- function(model_list,
   ####
   ## Combine flows back together
   ####
-  flows <- NULL # set original df to null to avoid it lingering...
-  flows <- dplyr::bind_rows(simple_flows, in_flows, out_flows, int_flows, ext_flows)
-
-
-
-  # Subset out interactions to in/out flows
-  # these are arrows that are drawn from a variable to an external (birth/death)
-  # or feedback flow. The predator-prey model is an example of this. These
-  # are defined in our flows data frame as flows that are interactions
-  # but do not have a "linkto" id because they only come from a variable.
-  # the external interactions are subsetted out and given some id information
-  # to be processed later and then binded back to the "core" flows after they
-  # have been processed, too.
-  # extints <- subset(flows, interaction == TRUE & is.na(linkto))
-  # if(nrow(extints) > 0) {  #only do this loop if there is something to loop over, avoids errors
-  #   for(i in 1:nrow(extints)) {
-  #     tmp <- extints[i, ]  #get the row to process
-  #     v <- get_vars_pars(tmp$label)  #remove the math notation
-  #     vf <- substr(v, start = 1, stop = 1)  #get first letters of each character element
-  #     v <- v[which(vf %in% LETTERS)]  #subset v to just variables (no parameters)
-  #     ids <- subset(variables, label %in% v)[ , "id"] #get the ids for all variables in the flow notation
-  #     id <- ids[which(ids != tmp$from)] #subset to the id that does not equal the id from which the flow originates
-  #     extints[i, "to"] <- id #set the "to" column to the id at which the flow should terminate
-  #   }
-  # }
+  flows <- NULL # set original df to null to avoid/identify any potential errors
+  flows <- dplyr::bind_rows(other_flows, ext_flows)
 
 
   ####
@@ -1116,12 +1095,13 @@ prepare_diagram <- function(model_list,
     # processing for direct flows
     if(tmp$interaction == FALSE & is.na(tmp$from) == FALSE & is.na(tmp$to) == FALSE) {
       if(tmp$xmin == tmp$xmax) { # vertical
-        flows[i, "xlabel"] <- flows[i, "xlabel"] - 0.25  # go to the left
+        flows[i, "xlabel"] <- flows[i, "xlabel"] - 0.25  # move to left
       } else { # horizontal
-        flows[i, "ylabel"] <- flows[i, "ylabel"] + 0.1
+        flows[i, "ylabel"] <- flows[i, "ylabel"] + 0.1  # move up
       }
-    } else if(is.na(tmp$from) | is.na(tmp$to)) { # processing for in/out flows
-      flows[i, "xlabel"] <- flows[i, "xlabel"] + 0.3
+    } else if((is.na(tmp$from) | is.na(tmp$to)) &
+              tmp$interaction == FALSE) { # processing for in/out flows
+      flows[i, "xlabel"] <- flows[i, "xlabel"] + 0.2  # move to right
     }
 
     # processing for interactions
@@ -1140,29 +1120,19 @@ prepare_diagram <- function(model_list,
   # is lots of traversing, then manual intervention will be required by the user
   flows$diff <- with(flows, abs(to-from))
 
-  # update vertical edges to avoid overlaps
-  flows <- fix_arrow_pos(flows)
-
   # set curvature of feedback loops. this is pretty different from the
   # "regular" curvature settings, so we made a separate function for this
   # operation.
   flows <- set_feedback_curvature(flows)
 
-  # TODO(andrew): delete?
-  # update external interaction arrows now that all other positioning
-  # is final
-  # extints <- update_external_interaction_positions(extints, variables)
-  #
-  #
-  # # combine all flows
-  # flows <- dplyr::bind_rows(flows, extints)
-
   # set to/from columns in flows to NA if value is not in node dataframe
   flows <- set_node_to_na(flows, variables)
 
   # remove rows with no location information
-  flows <- flows[!is.na(flows$xmin) & !is.na(flows$xmax) &
-                   !is.na(flows$ymin) & !is.na(flows$ymax), ]
+  flows <- flows[!is.na(flows$xmin) &
+                   !is.na(flows$xmax) &
+                   !is.na(flows$ymin) &
+                   !is.na(flows$ymax), ]
 
   # convert direct interaction to flag to regular interaction flag,
   # now only relevant for plotting
@@ -1178,21 +1148,13 @@ prepare_diagram <- function(model_list,
   # need to be character strings for the variable labels for plotting
   flows <- update_tofroms(flows, variables)
 
-  # update flow labels for straight connecting flows that run vertically
-  # find the rows where flows are straight and the xmin == xmax, this
-  # implies a vertical arrow
-  # ids <- which(flows$curvature == 0 & flows$xmin == flows$xmax)
-  # # add a small offset to move the label to the right of the arrow,
-  # # otherwise the label is right on top of the arrow.
-  # flows[ids, "xlabel"] <- flows[ids, "xlabel"] + 0.5
-
 
   # update interaction column to be type column, one of
   # main, interaction, or external. this is needed for plotting
   flows$type <- "main"  # intialize the column as all "main" flows
   # set the interaction flows according to the interaction flag
   flows$type <- ifelse(flows$interaction == TRUE, "interaction", flows$type)
-  # external flows are not interactions and either the to or from location is dummy (NA)
+  # external flows are not interactions and either the to or from id NA
   flows$type <- ifelse(flows$interaction == FALSE & (is.na(flows$to) | is.na(flows$from)),
                        "external", flows$type)
   flows$interaction <- NULL  # remove the interaction column
@@ -1211,8 +1173,19 @@ prepare_diagram <- function(model_list,
   flows$math <- flows$label
 
   # update flows column ordering
-  flows <- flows[, c("id", "from", "to", "label", "xmin", "xmax", "ymin", "ymax",
-                     "xlabel", "ylabel", "curvature", "type", "math")]
+  flows <- flows[, c("id",
+                     "from",
+                     "to",
+                     "label",
+                     "xmin",
+                     "xmax",
+                     "ymin",
+                     "ymax",
+                     "xlabel",
+                     "ylabel",
+                     "curvature",
+                     "type",
+                     "math")]
 
 
   #remove row names, those are confusing
