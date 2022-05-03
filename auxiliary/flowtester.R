@@ -1,4 +1,4 @@
-# library(flowdiagramr)
+library(flowdiagramr)
 
 #make model
 variables = c("S","I","R")

@@ -65,15 +65,20 @@
 #'   The data frame contains these columns:
 #'
 #'   \itemize{
-#'     \item `name`: The name of the variable as provided in the model specification.
-#'     \item `label`: A potential alternative label for the box. By default same as `name`.
 #'     \item `id`: A numeric id for each variable.
+#'     \item `name`: The name of the variable as provided in the model specification.
 #'     \item `xmin`: Left edge location of variable box.
+#'     \item `xlabel`: Horizontal position (midpoint) of label.
 #'     \item `xmax`: Right edge location of variable  box.
 #'     \item `ymin`: Lower edge of location variable box.
-#'     \item `ymax`: Upper edge of location variable  box.
-#'     \item `xlabel`: Horizontal position (midpoint) of label.
 #'     \item `ylabel`: Vertical position (midpoint) of label.
+#'     \item `ymax`: Upper edge of location variable  box.
+#'     \item `label_text`: Text that will appear as the label of the box. Can be
+#'         different from `name`.
+#'     \item `outline_color`: The outline color of variable boxes.
+#'     \item `fill_color`: The fill color of the variable boxes.
+#'     \item `label_color`: The color of the box labels for each variable.
+#'     \item `label_size`: Text size for variable labels.
 #'   }
 #'
 #'   \item `flows`: A data frame containing information for all flows.
