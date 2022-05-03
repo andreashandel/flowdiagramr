@@ -33,7 +33,7 @@ check_dataframes <- function(diagram_list) {
                 "chr", "chr", "chr", "chr", "num")
   )
   for(i in 1:ncol(variables)) {
-    x <- capture.output(str(variables[,i]))  # this captures a string of the str output
+    x <- utils::capture.output(utils::str(variables[,i]))  # this captures a string of the str output
     val <- substr(x, 2, 4)  # first space is always blank, then 3 letters for the str
     # find what the structure should be: `targ`
     targ <- var_str_map[var_str_map$column == colnames(variables)[i], "struct"]
@@ -51,7 +51,7 @@ check_dataframes <- function(diagram_list) {
     variables[ , "fill_color"],
     variables[ , "label_color"]
   )
-  nonrcolors_used <- which(!(used_colors %in% colors()))
+  nonrcolors_used <- which(!(used_colors %in% grDevices::colors()))
   if(length(nonrcolors_used) > 0) {
     # is it a HEX?
     # get first character, which will be "#" for HEX codes
@@ -92,7 +92,7 @@ check_dataframes <- function(diagram_list) {
 
   # 2. Check structures of columns
   for(i in 1:ncol(flows)) {
-    x <- capture.output(str(flows[,i]))  # this captures a string of the str output
+    x <- utils::capture.output(utils::str(flows[,i]))  # this captures a string of the str output
     val <- substr(x, 2, 4)  # first space is always blank, then 3 letters for the str
     # find what the structure should be: `targ`
     targ <- flow_str_map[flow_str_map$column == colnames(flows)[i], "struct"]
@@ -109,7 +109,7 @@ check_dataframes <- function(diagram_list) {
     flows[ , "color"],
     flows[ , "label_color"]
   )
-  nonrcolors_used <- which(!(used_colors %in% colors()))
+  nonrcolors_used <- which(!(used_colors %in% grDevices::colors()))
   if(length(nonrcolors_used) > 0) {
     # is it a HEX?
     # get first character, which will be "#" for HEX codes

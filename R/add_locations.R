@@ -2,7 +2,7 @@
 #' Helper function called by prepare_diagram.
 #' Likely not useful for direct calling.
 #'
-#' @param variables The nodes (variables) data frame.
+#' @param variables The variables data frame.
 #' @param varlocations The varlocations matrix.
 #' @param varbox_x_size Vector of box width for each variable.
 #' @param varbox_y_size Vector for box height for each variable.
@@ -17,8 +17,11 @@
 #'          `prepare_diagram` ensures inputs are provided in the required form.
 #' @export
 
-add_locations <- function(variables, varlocations, varbox_x_size,
-                          varbox_y_size, varspace_x_size,
+add_locations <- function(variables,
+                          varlocations,
+                          varbox_x_size,
+                          varbox_y_size,
+                          varspace_x_size,
                           varspace_y_size) {
 
   #### extract dimensions of the grid and number of variables
@@ -112,14 +115,13 @@ add_locations <- function(variables, varlocations, varbox_x_size,
     ymaxs <- matrix(data = varbox_y_size, nrow = 1, ncol = num_cols)
   }
 
-
   #### insert the location information in the data frame based on variable name
-  variables$xmin <- xmins[which(varlocations %in% variables$name)]
-  variables$xmid <- xmids[which(varlocations %in% variables$name)]
-  variables$xmax <- xmaxs[which(varlocations %in% variables$name)]
-  variables$ymin <- ymins[which(varlocations %in% variables$name)]
-  variables$ymid <- ymids[which(varlocations %in% variables$name)]
-  variables$ymax <- ymaxs[which(varlocations %in% variables$name)]
+  variables$xmin <- xmins[match(variables$name, varlocations)]
+  variables$xmid <- xmids[match(variables$name, varlocations)]
+  variables$xmax <- xmaxs[match(variables$name, varlocations)]
+  variables$ymin <- ymins[match(variables$name, varlocations)]
+  variables$ymid <- ymids[match(variables$name, varlocations)]
+  variables$ymax <- ymaxs[match(variables$name, varlocations)]
 
   #### rename mids as label positions
   names(variables)[names(variables) %in% c("xmid", "ymid")] <- c("xlabel", "ylabel")

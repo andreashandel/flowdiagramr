@@ -16,7 +16,7 @@ add_locations(
 )
 }
 \arguments{
-\item{variables}{The nodes (variables) data frame.}
+\item{variables}{The variables data frame.}
 
 \item{varlocations}{The varlocations matrix.}
 

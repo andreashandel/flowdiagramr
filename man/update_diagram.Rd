@@ -122,9 +122,8 @@ diag_list2 <- update_diagram(diag_list, diagram_settings = list(var_fill_color =
 
 # more extensive updates
 newsettings <- list(var_label_color = c("green","blue","red"),
-                      interaction_flow_size = 1.5,
-                       external_flow_size = c(0.7,0.9)
-                      )
+                    interaction_flow_size = 1.5,
+                    interaction_flow_color = "orange")
 diag_list3 <- update_diagram(diag_list, diagram_settings = newsettings)
 
 }

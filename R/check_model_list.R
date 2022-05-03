@@ -101,7 +101,8 @@ check_model_list <- function(model_list) {
       allsymbols = c(math_symbols,variables, parnames, 0:9)
       if (sum(!(flowsymbols %in% allsymbols)) >0)
       {
-        msg = paste0("Your flows for variable ",variables[n], " contain these non-allowed symbols: ", paste0(wrongflows, collapse = ", "));
+        wrongflows <- flowsymbols[!(flowsymbols %in% allsymbols)]
+        msg = paste0("Your flows for variable ",variables[nv], " contain these non-allowed symbols: ", paste0(wrongflows, collapse = ", "));
         return(msg)
       }
 

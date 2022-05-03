@@ -293,9 +293,12 @@ prepare_diagram <- function(model_list,
   # to individual variables with their respective names
   # this is done for convenience so we don't have to keep calling
   # model_settings$varlocations and can just call varlocations, etc
-  for(i in 1:length(model_settings)) {
-    assign(names(model_settings)[i], value = model_settings[[i]])
-  }
+  varlocations <- model_settings$varlocations
+  varbox_x_size <- model_settings$varbox_x_size
+  varbox_y_size <- model_settings$varbox_y_size
+  varspace_x_size <- model_settings$varspace_x_size
+  varspace_y_size <- model_settings$varspace_y_size
+
 
   #assign to variables outside of model_list
   #basically same as above for model_settings
@@ -695,7 +698,7 @@ prepare_diagram <- function(model_list,
       v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
-      ids <- subset(variables, name %in% v)[ , "id"]  #extract the relevant numeric ids
+      ids <- variables[variables$name %in% v, "id"]  #extract the relevant numeric ids
 
       if(is.na(ints[i, "to"])){
         # If the receiving node is NA, then this is an interaction

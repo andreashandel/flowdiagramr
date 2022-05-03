@@ -162,6 +162,7 @@ make_diagram(diagram_list)
 ## BROKEN!
 myvarlocs = matrix(c("","P","","S","I","R"),byrow=TRUE,nrow=2)
 model_settings = list(varlocations = myvarlocs)
+
 make_diagram(prepare_diagram(mymodel, model_settings = model_settings))
 
 
