@@ -3,6 +3,7 @@
 #'
 #' @param diagram_list The list of `variables` and `flows` data frames.
 #' @return Either `NULL` or an error message.
+#' @export
 
 check_dataframes <- function(diagram_list) {
   # unlist the data frames
@@ -13,7 +14,7 @@ check_dataframes <- function(diagram_list) {
   # Check the variables data frame
   ###
   # 1. check column names
-  allowed_var_columns <- c("name", "id", "xmin", "xmax", "ymin", "ymax",
+  allowed_var_columns <- c("id", "name", "xmin", "xmax", "ymin", "ymax",
                            "xlabel", "ylabel", "label_text", "outline_color",
                            "fill_color", "label_color", "label_size")
   # `test` will be the column names that are in `variables`
@@ -29,7 +30,7 @@ check_dataframes <- function(diagram_list) {
   # this is a map between the columns names and their allowed structures
   var_str_map <- data.frame(
     column = allowed_var_columns,
-    struct =  c("chr", "num", "num", "num", "num", "num", "chr", "chr",
+    struct =  c("int", "chr", "num", "num", "num", "num", "num", "num",
                 "chr", "chr", "chr", "chr", "num")
   )
   for(i in 1:ncol(variables)) {
@@ -40,7 +41,7 @@ check_dataframes <- function(diagram_list) {
     # test whether the `val` structure is different from the target (`targ`)
     test <- val != targ
     if(test) {
-      msg <- paste0("The column `", colnames(variables)[i], "` is ", val, " but must be ", targ, ".")
+      msg <- paste0("The column `", colnames(variables)[i], "` in variables is ", val, " but must be ", targ, ".")
       return(msg)
     }
   }
@@ -68,17 +69,17 @@ check_dataframes <- function(diagram_list) {
   ###
   # Check the flows data frame.
   ###
-  allowed_flow_columns <- c("type", "id", "from", "to", "label",
+  allowed_flow_columns <- c("id", "name", "type", "from", "to",
                             "xmin", "xmax", "ymin", "ymax",
-                            "xlabel", "ylabel", "curvature", "math",
+                            "xlabel", "ylabel", "curvature",
                             "label_text", "color", "size", "linetype",
                             "label_color", "label_size",
                             "arrow_size", "show_arrow")
   flow_str_map <- data.frame(
     column = allowed_flow_columns,
-    struct =  c("chr", "int", "chr", "chr", "chr", "num", "num", "num",
-                "num", "num", "num", "num", "chr", "chr", "chr", "num",
-                "chr", "chr", "num", "num", "logi")
+    struct =  c("int", "chr", "chr", "chr", "chr", "num", "num", "num",
+                "num", "num", "num", "num", "chr", "chr", "num",
+                "chr", "chr", "num", "num", "log")
   )
   # 1. check column names
   # `test` will be the column names that are in `flows`
@@ -99,7 +100,7 @@ check_dataframes <- function(diagram_list) {
     # test whether the `val` structure is different from the target (`targ`)
     test <- val != targ
     if(test) {
-      msg <- paste0("The column `", colnames(flows)[i], "` is ", val, " but must be ", targ, ".")
+      msg <- paste0("The column `", colnames(flows)[i], "` in the flows is ", val, " but must be ", targ, ".")
       return(msg)
     }
   }

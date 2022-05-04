@@ -8,7 +8,7 @@ update_diagram(diagram_list, diagram_settings = NULL)
 }
 \arguments{
 \item{diagram_list}{A required list of data frames returned from the
-\code{prepare_diagram} function. See that function for details
+\code{\link{prepare_diagram}} function. See that function for details
 about this object.}
 
 \item{diagram_settings}{A required list of diagram aesthetic settings. The
@@ -99,8 +99,8 @@ length 1 or the number of external flows.
 }
 \value{
 The same list of data frames that was sent into the function
-With updated style settings
-(different values in the updated columns/variables) of the data frames
+with updated style settings (different values in the updated
+columns/variables) of the data frames.
 }
 \description{
 This function takes a list as created by \code{\link{prepare_diagram}}
@@ -108,10 +108,13 @@ and allows the user to update the styling of the boxes and arrows by setting
 the different arguments in the input list of this function.
 }
 \details{
-more here
+The user can provide any number of updates in the
+\code{diagram_settings} list. Only those provided are updated. If the
+function is called with no updates, a warning is issued and the original
+data frames list object is returned.
 }
 \examples{
-#basic model specification
+# basic model specification
 variables <- c("S","I","R")
 flows <- list(S_flows = c("-b*S*I"),
               I_flows = c("b*S*I","-g*I"),
@@ -119,6 +122,8 @@ flows <- list(S_flows = c("-b*S*I"),
 mymodel <- list(variables = variables, flows = flows)
 diag_list <- prepare_diagram(model_list = mymodel)
 diag_list2 <- update_diagram(diag_list, diagram_settings = list(var_fill_color = "green"))
+
+
 
 # more extensive updates
 newsettings <- list(var_label_color = c("green","blue","red"),

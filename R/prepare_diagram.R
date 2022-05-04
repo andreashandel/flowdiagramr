@@ -1,16 +1,14 @@
 #' Create data frames for plotting from model elements.
 #'
 #' @description
-#' This function takes as input a model
-#' consisting of variables/compartments and flows
-#' and creates a list of data frames with label and
-#' position information for plotting a flow diagram.
-#' The resulting object is used as an input to
-#' \code{\link{make_diagram}}, which creates a **ggplot2** based diagram.
-#' Attempts to make decent decisions regarding the placement of nodes (boxes),
-#' flows (arrows), and labels are made. However, complex models with
-#' complex diagrams will likely need user modification. This is documented
-#' in the vignettes.
+#' This function takes as input a model consisting of variables/compartments
+#' and flows, and creates a list of data frames with label and position
+#' information for plotting a flow diagram.
+#' The resulting object is used as an input to \code{\link{make_diagram}},
+#' which creates a **ggplot2** based diagram. The function attempts to make
+#' decent decisions regarding the placement of variables (boxes),
+#' flows (arrows), and labels. However, complex models with complex diagrams
+#' will likely need user modification. This is documented in the vignettes.
 #'
 #' @param model_list A list of model elements. This list is required and
 #' must contain these two elements:
@@ -21,38 +19,45 @@
 #'     and out of the variable. Note that **flowdiagramr** assumes that the
 #'     order of `flows` and `variables` match.
 #' \item IMPORTANT: All `variables` entries must start with an upper case letter,
-#' followed by any combination of letters and numbers (e.g.,
-#' S, Si, or Aml2). All parameters contained in `flows`
-#' must start with a lower case letter
-#' followed by any combination of letters and numbers (e.g.,
-#' b, bBmax, kS, p21S). All variables and parameters MUST be separated by
-#' math notation (e.g., +, -, *, /).
-#' Most math functions (e.g., `sin`, `cos`) are currently not supported.
+#'     followed by any combination of letters and numbers
+#'     (e.g., S, Si, or Aml2). All parameters contained in `flows` must start
+#'     with a lower case letter followed by any combination of letters and
+#'     numbers (e.g., b, bBmax, kS, p21S). All variables and parameters MUST
+#'     be separated by math notation (e.g., +, -, *, /). Most math functions
+#'     (e.g., `sin`, `cos`) are currently not supported.
 #' \item See examples and details below and vignettes.
 #' }
 #'
-#' @param model_settings A list of optional settings to adjust layout.
-#'                       The following elements are supported.
-#'                       If not provided, they default to a single row and all sizes of 1.
+#' @param model_settings A list of optional settings to adjust layout. The
+#'     following elements are supported. If not provided, they default to a
+#'     single row and all sizes of 1.
 #' \itemize{
-#' \item `varlocations`: A matrix containing all `model_list$variables` entries in specific locations on a grid. See examples.
+#' \item `varlocations`: A matrix containing all `model_list$variables` entries
+#'     in specific locations on a grid. See examples.
 #' \item `varbox_x_size`: Either a scalar or a vector that changes the default
-#'     width of variable boxes. For example, `varbox_x_size = 1.5` makes each box
-#'     1.5 units in width. If a scalar, the value is used for all variables.
+#'     width of variable boxes. For example, `varbox_x_size = 1.5` makes each
+#'     box 1.5 units in width. If a scalar, the value is used for all variables.
 #'     If a vector, the length must correspond to number of variables,
 #'     and the provided values are applied to the variables in the order
 #'     provided in `model_list$vars`.
-#' \item `varbox_y_size`: Same as `varbox_x_size` but for the height of the boxes.
-#' \item `varspace_x_size`:  Either a scalar or a vector that changes the spacing between
-#'     variable boxes in the x/horizontal dimension.
-#'     To use this, you need to also provide a `varlocations` matrix.
-#'     If `varspace_x_size` is a scalar, all spaces between boxes in the x direction will be the same.
-#'     For example, `varspace_x_size = 1.5` puts 1.5 units of space in the x direction between boxes.
-#'     If you provide a vector, it needs to be of dimension one less than the number of columns in `varlocations`.
-#'     Spacing starts at the left, thus the first number is the spacing between the first column and second column, etc.
-#' \item `varspace_y_size`:  Same as `varspace_y_size` but for the vertical dimension.
-#'     If you provide a vector, it needs to be of dimension one less than the number of rows in `varlocations`.
-#'     Spacing starts at the bottom, thus the first number is the spacing between the lowest and second lowest row, etc.
+#' \item `varbox_y_size`: Same as `varbox_x_size` but for the height of
+#'     the boxes.
+#' \item `varspace_x_size`:  Either a scalar or a vector that changes the
+#'     spacing between variable boxes in the x/horizontal dimension. If
+#'     `varspace_x_size` is a scalar, all spaces between boxes in the x
+#'     direction will be the same. For example, `varspace_x_size = 1.5` puts
+#'     1.5 units of space in the x direction between boxes. If you provide a
+#'     vector, it needs to be of dimension one less than the number of columns
+#'     in `varlocations`. Spacing starts at the left, thus the first number is
+#'     the spacing between the first column and second column, etc. Spacing
+#'     is measured between the right edge of one box to the left edge of
+#'     the next box.
+#' \item `varspace_y_size`:  Same as `varspace_y_size` but for the vertical
+#'     dimension. If you provide a vector, it needs to be of dimension one
+#'     less than the number of rows in `varlocations`. Spacing starts at the
+#'     bottom, thus the first number is the spacing between the lowest and
+#'     second lowest row, etc. Spacing is measured between the bottom edge
+#'     of one box to the top edge og the next box.
 #' \item See examples and details below and vignettes.
 #' }
 #'
@@ -63,18 +68,18 @@
 #' \itemize{
 #'   \item `variables`: A data frame containing information for all variables.
 #'   The data frame contains these columns:
-#'
 #'   \itemize{
 #'     \item `id`: A numeric id for each variable.
-#'     \item `name`: The name of the variable as provided in the model specification.
+#'     \item `name`: The name of the variable as provided in the model
+#'         specification.
 #'     \item `xmin`: Left edge location of variable box.
-#'     \item `xlabel`: Horizontal position (midpoint) of label.
 #'     \item `xmax`: Right edge location of variable  box.
 #'     \item `ymin`: Lower edge of location variable box.
-#'     \item `ylabel`: Vertical position (midpoint) of label.
 #'     \item `ymax`: Upper edge of location variable  box.
-#'     \item `label_text`: Text that will appear as the label of the box. Can be
-#'         different from `name`.
+#'     \item `xlabel`: Horizontal position (midpoint) of label.
+#'     \item `ylabel`: Vertical position (midpoint) of label.
+#'     \item `label_text`: Text that will appear as the label of the box. Can
+#'         be different from `name`.
 #'     \item `outline_color`: The outline color of variable boxes.
 #'     \item `fill_color`: The fill color of the variable boxes.
 #'     \item `label_color`: The color of the box labels for each variable.
@@ -84,13 +89,13 @@
 #'   \item `flows`: A data frame containing information for all flows.
 #'   The data frame contains these columns:
 #'   \itemize{
-#'     \item `type`: Type of flow. One of main, interaction, or external.
 #'     \item `id`: A numeric id for each flow.
+#'     \item `name`: The label of the flow. Typically a mathematical expression.
+#'     \item `type`: Type of flow. One of main, interaction, or external.
 #'     \item `from`: The variable from which the arrow originate. That is, the
-#'     variable donating the flow.
+#'         variable donating the flow.
 #'     \item `to`: The variable to which the arrow will point. That is, the
-#'     variable receiving the flow.
-#'     \item `label`: The label of the flow. Typically a mathematical expression.
+#'         variable receiving the flow.
 #'     \item `xmin`: The starting horizontal position of the arrow.
 #'     \item `xmax`: The ending horizontal position of the arrow.
 #'     \item `ymin`: The starting vertical position of the arrow.
@@ -98,29 +103,54 @@
 #'     \item `xlabel`: Horizontal position (midpoint) of label.
 #'     \item `ylabel`: Vertical position (midpoint) of label.
 #'     \item `curvature`: The amount of curvature applied to arrow.
-#'     Higher numbers indicate more curvature; 0 = straight line.
-#'     \item `math`: The math from the flows specified by the user. This is a
-#'     duplicate of `label` so that user can update `label` as desired but
-#'     retain the original math for reference.
+#'         Higher numbers indicate more curvature; 0 = straight line.
+#'     \item `label_text`: The label that will appear in the diagram. This is a
+#'         duplicate of `name` so that user can update `label_text` as desired
+#'         but retain the original math for reference.
+#'     \item `color`: The color of the flow arrow line.
+#'     \item `size`: The size (width) of the flow arrow line.
+#'     \item `linetype`: The linetype of the flow arrow line.
+#'     \item `label_color`: Color of `label_text`.
+#'     \item `label_size`: The text size of `label_text`.
+#'     \item `arrow_size`: The size of the arrow point on the flow line.
+#'     \item `show_arrow`: Logical for whether to plot the flow arrow line
+#'         (TRUE) or not (FALSE).
 #'   }
 #' }
-#' @details `variables` needs to be specified as a vector of model variables,
-#' e.g., variables <- c("Pred","Prey").
-#' `flows` need to be specified as a list, with each list entry containing the
-#' flows/processes for each variable in the order in which the variables appear.
-#' Flows need to be named according to VARIABLENAME_flows.
-#' Example: flows <- list(Pred_flows = c(`r*Pred`, `-k1*Pred*Prey`),
-#'                        Prey_flows = c(`g*Prey`, `-k2*Pred*Prey`) )
-#' Each flow, i.e. each entry in the flow vector, needs to be a valid
-#' mathematical expression made up of vars and parameters.
-#' The rules are as described above.
-#' As an example, the following includes a parameter *b* and two variables, *S*
-#' and *I*: `b*S*I`. The following includes a parameter *s* and two
-#' variables, *Bg* and *I2*: `Bg*s*I2`.
-#' See more examples below and in the vignettes.
+#' @details
+#'    `variables` needs to be specified as a vector of model variables,
+#'     e.g., `variables <- c("Pred","Prey")`. `flows` need to be specified as a
+#'    list, with each list entry containing the flows/processes for each
+#'    variable in the order in which the variables appear. Flows need to be
+#'    named according to `VARIABLENAME_flows`.
+#'
+#'    Example:
+#'
+#'    \code{flows <- list(Pred_flows = c(r*Pred, -k1*Pred*Prey),
+#'    Prey_flows = c(g*Prey, -k2*Pred*Prey))}. Each flow, i.e. each entry in
+#'    the flow vector, needs to be a valid mathematical expression made up of
+#'    variables and parameters. The rules are as described above.
+#'    As an example, the following includes a parameter *b* and two variables,
+#'    *S* and *I*: `b*S*I`. The following includes a parameter *s* and two
+#'    variables, *Bg* and *I2*: `Bg*s*I2`. See more examples below and in
+#'    the vignettes.
+#'
+#'    The variables and flows data frames returned in the output list from this
+#'    function contain a few columns that are provided to make it easier for
+#'    the user to make changes to the data frames manually, but are not used
+#'    by the package to make the diagram itself. In the `variables` data frame,
+#'    `id` and `name` are unique identifiers that are not used by the package
+#'    to make the diagram -- changing these will have no impact on the final
+#'    diagram. In the `flows` data frame, `id`, `name`, `from`, and `to` are
+#'    identifiers provided to make it easier for the user to understand each
+#'    row of the data frame. Changing these columns will have no impact on the
+#'    final diagram. All other columns contain information that impacts the
+#'    drawn diagram itself. Users can update them -- and may want to in many
+#'    cases -- but any updates to values in the remaining columns will be seen
+#'    in the diagram itself. See the description of the output data frames below.
 #'
 #' @examples
-#' #basic model specification
+#' # basic model specification
 #' variables <- c("S","I","R")
 #' flows <- list(S_flows = c("-b*S*I"),
 #'               I_flows = c("b*S*I","-g*I"),
@@ -129,7 +159,9 @@
 #' diag_list <- prepare_diagram(model_list = mymodel)
 #' mydiag <- make_diagram(diag_list)
 #'
-#' #adding optional specifications
+#'
+#'
+#' # adding optional specifications
 #' varlocations <-  matrix(data = c("S", "", "R",
 #'                                  "", "I", "" ),
 #'                         nrow = 2, ncol = 3, byrow = TRUE)
@@ -137,7 +169,9 @@
 #' diag_list <- prepare_diagram(model_list = mymodel, model_settings = mysettings)
 #' mydiag <- make_diagram(diag_list)
 #'
-#' #another simple model for pathogen (prey) and immune response (predator)
+#'
+#'
+#' # another simple model for pathogen (prey) and immune response (predator)
 #' variables = c("Pat","Imm")
 #' flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
 #'                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
@@ -145,7 +179,9 @@
 #' diag_list <- prepare_diagram(mymodel)
 #' mydiag <- make_diagram(diag_list)
 #'
-#' #manually switch to vertical layout
+#'
+#'
+#' # manually switch to vertical layout
 #' varlocations <-  matrix(data = c("Pat", "Imm"),
 #'                         nrow = 2, byrow = TRUE)
 #' mysettings <- list(varlocations = varlocations)
@@ -226,7 +262,8 @@ prepare_diagram <- function(model_list,
   # we set vectors of length nvars and nvars-1 for box and space sizing
   # each with the default value of 1
   # note that we assign it to model_settings.
-  # these updated settings will also be returned as part of the list of values this function returns
+  # these updated settings will also be returned as part of the list of values
+  # this function returns
 
   #first, if varlocations matrix is not provided, make a single-row matrix
   if (is.null(model_settings$varlocations)) {
@@ -528,7 +565,7 @@ prepare_diagram <- function(model_list,
         # Create a data frame with all the necessary segment information
         tmp <- data.frame(from = i,
                           to = cn,
-                          label = currentflow,
+                          name = currentflow,
                           interaction = FALSE,
                           out_interaction = FALSE,
                           direct_interaction = FALSE)
@@ -545,7 +582,7 @@ prepare_diagram <- function(model_list,
         if(connectvars == i) {
           tmp <- data.frame(from = NA,
                             to = i,
-                            label = currentflow,
+                            name = currentflow,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
@@ -563,7 +600,7 @@ prepare_diagram <- function(model_list,
         if(length(unique(connectvars)) == 1) {
           tmp <- data.frame(from = i,
                             to = i,
-                            label = currentflow,
+                            name = currentflow,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
@@ -571,7 +608,7 @@ prepare_diagram <- function(model_list,
           # These are physical flows between two variables
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
-                            label = currentflow,
+                            name = currentflow,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
@@ -610,7 +647,7 @@ prepare_diagram <- function(model_list,
   # not all information is present or correct yet
   # code block below further update the flows DF
   # At this stage, the flows dataframe has the following columns:
-  # from, to, label, interaction, out_interaction, direct_interaction
+  # from, to, name, interaction, out_interaction, direct_interaction
   ############################################################
   ############################################################
 
@@ -630,11 +667,11 @@ prepare_diagram <- function(model_list,
   # state variables. We assume that the "main" flow among the "auxilliary"
   # duplicate flows is the one that traverses left-to-right (e.g., 1 to 2)
   # with the smallest gap and has no interaction flags.
-  dups <- as.matrix(table(flows$label))  # tally the occurences of each flow
+  dups <- as.matrix(table(flows$name))  # tally the occurences of each flow
   dupids <- rownames(dups)[which(dups[,1] > 1)]  # grab the one with >1 occurence
   if(length(dupids) > 0) {
-    flowdups <- subset(flows, label %in% dupids)  # take a subset of the edge data frame
-    flows <- subset(flows, !(label %in% dupids))  # restrict flows to non-duplicate flows
+    flowdups <- subset(flows, name %in% dupids)  # take a subset of the edge data frame
+    flows <- subset(flows, !(name %in% dupids))  # restrict flows to non-duplicate flows
     flowdups <- subset(flowdups, sign(to-from) == 1)  # keep left-to-right flows
     flowdups <- subset(flowdups, interaction == FALSE &
                          out_interaction == FALSE &
@@ -660,7 +697,7 @@ prepare_diagram <- function(model_list,
   if(nrow(repdf) != 0) {  # avoids errors if no rows
     repdf$interaction <- TRUE  # set this to TRUE for linetypes
     repdf$out_interaction <- NULL  # remove this now
-    flows[which(flows$out_interaction == TRUE), "label"] <- ""  # take away the label for the physical flow
+    flows[which(flows$out_interaction == TRUE), "name"] <- ""  # take away the name for the physical flow
     flows$out_interaction <- NULL  # remove this now
     flows <- rbind(flows, repdf)  # tack them together
   }
@@ -686,7 +723,7 @@ prepare_diagram <- function(model_list,
   # (the link is the "from" variable in the physical flow).
   if(nrow(ints) > 0) {  # avoids errors if no interactions
     intflows <- ints  # duplicate
-    intflows$label <- ""  # strip the label from the physical flow
+    intflows$name <- ""  # strip the name from the physical flow
     intflows <- unique(intflows)  # just keep unique flows
     intflows$interaction <- FALSE  # reset interaction to false b/c a main flow now
 
@@ -695,7 +732,7 @@ prepare_diagram <- function(model_list,
     # of the physical flow arrow.
     for(i in 1:nrow(ints)) {
       tmp <- ints[i, ]
-      v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
+      v <- get_vars_pars(tmp$name)  #strips away math, leaving just letters
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
       ids <- variables[variables$name %in% v, "id"]  #extract the relevant numeric ids
@@ -734,7 +771,7 @@ prepare_diagram <- function(model_list,
   #########################################
   #########################################
   # At this stage, the flows dataframe has the following columns:
-  # from, to, label, interaction, direct_interaction, linkfrom, linkto
+  # from, to, name, interaction, direct_interaction, linkfrom, linkto
   #########################################
   #########################################
 
@@ -981,17 +1018,17 @@ prepare_diagram <- function(model_list,
 
       # use the flow math to determine if this is associated with an
       # outflow or inflow
-      direction <- signmat[which(flowmatred == tmp$label)]
+      direction <- signmat[which(flowmatred == tmp$name)]
 
       if(direction == "-") {
         # if an outflow (direction == "-"), then this is associated with a
         # row in the other_flows data frame where the from location
         # is different than the from location in the tmp data frame AND
-        # the label is empty
+        # the name is empty
         to_flow <- NULL  # null out to avoid errors
         to_flow <- other_flows[other_flows$from != tmp$from &
                                  is.na(other_flows$to) &
-                                 other_flows$label == "", ]
+                                 other_flows$name == "", ]
         # this can sometimes produce a data frame with an NA row because of
         # an NA in the fields used above in the logical constraint, that
         # row is dropped here
@@ -1025,10 +1062,10 @@ prepare_diagram <- function(model_list,
         # if the flow is a "+", then this associated with either a feedback
         # flow or an external flow into the system
         # first find the to_flow, which will be the flow with a to variable
-        # that is not the current from variable and the label is empty
+        # that is not the current from variable and the name is empty
         to_flow <- NULL  # null out to avoid errors
         to_flow <- other_flows[other_flows$to != tmp$from &
-                                 other_flows$label == "", ]
+                                 other_flows$name == "", ]
         # this can sometimes produce a data frame with an NA row because of
         # an NA in the fields used above in the logical constraint, that
         # row is dropped here
@@ -1172,23 +1209,29 @@ prepare_diagram <- function(model_list,
   #add a row id so it's easier for users to know which row to alter
   flows$id = 1:nrow(flows)
 
-  # add a math column to differentiate from label if needed
-  flows$math <- flows$label
-
   # update flows column ordering
   flows <- flows[, c("id",
+                     "name",
+                     "type",
                      "from",
                      "to",
-                     "label",
                      "xmin",
                      "xmax",
                      "ymin",
                      "ymax",
                      "xlabel",
                      "ylabel",
-                     "curvature",
-                     "type",
-                     "math")]
+                     "curvature")]
+
+  # update variables column ordering
+  variables <- variables[ , c("id",
+                              "name",
+                              "xmin",
+                              "xmax",
+                              "ymin",
+                              "ymax",
+                              "xlabel",
+                              "ylabel")]
 
 
   #remove row names, those are confusing

@@ -16,14 +16,10 @@ add_default_aes <- function(variables, flows) {
   variables$label_size <- 10
 
   # the default settings for flows
-  flows$label_text <- flows$math
+  flows$label_text <- flows$name
   flows$color <- "grey25"
   flows$size <- 0.7
-  lines <- data.frame(
-    type = c("main", "external", "interaction"),
-    linetype = c("solid", "solid", "dashed")
-  )
-  flows <- merge(flows, lines)
+  flows$linetype <- ifelse(flows$type == "interaction", "dashed", "solid")
   flows$label_color <- "black"
   flows$label_size <- 5
   flows$arrow_size <- 0.25
