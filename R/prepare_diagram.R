@@ -162,14 +162,10 @@
 # check_model_list()
 # check_model_settings()
 # fix_arrow_pos()
-# make_vdf_angled()
-# remove_na_rows()
+# get_vars_pars()
 # set_curvature()
 # set_feedback_curvature()
 # set_node_to_na()
-# update_external_interaction_positions()
-# update_interactions()
-# update_straight_labels()
 # update_tofroms()
 
 
@@ -230,7 +226,6 @@ prepare_diagram <- function(model_list,
   # we set vectors of length nvars and nvars-1 for box and space sizing
   # each with the default value of 1
   # note that we assign it to model_settings.
-  # this is needed to be passed into helper functions like make_vdf_angled
   # these updated settings will also be returned as part of the list of values this function returns
 
   #first, if varlocations matrix is not provided, make a single-row matrix
