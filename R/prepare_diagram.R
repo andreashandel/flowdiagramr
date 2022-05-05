@@ -171,6 +171,26 @@
 #'
 #'
 #'
+#' # use of model_settings to change sizes and spacing, including vectorization
+#' variables <- c("S","I","R")
+#' flows <- list(S_flows = c("-b*S*I"),
+#'               I_flows = c("b*S*I","-g*I"),
+#'               R_flows = c("g*I"))
+#' mymodel <- list(variables = variables, flows = flows)
+#'
+#' var_locs <- matrix(c("S", "", "R", "", "I", ""), byrow = TRUE, nrow = 2)
+#' mysettings = list(
+#'   varlocations = var_locs,
+#'   varbox_x_size = c(1,2,1),
+#'   varbox_y_size = c(0.5,0.5,2),
+#'   varspace_x_size = 2,
+#'   varspace_y_size = 1)
+#'
+#' diag_list <- prepare_diagram(model_list = mymodel,
+#'                              model_settings = mysettings)
+#' make_diagram(diag_list)
+#'
+#'
 #' # another simple model for pathogen (prey) and immune response (predator)
 #' variables = c("Pat","Imm")
 #' flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),

@@ -46,13 +46,19 @@
 #' \item `main_flow_label_size`: A scalar or numeric vector
 #'     specifying the text size for main flow labels. Must either
 #'     be of length 1 or the number of main flows.
+#' \item `main_flow_arrow_size`: A scalar or numeric vector
+#'     specifying the size for main flow arrow heads. Must either
+#'     be of length 1 or the number of main flows.
+#' \item `main_flow_show_arrow`: A logical scalar or vector indicating whether
+#'     the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
+#'     be of length 1 or the number of main flows.
 #'
-#' \item `interaction_flow_line_color`: A character string or vector of character strings
-#'     specifying the text color for non-interaction flow arrows. Must either
-#'     be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
-#'     specifying the linetype for interaction flows. This
-#'     argument is passed to the \code{linetype} argument in ggplot2. From
+#' \item `interaction_flow_line_color`: A character string or vector of
+#'     character strings specifying the text color for non-interaction flow
+#'     arrows. Must either be of length 1 or the number of interaction flows.
+#' \item `interaction_flow_linetype`: Either a numeric scalar/vector or a
+#'     character scalar/vector specifying the linetype for interaction flows.
+#'     This argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
 #'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 #'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
@@ -60,21 +66,27 @@
 #'     hexadecimal digits which give the lengths in consecutive positions in
 #'     the string." Default is 1 (solid). Must either
 #'     be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_line_size`: A numeric scalar or vector specifying the line size for the
-#'     interaction flows (non-interaction flows). Must either
-#'     be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_label_color`: A character string or vector of character strings
-#'     specifying the text color for interaction flow labels. Must either
-#'     be of length 1 or the number of interaction flows.
+#' \item `interaction_flow_line_size`: A numeric scalar or vector specifying
+#'     the line size for the interaction flows (non-interaction flows). Must
+#'     either be of length 1 or the number of interaction flows.
+#' \item `interaction_flow_label_color`: A character string or vector of
+#'     character strings specifying the text color for interaction flow labels.
+#'     Must either be of length 1 or the number of interaction flows.
 #' \item `interaction_flow_label_size`: A scalar or numeric vector
 #'     specifying the text size for interaction flow labels. Must either
 #'     be of length 1 or the number of interaction flows.
+#' \item `interaction_flow_arrow_size`: A scalar or numeric vector
+#'     specifying the size for interaction flow arrow heads. Must either
+#'     be of length 1 or the number of interaction flows.
+#' \item `interaction_flow_show_arrow`: A logical scalar or vector indicating whether
+#'     the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
+#'     be of length 1 or the number of interaction flows.
 #'
-#' \item `external_flow_line_color`: A character string or vector of character strings
-#'     specifying the text color for non-interaction flow arrows.
+#' \item `external_flow_line_color`: A character string or vector of character
+#'     strings specifying the text color for non-interaction flow arrows.
 #'     Must either be of length 1 or the number of external flows.
-#' \item `external_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
-#'     specifying the linetype for external flows. This
+#' \item `external_flow_linetype`: Either a numeric scalar/vector or a character
+#'     scalar/vector specifying the linetype for external flows. This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
 #'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
@@ -83,15 +95,21 @@
 #'     hexadecimal digits which give the lengths in consecutive positions in
 #'     the string." Default is 1 (solid). Must either be of length 1 or
 #'     the number of external flows.
-#' \item `external_flow_line_size`: A numeric scalar or vector specifying the line size for the
-#'     external flows (non-interaction flows). Must either be of length 1 or
-#'     the number of external flows.
-#' \item `external_flow_label_color`: A character string or vector of character strings
-#'     specifying the text color for external flow labels. Must either be of
-#'     length 1 or the number of external flows.
+#' \item `external_flow_line_size`: A numeric scalar or vector specifying the
+#'     line size for the external flows (non-interaction flows). Must either be
+#'     of length 1 or the number of external flows.
+#' \item `external_flow_label_color`: A character string or vector of character
+#'     strings specifying the text color for external flow labels. Must either
+#'     be of length 1 or the number of external flows.
 #' \item `external_flow_label_size`: A scalar or numeric vector
 #'     specifying the text size for external flow labels. Must either be of
 #'     length 1 or the number of external flows.
+#' \item `external_flow_arrow_size`: A scalar or numeric vector
+#'     specifying the size for external flow arrow heads. Must either
+#'     be of length 1 or the number of external flows.
+#' \item `external_flow_show_arrow`: A logical scalar or vector indicating whether
+#'     the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
+#'     be of length 1 or the number of external flows.
 #' }
 #'
 #' @return The same list of data frames that was sent into the function
@@ -117,8 +135,8 @@
 #'
 #' # more extensive updates
 #' newsettings <- list(var_label_color = c("green","blue","red"),
-#'                     interaction_flow_size = 1.5,
-#'                     interaction_flow_color = "orange")
+#'                     interaction_flow_line_size = 1.5,
+#'                     interaction_flow_line_color = "orange")
 #' diag_list3 <- update_diagram(diag_list, diagram_settings = newsettings)
 #'
 #' @export
@@ -249,7 +267,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
 
         # make a data frame of settings. number of rows is equal to nmain
         new_main_settings <- make_new_settings_df(nmain,
-                                                  flow_settings)
+                                                  flow_settings[main_settings_names])
 
         # now update the columns in the flows data frame for type == "main"
         flows[flows$type == "main", colnames(new_main_settings)] <- new_main_settings
@@ -274,7 +292,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
 
         # make a data frame of settings. number of rows is equal to nmain
         new_ext_settings <- make_new_settings_df(nexternal,
-                                                 flow_settings)
+                                                 flow_settings[ext_settings_names])
 
         # now update the columns in the flows data frame for type == "main"
         flows[flows$type == "external", colnames(new_ext_settings)] <- new_ext_settings
@@ -299,7 +317,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
 
         # make a data frame of settings. number of rows is equal to nmain
         new_int_settings <- make_new_settings_df(ninteraction,
-                                                 flow_settings)
+                                                 flow_settings[int_settings_names])
 
         # now update the columns in the flows data frame for type == "main"
         flows[flows$type == "interaction", colnames(new_int_settings)] <- new_int_settings

@@ -27,7 +27,7 @@ or the number of rows in the variables data frame.
 labels. Must either be of length 1 or the number of rows in the
 variables data frame.
 
-\item \code{main_flow_color}: A character string or vector of character strings
+\item \code{main_flow_line_color}: A character string or vector of character strings
 specifying the text color for non-interaction flow arrows. Must either
 be of length 1 or the number of main flows.
 \item \code{main_flow_linetype}: Either a numeric scalar/vector or a character scalar/vector
@@ -40,7 +40,7 @@ discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
 the string." Default is 1 (solid). Must either
 be of length 1 or the number of main flows.
-\item \code{main_flow_size}: A numeric scalar or vector specifying the line size for the
+\item \code{main_flow_line_size}: A numeric scalar or vector specifying the line size for the
 main flows (non-interaction flows). Must either
 be of length 1 or the number of main flows.
 \item \code{main_flow_label_color}: A character string or vector of character strings
@@ -49,13 +49,19 @@ be of length 1 or the number of main flows.
 \item \code{main_flow_label_size}: A scalar or numeric vector
 specifying the text size for main flow labels. Must either
 be of length 1 or the number of main flows.
+\item \code{main_flow_arrow_size}: A scalar or numeric vector
+specifying the size for main flow arrow heads. Must either
+be of length 1 or the number of main flows.
+\item \code{main_flow_show_arrow}: A logical scalar or vector indicating whether
+the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
+be of length 1 or the number of main flows.
 
-\item \code{interaction_flow_color}: A character string or vector of character strings
-specifying the text color for non-interaction flow arrows. Must either
-be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_linetype}: Either a numeric scalar/vector or a character scalar/vector
-specifying the linetype for interaction flows. This
-argument is passed to the \code{linetype} argument in ggplot2. From
+\item \code{interaction_flow_line_color}: A character string or vector of
+character strings specifying the text color for non-interaction flow
+arrows. Must either be of length 1 or the number of interaction flows.
+\item \code{interaction_flow_linetype}: Either a numeric scalar/vector or a
+character scalar/vector specifying the linetype for interaction flows.
+This argument is passed to the \code{linetype} argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
 with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
@@ -63,21 +69,27 @@ discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
 the string." Default is 1 (solid). Must either
 be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_size}: A numeric scalar or vector specifying the line size for the
-interaction flows (non-interaction flows). Must either
-be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_label_color}: A character string or vector of character strings
-specifying the text color for interaction flow labels. Must either
-be of length 1 or the number of interaction flows.
+\item \code{interaction_flow_line_size}: A numeric scalar or vector specifying
+the line size for the interaction flows (non-interaction flows). Must
+either be of length 1 or the number of interaction flows.
+\item \code{interaction_flow_label_color}: A character string or vector of
+character strings specifying the text color for interaction flow labels.
+Must either be of length 1 or the number of interaction flows.
 \item \code{interaction_flow_label_size}: A scalar or numeric vector
 specifying the text size for interaction flow labels. Must either
 be of length 1 or the number of interaction flows.
+\item \code{interaction_flow_arrow_size}: A scalar or numeric vector
+specifying the size for interaction flow arrow heads. Must either
+be of length 1 or the number of interaction flows.
+\item \code{interaction_flow_show_arrow}: A logical scalar or vector indicating whether
+the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
+be of length 1 or the number of interaction flows.
 
-\item \code{external_flow_color}: A character string or vector of character strings
-specifying the text color for non-interaction flow arrows.
+\item \code{external_flow_line_color}: A character string or vector of character
+strings specifying the text color for non-interaction flow arrows.
 Must either be of length 1 or the number of external flows.
-\item \code{external_flow_linetype}: Either a numeric scalar/vector or a character scalar/vector
-specifying the linetype for external flows. This
+\item \code{external_flow_linetype}: Either a numeric scalar/vector or a character
+scalar/vector specifying the linetype for external flows. This
 argument is passed to the \code{linetype} argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
 with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
@@ -86,15 +98,21 @@ discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
 the string." Default is 1 (solid). Must either be of length 1 or
 the number of external flows.
-\item \code{external_flow_size}: A numeric scalar or vector specifying the line size for the
-external flows (non-interaction flows). Must either be of length 1 or
-the number of external flows.
-\item \code{external_flow_label_color}: A character string or vector of character strings
-specifying the text color for external flow labels. Must either be of
-length 1 or the number of external flows.
+\item \code{external_flow_line_size}: A numeric scalar or vector specifying the
+line size for the external flows (non-interaction flows). Must either be
+of length 1 or the number of external flows.
+\item \code{external_flow_label_color}: A character string or vector of character
+strings specifying the text color for external flow labels. Must either
+be of length 1 or the number of external flows.
 \item \code{external_flow_label_size}: A scalar or numeric vector
 specifying the text size for external flow labels. Must either be of
 length 1 or the number of external flows.
+\item \code{external_flow_arrow_size}: A scalar or numeric vector
+specifying the size for external flow arrow heads. Must either
+be of length 1 or the number of external flows.
+\item \code{external_flow_show_arrow}: A logical scalar or vector indicating whether
+the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
+be of length 1 or the number of external flows.
 }}
 }
 \value{
@@ -127,8 +145,8 @@ diag_list2 <- update_diagram(diag_list, diagram_settings = list(var_fill_color =
 
 # more extensive updates
 newsettings <- list(var_label_color = c("green","blue","red"),
-                    interaction_flow_size = 1.5,
-                    interaction_flow_color = "orange")
+                    interaction_flow_line_size = 1.5,
+                    interaction_flow_line_color = "orange")
 diag_list3 <- update_diagram(diag_list, diagram_settings = newsettings)
 
 }

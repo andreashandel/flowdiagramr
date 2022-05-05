@@ -119,6 +119,15 @@ diagram_list_new <- update_diagram(
   diagram_settings = list(main_flow_line_color = "orange"))
 make_diagram(diagram_list_new)
 
+# this should work
+diagram_list <- prepare_diagram(model_list)
+diagram_list_new <- update_diagram(
+  diagram_list,
+  diagram_settings = list(main_flow_line_color = "orange",
+                          main_flow_arrow_size = 2,
+                          interaction_flow_show_arrow = FALSE))
+make_diagram(diagram_list_new)
+
 # this should issue a warning about no new settings
 diagram_list <- prepare_diagram(model_list)
 diagram_list_new <- update_diagram(diagram_list)  # warning issued

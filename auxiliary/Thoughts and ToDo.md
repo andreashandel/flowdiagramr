@@ -46,7 +46,7 @@ DONE.
   - nonsense in update settings
   - column names are correct
   - check values for basic conformity (chr, str, num, etc.)
-    - DO WE WANT TO ALLOW CHR and NUM for some (like linetypes)?
+    - DO WE WANT TO ALLOW CHR and NUM for some (like linetypes)? -- JUST CHR for now
   - add to end of `update_diagram()`
   - add to beginning of `make_diagram()`
 
@@ -67,6 +67,7 @@ DONE (I think). Still may be some mismatching to update.
 DONE.
 * Not sure we want to have default values in update_diagram. Defaults should be spit out after prepare_diagram. Then in update_, only whatever the user provides is processed/updated, everything else remains untouched.
 
+ADDED.
 * Why are the logicals (show/hide) for arrows not part of update_?
 
 DONE.
@@ -75,10 +76,10 @@ DONE.
 DONE. But with a warniing.
 * Maybe just throw an error if user doesn't provide proper diagram_list and diagram_settings entries for update_diagram()? So basically at least one entry to be updated in diagram_settings, and must match column/variable in diagram_list, otherwise fail.
 
-TO BE DISCUSSED.
+DONE. GGPLOT CODE DIRECTLY IN FUNCTION
 * It somehow seems "dangerous" to produce the plot in make_diagram by evaluating it with environmental variables. Are we sure that might not lead to some unforeseen bad consequences if user has an unexpected local environment? Not sure, maybe ok because environment is only what's inside the function?
 
-TO BE DISCUSSED.
+DONE. GGPLOT CODE DIRECTLY IN FUNCTION
 * Is there an advantage to having the get_code() function instead of just storing the ggplot skeleton code in a string variable, either inside make_diagram or somewhere else, and just loading it?
 
 DONE. Should work now.
@@ -93,6 +94,7 @@ DONE. But might still need some documentation/comments.
 DONE. Except vignettes.
 * Need to update documentation, examples, etc. for all functions to match with new setup.
 
+DONE. (I think.)
 * Once working, prepare_diagram function needs an example showing full use of model_settings, including vectorization.
 
 ***
