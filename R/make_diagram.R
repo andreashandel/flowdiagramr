@@ -20,8 +20,7 @@
 #'    \code{\link{update_diagram}} to make a `ggplot2` object. All location
 #'    information and aesthetics are assumed fixed at this point -- no updates
 #'    are made within this function. The underlying `ggplot2` code can be
-#'    viewed in the \code{get_code} function, e.g.: type \code{get_code} with
-#'    no parentheses in the R console.
+#'    viewed by typing \code{make_diagram} with no parentheses in the R console.
 #'
 #' @examples
 #' mymodel = list(variables = c("S","I","R"),

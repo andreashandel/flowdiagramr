@@ -17,6 +17,7 @@ Helper-functions for users:
 convert_from_modelbuilder()
 
 
+YES.
 All other .R files/functions are internal helpers.
 
 ****************************
@@ -43,12 +44,12 @@ All other .R files/functions are internal helpers.
 
 DONE.
 * Add a final check function inside `make_diagram()`. Check for:
-  - nonsense in update settings
-  - column names are correct
+  - nonsense in update settings  -- DONE
+  - column names are correct -- DONE
   - check values for basic conformity (chr, str, num, etc.)
     - DO WE WANT TO ALLOW CHR and NUM for some (like linetypes)? -- JUST CHR for now
-  - add to end of `update_diagram()`
-  - add to beginning of `make_diagram()`
+  - add to end of `update_diagram()` -- DONE
+  - add to beginning of `make_diagram()` -- DONE
 
 DONE.
 * Make interaction and external arrow lengths depend on the box size (e.g., go from center out at 45 degree angle until the "edge" of the box is found).
@@ -67,7 +68,7 @@ DONE (I think). Still may be some mismatching to update.
 DONE.
 * Not sure we want to have default values in update_diagram. Defaults should be spit out after prepare_diagram. Then in update_, only whatever the user provides is processed/updated, everything else remains untouched.
 
-ADDED.
+ADDED. DONE.
 * Why are the logicals (show/hide) for arrows not part of update_?
 
 DONE.

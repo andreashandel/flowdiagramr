@@ -107,8 +107,8 @@
 #'     \item `label_text`: The label that will appear in the diagram. This is a
 #'         duplicate of `name` so that user can update `label_text` as desired
 #'         but retain the original math for reference.
-#'     \item `color`: The color of the flow arrow line.
-#'     \item `size`: The size (width) of the flow arrow line.
+#'     \item `line_color`: The color of the flow arrow line.
+#'     \item `line_size`: The size (width) of the flow arrow line.
 #'     \item `linetype`: The linetype of the flow arrow line.
 #'     \item `label_color`: Color of `label_text`.
 #'     \item `label_size`: The text size of `label_text`.

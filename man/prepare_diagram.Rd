@@ -109,8 +109,8 @@ Higher numbers indicate more curvature; 0 = straight line.
 \item \code{label_text}: The label that will appear in the diagram. This is a
 duplicate of \code{name} so that user can update \code{label_text} as desired
 but retain the original math for reference.
-\item \code{color}: The color of the flow arrow line.
-\item \code{size}: The size (width) of the flow arrow line.
+\item \code{line_color}: The color of the flow arrow line.
+\item \code{line_size}: The size (width) of the flow arrow line.
 \item \code{linetype}: The linetype of the flow arrow line.
 \item \code{label_color}: Color of \code{label_text}.
 \item \code{label_size}: The text size of \code{label_text}.
