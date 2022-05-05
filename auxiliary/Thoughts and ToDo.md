@@ -1,7 +1,7 @@
 ****************************
 2022-03-24 Andreas notes
 
-* Is it possible/easy to reshuffle code in prepare_diagram.R such that first all variables are processed and the variables data frame completed, and then move on to flows? Seems just easier to follow along. Basically, move whatever code is needed to complete variable DF before (current) line 330. Could also consider to refactor things to have a make_variables_df() function that has all the parts for making the variables data frame. But only if easy and if it makes code more readable, so let's contemplate first if useful.
+* DONE -- Is it possible/easy to reshuffle code in prepare_diagram.R such that first all variables are processed and the variables data frame completed, and then move on to flows? Seems just easier to follow along. Basically, move whatever code is needed to complete variable DF before (current) line 330. Could also consider to refactor things to have a make_variables_df() function that has all the parts for making the variables data frame. But only if easy and if it makes code more readable, so let's contemplate first if useful.
 
 
 Quick recap of overall structure (so I don't forget). 
@@ -12,7 +12,7 @@ diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 diag <- make_diagram(diagram_list_new, with_grid)
 write_diagram(diagram_list_new, "filename",...)
 
-
+ATT: This function is not tested yet.
 Helper-functions for users:
 convert_from_modelbuilder()
 
@@ -23,17 +23,17 @@ All other .R files/functions are internal helpers.
 2022-03-04 Andreas notes
 
 
-* flow data frame right now has columns label, math and label_text. Are all 3 needed/used? How do they differ?
+* flow data frame right now has columns label, math and label_text. Are all 3 needed/used? How do they differ? **DONE. There is now label and label_text in both the variables and flows data frames for consitency.**
 
-* Just to confirm: for flow data frame, the from/to columns are just so users can easier understand, but if they were to edit those, nothing would happen, only actual xmin/xmax, etc. values are used for making the diagram, correct? Should probably be mentioned in the help file which columns user could/should add and which ones they should leave alone.
+* Just to confirm: for flow data frame, the from/to columns are just so users can easier understand, but if they were to edit those, nothing would happen, only actual xmin/xmax, etc. values are used for making the diagram, correct? Should probably be mentioned in the help file which columns user could/should add and which ones they should leave alone. **DONE. Correct, and this information is in the details section of the help file for prepare_diagram.**
 
-* flow data frame has columns color and size. not sure what they refer to. arrows? if yes, there is another arrow_size coming later. should maybe be first all columns related to arrows and naming as arrow_color, arrow_size, arrow_type, show_arrow, then all columns related to label? 
+* flow data frame has columns color and size. not sure what they refer to. arrows? if yes, there is another arrow_size coming later. should maybe be first all columns related to arrows and naming as arrow_color, arrow_size, arrow_type, show_arrow, then all columns related to label? **DONE. This is the size of the line and color of line. These are update to be line_color and line_size.**
 
-* general comment: sometimes hard for me to figure out what happens if code and help text are not in sync. would be good if after each round of modifications, you can check that roxygen header/help text agrees with the latest code. otherwise i'm at times lost and need to go fishing in the code to figure out what is actually the new correct way of using the functions.
+* general comment: sometimes hard for me to figure out what happens if code and help text are not in sync. would be good if after each round of modifications, you can check that roxygen header/help text agrees with the latest code. otherwise i'm at times lost and need to go fishing in the code to figure out what is actually the new correct way of using the functions. **DONE. All documentation update -- but there still may be errors to be caught.**
 
-* Maybe a simpler way to add locations to variables? add_locations seems very complicated. Should be a way to multiply matrix with size/spacing vectors. Need to think through it.
+* Maybe a simpler way to add locations to variables? add_locations seems very complicated. Should be a way to multiply matrix with size/spacing vectors. Need to think through it. **DONE. Rewrote the add locations function.**
 
-* Are these dummy compartments needed? It strikes me as rather complicated right now.
+* Are these dummy compartments needed? It strikes me as rather complicated right now. **DONE. Dummy compartments gone and simpler, though more verbose, code used.**
 
 
 
@@ -41,6 +41,7 @@ All other .R files/functions are internal helpers.
 2022-02-23 Andrew and Andreas notes
 
 
+DONE.
 * Add a final check function inside `make_diagram()`. Check for:
   - nonsense in update settings
   - column names are correct
@@ -49,6 +50,7 @@ All other .R files/functions are internal helpers.
   - add to end of `update_diagram()`
   - add to beginning of `make_diagram()`
 
+DONE.
 * Make interaction and external arrow lengths depend on the box size (e.g., go from center out at 45 degree angle until the "edge" of the box is found).
 
 
@@ -56,28 +58,39 @@ All other .R files/functions are internal helpers.
 ***
 2022-02-09 Andreas Notes
 
+DONE. All added.
 * Currently, data frames returned from prepare_diagram do not contain all columns/settings that can be changed. Add them or not?
 
+DONE (I think). Still may be some mismatching to update.
 * Need to make sure matching between column names in diagram_list data frames and inputs to update_diagram() is obvious. E.g. suggest to change color -> border_color (or outline_color) and fill -> fill_color in variable dataframe (and same names in update_diagram)
 
+DONE.
 * Not sure we want to have default values in update_diagram. Defaults should be spit out after prepare_diagram. Then in update_, only whatever the user provides is processed/updated, everything else remains untouched.
 
 * Why are the logicals (show/hide) for arrows not part of update_?
 
+DONE.
 * Right now, update_diagram allows for nonsensical entries (e.g. linetype = "green"). Such nonsense can also arise if user manipulates data frames by hand. Thus, we might need a function at start of make_diagram that makes sure all columns in diag_list have the right names, and all entries are ok ones (e.g. anything that's numeric needs to be a number), color needs to be a color, etc. We could then also run that function during update_diagram to prevent nonsense (or ignore for update diagram and just do the check before making diagram).
 
+DONE. But with a warniing.
 * Maybe just throw an error if user doesn't provide proper diagram_list and diagram_settings entries for update_diagram()? So basically at least one entry to be updated in diagram_settings, and must match column/variable in diagram_list, otherwise fail.
 
+TO BE DISCUSSED.
 * It somehow seems "dangerous" to produce the plot in make_diagram by evaluating it with environmental variables. Are we sure that might not lead to some unforeseen bad consequences if user has an unexpected local environment? Not sure, maybe ok because environment is only what's inside the function?
 
+TO BE DISCUSSED.
 * Is there an advantage to having the get_code() function instead of just storing the ggplot skeleton code in a string variable, either inside make_diagram or somewhere else, and just loading it?
 
+DONE. Should work now.
 * Seems like extra model_settings in prepare diagram that determine size/spacing currently don't work?
 
+DONE.
 * make_diagram fails on a data frame that I think should work. see flowtester.R. Seems to be due to update_diagram() altering some column types from numeric to character.
 
+DONE. But might still need some documentation/comments.
 * Any further code simplification is good :) E.g. some of the helper functions one might be able to write simpler? And in general I think having the helper functions is good, but if it's only a 1-2 lines of code that isn't used too often, I think we can move into the calling function instead (e.g. without trying to think through it, it seems to me something like remove_na_rows could be done with some built-in function and maybe just 1 line of code? (but maybe not, i didn't try to work my way through the function)). Also, helper functions could use some more commenting/documentation. Sometimes hard to see what's going on without spending a good bit of time working through the code.
 
+DONE. Except vignettes.
 * Need to update documentation, examples, etc. for all functions to match with new setup.
 
 * Once working, prepare_diagram function needs an example showing full use of model_settings, including vectorization.

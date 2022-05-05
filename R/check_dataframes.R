@@ -72,7 +72,7 @@ check_dataframes <- function(diagram_list) {
   allowed_flow_columns <- c("id", "name", "type", "from", "to",
                             "xmin", "xmax", "ymin", "ymax",
                             "xlabel", "ylabel", "curvature",
-                            "label_text", "color", "size", "linetype",
+                            "label_text", "line_color", "line_size", "linetype",
                             "label_color", "label_size",
                             "arrow_size", "show_arrow")
   flow_str_map <- data.frame(
@@ -107,7 +107,7 @@ check_dataframes <- function(diagram_list) {
 
   # 3. Check that the color values are valid. Must be in `colors()` or a HEX code.
   used_colors <- c(
-    flows[ , "color"],
+    flows[ , "line_color"],
     flows[ , "label_color"]
   )
   nonrcolors_used <- which(!(used_colors %in% grDevices::colors()))

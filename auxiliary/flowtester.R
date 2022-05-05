@@ -112,6 +112,12 @@ prepare_diagram(model_list, model_settings1b)  # isses Error
 
 # Test model updating -----------------------------------------------------
 
+# this should work
+diagram_list <- prepare_diagram(model_list)
+diagram_list_new <- update_diagram(
+  diagram_list,
+  diagram_settings = list(main_flow_line_color = "orange"))
+make_diagram(diagram_list_new)
 
 # this should issue a warning about no new settings
 diagram_list <- prepare_diagram(model_list)
@@ -140,7 +146,6 @@ diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 # this should also error out - it does!
 diagram_settings <- list(main_flow_linetype = c("black", "red"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
-make_diagram(diagram_list_new)
 
 # this breaks, good.
 diagram_settings <- list(main_flow_linetype = c("black", "red", "orange"))

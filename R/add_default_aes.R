@@ -17,8 +17,8 @@ add_default_aes <- function(variables, flows) {
 
   # the default settings for flows
   flows$label_text <- flows$name
-  flows$color <- "grey25"
-  flows$size <- 0.7
+  flows$line_color <- "grey25"
+  flows$line_size <- 0.7
   flows$linetype <- ifelse(flows$type == "interaction", "dashed", "solid")
   flows$label_color <- "black"
   flows$label_size <- 5

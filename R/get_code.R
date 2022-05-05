@@ -55,10 +55,10 @@ for(i in 1:nrow(flows)) {
           yend = ymax),
       linetype = flows[i, "linetype"],
       arrow = arrow(length = unit(flows[i, "arrow_size"],"cm"), type = "closed"),
-      color = flows[i, "color"],
-      arrow.fill = flows[i, "color"],
+      color = flows[i, "line_color"],
+      arrow.fill = flows[i, "line_color"],
       lineend = "round",
-      size = flows[i, "size"],
+      size = flows[i, "line_size"],
       curvature = flows[i, "curvature"],
       ncp = 1000
     )

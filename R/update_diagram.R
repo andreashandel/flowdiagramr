@@ -24,7 +24,7 @@
 #'     labels. Must either be of length 1 or the number of rows in the
 #'     variables data frame.
 #'
-#' \item `main_flow_color`: A character string or vector of character strings
+#' \item `main_flow_line_color`: A character string or vector of character strings
 #'     specifying the text color for non-interaction flow arrows. Must either
 #'     be of length 1 or the number of main flows.
 #' \item `main_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
@@ -37,7 +37,7 @@
 #'     hexadecimal digits which give the lengths in consecutive positions in
 #'     the string." Default is 1 (solid). Must either
 #'     be of length 1 or the number of main flows.
-#' \item `main_flow_size`: A numeric scalar or vector specifying the line size for the
+#' \item `main_flow_line_size`: A numeric scalar or vector specifying the line size for the
 #'     main flows (non-interaction flows). Must either
 #'     be of length 1 or the number of main flows.
 #' \item `main_flow_label_color`: A character string or vector of character strings
@@ -47,7 +47,7 @@
 #'     specifying the text size for main flow labels. Must either
 #'     be of length 1 or the number of main flows.
 #'
-#' \item `interaction_flow_color`: A character string or vector of character strings
+#' \item `interaction_flow_line_color`: A character string or vector of character strings
 #'     specifying the text color for non-interaction flow arrows. Must either
 #'     be of length 1 or the number of interaction flows.
 #' \item `interaction_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
@@ -60,7 +60,7 @@
 #'     hexadecimal digits which give the lengths in consecutive positions in
 #'     the string." Default is 1 (solid). Must either
 #'     be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_size`: A numeric scalar or vector specifying the line size for the
+#' \item `interaction_flow_line_size`: A numeric scalar or vector specifying the line size for the
 #'     interaction flows (non-interaction flows). Must either
 #'     be of length 1 or the number of interaction flows.
 #' \item `interaction_flow_label_color`: A character string or vector of character strings
@@ -70,7 +70,7 @@
 #'     specifying the text size for interaction flow labels. Must either
 #'     be of length 1 or the number of interaction flows.
 #'
-#' \item `external_flow_color`: A character string or vector of character strings
+#' \item `external_flow_line_color`: A character string or vector of character strings
 #'     specifying the text color for non-interaction flow arrows.
 #'     Must either be of length 1 or the number of external flows.
 #' \item `external_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
@@ -83,7 +83,7 @@
 #'     hexadecimal digits which give the lengths in consecutive positions in
 #'     the string." Default is 1 (solid). Must either be of length 1 or
 #'     the number of external flows.
-#' \item `external_flow_size`: A numeric scalar or vector specifying the line size for the
+#' \item `external_flow_line_size`: A numeric scalar or vector specifying the line size for the
 #'     external flows (non-interaction flows). Must either be of length 1 or
 #'     the number of external flows.
 #' \item `external_flow_label_color`: A character string or vector of character strings
@@ -164,9 +164,9 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
 
   # possible flow settings are the following
   flow_setting_names <- c(
-    "color",
+    "line_color",
     "linetype",
-    "size",
+    "line_size",
     "label_color",
     "label_size",
     "arrow_size",
