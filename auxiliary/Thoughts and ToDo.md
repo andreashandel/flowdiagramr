@@ -1,4 +1,22 @@
 ****************************
+2022-05-06 Andreas notes
+
+* Vignette A seems to work.
+
+* Vignette B fails at line 123: diagram_list4 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings2)
+Several other problems like that with other exmamples in the vignette that fail, likely all the same error. I commented out all code chunks in that vignette that currently fail.
+
+* Vignette B last example layout does not look like it should. My guess is the empty slots are not treated quite right? But not sure what's going on, the diagram just looks overall strange :)
+
+* There's code in add_locations I don't understand, it doesn't seem quite right. Around line 61, see my comment.
+
+* Flowtester.R around line 204, produces warning that should be checked. See also my comment starting with AH: That is likely related to the previous point. I also copied one of the examples from vignette B that failed into flowtester. Of course doesn't work there either ATM.
+
+* I realized that this fails mymodel = list(variables, flows) since we require the entries to be named. Maybe a bit too strict? I recoded such that now we just expect mymodel to consist of a nested list with 2 elements, and we name it inside prepare_diagram, right after checking.
+
+
+
+****************************
 2022-03-24 Andreas notes
 
 * DONE -- Is it possible/easy to reshuffle code in prepare_diagram.R such that first all variables are processed and the variables data frame completed, and then move on to flows? Seems just easier to follow along. Basically, move whatever code is needed to complete variable DF before (current) line 330. Could also consider to refactor things to have a make_variables_df() function that has all the parts for making the variables data frame. But only if easy and if it makes code more readable, so let's contemplate first if useful.

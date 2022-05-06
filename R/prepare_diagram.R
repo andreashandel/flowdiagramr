@@ -17,7 +17,7 @@
 #' \item `flows`: A list that is the same length as `variables`. Each sub-list
 #'     element is a character vector of any length specifying the flows into
 #'     and out of the variable. Note that **flowdiagramr** assumes that the
-#'     order of `flows` and `variables` match.
+#'     order of `flows` matches that of the `variables` vector.
 #' \item IMPORTANT: All `variables` entries must start with an upper case letter,
 #'     followed by any combination of letters and numbers
 #'     (e.g., S, Si, or Aml2). All parameters contained in `flows` must start
@@ -195,7 +195,7 @@
 #' variables = c("Pat","Imm")
 #' flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
 #'                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-#' mymodel = list(variables = variables, flows = flows)
+#' mymodel = list(variables, flows)
 #' diag_list <- prepare_diagram(mymodel)
 #' mydiag <- make_diagram(diag_list)
 #'
@@ -259,6 +259,9 @@ prepare_diagram <- function(model_list,
   {
     stop(checkmsg)
   }
+
+  #in case the user didn't explicitly name the variable and flow elements, we do it here
+  names(model_list) <- c("variables","flows")
 
   # check all user-provided model_settings to make sure entries are what
   # they should be
@@ -332,8 +335,6 @@ prepare_diagram <- function(model_list,
   # At this stage, all input checking and processing should be done
   #############################################
   #############################################
-
-
 
 
   ############################################################################

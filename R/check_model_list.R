@@ -14,10 +14,20 @@ check_model_list <- function(model_list) {
 
   msg <- NULL
 
+
+  ################################
+  # Check that the structure is right
+  ################################
+  if (length(model_list)!=2)
+  {
+    msg <- "You need to provide a list structure with the main list elements containing variables and flows."
+    return(msg)
+
+  }
+
   # to reduce typing
-  # also helps if someone like AH tries to rename everything again in the future :)
-  variables <- model_list$variables
-  flows <- model_list$flows
+  variables <- model_list[[1]]
+  flows <- model_list[[2]]
 
 
   ################################
@@ -25,12 +35,12 @@ check_model_list <- function(model_list) {
   ################################
 
   # High level check for list elements
-  elements <- names(model_list)
-  if(!("variables" %in% elements))
-  {
-    msg <- "The model_list object must contain a list element called variables."
-    return(msg)
-  }
+  # elements <- names(model_list)
+  # if(!("variables" %in% elements))
+  # {
+  #   msg <- "The model_list object must contain a list element called variables."
+  #   return(msg)
+  # }
 
   # Make sure all variables are unique
   if(length(unique(variables)) != length(variables))
@@ -53,11 +63,11 @@ check_model_list <- function(model_list) {
   ################################
 
 
-  if(!("flows" %in% elements))
-  {
-    msg <- "The model_list object must contain a list element called flows."
-    return(msg)
-  }
+  # if(!("flows" %in% elements))
+  # {
+  #   msg <- "The model_list object must contain a list element called flows."
+  #   return(msg)
+  # }
 
   # Check that each variables entry has a matched X_flow and the reverse
   # Also ensure they are in the same order

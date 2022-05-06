@@ -19,6 +19,9 @@ flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              R_flows = c("g*I", "-m*R"))
 model_list = list(variables = variables, flows = flows)
 
+check_model_list(model_list)
+
+
 dfs <- prepare_diagram(model_list)
 make_diagram(dfs)  # prints the model diagram
 make_diagram(dfs, with_grid = TRUE)  # show the grid
@@ -26,10 +29,16 @@ make_diagram(dfs, with_grid = TRUE)  # show the grid
 
 
 
-# Test locations for SIR --------------------------------------------------
 
+
+# Test locations for SIR --------------------------------------------------
 varlocs1 = matrix(c("S","","R","","I",""),byrow=TRUE,nrow=2)
 varlocs2 = matrix(c("S","I","R"),byrow=TRUE,nrow=3)
+varlocs3 = matrix(data = c("S", "",
+                           "", "I",
+                           "R", "" ),
+                        nrow = 3, ncol = 2, byrow = TRUE)
+
 
 # two rows, with I in second row
 model_settings = list(varlocations = varlocs1, varspace_y_size = 1)
@@ -38,6 +47,11 @@ make_diagram(prepare_diagram(model_list, model_settings))
 # vertical diagram -- not always the best looking
 model_settings = list(varlocations = varlocs2, varspace_y_size = 1)
 make_diagram(prepare_diagram(model_list, model_settings), with_grid = F)
+
+# two columns, 3 rows
+# AH: this fails
+model_settings = list(varlocations = varlocs3)
+diagram_list <- prepare_diagram(model_list , model_settings)
 
 
 
@@ -196,6 +210,7 @@ make_diagram(diagram_list)
 # better positioning
 myvarlocs = matrix(c("","P","","S","I","R"),byrow=TRUE,nrow=2)
 model_settings = list(varlocations = myvarlocs)
+# AH: PRODUCES R-INTERNAL WARNING MESSAGE ABOUT NOT EQUAL LENGTH. SHOULD PROBABLY BE CHECKED
 make_diagram(prepare_diagram(mymodel, model_settings = model_settings))
 
 

@@ -57,6 +57,13 @@ add_locations <- function(variables,
   # between box size and spacing between boxes.
   # First, process for situations with more than one column in varlocations
   if(ncol(varlocations) > 1) {
+
+    #AH: I DON'T QUITE UNDERSTAND WHAT'S HAPPENING HERE.
+    #FOR INSTANCE FOR SOME NUMBER OF VARIABLES SET UP AS 2 COLUMNS, SHOULDN'T
+    #DIST_VECTOR BE OF LENGTH 3? RIGHT NOW IT IS WHATEVER THE NUMBER OF
+    #VARIABLES IS PLUS THE SPACINGS.
+    #SEEMS INFORMATION SHOULD COME FROM LOOKING AT NUMBER OF COLUMNS OF
+    #VARLOCATIONS, AND ADDING col-1 FOR THE SPACINGS?
     vec_length_x <- length(c(varbox_x_size, varspace_x_size))
     dist_vector <- vector(class(varbox_x_size), vec_length_x)
     dist_vector[c(TRUE, FALSE)] <- varbox_x_size
