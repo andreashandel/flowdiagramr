@@ -211,7 +211,6 @@ make_diagram(diagram_list)
 # better positioning
 myvarlocs = matrix(c("","P","","S","I","R"),byrow=TRUE,nrow=2)
 model_settings = list(varlocations = myvarlocs)
-# AH: PRODUCES R-INTERNAL WARNING MESSAGE ABOUT NOT EQUAL LENGTH. SHOULD PROBABLY BE CHECKED
 make_diagram(prepare_diagram(mymodel, model_settings = model_settings))
 
 
