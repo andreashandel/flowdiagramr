@@ -185,13 +185,13 @@ Instead of supplying a single number to size the boxes and spacing, the scaling 
 Here is an example.
 
 
-```{r, eval = FALSE}
+```{r}
 sirsettings5 = list(varlocations = matrix(data = c("S", "",
                                                    "", "I",
                                                    "R", "" ),
                                          nrow = 3, ncol = 2, byrow = TRUE),
-                   varbox_x_size = c(1, 1.5, 1)
-                   varbox_y_size = c(2, 1, 1)
+                   varbox_x_size = c(1, 1.5, 1),
+                   varbox_y_size = c(2, 1, 1),
                    varspace_x_size = 1.5,
                    varspace_y_size = c(0.5,1)
                   )
@@ -199,9 +199,9 @@ sirsettings5 = list(varlocations = matrix(data = c("S", "",
 
 
 ```{r, fig.height=5}
-#sir_ex5 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings5)
-#sir_diagram5 <- make_diagram(diagram_list = sir_ex5)
-#plot(sir_diagram5)
+sir_ex5 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings5)
+sir_diagram5 <- make_diagram(diagram_list = sir_ex5)
+plot(sir_diagram5)
 ```
 
 

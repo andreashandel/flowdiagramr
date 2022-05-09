@@ -870,13 +870,25 @@ prepare_diagram <- function(model_list,
       }
 
       # if the start variable is above the ending variable (y1 > y2) AND
-      # the start variable is to the left of the ending variable (x1 > x2), then
+      # the start variable is to the left of the ending variable (x1 < x2), then
       # the flow start is set to the right-middle of the originating box and
       # the flow end is set to the left-middle of the terminating box. this
       # creates an angled flow arrow pointing down and to the right.
       if(from_node$ymin > to_node$ymin & from_node$xmin < to_node$xmin) {
         simple_flows[i, "xmin"] <- from_node$xmax # right edge
         simple_flows[i, "xmax"] <- to_node$xmin  # left edge
+        simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
+        simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
+      }
+
+      # if the start variable is above the ending variable (y1 > y2) AND
+      # the start variable is to the right of the ending variable (x1 > x2), then
+      # the flow start is set to the left-middle of the originating box and
+      # the flow end is set to the right-middle of the terminating box. this
+      # creates an angled flow arrow pointing down and to the left.
+      if(from_node$ymin > to_node$ymin & from_node$xmin > to_node$xmin) {
+        simple_flows[i, "xmin"] <- from_node$xmin # left edge
+        simple_flows[i, "xmax"] <- to_node$xmax  # right edge
         simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
         simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
       }

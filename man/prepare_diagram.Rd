@@ -18,7 +18,7 @@ must contain these two elements:
 \item \code{flows}: A list that is the same length as \code{variables}. Each sub-list
 element is a character vector of any length specifying the flows into
 and out of the variable. Note that \strong{flowdiagramr} assumes that the
-order of \code{flows} and \code{variables} match.
+order of \code{flows} matches that of the \code{variables} vector.
 \item IMPORTANT: All \code{variables} entries must start with an upper case letter,
 followed by any combination of letters and numbers
 (e.g., S, Si, or Aml2). All parameters contained in \code{flows} must start
@@ -208,7 +208,7 @@ make_diagram(diag_list)
 variables = c("Pat","Imm")
 flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-mymodel = list(variables = variables, flows = flows)
+mymodel = list(variables, flows)
 diag_list <- prepare_diagram(mymodel)
 mydiag <- make_diagram(diag_list)
 

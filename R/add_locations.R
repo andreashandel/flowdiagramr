@@ -15,6 +15,7 @@
 #'          `varspace_x_size` and `varspace_y_size` need to be vectors
 #'          of length corresponding to cols/rows in varlocations minus 1.
 #'          `prepare_diagram` ensures inputs are provided in the required form.
+#' @importFrom stats na.omit
 #' @export
 
 add_locations <- function(variables,
@@ -29,23 +30,16 @@ add_locations <- function(variables,
   num_cols <- ncol(varlocations)
   num_vars <- length(which(varlocations != ""))
 
-
-  #### box midpoints on grid
-  xsize_mat <- matrix(data = 1:(num_rows*num_cols),  # default size
-                      nrow = num_rows,
-                      ncol = num_cols,
-                      byrow = TRUE)
-
   #### box sizes on grid
   # to start, make a matrix of the size of each variable, one for
   # x size and one for y size
-  xsize_mat <- matrix(data = 1,  # default size
+  xsize_mat <- matrix(data = NA,  # default size
                       nrow = num_rows,
                       ncol = num_cols,
                       byrow = TRUE)
   xsize_mat[which(varlocations %in% variables$name)] <- varbox_x_size
 
-  ysize_mat <- matrix(data = 1,  # default size
+  ysize_mat <- matrix(data = NA,
                       nrow = num_rows,
                       ncol = num_cols,
                       byrow = TRUE)
@@ -57,16 +51,16 @@ add_locations <- function(variables,
   # between box size and spacing between boxes.
   # First, process for situations with more than one column in varlocations
   if(ncol(varlocations) > 1) {
+    # find the x dimensions specified for each column. the package
+    # currently assumes that all boxes in a column have the same x-dims. this
+    # means we extract the first non-NA element in each column of xsize_mat
+    x_size <- apply(xsize_mat, 2, function(x) na.omit(x)[1])
 
-    #AH: I DON'T QUITE UNDERSTAND WHAT'S HAPPENING HERE.
-    #FOR INSTANCE FOR SOME NUMBER OF VARIABLES SET UP AS 2 COLUMNS, SHOULDN'T
-    #DIST_VECTOR BE OF LENGTH 3? RIGHT NOW IT IS WHATEVER THE NUMBER OF
-    #VARIABLES IS PLUS THE SPACINGS.
-    #SEEMS INFORMATION SHOULD COME FROM LOOKING AT NUMBER OF COLUMNS OF
-    #VARLOCATIONS, AND ADDING col-1 FOR THE SPACINGS?
-    vec_length_x <- length(c(varbox_x_size, varspace_x_size))
+    # define the number of widths needed as number of columns (boxes) plus
+    # the number of columns minus 1 (spaces between boxes)
+    vec_length_x <- num_cols + (num_cols-1)
     dist_vector <- vector(class(varbox_x_size), vec_length_x)
-    dist_vector[c(TRUE, FALSE)] <- varbox_x_size
+    dist_vector[c(TRUE, FALSE)] <- x_size
     dist_vector[c(FALSE, TRUE)] <- varspace_x_size
 
     # take cumulative sum of the distance vector to get distance from 0
@@ -96,10 +90,15 @@ add_locations <- function(variables,
   #### y mins, mids, and maxs
   ## First process is if there is more than one row
   if(num_rows > 1) {
+    # find the y dimensions specified for each row. the package
+    # currently assumes that all boxes in a row have the same y-dims. this
+    # means we extract the first non-NA element in each column of ysize_mat
+    y_size <- apply(ysize_mat, 1, function(x) na.omit(x)[1])
+
     # add row(s) in ysize_mat for spacing in y direction
     space_rows <- matrix(varspace_y_size, num_rows-1, num_cols)
     ymat <- matrix(data = NA, nrow = num_rows + nrow(space_rows), num_cols)
-    ymat[c(TRUE, FALSE), ] <- ysize_mat
+    ymat[c(TRUE, FALSE), ] <- y_size
     ymat[c(FALSE, TRUE), ] <- space_rows
 
     # reverse of the cumulate sum within columns is the y-distance from 0

@@ -32,6 +32,7 @@ make_diagram(dfs, with_grid = TRUE)  # show the grid
 
 
 # Test locations for SIR --------------------------------------------------
+
 varlocs1 = matrix(c("S","","R","","I",""),byrow=TRUE,nrow=2)
 varlocs2 = matrix(c("S","I","R"),byrow=TRUE,nrow=3)
 varlocs3 = matrix(data = c("S", "",
@@ -52,7 +53,7 @@ make_diagram(prepare_diagram(model_list, model_settings), with_grid = F)
 # AH: this fails
 model_settings = list(varlocations = varlocs3)
 diagram_list <- prepare_diagram(model_list , model_settings)
-
+make_diagram(diagram_list)
 
 
 
