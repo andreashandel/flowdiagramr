@@ -1,4 +1,28 @@
 ****************************
+2022-05-10 Andreas notes
+
+* Example 5 in vignette B isn't quite right. It seems the box sizes are not assigned according to the order of the elements in the variables vector, but some other order. Specifically, the I box has size 1/1 and the R box has size 1.5/1, but it should be the other way around.
+
+* Example 6 in vignette B now looks I think like it should. It's not good yet, but arrangement is ok. It will get better with each vignette we discuss :)
+
+* I suggest we give each type of flow a different default line style. E.g. main/solid, interaction/dashed, external/dotted.
+
+* Vignette A: For the pred/prey model with custom settings through update_diagram, is that external flow style actually shown as dotted? looks dashed to me, but hard to tell.
+
+* I think we should give users the option to update everything with update_diagram, including the xmin/xmax/curvature, etc. I think would be nice, this way they would rarely need to "hack" the data frames directly. Also see comments in vignette C for last 2 examples.
+
+* When arrow is turned off, label should also be turned off. Currently label is shown even if arrow is gone. See example 2 in vignette C. Alternatively, and maybe better, we should have an XX_flow_show_label setting, which allows one to turn on/off the label separate from the arrow. (I assume this could be achieved by supplying label text as empty string, but that might not be obvious to all users.)
+
+* Can we order the columns of the diagram_list data frames logically, i.e. all the line_ settings together and all the label_ settings together, etc.
+
+* I noticed some flows don't have a name. For instance the b*S*I process which leads S -> I has no name and no label. The no label makes sense since it is already labeled by the b*S*I interaction flow. But maybe we should still give the flow the same b*S*I name, so a user knows which part of the model that flow corresponds to? Would it cause a problem if flows had names that showed up more than once? As far as I understand, the "name" entry isn't really further used in make_diagram, is that right? 
+
+* Example 4 in vignette C suggests that some of the default settings for flow placement could still be improved, e.g. trying to figure out which side of the box leads to the shortest distance to the target and placing the arrow there. Though this might not be easy, so maybe something "for later"? (Though if you end up fiddling with that part of the code anyway, see if there are quick fixes). Otherwise, for now we can ask users to manually move the arrows.
+
+
+
+****************************
+
 2022-05-06 Andreas notes
 
 * Vignette A seems to work.

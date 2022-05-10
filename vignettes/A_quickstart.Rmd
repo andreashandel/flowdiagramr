@@ -173,7 +173,7 @@ my_diagram <- make_diagram(diagram_list)
 plot(my_diagram)
 ```
 
-It is possible to change the look of the diagram fairly easily using the `update_diagram()` function. You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html). Here is a quick preview. You provide the `update_diagram()` function with the `diagram_list` object produced by `make_diagram()` 
+It is possible to change the look of the diagram fairly easily using the `update_diagram()` function. You'll learn more about this in a later vignette. Here is a quick preview. You provide the `update_diagram()` function with the `diagram_list` object produced by `make_diagram()` 
 and tell it what adjustments you want to make by specifying `diagram_settings`. You get an updated object, which you can then turn into a diagram.
 
 ```{r}

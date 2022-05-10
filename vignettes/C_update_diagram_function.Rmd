@@ -1,0 +1,286 @@
+---
+title: Modifiying diagrams with `update_diagram()`  
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Modifiying diagrams with `update_diagram()`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7
+)
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup, include = FALSE}
+pkg = 'flowdiagramr' #so we can easily switch names
+library(pkg, character.only = TRUE)
+```
+
+
+## Introduction
+
+We assume you went through the previous vignettes, especially the [getting started vignette](./A_quickstart.html). 
+In this vignette, you will learn how to use the `update_diagrm()` function to further customize the look of your diagrams.
+
+To re-cap, the workflow discussed in the previous vignettes goes like this
+
+```{r}
+#specify model
+sirmodel1 = list(variables = c("S","I","R"),
+                 flows     = list(S_flows = c("-b*S*I"), 
+                                  I_flows = c("b*S*I","-g*I"), 
+                                  R_flows = c("g*I")))
+#optional layout information
+sirsettings1 = list(varlocations = matrix(data = c("S", "","R",
+                                                   "", "I","" ),
+                                         nrow = 2, ncol = 3, byrow = TRUE),
+                   varbox_x_size = c(1, 1.5, 1),
+                   varbox_y_size = c(2, 1, 1),
+                   varspace_x_size = c(1.5,2),
+                   varspace_y_size = 0.5
+                  )
+#prepare diagram
+diagram_list1 <- prepare_diagram(model_list = sirmodel1, model_settings = sirsettings1)
+#make diagram
+sir_diagram1 <- make_diagram(diagram_list = diagram_list1)
+#plot diagram
+plot(sir_diagram1)
+```
+
+
+The `update_diagam()` function allows you to modify the look of most aspects of the diagram. Here are some examples to illustrate this.
+Check the help file with `help('update_diagram')` for all the details.
+
+
+
+## Example 1
+
+We are revisiting one of the models discussed in the introductory vignette, the predator-prey model for pathogen and immune response.
+Here is the model again.
+
+```{r}
+variables = c("Pat","Imm")
+flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
+                 Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
+mymodel = list(variables, flows)
+```
+
+Here is the step that prepares the model, without any optional settings (for now).
+
+```{r}
+diagram_list_v1 <- prepare_diagram(mymodel)
+```
+
+This is how the default plot looks.
+
+```{r}
+diagram_v1 <- make_diagram(diagram_list_v1) 
+plot(diagram_v1)
+```
+
+Using the `update_diagram()` function, it is possible to change the look of most components of the diagram. Here is an example:
+
+```{r}
+diagram_list_v2 <- update_diagram(diagram_list_v1, 
+                                  diagram_settings = list(var_fill_color = c('blue','red'), 
+                                                          var_label_color = c('white'),
+                                                          main_flow_linetype = "dashed",
+                                                          main_flow_line_color = c("green", "orange"),
+                                                          main_flow_line_size = c(0.5,1.5),
+                                                          interaction_flow_line_size = 1.5,                        
+                                                          interaction_flow_label_size = c(6,10),                        
+                                                          external_flow_label_color = "#FF0000",
+                                                          external_flow_linetype = "dotted"
+                                                          )
+                                  )
+```
+
+The result of those modifications is this very ugly figure:
+
+```{r}
+diagram_v2 <- make_diagram(diagram_list_v2) 
+plot(diagram_v2)
+```
+
+
+## Example 2
+
+Let's revisit the SIR model with natural births and deaths
+
+```{r}
+# specify the model
+variables = c("S","I","R")
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
+             I_flows = c("+b*S*I","-g*I", "-m*I"), 
+             R_flows = c("g*I", "-m*R"))
+sirmodel = list(variables = variables, flows = flows)
+```
+
+
+Here are the defaults
+
+```{r}
+#prepare diagram
+diagram_list1 <- prepare_diagram(model_list = sirmodel)
+#make diagram
+sir_diagram1 <- make_diagram(diagram_list = diagram_list1)
+#plot diagram
+plot(sir_diagram1)
+```
+
+
+Here is an alternative version with layout changes specified through `update_diagram()`.
+
+```{r}
+#update diagram
+diagram_list2 <- update_diagram(diagram_list1, 
+                                diagram_settings = list(var_fill_color = c("#cde9fa", "#FFB3A8", "#b2b2b2"),
+                                                        var_outline_color = "#031e79",
+                                                        var_label_color = "black",
+                                                        interaction_flow_line_color = "#f94075",
+                                                        external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE), 
+                                                        external_flow_line_color = "gray"                                
+                                                      ))
+#make diagram
+sir_diagram2 <- make_diagram(diagram_list = diagram_list2)
+#plot diagram
+plot(sir_diagram2)
+```
+
+## A quick look behind the scenes
+
+Before we look at some examples, let's briefly discuss what's going on behind the scenes. We'll dig into that more in later vignettes.
+
+The function `prepare_diagram()` takes the model and optional settings and returns a list (which we call `diagram_list` here) consisting of 2 data frames, one called `variables` and one called `flows`. In each data frame, the elements (variables or flows) are in the rows, and the columns indicate graphical settings, e.g. the color. The `update_diagram()` is a convenience function which simply updates the elements in either of those data frames based on the supplied input.
+
+When **`r pkg`** prepares the diagram, it groups flows into 3 different categories as follows:
+
+* Main flows, which are flows that go from one box to another, and generally indicate physical/actual movement of units from one state to another (e.g., from susceptible to infected). 
+* Interaction flows, which indicate a variable interacting with another, without any actual flow (e.g., infected individuals infecting susceptible).
+* External flows, which indicate entry into or exit out of the system (e.g., births and deaths to/from states that are not part of the model).
+
+Each of those flow types receives its own default styling. You can change that as you like. It is also quite possible that sometimes **`r pkg`** doesn't guess correctly and labels a flow differently than what it should be. In that case, you can also easily overwrite the default settings.
+
+When you modify any input with `update_diagram()`, you generally have two options. Either you supply a single value, which is then applied to all elements of that type. For instance you can change the line width of all main flows by providing one number to `main_flow_line_size`. Alternatively, you can provide a vector of values. That vector needs to have the same length as the type of element you want to change. For instance if there are 3 main flows and you want to give each one a different line size, you need to provide 3 numbers. The examples above show such a mix of either single values or values for each element.
+
+The values for a given setting  you supply are applied to the elements in the order they show up in the data frame. That ordering might not be obvious. For instance, in the previous example, I wanted to turn off the inflow/birth arrow, but not the others. I specified this with `external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE)`. How did I know the birth flow was the first? I actually didn't and just made a guess `r emoji::emoji('grin')`. 
+
+In general, to figure this out, you can either look at the ordering by inspecting the data frames (e.g., by typing `diagram_list$variables` or `diagram_list$flows` into the R console), or just by trial and error. You should be able to figure out quickly which entry is which and adjust accordingly. By looking at the data frames, you can also find out how many flows of each type exist, in case you are unclear (the different line styling of each flow type in the default diagram should also tell you how many of each type you have).  
+
+We'll dig a bit deeper into these data frames that `prepare_diagram()` returns in another vignette. For now, let's look at a few more examples.
+
+
+## Example 3
+
+It is of course entirely possible to combine layout settings supplied to `prepare_diagram()` with further styling through `update_diagram()`. Here is an example, using the SIR model we just explored.
+
+
+```{r}
+#optional layout settings
+sirsettings = list(varlocations = matrix(data = c("S", "","R",
+                                                   "", "I","" ),
+                                         nrow = 2, ncol = 3, byrow = TRUE),
+                   varbox_x_size = c(1, 1.5, 1),
+                   varbox_y_size = c(1, 1, 1),
+                   varspace_x_size = c(1,1),
+                   varspace_y_size = 0.5
+                  )
+
+#prepare diagram
+diagram_list3 <- prepare_diagram(model_list = sirmodel, model_settings = sirsettings)
+#change styling
+diagram_list4 <- update_diagram(diagram_list3, 
+                                diagram_settings = list(var_fill_color = c("#cde9fa", "#FFB3A8", "#b2b2b2"),
+                                                        var_outline_color = "#031e79",
+                                                        var_label_color = "black",
+                                                        interaction_flow_line_color = "#f94075",
+                                                        external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE), 
+                                                        external_flow_line_color = "gray"                                
+                                                      ))
+#make diagram
+sir_diagram4 <- make_diagram(diagram_list = diagram_list4)
+#plot diagram
+plot(sir_diagram4)
+```
+
+
+ONCE IMPLEMENTED, ADD SETTINGS TO UPDATE_DIAGRAM THAT MODIFY LOCATIONS OF FLOW LABELS TO MAKE THEM LOOK BETTER.
+
+## Example 4
+
+Finally, we'll revisit the 7-compartment model we explored previously, and see if we can get closer to something that could be shown to the public `r emoji::emoji('smile')`.
+
+```{r}
+variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
+             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
+             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             )
+mymodel = list(variables, flows)
+```
+
+```{r}
+mysettings = list( varlocations = matrix(data = c("Sc", "", "Ic", "Rc",
+                                                  "",   "P", "",   "",
+                                                  "Sa", "", "Ia", "Ra"),nrow = 3, byrow = TRUE),
+                   varspace_x_size = 2,
+                   varspace_y_size = 1
+                   )
+```
+
+Prepare the diagram with  additional settings.
+
+```{r}
+diagram_list5 <- prepare_diagram(mymodel, mysettings)
+```
+
+Update look of diagram
+
+```{r}
+diagram_list6 <- update_diagram(diagram_list5, 
+                                diagram_settings = list(var_fill_color = c("#cde9fa", "#cde9fa", "#cde9fa", "#40f9cf", "#40f9cf", "#40f9cf", "#b2b2b2"),
+                                                        var_outline_color = "#031e79",
+                                                        var_label_color = "black",
+                                                        interaction_flow_line_color = "#f94075",
+                                                        external_flow_line_color = "gray"                                
+                                                      ))
+```
+
+
+Now we make the diagram and plot it.
+
+```{r}
+model_plot6 <- make_diagram(diagram_list6)
+plot(model_plot6)
+```
+
+
+
+
+ONCE IMPLEMENTED, ADD SETTINGS TO UPDATE_DIAGRAM THAT MODIFY FLOW LOCATIONS/CURVATURE/LABELS, ETC. TO MAKE THEM LOOK BETTER.
+
+
+
+
+## Next steps
+
+By combining layout settings supplied to `prepare_diagram()` and styling applied through `update_diagram()`, you can easily customize the look of the diagram. This might give you a diagram that's good enough for what you want. However, at times you might want to make further changes. 
+
+[The next vignette](./C_modify_input_structure.html) explains how to do further changes with **`r pkg`** . 
+
+
+
+
+
+

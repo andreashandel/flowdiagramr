@@ -53,7 +53,7 @@ You always need to provide a `model_list` input to `prepare_diagram()`. In addit
 
 
 
-### Example 1
+## Example 1
 
 We'll take the model defined above, and now specify an additional `model_settings` argument called `varlocations`. This allows you to specify the placement of the variable boxes. 
 
@@ -82,10 +82,10 @@ sir_diagram2 <- make_diagram(diagram_list = diagram_list2)
 plot(sir_diagram2)
 ```
 
+The placement of the flow labels could be improved, which is not hard to do with **`r pkg`** and you'll learn how to do that soon.
 
 
-
-### Example 2
+## Example 2
 
 Let's look at a slightly extended SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
 
@@ -120,14 +120,14 @@ plot(sir_diagram3)
 Here is the version with the additional settings.
 
 ```{r}
-#diagram_list4 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings2)
-#sir_diagram4 <- make_diagram(diagram_list = diagram_list4)
-#plot(sir_diagram4)
+diagram_list4 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings2)
+sir_diagram4 <- make_diagram(diagram_list = diagram_list4)
+plot(sir_diagram4)
 ```
 
 
 
-### Example 3
+## Example 3
 
 Let's look at another example, one that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by again specifying a `varlocations` matrix. In addition, we now also change the size and spacing of the boxes and space between the boxes.
 
@@ -148,11 +148,9 @@ plot(sir_diagram)
 ggplot2::ggsave("sirdiagram1.png",sir_diagram)
 ```
 
-The placement of the flow labels could be improved, which is not hard to do with **`r pkg`** and you'll learn soon.
 
 
-
-### Example 4
+## Example 4
 
 You can set both the horizontal and vertical size of each box, and the spacing between each row/column of boxes. The following provides an example. We are now changing the box sizes and the spacing. For both size and spacing, you can supply a single number, which is then applied to all parts of the diagram.
 
@@ -173,13 +171,13 @@ sirsettings4 = list(varlocations = matrix(data = c("S", "",
 
 
 ```{r, fig.height=5}
-#sir_ex4 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings4)
-#sir_diagram4 <- make_diagram(diagram_list = sir_ex4)
-#plot(sir_diagram4)
+sir_ex4 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings4)
+sir_diagram4 <- make_diagram(diagram_list = sir_ex4)
+plot(sir_diagram4)
 ```
 
 
-### Example 5
+## Example 5
 
 Instead of supplying a single number to size the boxes and spacing, the scaling arguments can be vectorized to allow different spacing and sizing of different boxes. In that case, for box sizes the vector needs to have a length corresponding to the number of boxes. The x/y-spacing needs to correspond to the number of rows/columns minus 1. 
 Here is an example.
@@ -205,7 +203,7 @@ plot(sir_diagram5)
 ```
 
 
-### Example 6
+## Example 6
 
 Let's look at one more example, the somewhat large model with 7 compartments shown in the _Getting Started_ vignette. 
 
