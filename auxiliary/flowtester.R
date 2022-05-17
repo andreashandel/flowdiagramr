@@ -123,6 +123,26 @@ model_settings1b = list(
 prepare_diagram(model_list, model_settings1b)  # isses Error
 
 
+# test sizes for each box
+variables = c("S","I","R")
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
+             I_flows = c("+b*S*I","-g*I", "-m*I"),
+             R_flows = c("g*I", "-m*R"))
+model_list = list(variables = variables, flows = flows)
+test_settings = list(varlocations = matrix(data = c("S", "",
+                                                   "", "I",
+                                                   "R", "" ),
+                                          nrow = 3, ncol = 2, byrow = TRUE),
+                    varbox_x_size = c(1, 1.5, 1),
+                    varbox_y_size = c(2, 1, 1),
+                    varspace_x_size = 1.5,
+                    varspace_y_size = c(0.5,1)
+)
+
+dlist <- prepare_diagram(model_list, test_settings)
+make_diagram(dlist, with_grid = TRUE)
+
+
 
 
 # Test model updating -----------------------------------------------------

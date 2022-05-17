@@ -30,6 +30,10 @@ add_locations <- function(variables,
   num_cols <- ncol(varlocations)
   num_vars <- length(which(varlocations != ""))
 
+  #### add variable names to the varbox vector for matching
+  names(varbox_x_size) <- variables$name
+  names(varbox_y_size) <- variables$name
+
   #### box sizes on grid
   # to start, make a matrix of the size of each variable, one for
   # x size and one for y size
@@ -37,13 +41,13 @@ add_locations <- function(variables,
                       nrow = num_rows,
                       ncol = num_cols,
                       byrow = TRUE)
-  xsize_mat[which(varlocations %in% variables$name)] <- varbox_x_size
+  xsize_mat[match(names(varbox_x_size), varlocations)] <- varbox_x_size
 
   ysize_mat <- matrix(data = NA,
                       nrow = num_rows,
                       ncol = num_cols,
                       byrow = TRUE)
-  ysize_mat[which(varlocations %in% variables$name)] <- varbox_y_size
+  ysize_mat[match(names(varbox_y_size), varlocations)] <- varbox_y_size
 
   #### x mins, mids, and maxs
   # create a vector of distances, assuming start point left edge of box 1 at 0.
