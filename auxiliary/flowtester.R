@@ -28,9 +28,6 @@ make_diagram(dfs, with_grid = TRUE)  # show the grid
 
 
 
-
-
-
 # Test locations for SIR --------------------------------------------------
 
 varlocs1 = matrix(c("S","","R","","I",""),byrow=TRUE,nrow=2)
@@ -195,6 +192,22 @@ diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 diagram_settings <- list(main_flow_linetype = c("black", "red", "orange"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
+
+# this should work; it does
+newylabs <- dfs$flows$ylabel
+newcurve <- dfs$flows$curvature
+newylabs[1] <- 1.2
+newcurve[1] <- -1
+new_settings <- list(flow_ylabel = newylabs, flow_curvature = newcurve)
+newdf <- update_diagram(dfs, new_settings)
+make_diagram(newdf)
+
+
+# this should throw an error; it does
+newylabs <- 1.75
+new_settings <- list(flow_ylabel = newylabs)
+newdf <- update_diagram(dfs, new_settings)
+make_diagram(newdf)
 
 
 

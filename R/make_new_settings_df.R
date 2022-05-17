@@ -26,7 +26,7 @@ make_new_settings_df <- function(n,
 
   # update column name
   cnames <- colnames(df)
-  new_names <- unlist(strsplit(cnames, "var_|main_flow_|external_flow_|interaction_flow_"))
+  new_names <- unlist(strsplit(cnames, "var_|flow_|main_flow_|external_flow_|interaction_flow_"))
   new_names <- new_names[which(new_names != "")]
   colnames(df) <- new_names
 

@@ -9,13 +9,13 @@
 
 * Vignette A: For the pred/prey model with custom settings through update_diagram, is that external flow style actually shown as dotted? looks dashed to me, but hard to tell. *ATT*: I looked into this and it is in fact dotted. But you're right that it doesn't look very dotted. I googled R linetypes and the examples for dotted look like what we're seeing.
 
-* I think we should give users the option to update everything with update_diagram, including the xmin/xmax/curvature, etc. I think would be nice, this way they would rarely need to "hack" the data frames directly. Also see comments in vignette C for last 2 examples.
+* **DONE** I think we should give users the option to update everything with update_diagram, including the xmin/xmax/curvature, etc. I think would be nice, this way they would rarely need to "hack" the data frames directly. Also see comments in vignette C for last 2 examples. *ATT*: I added a note vignette C about how these locations and curvature settings must be vectors. This is also in the documentation.
 
 * **DONE** When arrow is turned off, label should also be turned off. Currently label is shown even if arrow is gone. See example 2 in vignette C. Alternatively, and maybe better, we should have an XX_flow_show_label setting, which allows one to turn on/off the label separate from the arrow. (I assume this could be achieved by supplying label text as empty string, but that might not be obvious to all users.)
 
 * **DONE (but can still be updated as desired)** Can we order the columns of the diagram_list data frames logically, i.e. all the line_ settings together and all the label_ settings together, etc.
 
-* I noticed some flows don't have a name. For instance the b*S*I process which leads S -> I has no name and no label. The no label makes sense since it is already labeled by the b*S*I interaction flow. But maybe we should still give the flow the same b*S*I name, so a user knows which part of the model that flow corresponds to? Would it cause a problem if flows had names that showed up more than once? As far as I understand, the "name" entry isn't really further used in make_diagram, is that right? 
+* **DONE.** I noticed some flows don't have a name. For instance the b*S*I process which leads S -> I has no name and no label. The no label makes sense since it is already labeled by the b*S*I interaction flow. But maybe we should still give the flow the same b*S*I name, so a user knows which part of the model that flow corresponds to? Would it cause a problem if flows had names that showed up more than once? As far as I understand, the "name" entry isn't really further used in make_diagram, is that right? 
 
 * Example 4 in vignette C suggests that some of the default settings for flow placement could still be improved, e.g. trying to figure out which side of the box leads to the shortest distance to the target and placing the arrow there. Though this might not be easy, so maybe something "for later"? (Though if you end up fiddling with that part of the code anyway, see if there are quick fixes). Otherwise, for now we can ask users to manually move the arrows.
 

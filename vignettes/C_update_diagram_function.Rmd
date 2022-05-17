@@ -174,6 +174,8 @@ Each of those flow types receives its own default styling. You can change that a
 
 When you modify any input with `update_diagram()`, you generally have two options. Either you supply a single value, which is then applied to all elements of that type. For instance you can change the line width of all main flows by providing one number to `main_flow_line_size`. Alternatively, you can provide a vector of values. That vector needs to have the same length as the type of element you want to change. For instance if there are 3 main flows and you want to give each one a different line size, you need to provide 3 numbers. The examples above show such a mix of either single values or values for each element.
 
+NOTE: THE ABOVE IS TRUE EXCEPT FOR THE LOCATION INFORMATION AND CURVATURE. THOSE MUST BE VECTORS EQUAL IN LENGTH TO THE NUMBER OF VARS OR FLOWS.
+
 The values for a given setting  you supply are applied to the elements in the order they show up in the data frame. That ordering might not be obvious. For instance, in the previous example, I wanted to turn off the inflow/birth arrow, but not the others. I specified this with `external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE)`. How did I know the birth flow was the first? I actually didn't and just made a guess `r emoji::emoji('grin')`. 
 
 In general, to figure this out, you can either look at the ordering by inspecting the data frames (e.g., by typing `diagram_list$variables` or `diagram_list$flows` into the R console), or just by trial and error. You should be able to figure out quickly which entry is which and adjust accordingly. By looking at the data frames, you can also find out how many flows of each type exist, in case you are unclear (the different line styling of each flow type in the default diagram should also tell you how many of each type you have).  
@@ -200,14 +202,18 @@ sirsettings = list(varlocations = matrix(data = c("S", "","R",
 #prepare diagram
 diagram_list3 <- prepare_diagram(model_list = sirmodel, model_settings = sirsettings)
 #change styling
-diagram_list4 <- update_diagram(diagram_list3, 
-                                diagram_settings = list(var_fill_color = c("#cde9fa", "#FFB3A8", "#b2b2b2"),
-                                                        var_outline_color = "#031e79",
-                                                        var_label_color = "black",
-                                                        interaction_flow_line_color = "#f94075",
-                                                        external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE), 
-                                                        external_flow_line_color = "gray"                                
-                                                      ))
+diagram_list4 <- update_diagram(
+  diagram_list3,
+  diagram_settings = list(
+    var_fill_color = c("#cde9fa", "#FFB3A8", "#b2b2b2"),
+    var_outline_color = "#031e79",
+    var_label_color = "black",
+    interaction_flow_line_color = "#f94075",
+    external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE),
+    external_flow_show_label = c(FALSE, TRUE, TRUE, TRUE),
+    external_flow_line_color = "gray"
+  )
+)
 #make diagram
 sir_diagram4 <- make_diagram(diagram_list = diagram_list4)
 #plot diagram

@@ -12,11 +12,21 @@
 
 test_setting_lengths <- function(diagram_settings, names, n) {
   msg <- NULL
-  for(dovar in names) {
-    tmp <- diagram_settings[[dovar]]
-    if(!length(tmp) %in% c(1, n)) {
-      msg <- paste("Length of", dovar, "must be either 1 or", n)
+  if(length(grep("var_|main_|external_|interaction_", names)) > 0) {
+    for(dovar in names) {
+      tmp <- diagram_settings[[dovar]]
+      if(!length(tmp) %in% c(1, n)) {
+        msg <- paste("Length of", dovar, "must be either 1 or", n)
+      }
+    }
+  } else {
+    for(dovar in names) {
+      tmp <- diagram_settings[[dovar]]
+      if(!length(tmp) %in% c(n)) {
+        msg <- paste("Length of", dovar, "must be ", n)
+      }
     }
   }
+
   return(msg)
 }

@@ -14,6 +14,30 @@ about this object.}
 \item{diagram_settings}{A required list of diagram aesthetic settings. The
 following elements are supported and default values are provided:
 \itemize{
+\item \code{var_xmin}: A numeric vector of minimum x locations for each variable
+in the \code{variables} data frame. The vector must equal the number of
+variables and is assumed to be in the same order as the variables in the
+\code{variables} data frame.
+\item \code{var_xmax}: A numeric vector of maximum x locations for each variable
+in the \code{variables} data frame. The vector must equal the number of
+variables and is assumed to be in the same order as the variables in the
+\code{variables} data frame.
+\item \code{var_ymin}: A numeric vector of minimum y locations for each variable
+in the \code{variables} data frame. The vector must equal the number of
+variables and is assumed to be in the same order as the variables in the
+\code{variables} data frame.
+\item \code{var_ymax}: A numeric vector of maximum y locations for each variable
+in the \code{variables} data frame. The vector must equal the number of
+variables and is assumed to be in the same order as the variables in the
+\code{variables} data frame.
+\item \code{var_xlabel}: A numeric vector of the x location for the label for
+each variable in the \code{variables} data frame. The vector must equal the
+number of variables and is assumed to be in the same order as the
+variables in the \code{variables} data frame.
+\item \code{var_ylabel}: A numeric vector of the y location for the label for
+each variable in the \code{variables} data frame. The vector must equal the
+number of variables and is assumed to be in the same order as the
+variables in the \code{variables} data frame.
 \item \code{var_outline_color}: A character string or vector of character strings
 specifying the color of variable outlines. Must either be of length 1
 or the number of rows in the variables data frame.
@@ -26,6 +50,35 @@ or the number of rows in the variables data frame.
 \item \code{var_label_size}: A numeric scalar specifying the text size for variable
 labels. Must either be of length 1 or the number of rows in the
 variables data frame.
+
+\item \code{flow_xmin}: A numeric vector of minimum x locations for each flow
+in the \code{flows} data frame. The vector must equal the number of
+flows and is assumed to be in the same order as the flows in the
+\code{flows} data frame. xmin is the starting point of the flow.
+\item \code{flow_xmax}: A numeric vector of maximum x locations for each flow
+in the \code{flows} data frame. The vector must equal the number of
+flows and is assumed to be in the same order as the flows in the
+\code{flows} data frame. xmax is the ending point of the flow.
+\item \code{flow_ymin}: A numeric vector of minimum y locations for each flow
+in the \code{flows} data frame. The vector must equal the number of
+flows and is assumed to be in the same order as the flows in the
+\code{flows} data frame. xmin is the starting point of the flow.
+\item \code{flow_ymax}: A numeric vector of maximum y locations for each flow
+in the \code{flows} data frame. The vector must equal the number of
+flows and is assumed to be in the same order as the flows in the
+\code{flows} data frame. xmax is the ending point of the flow.
+\item \code{flow_xlabel}: A numeric vector of the x location for the label for
+each flow in the \code{flows} data frame. The vector must equal the
+number of flows and is assumed to be in the same order as the
+flows in the \code{flows} data frame.
+\item \code{flow_ylabel}: A numeric vector of the y location for the label for
+each flow in the \code{flows} data frame. The vector must equal the
+number of flows and is assumed to be in the same order as the
+flows in the \code{flows} data frame.
+\item \code{flow_curvature}: A numeric vector of curvature values for each flow
+in the \code{flows} data frame. The vector must equal the
+number of flows and is assumed to be in the same order as the
+flows in the \code{flows} data frame.
 
 \item \code{main_flow_line_color}: A character string or vector of character strings
 specifying the text color for non-interaction flow arrows. Must either
@@ -48,6 +101,9 @@ specifying the text color for main flow labels. Must either
 be of length 1 or the number of main flows.
 \item \code{main_flow_label_size}: A scalar or numeric vector
 specifying the text size for main flow labels. Must either
+be of length 1 or the number of main flows.
+\item \code{main_flow_show_label}: A logical scalar or vector indicating whether
+the flow label should be shown (TRUE) or not (FALSE). Must either
 be of length 1 or the number of main flows.
 \item \code{main_flow_arrow_size}: A scalar or numeric vector
 specifying the size for main flow arrow heads. Must either
@@ -78,6 +134,9 @@ Must either be of length 1 or the number of interaction flows.
 \item \code{interaction_flow_label_size}: A scalar or numeric vector
 specifying the text size for interaction flow labels. Must either
 be of length 1 or the number of interaction flows.
+\item \code{interaction_flow_show_label}: A logical scalar or vector indicating
+whether the flow label should be shown (TRUE) or not (FALSE). Must
+either be of length 1 or the number of interaction flows.
 \item \code{interaction_flow_arrow_size}: A scalar or numeric vector
 specifying the size for interaction flow arrow heads. Must either
 be of length 1 or the number of interaction flows.
@@ -107,6 +166,9 @@ be of length 1 or the number of external flows.
 \item \code{external_flow_label_size}: A scalar or numeric vector
 specifying the text size for external flow labels. Must either be of
 length 1 or the number of external flows.
+\item \code{external_flow_show_label}: A logical scalar or vector indicating
+whether the flow label should be shown (TRUE) or not (FALSE). Must
+either be of length 1 or the number of external flows.
 \item \code{external_flow_arrow_size}: A scalar or numeric vector
 specifying the size for external flow arrow heads. Must either
 be of length 1 or the number of external flows.

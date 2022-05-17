@@ -11,6 +11,30 @@
 #' @param diagram_settings A required list of diagram aesthetic settings. The
 #'     following elements are supported and default values are provided:
 #' \itemize{
+#' \item `var_xmin`: A numeric vector of minimum x locations for each variable
+#'     in the `variables` data frame. The vector must equal the number of
+#'     variables and is assumed to be in the same order as the variables in the
+#'     `variables` data frame.
+#' \item `var_xmax`: A numeric vector of maximum x locations for each variable
+#'     in the `variables` data frame. The vector must equal the number of
+#'     variables and is assumed to be in the same order as the variables in the
+#'     `variables` data frame.
+#' \item `var_ymin`: A numeric vector of minimum y locations for each variable
+#'     in the `variables` data frame. The vector must equal the number of
+#'     variables and is assumed to be in the same order as the variables in the
+#'     `variables` data frame.
+#' \item `var_ymax`: A numeric vector of maximum y locations for each variable
+#'     in the `variables` data frame. The vector must equal the number of
+#'     variables and is assumed to be in the same order as the variables in the
+#'     `variables` data frame.
+#' \item `var_xlabel`: A numeric vector of the x location for the label for
+#'     each variable in the `variables` data frame. The vector must equal the
+#'     number of variables and is assumed to be in the same order as the
+#'     variables in the `variables` data frame.
+#' \item `var_ylabel`: A numeric vector of the y location for the label for
+#'     each variable in the `variables` data frame. The vector must equal the
+#'     number of variables and is assumed to be in the same order as the
+#'     variables in the `variables` data frame.
 #' \item `var_outline_color`: A character string or vector of character strings
 #'     specifying the color of variable outlines. Must either be of length 1
 #'     or the number of rows in the variables data frame.
@@ -23,6 +47,35 @@
 #' \item `var_label_size`: A numeric scalar specifying the text size for variable
 #'     labels. Must either be of length 1 or the number of rows in the
 #'     variables data frame.
+#'
+#' \item `flow_xmin`: A numeric vector of minimum x locations for each flow
+#'     in the `flows` data frame. The vector must equal the number of
+#'     flows and is assumed to be in the same order as the flows in the
+#'     `flows` data frame. xmin is the starting point of the flow.
+#' \item `flow_xmax`: A numeric vector of maximum x locations for each flow
+#'     in the `flows` data frame. The vector must equal the number of
+#'     flows and is assumed to be in the same order as the flows in the
+#'     `flows` data frame. xmax is the ending point of the flow.
+#' \item `flow_ymin`: A numeric vector of minimum y locations for each flow
+#'     in the `flows` data frame. The vector must equal the number of
+#'     flows and is assumed to be in the same order as the flows in the
+#'     `flows` data frame. xmin is the starting point of the flow.
+#' \item `flow_ymax`: A numeric vector of maximum y locations for each flow
+#'     in the `flows` data frame. The vector must equal the number of
+#'     flows and is assumed to be in the same order as the flows in the
+#'     `flows` data frame. xmax is the ending point of the flow.
+#' \item `flow_xlabel`: A numeric vector of the x location for the label for
+#'     each flow in the `flows` data frame. The vector must equal the
+#'     number of flows and is assumed to be in the same order as the
+#'     flows in the `flows` data frame.
+#' \item `flow_ylabel`: A numeric vector of the y location for the label for
+#'     each flow in the `flows` data frame. The vector must equal the
+#'     number of flows and is assumed to be in the same order as the
+#'     flows in the `flows` data frame.
+#' \item `flow_curvature`: A numeric vector of curvature values for each flow
+#'     in the `flows` data frame. The vector must equal the
+#'     number of flows and is assumed to be in the same order as the
+#'     flows in the `flows` data frame.
 #'
 #' \item `main_flow_line_color`: A character string or vector of character strings
 #'     specifying the text color for non-interaction flow arrows. Must either
@@ -182,6 +235,12 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   # possible variable (var) settings are the following
   var_setting_names <- paste0("var_",
                               c(
+                                "xmin",
+                                "xmax",
+                                "ymin",
+                                "ymax",
+                                "xlabel",
+                                "ylabel",
                                 "outline_color",
                                 "fill_color",
                                 "label_text",
@@ -190,7 +249,17 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
                               ))
 
   # possible flow settings are the following
-  flow_setting_names <- c(
+  # these don't get prepended with flow type, just flow
+  all_flow_setting_names <- paste0("flow_", c(
+    "xmin",
+    "xmax",
+    "ymin",
+    "ymax",
+    "xlabel",
+    "ylabel",
+    "curvature"
+  ))
+  flow_setting_names <- c(  # these do get prepended with flow type
     "line_color",
     "linetype",
     "line_size",
@@ -209,7 +278,9 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   )
 
   # concatenate into one character vector of setting names
-  setting_names <- c(var_setting_names, flow_setting_names)
+  setting_names <- c(var_setting_names,
+                     all_flow_setting_names,
+                     flow_setting_names)
 
 
   # check user inputs provided in diagram_settings,
@@ -227,6 +298,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
 
   # determine number of variables and number of each flow type
   nvars <- nrow(variables)
+  nflow <- nrow(flows)
   nmain <- sum(flows$type == "main")
   ninteraction <- sum(flows$type == "interaction")
   nexternal <- sum(flows$type == "external")
@@ -258,6 +330,30 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   }
 
 
+  ###
+  # update flow settings not specific to flow type
+  ###
+  if(length(flow_settings) > 0) {
+    flow_settings_names <- grep("main_|external_|interaction_",
+                                names(flow_settings),
+                                invert = TRUE,
+                                value = TRUE)
+    if(length(flow_settings_names) > 0) {
+      # test that all entries are of length nvars
+      checkmsg <- test_setting_lengths(flow_settings, flow_settings_names, nflow)
+      if(!is.null(checkmsg))
+      {
+        stop(checkmsg)
+      }
+
+      # make a data frame of settings. number of rows is equal to nmain
+      new_flow_settings <- make_new_settings_df(nflow,
+                                                flow_settings[flow_settings_names])
+
+      # now update the columns in the flows data frame for type == "main"
+      flows[ , colnames(new_flow_settings)] <- new_flow_settings
+    }
+  }
 
   ###
   # update main flow settings

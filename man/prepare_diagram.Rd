@@ -92,7 +92,10 @@ be different from \code{name}.
 The data frame contains these columns:
 \itemize{
 \item \code{id}: A numeric id for each flow.
-\item \code{name}: The label of the flow. Typically a mathematical expression.
+\item \code{name}: The name of the flow. Typically a mathematical expression.
+If a main flow with an interaction, this name is for id purposes
+only because the \code{label_text} will be the actual label displayed
+in the diagram. Thus, the name might be duplicated in other rows.
 \item \code{type}: Type of flow. One of main, interaction, or external.
 \item \code{from}: The variable from which the arrow originate. That is, the
 variable donating the flow.

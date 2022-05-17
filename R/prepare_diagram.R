@@ -90,7 +90,10 @@
 #'   The data frame contains these columns:
 #'   \itemize{
 #'     \item `id`: A numeric id for each flow.
-#'     \item `name`: The label of the flow. Typically a mathematical expression.
+#'     \item `name`: The name of the flow. Typically a mathematical expression.
+#'         If a main flow with an interaction, this name is for id purposes
+#'         only because the `label_text` will be the actual label displayed
+#'         in the diagram. Thus, the name might be duplicated in other rows.
 #'     \item `type`: Type of flow. One of main, interaction, or external.
 #'     \item `from`: The variable from which the arrow originate. That is, the
 #'         variable donating the flow.
@@ -735,6 +738,11 @@ prepare_diagram <- function(model_list,
   ints <- subset(flows, interaction == TRUE)
   flows <- subset(flows, interaction == FALSE)
 
+  # keep original name for all flows. this gets overwritten when the interaction
+  # flow is added. but we want to retain this for later for the user
+  flows$orig_name <- flows$name
+  ints$orig_name <- ints$name
+
   # If there are interactions, then duplicate them and reassign the to/from
   # columns such that we have two segments for each interaction flagged
   # row: (1) the physical flow with from/to for donating and receiving
@@ -786,8 +794,15 @@ prepare_diagram <- function(model_list,
     flows <- dplyr::bind_rows(flows, ints, intflows)
   }
 
-  # Keep only distinct rows
-  flows <- unique(flows)
+  # Keep only distinct rows, but take extra care to avoid uniquness due to
+  # original name. this takes a bit of bookkeeping
+  tmp <- flows
+  tmp$orig_name <- NULL
+  tmp <- unique(tmp)
+  tmp$orig_name <- flows[rownames(tmp), "orig_name"]
+  rm(flows)
+  flows <- tmp
+  rm(tmp)
 
   #########################################
   #########################################
@@ -1244,6 +1259,7 @@ prepare_diagram <- function(model_list,
 
   # update flows column ordering
   flows <- flows[, c("id",
+                     "orig_name",
                      "name",
                      "type",
                      "from",
