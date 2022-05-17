@@ -116,12 +116,14 @@ make_diagram <- function (diagram_list, with_grid = FALSE) {
   }
 
   for(i in 1:nrow(flows)) {
-    diagram_plot <- diagram_plot +
-      geom_text(
-        data = flows[i, ],
-        aes(x = xlabel, y = ylabel, label = label_text),
-        size = flows[i, "label_size"],
-        color = flows[i, "label_color"])
+    if(flows[i, "show_label"] == TRUE) {
+      diagram_plot <- diagram_plot +
+        geom_text(
+          data = flows[i, ],
+          aes(x = xlabel, y = ylabel, label = label_text),
+          size = flows[i, "label_size"],
+          color = flows[i, "label_color"])
+    }
   }
 
   # If with_grid == FALSE (default) then void out the theme

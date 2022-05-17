@@ -140,14 +140,18 @@ Here is an alternative version with layout changes specified through `update_dia
 
 ```{r}
 #update diagram
-diagram_list2 <- update_diagram(diagram_list1, 
-                                diagram_settings = list(var_fill_color = c("#cde9fa", "#FFB3A8", "#b2b2b2"),
-                                                        var_outline_color = "#031e79",
-                                                        var_label_color = "black",
-                                                        interaction_flow_line_color = "#f94075",
-                                                        external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE), 
-                                                        external_flow_line_color = "gray"                                
-                                                      ))
+diagram_list2 <- update_diagram(
+  diagram_list1,
+  diagram_settings = list(
+    var_fill_color = c("#cde9fa", "#FFB3A8", "#b2b2b2"),
+    var_outline_color = "#031e79",
+    var_label_color = "black",
+    interaction_flow_line_color = "#f94075",
+    external_flow_show_label = c(FALSE, TRUE, TRUE, TRUE),
+    external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE),
+    external_flow_line_color = "gray"
+  )
+)
 #make diagram
 sir_diagram2 <- make_diagram(diagram_list = diagram_list2)
 #plot diagram

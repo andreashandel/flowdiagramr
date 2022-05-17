@@ -46,6 +46,9 @@
 #' \item `main_flow_label_size`: A scalar or numeric vector
 #'     specifying the text size for main flow labels. Must either
 #'     be of length 1 or the number of main flows.
+#' \item `main_flow_show_label`: A logical scalar or vector indicating whether
+#'     the flow label should be shown (TRUE) or not (FALSE). Must either
+#'     be of length 1 or the number of main flows.
 #' \item `main_flow_arrow_size`: A scalar or numeric vector
 #'     specifying the size for main flow arrow heads. Must either
 #'     be of length 1 or the number of main flows.
@@ -75,6 +78,9 @@
 #' \item `interaction_flow_label_size`: A scalar or numeric vector
 #'     specifying the text size for interaction flow labels. Must either
 #'     be of length 1 or the number of interaction flows.
+#' \item `interaction_flow_show_label`: A logical scalar or vector indicating
+#'     whether the flow label should be shown (TRUE) or not (FALSE). Must
+#'     either be of length 1 or the number of interaction flows.
 #' \item `interaction_flow_arrow_size`: A scalar or numeric vector
 #'     specifying the size for interaction flow arrow heads. Must either
 #'     be of length 1 or the number of interaction flows.
@@ -104,6 +110,9 @@
 #' \item `external_flow_label_size`: A scalar or numeric vector
 #'     specifying the text size for external flow labels. Must either be of
 #'     length 1 or the number of external flows.
+#' \item `external_flow_show_label`: A logical scalar or vector indicating
+#'     whether the flow label should be shown (TRUE) or not (FALSE). Must
+#'     either be of length 1 or the number of external flows.
 #' \item `external_flow_arrow_size`: A scalar or numeric vector
 #'     specifying the size for external flow arrow heads. Must either
 #'     be of length 1 or the number of external flows.
@@ -187,6 +196,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
     "line_size",
     "label_color",
     "label_size",
+    "show_label",
     "arrow_size",
     "show_arrow"
   )

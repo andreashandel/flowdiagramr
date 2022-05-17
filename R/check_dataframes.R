@@ -72,14 +72,17 @@ check_dataframes <- function(diagram_list) {
   allowed_flow_columns <- c("id", "name", "type", "from", "to",
                             "xmin", "xmax", "ymin", "ymax",
                             "xlabel", "ylabel", "curvature",
-                            "label_text", "line_color", "line_size", "linetype",
-                            "label_color", "label_size",
+                            "line_color", "line_size", "linetype",
+                            "label_text", "label_color", "label_size", "show_label",
                             "arrow_size", "show_arrow")
   flow_str_map <- data.frame(
     column = allowed_flow_columns,
-    struct =  c("int", "chr", "chr", "chr", "chr", "num", "num", "num",
-                "num", "num", "num", "num", "chr", "chr", "num",
-                "chr", "chr", "num", "num", "log")
+    struct =  c("int", "chr", "chr", "chr", "chr",
+                "num", "num", "num", "num",
+                "num", "num", "num",
+                "chr", "num", "chr",
+                "chr", "chr", "num", "log",
+                "num", "log")
   )
   # 1. check column names
   # `test` will be the column names that are in `flows`
