@@ -147,6 +147,7 @@ diagram_list2 <- update_diagram(
     var_outline_color = "#031e79",
     var_label_color = "black",
     interaction_flow_line_color = "#f94075",
+    interaction_flow_show_label = FALSE,
     external_flow_show_label = c(FALSE, TRUE, TRUE, TRUE),
     external_flow_show_arrow = c(FALSE, TRUE, TRUE, TRUE),
     external_flow_line_color = "gray"

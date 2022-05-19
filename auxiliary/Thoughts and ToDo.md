@@ -1,4 +1,22 @@
 ****************************
+2022-05-19 Andreas notes
+
+* in vignette C, you write: "NOTE: THE ABOVE IS TRUE EXCEPT FOR THE LOCATION INFORMATION AND CURVATURE. THOSE MUST BE VECTORS EQUAL IN LENGTH TO THE NUMBER OF VARS OR FLOWS." does that mean if i wanted to change the xmin of one flow, i needed to enter the xmin for all of them, even the unchanged? seems a bit tedious and it would also require digging into the data frame to get the original locations. can we make it such that one can specify only the ones that should be changed? 
+
+related to this, which would solve the above issue and make other bits easier too: i'm wondering if we should allow changing elements through naming them. specifically, i'm thinking we could create a unique and descriptive name for each variable and flow. for the variable, that's just the existing "name" column. for the flows, we could maybe redefine names so they become unique. E.g. a name that has a shorthand for the type of flow (m/i/e) and then the actual flow, without the special symbols. what i mean is e.g. m_gI, i_bSI, e_mR, etc. then a user could update as follows: 
+update_diagram(diag_list, diagram_settings = list(var_label_color = c( S = "black", R = "green" ),
+                                                  external_flow_linesize = c(e_mI = 1.5, e_mR = 0.7)
+                                                  ) )  
+
+If we did that, we could allow 2 options. Either a single unnamed value that is applied to every element in a group (e.g. var_label_color = "orange" or  external_flow_linesize = 2) or a vector of named values and those are matched and applied. if a user provides a name that doesn't match, there's a warning. then we could get rid of checking if the entries have the right length. This way a user can easily target any number of elements without needing to specify values for all, and also without guessing if the one they want to change might be entry 5 or 6.
+
+We could additionally make it that a call to update_diagram with only diag_list an no diagram_list will print the names of the variables an flows to the screen. The user would often call that one first, then they know what to change and create the named vectors.
+
+This change seems to not be too hard, but I'm not sure. Let me know what you think.
+
+
+
+****************************
 2022-05-10 Andreas notes
 
 * **FIXED** Example 5 in vignette B isn't quite right. It seems the box sizes are not assigned according to the order of the elements in the variables vector, but some other order. Specifically, the I box has size 1/1 and the R box has size 1.5/1, but it should be the other way around.

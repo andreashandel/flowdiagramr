@@ -180,7 +180,7 @@ and tell it what adjustments you want to make by specifying `diagram_settings`. 
 diagram_list_v2 <- update_diagram(diagram_list, 
                                   diagram_settings = list(var_fill_color = c('blue','red'), 
                                                           main_flow_linetype = "dashed",
-                                                          external_flow_linetype = "dotted",
+                                                          external_flow_linetype = "solid",
                                                          interaction_flow_line_size = 1.5)
                                   )
 ```
