@@ -11,170 +11,57 @@ update_diagram(diagram_list, diagram_settings = NULL)
 \code{\link{prepare_diagram}} function. See that function for details
 about this object.}
 
-\item{diagram_settings}{A required list of diagram aesthetic settings. The
-following elements are supported and default values are provided:
+\item{diagram_settings}{A required list of diagram aesthetic settings. See
+\strong{details} for allowable syntax. The following elements are supported
+and default values are provided:
 \itemize{
-\item \code{var_xmin}: A numeric vector of minimum x locations for each variable
-in the \code{variables} data frame. The vector must equal the number of
-variables and is assumed to be in the same order as the variables in the
-\code{variables} data frame.
-\item \code{var_xmax}: A numeric vector of maximum x locations for each variable
-in the \code{variables} data frame. The vector must equal the number of
-variables and is assumed to be in the same order as the variables in the
-\code{variables} data frame.
-\item \code{var_ymin}: A numeric vector of minimum y locations for each variable
-in the \code{variables} data frame. The vector must equal the number of
-variables and is assumed to be in the same order as the variables in the
-\code{variables} data frame.
-\item \code{var_ymax}: A numeric vector of maximum y locations for each variable
-in the \code{variables} data frame. The vector must equal the number of
-variables and is assumed to be in the same order as the variables in the
-\code{variables} data frame.
-\item \code{var_xlabel}: A numeric vector of the x location for the label for
-each variable in the \code{variables} data frame. The vector must equal the
-number of variables and is assumed to be in the same order as the
-variables in the \code{variables} data frame.
-\item \code{var_ylabel}: A numeric vector of the y location for the label for
-each variable in the \code{variables} data frame. The vector must equal the
-number of variables and is assumed to be in the same order as the
-variables in the \code{variables} data frame.
-\item \code{var_outline_color}: A character string or vector of character strings
-specifying the color of variable outlines. Must either be of length 1
-or the number of rows in the variables data frame.
-\item \code{var_fill_color}: A character string or vector of character strings
-specifying the fill color of variables. Must either be of length 1
-or the number of rows in the variables data frame.
-\item \code{var_label_color}: A character string or vector of character strings
-specifying the text color for variable labels. Must either be of length 1
-or the number of rows in the variables data frame.
-\item \code{var_label_size}: A numeric scalar specifying the text size for variable
-labels. Must either be of length 1 or the number of rows in the
-variables data frame.
-
-\item \code{flow_xmin}: A numeric vector of minimum x locations for each flow
-in the \code{flows} data frame. The vector must equal the number of
-flows and is assumed to be in the same order as the flows in the
-\code{flows} data frame. xmin is the starting point of the flow.
-\item \code{flow_xmax}: A numeric vector of maximum x locations for each flow
-in the \code{flows} data frame. The vector must equal the number of
-flows and is assumed to be in the same order as the flows in the
-\code{flows} data frame. xmax is the ending point of the flow.
-\item \code{flow_ymin}: A numeric vector of minimum y locations for each flow
-in the \code{flows} data frame. The vector must equal the number of
-flows and is assumed to be in the same order as the flows in the
-\code{flows} data frame. xmin is the starting point of the flow.
-\item \code{flow_ymax}: A numeric vector of maximum y locations for each flow
-in the \code{flows} data frame. The vector must equal the number of
-flows and is assumed to be in the same order as the flows in the
-\code{flows} data frame. xmax is the ending point of the flow.
-\item \code{flow_xlabel}: A numeric vector of the x location for the label for
-each flow in the \code{flows} data frame. The vector must equal the
-number of flows and is assumed to be in the same order as the
-flows in the \code{flows} data frame.
-\item \code{flow_ylabel}: A numeric vector of the y location for the label for
-each flow in the \code{flows} data frame. The vector must equal the
-number of flows and is assumed to be in the same order as the
-flows in the \code{flows} data frame.
-\item \code{flow_curvature}: A numeric vector of curvature values for each flow
-in the \code{flows} data frame. The vector must equal the
-number of flows and is assumed to be in the same order as the
-flows in the \code{flows} data frame.
-
-\item \code{main_flow_line_color}: A character string or vector of character strings
-specifying the text color for non-interaction flow arrows. Must either
-be of length 1 or the number of main flows.
-\item \code{main_flow_linetype}: Either a numeric scalar/vector or a character scalar/vector
-specifying the linetype for main flows (non-interaction flows). This
+\item \code{var_xmin}: A named numeric vector of mininum x locations.
+\item \code{var_xmax}: A named numeric vector of maximum x locations.
+\item \code{var_ymin}: A named numeric vector of minimum y locations.
+\item \code{var_ymax}: A named numeric vector of maximum y locations.
+\item \code{var_xlabel}: A named numeric vector of variable label x locations.
+\item \code{var_ylabel}: A named numeric vector of variable label x locations.
+\item \code{var_outline_color}: A named character vector of box outline colors.
+Default is "black".
+\item \code{var_fill_color}: A named character vector of box fill colors. Can be
+a named color or HEX code. Default is "#6aa4c8".
+\item \code{var_label_color}: A named character vector of variable label colors.
+Can be a named color or HEX code. Default is "white".
+\item \code{var_label_size}: A named character vector of text sized for variable
+labels. Default is 10.
+\item \code{flow_xmin}: A named numeric vector of minimum x locations (flow
+starting points).
+\item \code{flow_xmax}: A named numeric vector of maximum x locations (flow
+ending points).
+\item \code{flow_ymin}: A named numeric vector of minimum y locations (flow
+starting points).
+\item \code{flow_ymax}: A named numeric vector of maximum y locations (flow
+ending points).
+\item \code{flow_xlabel}: A named numeric vector of flow label x locations.
+\item \code{flow_ylabel}: A named numeric vector of flow label y locations.
+\item \code{flow_curvature}: A named numeric vector numeric curvature values.
+\item \code{flow_line_color}: A named character vector specifying the color of
+of flow lines. Default is "black".
+\item \code{flow_linetype}: A named character vector of linetypes. This
 argument is passed to the \code{linetype} argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
 with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 1 (solid). Must either
-be of length 1 or the number of main flows.
-\item \code{main_flow_line_size}: A numeric scalar or vector specifying the line size for the
-main flows (non-interaction flows). Must either
-be of length 1 or the number of main flows.
-\item \code{main_flow_label_color}: A character string or vector of character strings
-specifying the text color for main flow labels. Must either
-be of length 1 or the number of main flows.
-\item \code{main_flow_label_size}: A scalar or numeric vector
-specifying the text size for main flow labels. Must either
-be of length 1 or the number of main flows.
-\item \code{main_flow_show_label}: A logical scalar or vector indicating whether
-the flow label should be shown (TRUE) or not (FALSE). Must either
-be of length 1 or the number of main flows.
-\item \code{main_flow_arrow_size}: A scalar or numeric vector
-specifying the size for main flow arrow heads. Must either
-be of length 1 or the number of main flows.
-\item \code{main_flow_show_arrow}: A logical scalar or vector indicating whether
-the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
-be of length 1 or the number of main flows.
-
-\item \code{interaction_flow_line_color}: A character string or vector of
-character strings specifying the text color for non-interaction flow
-arrows. Must either be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_linetype}: Either a numeric scalar/vector or a
-character scalar/vector specifying the linetype for interaction flows.
-This argument is passed to the \code{linetype} argument in ggplot2. From
-the ggplot2 documentation: "The linetype aesthetic can be specified
-with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
-3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
-discrete variable, or a string of an even number (up to eight) of
-hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 1 (solid). Must either
-be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_line_size}: A numeric scalar or vector specifying
-the line size for the interaction flows (non-interaction flows). Must
-either be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_label_color}: A character string or vector of
-character strings specifying the text color for interaction flow labels.
-Must either be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_label_size}: A scalar or numeric vector
-specifying the text size for interaction flow labels. Must either
-be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_show_label}: A logical scalar or vector indicating
-whether the flow label should be shown (TRUE) or not (FALSE). Must
-either be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_arrow_size}: A scalar or numeric vector
-specifying the size for interaction flow arrow heads. Must either
-be of length 1 or the number of interaction flows.
-\item \code{interaction_flow_show_arrow}: A logical scalar or vector indicating whether
-the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
-be of length 1 or the number of interaction flows.
-
-\item \code{external_flow_line_color}: A character string or vector of character
-strings specifying the text color for non-interaction flow arrows.
-Must either be of length 1 or the number of external flows.
-\item \code{external_flow_linetype}: Either a numeric scalar/vector or a character
-scalar/vector specifying the linetype for external flows. This
-argument is passed to the \code{linetype} argument in ggplot2. From
-the ggplot2 documentation: "The linetype aesthetic can be specified
-with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
-3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
-discrete variable, or a string of an even number (up to eight) of
-hexadecimal digits which give the lengths in consecutive positions in
-the string." Default is 1 (solid). Must either be of length 1 or
-the number of external flows.
-\item \code{external_flow_line_size}: A numeric scalar or vector specifying the
-line size for the external flows (non-interaction flows). Must either be
-of length 1 or the number of external flows.
-\item \code{external_flow_label_color}: A character string or vector of character
-strings specifying the text color for external flow labels. Must either
-be of length 1 or the number of external flows.
-\item \code{external_flow_label_size}: A scalar or numeric vector
-specifying the text size for external flow labels. Must either be of
-length 1 or the number of external flows.
-\item \code{external_flow_show_label}: A logical scalar or vector indicating
-whether the flow label should be shown (TRUE) or not (FALSE). Must
-either be of length 1 or the number of external flows.
-\item \code{external_flow_arrow_size}: A scalar or numeric vector
-specifying the size for external flow arrow heads. Must either
-be of length 1 or the number of external flows.
-\item \code{external_flow_show_arrow}: A logical scalar or vector indicating whether
-the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
-be of length 1 or the number of external flows.
+the string." flowdiagramr uses the character name. Default is "solid".
+\item \code{flow_line_size}: A named numeric vector of line sizes. Default
+value is 1.
+\item \code{flow_label_color}: A named character vector of label colors. Default
+is "black".
+\item \code{flow_label_size}: A named numeric vector of label text sizes. Default
+value is 5.
+\item \code{flow_show_label}: A named logical vector of whether to display flow
+labels (TRUE) or not (FALSE). Default value is TRUE.
+\item \code{flow_arrow_size}: A named numeric vector of arrow head sizes. Default
+value is 0.25.
+\item \code{flow_show_arrow}: A named logical vector of whether to display flows
+(TRUE) or not (FALSE). Default value is TRUE.
 }}
 }
 \value{
@@ -191,7 +78,21 @@ the different arguments in the input list of this function.
 The user can provide any number of updates in the
 \code{diagram_settings} list. Only those provided are updated. If the
 function is called with no updates, a warning is issued and the original
-data frames list object is returned.
+data frames list object is returned. For location settings (e.g., xmin)
+and curvature settings (just for flows), the user must provide a named
+vector for the setting argument, where the name matches one or more of
+\code{variables$name} (for var_* settings) or \code{flows$name} (for flow_*
+settings). For visual aesthetics for variables (e.g., fill_color), the
+user must specify a named vector where the name is either "all"
+(aesthetic value for all variables) or the name matches one one or more
+of the \code{variables$name}. For visual aesthetics for flows (e.g.,
+line_color), the user must specify a named vector, where allowable
+names are: "all" (color for all lines,  regardless of type or name),
+"main" (color for main flows), "interaction" (color for interaction
+flows), "external" (color for external flows), or the name of one of the
+character values in \code{flows$name}. If a mix of type and name are supplied,
+the type is applied first and name-specific values are applied second.
+See examples.
 }
 \examples{
 # basic model specification
@@ -201,14 +102,42 @@ flows <- list(S_flows = c("-b*S*I"),
               R_flows = c("g*I"))
 mymodel <- list(variables = variables, flows = flows)
 diag_list <- prepare_diagram(model_list = mymodel)
-diag_list2 <- update_diagram(diag_list, diagram_settings = list(var_fill_color = "green"))
 
+# make all variable boxes green
+new_setts <- list(var_fill_color = c(all = "green"))
+new_list <- update_diagram(diag_list, new_setts)
 
+# make just the S box green
+new_setts <- list(var_fill_color = c(S = "green"))
+new_list <- update_diagram(diag_list, new_setts)
+
+# make all flow lines red
+new_setts <- list(flow_line_color = c(all = "red"))
+new_list <- update_diagram(diag_list, new_setts)
+
+# make main flow lines red
+new_setts <- list(flow_line_color = c(main = "red"))
+new_list <- update_diagram(diag_list, new_setts)
+
+# make the b*S*I interaction flow line red
+new_setts <- list(flow_line_color = c(i_bSI = "red"))
+new_list <- update_diagram(diag_list, new_setts)
+
+# make all flow lines green except for b*S*I interaction flow, which is blue
+new_setts <- list(flow_line_color = c(all = "green", i_bSI = "blue"))
+new_list <- update_diagram(diag_list, new_setts)
+
+# combine variable and flow settings
+new_setts <- list(flow_line_color = c(all = "green", i_bSI = "blue"),
+                  var_fill_color = c(all = "red", S = "cyan"))
+new_list <- update_diagram(diag_list, new_setts)
 
 # more extensive updates
-newsettings <- list(var_label_color = c("green","blue","red"),
-                    interaction_flow_line_size = 1.5,
-                    interaction_flow_line_color = "orange")
+newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
+                    flow_line_size = c(interaction = 1.5),
+                    flow_line_color = c(all = "grey25",
+                                        interaction = "orange",
+                                        e_n = "red"))
 diag_list3 <- update_diagram(diag_list, diagram_settings = newsettings)
 
 }
