@@ -11,167 +11,215 @@
 #' @param diagram_settings A required list of diagram aesthetic settings. The
 #'     following elements are supported and default values are provided:
 #' \itemize{
-#' \item `var_xmin`: A numeric vector of minimum x locations for each variable
-#'     in the `variables` data frame. The vector must equal the number of
-#'     variables and is assumed to be in the same order as the variables in the
-#'     `variables` data frame.
-#' \item `var_xmax`: A numeric vector of maximum x locations for each variable
-#'     in the `variables` data frame. The vector must equal the number of
-#'     variables and is assumed to be in the same order as the variables in the
-#'     `variables` data frame.
-#' \item `var_ymin`: A numeric vector of minimum y locations for each variable
-#'     in the `variables` data frame. The vector must equal the number of
-#'     variables and is assumed to be in the same order as the variables in the
-#'     `variables` data frame.
-#' \item `var_ymax`: A numeric vector of maximum y locations for each variable
-#'     in the `variables` data frame. The vector must equal the number of
-#'     variables and is assumed to be in the same order as the variables in the
-#'     `variables` data frame.
-#' \item `var_xlabel`: A numeric vector of the x location for the label for
-#'     each variable in the `variables` data frame. The vector must equal the
-#'     number of variables and is assumed to be in the same order as the
-#'     variables in the `variables` data frame.
-#' \item `var_ylabel`: A numeric vector of the y location for the label for
-#'     each variable in the `variables` data frame. The vector must equal the
-#'     number of variables and is assumed to be in the same order as the
-#'     variables in the `variables` data frame.
-#' \item `var_outline_color`: A character string or vector of character strings
-#'     specifying the color of variable outlines. Must either be of length 1
-#'     or the number of rows in the variables data frame.
-#' \item `var_fill_color`: A character string or vector of character strings
-#'     specifying the fill color of variables. Must either be of length 1
-#'     or the number of rows in the variables data frame.
-#' \item `var_label_color`: A character string or vector of character strings
-#'     specifying the text color for variable labels. Must either be of length 1
-#'     or the number of rows in the variables data frame.
-#' \item `var_label_size`: A numeric scalar specifying the text size for variable
-#'     labels. Must either be of length 1 or the number of rows in the
-#'     variables data frame.
+#' \item `var_xmin`: A named vector a mininum x locations for the specified
+#'     variable. The name of each element must match one of the character
+#'     values in the `variables$name` column. Must be numeric.
+#' \item `var_xmax`: A named vector a maximum x locations for the specified
+#'     variable. The name of each element must match one of the character
+#'     values in the `variables$name` column. Must be numeric.
+#' \item `var_ymin`: A named vector a minimum y locations for the specified
+#'     variable. The name of each element must match one of the character
+#'     values in the `variables$name` column. Must be numeric.
+#' \item `var_ymax`: A named vector a maximum y locations for the specified
+#'     variable. The name of each element must match one of the character
+#'     values in the `variables$name` column. Must be numeric.
+#' \item `var_xlabel`: A named vector x locations for the specified
+#'     variable label. The name of each element must match one of the character
+#'     values in the `variables$name` column. Must be numeric.
+#' \item `var_ylabel`: A named vector y locations for the specified
+#'     variable label. The name of each element must match one of the character
+#'     values in the `variables$name` column. Must be numeric.
+#' \item `var_outline_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `variables$name` column. If a scalar, the character value
+#'     will be applied to every variable. Default is "black".
+#' \item `var_fill_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `variables$name` column. If a scalar, the character value
+#'     will be applied to every variable. Can be a named color or HEX code.
+#'     Default is "#6aa4c8".
+#' \item `var_label_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `variables$name` column. If a scalar, the character value
+#'     will be applied to every variable. Can be a named color or HEX code.
+#'     Default is "white".
+#' \item `var_label_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `variables$name` column. If a scalar, the numeric value
+#'     will be applied to every variable. Default is 10.
 #'
-#' \item `flow_xmin`: A numeric vector of minimum x locations for each flow
-#'     in the `flows` data frame. The vector must equal the number of
-#'     flows and is assumed to be in the same order as the flows in the
-#'     `flows` data frame. xmin is the starting point of the flow.
-#' \item `flow_xmax`: A numeric vector of maximum x locations for each flow
-#'     in the `flows` data frame. The vector must equal the number of
-#'     flows and is assumed to be in the same order as the flows in the
-#'     `flows` data frame. xmax is the ending point of the flow.
-#' \item `flow_ymin`: A numeric vector of minimum y locations for each flow
-#'     in the `flows` data frame. The vector must equal the number of
-#'     flows and is assumed to be in the same order as the flows in the
-#'     `flows` data frame. xmin is the starting point of the flow.
-#' \item `flow_ymax`: A numeric vector of maximum y locations for each flow
-#'     in the `flows` data frame. The vector must equal the number of
-#'     flows and is assumed to be in the same order as the flows in the
-#'     `flows` data frame. xmax is the ending point of the flow.
-#' \item `flow_xlabel`: A numeric vector of the x location for the label for
-#'     each flow in the `flows` data frame. The vector must equal the
-#'     number of flows and is assumed to be in the same order as the
-#'     flows in the `flows` data frame.
-#' \item `flow_ylabel`: A numeric vector of the y location for the label for
-#'     each flow in the `flows` data frame. The vector must equal the
-#'     number of flows and is assumed to be in the same order as the
-#'     flows in the `flows` data frame.
-#' \item `flow_curvature`: A numeric vector of curvature values for each flow
-#'     in the `flows` data frame. The vector must equal the
-#'     number of flows and is assumed to be in the same order as the
-#'     flows in the `flows` data frame.
+#' \item `flow_xmin`: A named vector a mininum x locations for the specified
+#'     flow. The name of each element must match one of the character
+#'     values in the `flows$name` column. Must be numeric. xmin is the
+#'     starting point of the flow.
+#' \item `flow_xmax`: A named vector a maximum x locations for the specified
+#'     flow. The name of each element must match one of the character
+#'     values in the `flows$name` column. Must be numeric. xmax is the
+#'     ending point of the flow.
+#' \item `flow_ymin`: A named vector a mininum y locations for the specified
+#'     flow. The name of each element must match one of the character
+#'     values in the `flows$name` column. Must be numeric. ymin is the
+#'     starting point of the flow.
+#' \item `flow_ymax`: A named vector a maximum x locations for the specified
+#'     flow. The name of each element must match one of the character
+#'     values in the `flows$name` column. Must be numeric. ymax is the
+#'     ending point of the flow.
+#' \item `flow_xlabel`: A named vector x locations for the specified
+#'     flow label. The name of each element must match one of the character
+#'     values in the `flows$name` column. Must be numeric.
+#' \item `flow_ylabel`: A named vector y locations for the specified
+#'     flow label. The name of each element must match one of the character
+#'     values in the `flows$name` column. Must be numeric.
+#' \item `flow_curvature`: A named vector numeric curvature values for the
+#'     specified flow label. The name of each element must match one of the
+#'     character values in the `flows$name` column. Must be numeric.
 #'
-#' \item `main_flow_line_color`: A character string or vector of character strings
-#'     specifying the text color for non-interaction flow arrows. Must either
-#'     be of length 1 or the number of main flows.
-#' \item `main_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
-#'     specifying the linetype for main flows (non-interaction flows). This
+#' \item `main_flow_line_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "main"`. If a scalar,
+#'     the character value will be applied to every flow of type "main".
+#'     Default is "black".
+#' \item `main_flow_linetype`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "main"`. If a scalar,
+#'     the character value will be applied to every flow of type "main". This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
 #'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 #'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 #'     discrete variable, or a string of an even number (up to eight) of
 #'     hexadecimal digits which give the lengths in consecutive positions in
-#'     the string." Default is 1 (solid). Must either
-#'     be of length 1 or the number of main flows.
-#' \item `main_flow_line_size`: A numeric scalar or vector specifying the line size for the
-#'     main flows (non-interaction flows). Must either
-#'     be of length 1 or the number of main flows.
-#' \item `main_flow_label_color`: A character string or vector of character strings
-#'     specifying the text color for main flow labels. Must either
-#'     be of length 1 or the number of main flows.
-#' \item `main_flow_label_size`: A scalar or numeric vector
-#'     specifying the text size for main flow labels. Must either
-#'     be of length 1 or the number of main flows.
-#' \item `main_flow_show_label`: A logical scalar or vector indicating whether
-#'     the flow label should be shown (TRUE) or not (FALSE). Must either
-#'     be of length 1 or the number of main flows.
-#' \item `main_flow_arrow_size`: A scalar or numeric vector
-#'     specifying the size for main flow arrow heads. Must either
-#'     be of length 1 or the number of main flows.
-#' \item `main_flow_show_arrow`: A logical scalar or vector indicating whether
-#'     the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
-#'     be of length 1 or the number of main flows.
+#'     the string." flowdiagramr uses the character name. Default is "solid".
+#' \item `main_flow_line_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "main"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "main". Default
+#'     value is 1.
+#' \item `main_flow_label_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "main"`. If a scalar,
+#'     the character value will be applied to every flow of type "main".
+#'     Default is "black".
+#' \item `main_flow_label_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "main"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "main". Default
+#'     value is 5.
+#' \item `main_flow_show_label`: Either a scalar or named logical vector
+#'     indicating whether the flow label should be shown (TRUE) or not (FALSE).
+#'     If a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "main"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "main". Default
+#'     value is TRUE.
+#' \item `main_flow_arrow_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "main"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "main". Default
+#'     value is 0.25.
+#' \item `main_flow_show_arrow`: Either a scalar or named logical vector
+#'     indicating whether the entire flow line and arrow should be drawn (TRUE)
+#'     or not (FALSE). If a named vector, the name of each element must match
+#'     one of the character values in the `flows$name` column of
+#'     `flows$type = "main"`. If a scalar, the numeric value will be applied to
+#'     every flow of type "main". Default value is TRUE.
 #'
-#' \item `interaction_flow_line_color`: A character string or vector of
-#'     character strings specifying the text color for non-interaction flow
-#'     arrows. Must either be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_linetype`: Either a numeric scalar/vector or a
-#'     character scalar/vector specifying the linetype for interaction flows.
-#'     This argument is passed to the \code{linetype} argument in ggplot2. From
-#'     the ggplot2 documentation: "The linetype aesthetic can be specified
-#'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
-#'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
-#'     discrete variable, or a string of an even number (up to eight) of
-#'     hexadecimal digits which give the lengths in consecutive positions in
-#'     the string." Default is 1 (solid). Must either
-#'     be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_line_size`: A numeric scalar or vector specifying
-#'     the line size for the interaction flows (non-interaction flows). Must
-#'     either be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_label_color`: A character string or vector of
-#'     character strings specifying the text color for interaction flow labels.
-#'     Must either be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_label_size`: A scalar or numeric vector
-#'     specifying the text size for interaction flow labels. Must either
-#'     be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_show_label`: A logical scalar or vector indicating
-#'     whether the flow label should be shown (TRUE) or not (FALSE). Must
-#'     either be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_arrow_size`: A scalar or numeric vector
-#'     specifying the size for interaction flow arrow heads. Must either
-#'     be of length 1 or the number of interaction flows.
-#' \item `interaction_flow_show_arrow`: A logical scalar or vector indicating whether
-#'     the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
-#'     be of length 1 or the number of interaction flows.
-#'
-#' \item `external_flow_line_color`: A character string or vector of character
-#'     strings specifying the text color for non-interaction flow arrows.
-#'     Must either be of length 1 or the number of external flows.
-#' \item `external_flow_linetype`: Either a numeric scalar/vector or a character
-#'     scalar/vector specifying the linetype for external flows. This
+#' \item `interaction_flow_line_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "interaction"`. If a scalar,
+#'     the character value will be applied to every flow of type "interaction".
+#'     Default is "black".
+#' \item `interaction_flow_linetype`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "interaction"`. If a scalar,
+#'     the character value will be applied to every flow of type "interaction". This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
 #'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 #'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
 #'     discrete variable, or a string of an even number (up to eight) of
 #'     hexadecimal digits which give the lengths in consecutive positions in
-#'     the string." Default is 1 (solid). Must either be of length 1 or
-#'     the number of external flows.
-#' \item `external_flow_line_size`: A numeric scalar or vector specifying the
-#'     line size for the external flows (non-interaction flows). Must either be
-#'     of length 1 or the number of external flows.
-#' \item `external_flow_label_color`: A character string or vector of character
-#'     strings specifying the text color for external flow labels. Must either
-#'     be of length 1 or the number of external flows.
-#' \item `external_flow_label_size`: A scalar or numeric vector
-#'     specifying the text size for external flow labels. Must either be of
-#'     length 1 or the number of external flows.
-#' \item `external_flow_show_label`: A logical scalar or vector indicating
-#'     whether the flow label should be shown (TRUE) or not (FALSE). Must
-#'     either be of length 1 or the number of external flows.
-#' \item `external_flow_arrow_size`: A scalar or numeric vector
-#'     specifying the size for external flow arrow heads. Must either
-#'     be of length 1 or the number of external flows.
-#' \item `external_flow_show_arrow`: A logical scalar or vector indicating whether
-#'     the entire flow arrow should be shown (TRUE) or not (FALSE). Must either
-#'     be of length 1 or the number of external flows.
+#'     the string." flowdiagramr uses the character name. Default is "solid".
+#' \item `interaction_flow_line_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "interaction"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "interaction". Default
+#'     value is 1.
+#' \item `interaction_flow_label_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "interaction"`. If a scalar,
+#'     the character value will be applied to every flow of type "interaction".
+#'     Default is "black".
+#' \item `interaction_flow_label_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "interaction"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "interaction". Default
+#'     value is 5.
+#' \item `interaction_flow_show_label`: Either a scalar or named logical vector
+#'     indicating whether the flow label should be shown (TRUE) or not (FALSE).
+#'     If a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "interaction"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "interaction". Default
+#'     value is TRUE.
+#' \item `interaction_flow_arrow_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "interaction"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "interaction". Default
+#'     value is 0.25.
+#' \item `interaction_flow_show_arrow`: Either a scalar or named logical vector
+#'     indicating whether the entire flow line and arrow should be drawn (TRUE)
+#'     or not (FALSE). If a named vector, the name of each element must match
+#'     one of the character values in the `flows$name` column of
+#'     `flows$type = "interaction"`. If a scalar, the numeric value will be applied to
+#'     every flow of type "interaction". Default value is TRUE.
+#'
+#' \item `external_flow_line_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "external"`. If a scalar,
+#'     the character value will be applied to every flow of type "external".
+#'     Default is "black".
+#' \item `external_flow_linetype`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "external"`. If a scalar,
+#'     the character value will be applied to every flow of type "external". This
+#'     argument is passed to the \code{linetype} argument in ggplot2. From
+#'     the ggplot2 documentation: "The linetype aesthetic can be specified
+#'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
+#'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
+#'     discrete variable, or a string of an even number (up to eight) of
+#'     hexadecimal digits which give the lengths in consecutive positions in
+#'     the string." flowdiagramr uses the character name. Default is "solid".
+#' \item `external_flow_line_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "external"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "external". Default
+#'     value is 1.
+#' \item `external_flow_label_color`: Either a scalar or a named character vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "external"`. If a scalar,
+#'     the character value will be applied to every flow of type "external".
+#'     Default is "black".
+#' \item `external_flow_label_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "external"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "external". Default
+#'     value is 5.
+#' \item `external_flow_show_label`: Either a scalar or named logical vector
+#'     indicating whether the flow label should be shown (TRUE) or not (FALSE).
+#'     If a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "external"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "external". Default
+#'     value is TRUE.
+#' \item `external_flow_arrow_size`: Either a scalar or a named numeric vector. If
+#'     a named vector, the name of each element must match one of the character
+#'     values in the `flows$name` column of `flows$type = "external"`. If a scalar,
+#'     the numeric value will be applied to every flow of type "external". Default
+#'     value is 0.25.
+#' \item `external_flow_show_arrow`: Either a scalar or named logical vector
+#'     indicating whether the entire flow line and arrow should be drawn (TRUE)
+#'     or not (FALSE). If a named vector, the name of each element must match
+#'     one of the character values in the `flows$name` column of
+#'     `flows$type = "external"`. If a scalar, the numeric value will be applied to
+#'     every flow of type "external". Default value is TRUE.
 #' }
 #'
 #' @return The same list of data frames that was sent into the function

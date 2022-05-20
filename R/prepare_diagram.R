@@ -1257,6 +1257,20 @@ prepare_diagram <- function(model_list,
   #add a row id so it's easier for users to know which row to alter
   flows$id = 1:nrow(flows)
 
+  # add a unique id for users when interacting with update_diagram()
+  # for variables, this is just the name columne
+  # for flows, the unique id is the first letter of the "type" and
+  # then the collapsed original name, separated by "_"
+  part1 <- substr(flows$type, 1, 1)
+  paste_it_too <- function(x) {  # little helper function for lapply
+    ch <- get_vars_pars(x)
+    paste0(ch, collapse = "")
+  }
+  part2 <- unlist(lapply(flows$orig_name, paste_it_too))
+  # overwrite orig_name, gets changed to name in add_default_aes after
+  # label column is created
+  flows$orig_name <- paste0(part1, "_", part2)
+
   # update flows column ordering
   flows <- flows[, c("id",
                      "orig_name",
@@ -1283,11 +1297,11 @@ prepare_diagram <- function(model_list,
                               "ylabel")]
 
 
-  #remove row names, those are confusing
+  # remove row names, those are confusing
   rownames(flows) <- NULL
   rownames(variables) <- NULL
 
-  # add default aesthetics
+  # add default aesthetics and unique ids
   dflist <- add_default_aes(variables, flows)
 
   return(dflist)
