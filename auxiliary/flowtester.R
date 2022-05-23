@@ -33,9 +33,18 @@ newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
                     flow_line_color = c(all = "grey25",
                                         interaction = "orange",
                                         e_n = "red"),
-                    flow_xmin = c(z_n = 0.5))
+                    flow_xmin = c(e_n = 0.5))
 diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
 make_diagram(diag_list_up)
+
+# and one with an error
+newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
+                    flow_line_size = c(interaction = 1.5),
+                    flow_line_color = c(all = "grey25",
+                                        interaction = "orange",
+                                        e_n = "red"),
+                    flow_xmin = c(z_n = 0.5))  # ERROR HERE IN NAME
+diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
 
 
 # Test locations for SIR --------------------------------------------------
