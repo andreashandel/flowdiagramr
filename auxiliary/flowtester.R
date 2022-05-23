@@ -27,6 +27,16 @@ make_diagram(dfs)  # prints the model diagram
 make_diagram(dfs, with_grid = TRUE)  # show the grid
 
 
+# quick test of update
+newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
+                    flow_line_size = c(interaction = 1.5),
+                    flow_line_color = c(all = "grey25",
+                                        interaction = "orange",
+                                        e_n = "red"),
+                    flow_xmin = c(z_n = 0.5))
+diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
+make_diagram(diag_list_up)
+
 
 # Test locations for SIR --------------------------------------------------
 
