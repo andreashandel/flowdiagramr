@@ -8,7 +8,7 @@
 #' @param diagram_list A required list of data frames returned from the
 #'     \code{\link{prepare_diagram}} function. See that function for details
 #'     about this object.
-#' @param diagram_settings A required list of diagram aesthetic settings. See
+#' @param diagram_settings An optional list of diagram aesthetic settings. See
 #'     **details** for allowable syntax. The following elements are supported
 #'     and default values are provided:
 #' \itemize{
@@ -67,8 +67,9 @@
 #'
 #' @details The user can provide any number of updates in the
 #'     \code{diagram_settings} list. Only those provided are updated. If the
-#'     function is called with no updates, a warning is issued and the original
-#'     data frames list object is returned. For location settings (e.g., xmin)
+#'     function is called with no updates, the names of all elements in
+#'     the `variables` and `flows` data frames are returned.
+#'     For location settings (e.g., xmin)
 #'     and curvature settings (just for flows), the user must provide a named
 #'     vector for the setting argument, where the name matches one or more of
 #'     `variables$name` (for var_* settings) or `flows$name` (for flow_*
@@ -152,8 +153,11 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   # if the user does not provide any settings, warn them
   # and return the data frames
   if(is.null(diagram_settings)) {
-    warning("No settings were provided; returning diagram_list without updates.")
-    return(diagram_list)
+    message("No settings were provided; returning names of elements in diagram_list dataframes.")
+    varelementnames = paste("Variables:",paste(variables$name, collapse = ", "))
+    flowelementnames = paste("Flows:",paste(flows$name, collapse = ", "))
+    elementnames = paste(varelementnames, "\n", flowelementnames)
+    return(elementnames)
   }  # otherwise, carry on
 
   # possible variable (var) settings are the following

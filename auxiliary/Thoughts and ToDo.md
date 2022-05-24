@@ -1,4 +1,22 @@
 ****************************
+2022-05-24 Andreas notes
+
+* At some point I accidentally set flow_line_size twice. Results weren't right, only one was evaluated. I suggest that update_diagram() checks that each setting matches one of the allowed ones, and none is accidentally supplied more than once. Otherwise produce error and stop.
+
+* Some bits are not working, I made comments in vignette C, always in ALL CAPS with AH: in front.
+
+* I updated update_diagram such that an empty setting returns names of elements. For some reason my line break with \n doesn't work in the output when returning names. Can you get that to work? To see what I mean, see vignette C.
+
+* I realized that it's really hard for users to pick absolute values for changes to anything that has to do with locations or curvature, since they have no idea what an x value of say 3 actually means. They would have to look at the various xmin/xmax etc values inside the variables/flows data frames, which we want to avoid. My suggestion is to rewrite update_diagram such that any entries the user supplies are relative to the current value. So for instance var_xmin = (S = 0.1, I = -0.2) would shift the xmin of the S box by +0.1 and the I box by -0.2 This way the user can explore shifting things around on the plot without having to know the absolute numbers. Should be pretty quick to do in code, instead of replacing the old value with the new, it's just the old value plus the new. 
+
+* Not urgent but maybe nice at some point: have a var_outline_width setting to adjust thickness of box borders? 
+
+* Another option one could add would be var_shape that might allow a few different shapes, e.g. rectangle, circle, diamond. Though that might potentially be difficult with the connection points of the arrows? I say not now, just noting here as something one could consider doing.
+
+
+
+
+****************************
 2022-05-19 Andreas notes
 
 * in vignette C, you write: "NOTE: THE ABOVE IS TRUE EXCEPT FOR THE LOCATION INFORMATION AND CURVATURE. THOSE MUST BE VECTORS EQUAL IN LENGTH TO THE NUMBER OF VARS OR FLOWS." does that mean if i wanted to change the xmin of one flow, i needed to enter the xmin for all of them, even the unchanged? seems a bit tedious and it would also require digging into the data frame to get the original locations. can we make it such that one can specify only the ones that should be changed? 
