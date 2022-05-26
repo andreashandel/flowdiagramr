@@ -11,16 +11,16 @@ update_diagram(diagram_list, diagram_settings = NULL)
 \code{\link{prepare_diagram}} function. See that function for details
 about this object.}
 
-\item{diagram_settings}{A required list of diagram aesthetic settings. See
+\item{diagram_settings}{An optional list of diagram aesthetic settings. See
 \strong{details} for allowable syntax. The following elements are supported
 and default values are provided:
 \itemize{
-\item \code{var_xmin}: A named numeric vector of mininum x locations.
-\item \code{var_xmax}: A named numeric vector of maximum x locations.
-\item \code{var_ymin}: A named numeric vector of minimum y locations.
-\item \code{var_ymax}: A named numeric vector of maximum y locations.
-\item \code{var_xlabel}: A named numeric vector of variable label x locations.
-\item \code{var_ylabel}: A named numeric vector of variable label x locations.
+\item \code{var_xmin}: A named numeric vector of offsets to mininum x locations.
+\item \code{var_xmax}: A named numeric vector of offsets to maximum x locations.
+\item \code{var_ymin}: A named numeric vector of offsets to minimum y locations.
+\item \code{var_ymax}: A named numeric vector of offsets to maximum y locations.
+\item \code{var_xlabel}: A named numeric vector of offsets to variable label x locations.
+\item \code{var_ylabel}: A named numeric vector of offsets to variable label x locations.
 \item \code{var_outline_color}: A named character vector of box outline colors.
 Default is "black".
 \item \code{var_fill_color}: A named character vector of box fill colors. Can be
@@ -29,16 +29,16 @@ a named color or HEX code. Default is "#6aa4c8".
 Can be a named color or HEX code. Default is "white".
 \item \code{var_label_size}: A named character vector of text sized for variable
 labels. Default is 10.
-\item \code{flow_xmin}: A named numeric vector of minimum x locations (flow
-starting points).
-\item \code{flow_xmax}: A named numeric vector of maximum x locations (flow
-ending points).
-\item \code{flow_ymin}: A named numeric vector of minimum y locations (flow
-starting points).
-\item \code{flow_ymax}: A named numeric vector of maximum y locations (flow
-ending points).
-\item \code{flow_xlabel}: A named numeric vector of flow label x locations.
-\item \code{flow_ylabel}: A named numeric vector of flow label y locations.
+\item \code{flow_xmin}: A named numeric vector of offsets to the minimum x
+locations (flow starting points).
+\item \code{flow_xmax}: A named numeric vector of offsets to the maximum x
+locations (flow ending points).
+\item \code{flow_ymin}: A named numeric vector of offsets to the minimum y
+locations (flow starting points).
+\item \code{flow_ymax}: A named numeric vector of offsets to the maximum y
+locations (flow ending points).
+\item \code{flow_xlabel}: A named numeric vector of offsets to the flow label x locations.
+\item \code{flow_ylabel}: A named numeric vector of offsets to the flow label y locations.
 \item \code{flow_curvature}: A named numeric vector numeric curvature values.
 \item \code{flow_line_color}: A named character vector specifying the color of
 of flow lines. Default is "black".
@@ -77,8 +77,9 @@ the different arguments in the input list of this function.
 \details{
 The user can provide any number of updates in the
 \code{diagram_settings} list. Only those provided are updated. If the
-function is called with no updates, a warning is issued and the original
-data frames list object is returned. For location settings (e.g., xmin)
+function is called with no updates, the names of all elements in
+the \code{variables} and \code{flows} data frames are returned.
+For location settings (e.g., xmin)
 and curvature settings (just for flows), the user must provide a named
 vector for the setting argument, where the name matches one or more of
 \code{variables$name} (for var_* settings) or \code{flows$name} (for flow_*

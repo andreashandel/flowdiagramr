@@ -686,6 +686,10 @@ prepare_diagram <- function(model_list,
   # in the data frame for edges (segments/arrows/flows).
   flows <- unique(flows)
 
+  # keep original name for all flows. this gets overwritten when the interaction
+  # flow is added. but we want to retain this for later for the user
+  flows$orig_name <- flows$name
+
   # Parse the meaning of duplicate labels. Usually this is a complex mix
   # of a direct, physical flows and interactions from several other
   # state variables. We assume that the "main" flow among the "auxilliary"
@@ -737,11 +741,6 @@ prepare_diagram <- function(model_list,
   flows$linkto <- NA  #empty column for interaction flows, but needed for binding
   ints <- subset(flows, interaction == TRUE)
   flows <- subset(flows, interaction == FALSE)
-
-  # keep original name for all flows. this gets overwritten when the interaction
-  # flow is added. but we want to retain this for later for the user
-  flows$orig_name <- flows$name
-  ints$orig_name <- ints$name
 
   # If there are interactions, then duplicate them and reassign the to/from
   # columns such that we have two segments for each interaction flagged

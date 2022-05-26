@@ -12,12 +12,12 @@
 #'     **details** for allowable syntax. The following elements are supported
 #'     and default values are provided:
 #' \itemize{
-#' \item `var_xmin`: A named numeric vector of mininum x locations.
-#' \item `var_xmax`: A named numeric vector of maximum x locations.
-#' \item `var_ymin`: A named numeric vector of minimum y locations.
-#' \item `var_ymax`: A named numeric vector of maximum y locations.
-#' \item `var_xlabel`: A named numeric vector of variable label x locations.
-#' \item `var_ylabel`: A named numeric vector of variable label x locations.
+#' \item `var_xmin`: A named numeric vector of offsets to mininum x locations.
+#' \item `var_xmax`: A named numeric vector of offsets to maximum x locations.
+#' \item `var_ymin`: A named numeric vector of offsets to minimum y locations.
+#' \item `var_ymax`: A named numeric vector of offsets to maximum y locations.
+#' \item `var_xlabel`: A named numeric vector of offsets to variable label x locations.
+#' \item `var_ylabel`: A named numeric vector of offsets to variable label x locations.
 #' \item `var_outline_color`: A named character vector of box outline colors.
 #'     Default is "black".
 #' \item `var_fill_color`: A named character vector of box fill colors. Can be
@@ -26,16 +26,16 @@
 #'     Can be a named color or HEX code. Default is "white".
 #' \item `var_label_size`: A named character vector of text sized for variable
 #'     labels. Default is 10.
-#' \item `flow_xmin`: A named numeric vector of minimum x locations (flow
-#'     starting points).
-#' \item `flow_xmax`: A named numeric vector of maximum x locations (flow
-#'     ending points).
-#' \item `flow_ymin`: A named numeric vector of minimum y locations (flow
-#'     starting points).
-#' \item `flow_ymax`: A named numeric vector of maximum y locations (flow
-#'     ending points).
-#' \item `flow_xlabel`: A named numeric vector of flow label x locations.
-#' \item `flow_ylabel`: A named numeric vector of flow label y locations.
+#' \item `flow_xmin`: A named numeric vector of offsets to the minimum x
+#'     locations (flow starting points).
+#' \item `flow_xmax`: A named numeric vector of offsets to the maximum x
+#'     locations (flow ending points).
+#' \item `flow_ymin`: A named numeric vector of offsets to the minimum y
+#'     locations (flow starting points).
+#' \item `flow_ymax`: A named numeric vector of offsets to the maximum y
+#'     locations (flow ending points).
+#' \item `flow_xlabel`: A named numeric vector of offsets to the flow label x locations.
+#' \item `flow_ylabel`: A named numeric vector of offsets to the flow label y locations.
 #' \item `flow_curvature`: A named numeric vector numeric curvature values.
 #' \item `flow_line_color`: A named character vector specifying the color of
 #'     of flow lines. Default is "black".
@@ -156,8 +156,8 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
     message("No settings were provided; returning names of elements in diagram_list dataframes.")
     varelementnames = paste("Variables:",paste(variables$name, collapse = ", "))
     flowelementnames = paste("Flows:",paste(flows$name, collapse = ", "))
-    elementnames = paste(varelementnames, "\n", flowelementnames)
-    return(elementnames)
+    elementnames = paste0(varelementnames, "\n", flowelementnames)
+    return(cat(elementnames))
   }  # otherwise, carry on
 
   # possible variable (var) settings are the following
@@ -205,7 +205,14 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   nonrecognized_inputs <- setdiff(names(diagram_settings),  setting_names)
   if (length(nonrecognized_inputs) > 0)
   {
-    stop('These elements of diagram_settings are not recognized: ', nonrecognized_inputs)
+    stop(paste0('These elements of diagram_settings are not recognized: ', nonrecognized_inputs))
+  }
+
+  # if the user provides the same setting name twice, send error
+  test <- any(duplicated(names(diagram_settings)))
+  if(test == TRUE) {
+    dups <- names(diagram_settings)[duplicated(names(diagram_settings))]
+    stop(paste0("These elements of diagram_settings are duplicated: ", dups, ". Each element can only be assigned once. See examples."))
   }
 
 
@@ -225,11 +232,19 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
       this_setting <- variable_settings[[i]]
       df_colname <- gsub("var_", "", names(variable_settings)[i])
 
+      # check if this is a location setting, treated as offset below
+      loc_flag <- grep(pattern = c("xmin|xmax|ymin|ymax|xlabel|ylabel"),
+                       x = names(variable_settings)[i])
+
       # check for settings applied to all
       for_all <- this_setting["all"]
       if(!is.na(for_all)) {
-        # this value will apply to all rows in that column
-        variables[ , df_colname] <- this_setting["all"]
+        if(length(loc_flag) > 0) {
+          variables[ , df_colname] <- variables[ , df_colname] + this_setting["all"]
+        } else {
+          # this value will apply to all rows in that column
+          variables[ , df_colname] <- this_setting["all"]
+        }
       }
 
       # now apply variable-specific, if present
@@ -242,11 +257,17 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
       } else {
         var_vals <- variables[ , df_colname] # pull out vector of current values
         names(var_vals) <- variables$name  # name for matching
-        # update the one's that match
-        var_vals[match(names(named_settings), names(var_vals))] <- named_settings
-        # overwrite the variables column (could be same values)
-        variables[ , df_colname] <- var_vals
-      }
+        if(length(loc_flag) > 0) {
+          var_vals[match(names(named_settings), names(var_vals))] <- var_vals[match(names(named_settings), names(var_vals))] + named_settings
+          # overwrite the variables column (could be same values)
+          variables[ , df_colname] <- var_vals
+        } else {
+          # update the one's that match
+          var_vals[match(names(named_settings), names(var_vals))] <- named_settings
+          # overwrite the variables column (could be same values)
+          variables[ , df_colname] <- var_vals
+        }  # end location if/then
+      }  # end if/then for names testing
     }  # end variable settings loop
   }  # end variable settings if/then process chunk
 
@@ -258,11 +279,21 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
       this_setting <- flow_settings[[i]]
       df_colname <- gsub("flow_", "", names(flow_settings)[i])
 
+      # check if this is a location setting, treated as offset below
+      loc_flag <- grep(pattern = c("xmin|xmax|ymin|ymax|xlabel|ylabel"),
+                       x = names(flow_settings)[i])
+
       # check for settings applied to all
       for_all <- this_setting["all"]
+
       if(!is.na(for_all)) {
-        # this value will apply to all rows in that column
-        flows[ , df_colname] <- this_setting["all"]
+        # if a location setting, apply as offset
+        if(length(loc_flag) > 0) {
+          flows[ , df_colname] <- flows[ , df_colname] + this_setting["all"]
+        } else {
+          # this value will apply to all rows in that column
+          flows[ , df_colname] <- this_setting["all"]
+        }
       }
 
       # now apply type specific settings -- not "all" or in flows$name
@@ -274,12 +305,23 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
                     names(flow_settings)[i],
                     " is not present in the flows data frame."))
       } else {
-        flow_vals <- flows[ , df_colname] # pull out vector of current values
-        names(flow_vals) <- flows$type  # name for matching
-        # update the one's that match
-        flow_vals[match(names(typed_settings), names(flow_vals))] <- typed_settings
-        # overwrite the variables column (could be same values)
-        flows[ , df_colname] <- flow_vals
+        typed_df <- data.frame(
+          type = names(typed_settings),
+          value = typed_settings
+        )
+        flows <- merge(flows, typed_df, all = TRUE)
+
+        if(length(loc_flag) > 0) {
+          flows[ , df_colname] <- ifelse(is.na(flows$value),
+                                         flows[ , df_colname],
+                                         flows[ , df_colname] + flows$value)
+          flows$value <- NULL
+        } else {
+          flows[ , df_colname] <- ifelse(is.na(flows$value),
+                                         flows[ , df_colname],
+                                         flows$value)
+          flows$value <- NULL
+        }
       }
 
       # now apply name specific settings -- not "all" or any possible types
@@ -292,12 +334,23 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
                     names(flow_settings)[i],
                     " is not present in the flows data frame."))
       } else {
-        flow_vals <- flows[ , df_colname] # pull out vector of current values
-        names(flow_vals) <- flows$name  # name for matching
-        # update the one's that match
-        flow_vals[match(names(named_settings), names(flow_vals))] <- named_settings
-        # overwrite the variables column (could be same values)
-        flows[ , df_colname] <- flow_vals
+        named_df <- data.frame(
+          name = names(named_settings),
+          value = named_settings
+        )
+        flows <- merge(flows, named_df, all = TRUE)
+
+        if(length(loc_flag) > 0) {
+          flows[ , df_colname] <- ifelse(is.na(flows$value),
+                                         flows[ , df_colname],
+                                         flows[ , df_colname] + flows$value)
+          flows$value <- NULL
+        } else {
+          flows[ , df_colname] <- ifelse(is.na(flows$value),
+                                         flows[ , df_colname],
+                                         flows$value)
+          flows$value <- NULL
+        }
       }
     }  # end flow settings loop
   }  # end flow settings if/then process chunk

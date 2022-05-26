@@ -145,7 +145,6 @@ sir_diagram4 <- make_diagram(diagram_list4)
 plot(sir_diagram4)
 ```
 
-AH: NOT QUITE WORKING, THE ARROW FROM S TO I SHOULD ALSO BE ORANGE.
 
 The reserved words for `update_diagram()` are `all` (applied to variables and flows) and `main`, `interaction` and `external` (only applied to flows.)
 
@@ -183,8 +182,6 @@ update_diagram(diagram_list_v1)
 ```
 Note that the flow names are simply the equations without the math symbols, and indexed by type of flow. That can make them look a bit ugly at times, but it shouldn't be much of an issue.
 
-AH: TWO OF THE FLOWS DON"T HAVE THE RIGHT NAMES
-
 Now we alter the look:
 
 ```{r}
@@ -209,8 +206,6 @@ plot(diagram_v2)
 ```
 
 Note that for some settings, we used a mix of addressing elements by name and some of the grouping shorthand. If you supply both, the way `update_diagram()` works is to first process the groupings (`all`/`main`/`interaction`/`external`) and then any individual ones. This means you can for instance change all boxes to one color and then individually set one to yet another color. We'll show that in the next example.
-
-AH: NOT WORKING. NOT ALL MAIN FLOWS ARE DASHED. FLOW LABEL COLOR NOT ALL CYAN. dPPat should be size 2.
 
 
 ## Example 3
@@ -268,7 +263,6 @@ plot(sir_diagram2)
 
 Note again the mix of updates applied to individual elements and groups of elements. Groupings are always applied first, no matter the order you supply them. Thus, first we set the color of all boxes to gray, then change the `I` box individually to red.
 
-AH: FLOW LINE COLOR EXTERNAL BLUE DOESN'T SEEM TO WORK.
 
 ## Example 4
 

@@ -29,11 +29,13 @@ make_diagram(dfs, with_grid = TRUE)  # show the grid
 
 # quick test of update
 newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
+                    var_xlabel = c(all = -0.25, R = 0.25),
+                    var_ylabel = c(R = -0.25),
                     flow_line_size = c(interaction = 1.5),
                     flow_line_color = c(all = "grey25",
                                         interaction = "orange",
                                         e_n = "red"),
-                    flow_xmin = c(e_n = 0.5))
+                    flow_xmin = c(i_bSI = -0.5))
 diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
 make_diagram(diag_list_up)
 
