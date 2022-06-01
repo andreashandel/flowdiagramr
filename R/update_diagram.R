@@ -205,14 +205,17 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   nonrecognized_inputs <- setdiff(names(diagram_settings),  setting_names)
   if (length(nonrecognized_inputs) > 0)
   {
-    stop(paste0('These elements of diagram_settings are not recognized: ', nonrecognized_inputs))
+    stop(paste0('These elements of diagram_settings are not recognized: ',
+                nonrecognized_inputs))
   }
 
   # if the user provides the same setting name twice, send error
   test <- any(duplicated(names(diagram_settings)))
   if(test == TRUE) {
     dups <- names(diagram_settings)[duplicated(names(diagram_settings))]
-    stop(paste0("These elements of diagram_settings are duplicated: ", dups, ". Each element can only be assigned once. See examples."))
+    stop(paste0("These elements of diagram_settings are duplicated: ",
+                dups,
+                ". Each element can only be assigned once. See examples."))
   }
 
 
@@ -233,6 +236,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
       df_colname <- gsub("var_", "", names(variable_settings)[i])
 
       # check if this is a location setting, treated as offset below
+      # all other, non-location settings are simply overwritten
       loc_flag <- grep(pattern = c("xmin|xmax|ymin|ymax|xlabel|ylabel"),
                        x = names(variable_settings)[i])
 
@@ -240,8 +244,10 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
       for_all <- this_setting["all"]
       if(!is.na(for_all)) {
         if(length(loc_flag) > 0) {
+          # add offset
           variables[ , df_colname] <- variables[ , df_colname] + this_setting["all"]
         } else {
+          # overwrite
           # this value will apply to all rows in that column
           variables[ , df_colname] <- this_setting["all"]
         }
@@ -258,12 +264,24 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
         var_vals <- variables[ , df_colname] # pull out vector of current values
         names(var_vals) <- variables$name  # name for matching
         if(length(loc_flag) > 0) {
-          var_vals[match(names(named_settings), names(var_vals))] <- var_vals[match(names(named_settings), names(var_vals))] + named_settings
+          # if locations were changed above by "all", we need also
+          # subtract the "all" offset. here we create and all_off object that
+          # is 0 by default or the value in "all"
+          all_off <- 0
+          if(!is.na(for_all)) {
+            all_off <- this_setting["all"]
+          }
+
+          to_update <- match(names(named_settings), names(var_vals))
+          var_vals[to_update] <-  var_vals[to_update] - all_off + named_settings
+
           # overwrite the variables column (could be same values)
           variables[ , df_colname] <- var_vals
         } else {
           # update the one's that match
-          var_vals[match(names(named_settings), names(var_vals))] <- named_settings
+          to_update <- match(names(named_settings), names(var_vals))
+          var_vals[to_update] <- named_settings
+
           # overwrite the variables column (could be same values)
           variables[ , df_colname] <- var_vals
         }  # end location if/then
@@ -312,9 +330,17 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
         flows <- merge(flows, typed_df, all = TRUE)
 
         if(length(loc_flag) > 0) {
+          # if locations were changed above by "all", we need also
+          # subtract the "all" offset. here we create and all_off object that
+          # is 0 by default or the value in "all"
+          all_off <- 0
+          if(!is.na(for_all)) {
+            all_off <- this_setting["all"]
+          }
+
           flows[ , df_colname] <- ifelse(is.na(flows$value),
                                          flows[ , df_colname],
-                                         flows[ , df_colname] + flows$value)
+                                         flows[ , df_colname] - all_off + flows$value)
           flows$value <- NULL
         } else {
           flows[ , df_colname] <- ifelse(is.na(flows$value),
@@ -341,9 +367,17 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
         flows <- merge(flows, named_df, all = TRUE)
 
         if(length(loc_flag) > 0) {
+          # if locations were changed above by "all", we need also
+          # subtract the "all" offset. here we create and all_off object that
+          # is 0 by default or the value in "all"
+          all_off <- 0
+          if(!is.na(for_all)) {
+            all_off <- this_setting["all"]
+          }
+
           flows[ , df_colname] <- ifelse(is.na(flows$value),
                                          flows[ , df_colname],
-                                         flows[ , df_colname] + flows$value)
+                                         flows[ , df_colname] - all_off + flows$value)
           flows$value <- NULL
         } else {
           flows[ , df_colname] <- ifelse(is.na(flows$value),
