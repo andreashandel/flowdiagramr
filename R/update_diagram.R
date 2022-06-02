@@ -128,7 +128,7 @@
 #'                     flow_line_size = c(interaction = 1.5),
 #'                     flow_line_color = c(all = "grey25",
 #'                                         interaction = "orange",
-#'                                         e_n = "red"))
+#'                                         m_bSI = "red"))
 #' diag_list3 <- update_diagram(diag_list, diagram_settings = newsettings)
 #'
 #' @export

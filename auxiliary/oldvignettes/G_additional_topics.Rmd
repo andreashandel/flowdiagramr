@@ -65,7 +65,7 @@ print(mymodel)
 You can now proceed with the usual steps.
 
 ```{r, fig.width = 7, fig.align = "center"}
-diagram_list <- prepare_diagram(mymodel$model_list, mymodel$model_settings)
+diagram_list <- prepare_diagram(model_list = mymodel$model_list)
 sir_diagram <- make_diagram(diagram_list)
 plot(sir_diagram)
 ```
@@ -108,9 +108,9 @@ model_settings$varlocations = matrix(data = c("","E","","",
 
 
 ```{r, fig.height = 6, fig.width = 8, fig.align = "center"}
-diagram_list <- prepare_diagram(mymodel$model_list, model_settings)
-my_diagram <- make_diagram(diagram_list)
-plot(my_diagram)
+#diagram_list <- prepare_diagram(mymodel$model_list, model_settings)
+#my_diagram <- make_diagram(diagram_list)
+#plot(my_diagram)
 ```
 
 

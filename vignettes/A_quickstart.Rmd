@@ -178,10 +178,10 @@ and tell it what adjustments you want to make by specifying `diagram_settings`. 
 
 ```{r}
 diagram_list_v2 <- update_diagram(diagram_list, 
-                                  diagram_settings = list(var_fill_color = c('blue','red'), 
-                                                          main_flow_linetype = "dashed",
-                                                          external_flow_linetype = "solid",
-                                                         interaction_flow_line_size = 1.5)
+                                  diagram_settings = list(var_fill_color = c(Pat = 'blue', Imm = 'red'), 
+                                                          flow_linetype = c(main = "dashed", external = "solid"),
+                                                          flow_line_size = c(all = 1.5)
+                                                          )
                                   )
 ```
 
@@ -210,19 +210,21 @@ $$
 
 We'll finish with one more model, this time a more complex one.
 
-This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible individuals can get infected that way. We still allow for direct transmission. And on top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**). This gives us 3 SIR compartments each for adults and children, i.e., 6, and 1 environmental compartment, for a total of 7 compartments. 
+This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible individuals can get infected that way. We still allow for direct transmission.  On top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**) at rates `ra` and `rc`. Transmission occurs at rates $b_ij$, where $i$ is the infected category (including the infected environment) and $j$ the susceptible category.
+
+This gives us 3 SIR compartments each for adults and children, i.e., 6, and 1 environmental compartment, for a total of 7 compartments. 
 
 Here is the model specified in the format needed for **`r pkg`**.
 
 ```{r}
 variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
-             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
+flows = list(Sc_flows = c("-bcc*Sc*Ic","-bca*Sc*Ia","-bcp*Sc*P"), 
+             Ic_flows = c("bcc*Sc*Ic","bca*Sc*Ia","bcp*Sc*P","-gc*Ic"), 
              Rc_flows = c("gc*Ic"),
-             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
-             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
+             Sa_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P"), 
+             Ia_flows = c("bac*Sa*Ic","baa*Sa*Ia","bap*Sa*P","-ga*Ia"), 
              Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             P_flows = c("rc*Ic","ra*Ia","-d*P")
              )
 mymodel = list(variables = variables, flows = flows)
 ```
@@ -239,7 +241,7 @@ flows_wrong = list(Sc_flows = c("-Sc*(bcc*Ic+bca*Ia+bcp*P)"),
              Sa_flows = c("-Sa*(bac*Ic+baa*Ia+bap*P)"),
              Ia_flows = c("Sa*(bac*Ic+baa*Ia+bap*P)","-ga*Ia"),
              Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             P_flows = c("rc*Ic","ra*Ia","-d*P")
              )
 model_list_wrong = list(variables = variables, flows = flows_wrong)
 ```
@@ -257,14 +259,13 @@ As an example, here is the model with some typos. We accidentally put minus ("-"
 
 ```{r}
 variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-flows_wrong2 = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
-             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
+flows_wrong2 = list(Sc_flows = c("-bcc*Sc*Ic","-bca*Sc*Ia","-bcp*Sc*P"), 
+             Ic_flows = c("bcc*Sc*Ic","bca*Sc*Ia","bcp*Sc*P","-gc*Ic"), 
              Rc_flows = c("gc*Ic"),
-             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),
-             Ia_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P","-ga*Ia"),
+             Sa_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P"), 
+             Ia_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P","-ga*Ia"), 
              Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
-             )
+             P_flows = c("rc*Ic","ra*Ia","-d*P"))
 model_list_wrong2 = list(variables = variables, flows = flows_wrong2)
 ```
 

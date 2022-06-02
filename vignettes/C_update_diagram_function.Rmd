@@ -116,9 +116,10 @@ If you wanted to make the same changes as we did manually above, this would do i
 
 
 ```{r}
-diagram_list3 <- update_diagram(diagram_list1, diagram_settings = list(var_fill_color = c(I = "red"),
+diagram_list3 <- update_diagram(diagram_list1, 
+                                diagram_settings = list(var_fill_color = c(I = "red"),
                                                                        flow_line_size = c(i_bSI = 1.5) 
-                                                                       ) 
+                                                        ) 
                                 )
 ```
 
@@ -131,7 +132,7 @@ plot(sir_diagram3)
 
 
 
-When you modify any input with `update_diagram()`, you generally have two options. You can either specify individual elements you want to update, which we just did. For convenience, there is also a way to update multiple elements at the same time. Let's say we wanted to update the outline colors of all variables and the colors of all main flows, this would do it:
+When you modify any input with `update_diagram()`, you generally have two options. You can either specify individual elements you want to update, which we just did. For convenience, there is also a way to update multiple elements at the same time. Let's say we wanted to update the box colors of all variables and the colors of all main flows, this would do it:
 
 
 ```{r}
@@ -146,7 +147,7 @@ plot(sir_diagram4)
 ```
 
 
-The reserved words for `update_diagram()` are `all` (applied to variables and flows) and `main`, `interaction` and `external` (only applied to flows.)
+The reserved words for `update_diagram()` are `all` (for variables or flows) and `main`, `interaction` and `external` (only applicable for flows.)
 
 
 
@@ -180,7 +181,7 @@ Using the `update_diagram()` function, it is possible to change the look of most
 ```{r}
 update_diagram(diagram_list_v1)
 ```
-Note that the flow names are simply the equations without the math symbols, and indexed by type of flow. That can make them look a bit ugly at times, but it shouldn't be much of an issue.
+Note that the flow names are simply the equations without the math symbols, and prefaced by type of flow (m = main, i = interaction, e = external). That can make for at times ugly names, but it shouldn't be much of an issue. 
 
 Now we alter the look:
 
@@ -189,7 +190,7 @@ Now we alter the look:
 diagram_settings2 = list(var_fill_color = c(Pat = "blue", Imm = "red"), 
                          var_label_color = c(all = "orange"),
                          flow_linetype = c(main = "dashed"),
-                         flow_line_color = c(m_gPat1Patpmax = "green", m_ = "orange"),
+                         flow_line_color = c(m_gPat1Patpmax = "green", m_rPatImm = "orange"),
                          flow_line_size = c(m_gPat1Patpmax = 1.5, e_dIImm = 2.5, interaction = 3.5),
                          flow_label_size = c(e_dIImm = 8, external = 2, interaction = 12),
                          flow_label_color = c(external = "cyan")
@@ -297,13 +298,13 @@ Finally, we'll revisit the 7-compartment model we explored previously, and see i
 
 ```{r}
 variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
-             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
+flows = list(Sc_flows = c("-bcc*Sc*Ic","-bca*Sc*Ia","-bcp*Sc*P"), 
+             Ic_flows = c("bcc*Sc*Ic","bca*Sc*Ia","bcp*Sc*P","-gc*Ic"), 
              Rc_flows = c("gc*Ic"),
-             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
-             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
+             Sa_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P"), 
+             Ia_flows = c("bac*Sa*Ic","baa*Sa*Ia","bap*Sa*P","-ga*Ia"), 
              Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             P_flows = c("rc*Ic","ra*Ia","-d*P")
              )
 mymodel = list(variables, flows)
 ```
@@ -338,6 +339,7 @@ diagram_settings2 = list(var_fill_color = c(Sc = "#cde9fa", Ic = "#cde9fa",
                                             Ia = "#40f9cf", Ra = "#40f9cf", 
                                             P = "#b2b2b2"),
                          var_outline_color = c(all = "#031e79"),
+                         var_label_size = c(all = 8),
                          var_label_color = c(all = "black"),
                          flow_line_color = c( interaction = "#f94075",
                                               external = "gray")
@@ -354,32 +356,66 @@ plot(model_plot6)
 ```
 Better, but not quite there. One can use `update_diagram()` more than once of course, so let's make further changes. Specifically, we'll modify some of the locations for the arrows and labels.
 
-AH: WAITING TO DO THIS UNTIL WE FINALIZED HOW UPDATES TO LOCATIONS WORK, SEE NOTE IN TODO.
+The way `update_diagram()` processes any change to location of boxes, arrows, labels, etc. is by applying a change **relative to the current position**. This means if you think a box for some variable should be extended a bit to the left, you can apply an offset of say -0.25 to `var_xmin` for that variable. Similarly, if you think the box should be extended upwards a bit, you can apply 0.25 to the `var_ymax` value. As you adjust positioning, it might be helpful to turn on the grid lines in the diagram, which are by default turned off. You can do so by setting `with_grid = TRUE` in `make_diagram()`.   
+
+Here is a simple example where we moved a few of the labels
 
 ```{r}
 # define list of updates
-diagram_settings3 = list(flow_ylabel = c(m_gcIc = 0.5)
-                         )
+diagram_settings3 = list(flow_ylabel = c(m_gcIc = 0.25, m_gaIa = 0.25) )
 diagram_list7 <- update_diagram(diagram_list6, diagram_settings3) 
+model_plot7 <- make_diagram(diagram_list7, with_grid = TRUE)
+plot(model_plot7)
 ```
-
+Next, let's move some arrows around to make things look less messy. Note that start and end points for arrows are specified as relative to the current value, however **curvature is an absolute value.** Positive values curve in one direction, negative in the other, and 0 means no curvature. We are also changing a few flow colors to make things clearer.
 
 
 ```{r}
-model_plot7 <- make_diagram(diagram_list7)
-plot(model_plot7)
+# define list of updates
+diagram_settings4 = list(flow_curvature = c(i_baaSaIa = -0.5, i_bccScIc = 0.5, 
+                                            i_bacSaIc = -0.3, i_bcaScIa = 0.3,
+                                            i_raIa = 0, i_rcIc = 0, i_bcpScP = -0.5),
+                         flow_xmin = c(i_bcpScP = -0.5),
+                         flow_ymin = c(i_bcpScP = -0.5, i_bacSaIc = -1),
+                         flow_line_color = c(i_baaSaIa = "#40f9cf", i_bacSaIc = "#cde9fa",
+                                             i_bapSaP = "#b2b2b2", i_bcpScP = "#b2b2b2",
+                                             i_bccScIc = "#cde9fa", i_bcaScIa = "#40f9cf"),
+                         flow_line_size = c(all = 1.25)
+                        )
+diagram_list8 <- update_diagram(diagram_list7, diagram_settings4) 
+model_plot8 <- make_diagram(diagram_list8, with_grid = TRUE)
+plot(model_plot8)
 ```
 
-This is now looking like a pretty decent diagram. Further tweaks are of course possible.
+AH: I AM A BIT SURPRISED THAT THE FLOWS OUT OF P ARE NOT AT EXACTLY THE SAME Y VALUE, GIVEN THAT I'M ONLY SHIFTING AROUND IN UNITS OF 0.5. NOT A BIG DEAL FOR THIS PARTICULAR EXAMPLE, BUT WONDERING IF THAT POINTS TO SOMETHING UNDERNEATH THAT'S OFF?
+
+
+Now we need to adjust the labels 
+
+
+```{r}
+# define list of updates
+diagram_settings5 = list(flow_xlabel = c(i_bcaScIa = 0.75, i_bacSaIc = 3.5, 
+                                         i_bapSaP = -0.75, i_bcpScP = -2,
+                                         i_raIa = -0.25, i_rcIc = 0.5), 
+                         flow_ylabel = c(i_bcaScIa = -2.5, i_bacSaIc = -0.25, 
+                                         i_baaSaIa = -2, e_dP = -0.5,
+                                         i_rcIc = -0.75)
+                        )
+diagram_list9 <- update_diagram(diagram_list8, diagram_settings5) 
+model_plot9 <- make_diagram(diagram_list9, with_grid = FALSE)
+plot(model_plot9)
+```
+This is now looking like a pretty decent diagram. With maybe a few more further tweaks, this could be used for public consumption `r emoji::emoji('grin')`. Granted, adjusting the arrows and labels can be a bit fiddly, but we think it's still easier and better than firing up your favorite drawing software. Also, it's likely easier to update here if you make changes to the model.
+
 
 
 
 ## Next steps
 
 By combining layout settings supplied to `prepare_diagram()` and styling applied through `update_diagram()`, you can easily customize the look of the diagram. Often, this should allow you to produce a diagram that looks ready to use. 
-In thos instances where you want to make further changes that are not currently supported by this workflow (e.g., if you want to change one of the variable boxes to a circle), **`r pkg`** can provide you with the complete code that generates the `ggplot` object, which you can then edit manually.
 
-[The next vignette](./D_modify_input_structure.html) explains how to do that. 
+In those instances where you want to make further changes that are not currently supported by this workflow (e.g., if you want to change one of the variable boxes to a circle), **`r pkg`** can provide you with the complete code that generates the `ggplot` object, which you can then edit manually. [The next vignette](./D_modify_ggplot_code.html) explains how to do that. 
 
 
 

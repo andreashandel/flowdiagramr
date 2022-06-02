@@ -1,4 +1,44 @@
 ****************************
+2022-06-02 Andreas notes
+
+* I re-activated and went through all vignettes, apart from vignette D, the ggplot code one and G, the convert_from_modelbuilder one.
+
+Here are specific comments:
+
+* I updated vignette C. Seems to work, made one more comment, take a look.
+
+* I realized that xmin/xmax/ymin/ymax for flows is not fully clear, since min/max could reference to start/end or actual min/max according to coordinate system. I think you actually had it as xstart/xend previously and I suggested to change - maybe that changing wasn't a good idea, and xstart/xend, etc are better :) Suggest switching back for flows.
+
+* I accidentally supplied the same element twice in flow_xlabel and instead of an error message, it plotted 2 copies of the label. So some check for multiple elements seems to not be present yet. Every entry should be checked to make sure it has a matching element and no element is matched more than once. (see also comment on checking below)
+
+* var_label_text is not documented in update_diagram (but seems to work) and flow_label_text doesn't seem to be implemented. See vignette E example 1.
+
+* I accidentally wrote at some point var_label_size =  3 instead of var_label_size = c(all = 3) and it silently ignored. Should be an error message if the input for each element is not a named vector. Maybe, since you need to do various checks for those inputs, put all input checks in a separate error check function (e.g. check_update_inputs() ) that is called at the beginning of update_diagram?
+
+* Totally picky, but my sense of symmetry doesn't like that it's flow_line_color and flow_line_size but flow_linetype. Can we add an underscore before type? :)
+
+
+Next is I think the following:
+
+* For write_diagram, I figured it's best if you first revisit the write_diagram function, make updates based on what we have now, update documentation/help file. Then I update that vignette. My current thought is that write_diagram takes diagram_list as required input, and directory/filename/always_overwrite as optional. Nothing else, we'll remove model_list/model_settings/diagram_settings from input. The code that's then generated is the ggplot part, based on diagram_list. I think carrying through the other stuff is just too complex and at this point I don't see a real need. Basically, if a user decides to go the write_diagram() route, they are taking a one-way out of the package towards manual adjustment. That's ok. To be reproducible, all write_diagram needs to include is the diagram_list data frame as input data, and the ggplot commands that create the diagram. Am I seeing this right or forgetting something? Happy to discuss this part more.
+
+* For the convert_from_modelbuilder, I think it only requires a few updates to work with the new setup.
+
+
+
+
+A few additional thoughts/ideas, but I think less critical than those above:
+
+* Not a focus now, but worth keeping in the back: Any tweaks the automatic/default placement of things that improve the default look are good. E.g. getting closer to the final figure in vignette C with reduced manual intervention.
+
+* Arrows in example 2 of vignette F are poorly placed. Of course user can adjust. But wondering if there's still some tweaks/improvements one can make to the logic inside prepare_diagram to make automatic placement better? Might be worth scribbling down thoughts for future implementation.
+
+* Maybe worth considering moving some of the flowtester examples into vignette F, this way they get run on every package check and we can easily see if stuff fails in the future (and it gives users more examples). I can do that.
+
+
+
+
+****************************
 2022-05-24 Andreas notes
 
 * At some point I accidentally set flow_line_size twice. Results weren't right, only one was evaluated. I suggest that update_diagram() checks that each setting matches one of the allowed ones, and none is accidentally supplied more than once. Otherwise produce error and stop. **DONE**

@@ -1,5 +1,5 @@
 ---
-title: Modifying the code 
+title: Modifying the ggplot2 code 
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Modifying the ggplot2 code}
@@ -25,13 +25,15 @@ library(pkg, character.only = TRUE)
 
 ## Introduction
 
-We assume you went through the [getting started vignette](./A_quickstart.html) and also the [basic modification](./B_modify_diagrams_simple.html) and the [input structure modification](./C_modify_input_structure.html) vignettes. These ways of adjusting diagrams described in the previous vignettes might allow you to produce the diagram you need. That's great! But sometimes, you might want to make additional tweaks. How that's done is the topic of this vignette.
+We assume you went through the previous vignettes that showed you how to use the functionality provided by **`r pkg`** to produce fairly good looking (in our biased opinion) diagrams. We believe (hope) that this often gives you a diagram you are happy with.
+
+However, occasionally you might want to make additional tweaks beyond what **`r pkg`** can do. Fortunately for you, there is a way to do this, which is the topic of this vignette.
+
 
 
 ## Modifying the ggplot2 code
 
-The most flexible approach to adjust diagrams is to modify the ggplot code that produces the diagram. To do this, you can retrieve the full ggplot2 code that creates the diagram and then edit it like you would any ggplot figure. This is the most flexible, but also the most time-consuming approach.
-We'll illustrate this approach with a few simple examples. It is obviously impossible to cover all options, it's fully up to you to edit the code.
+The most flexible approach to adjust diagrams is to modify the ggplot code that produces the diagram. To do this, you can retrieve the full ggplot2 code that creates the diagram and then edit it like you would any ggplot figure. We'll illustrate this approach with a few simple examples. 
 
 
 ### Example 1
@@ -39,14 +41,22 @@ We'll illustrate this approach with a few simple examples. It is obviously impos
 We'll start with a very basic example. First, you define your model as usual. 
 
 ```{r}
-varlabels = c("S","I","R")
-flows = list(S_flows = c("-b*S*I"), 
-             I_flows = c("b*S*I","-g*I"), 
-             R_flows = c("g*I"))
-sirmodel1 = list(varlabels = varlabels, flows = flows)
+# specify the model
+variables = c("S","I","R")
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
+             I_flows = c("+b*S*I","-g*I", "-m*I"), 
+             R_flows = c("g*I", "-m*R"))
+sirmodel = list(variables = variables, flows = flows)
 ```
 
-Once you have your model, you can send it to `write_diagram`, a function that writes the full code needed to generate the diagram. 
+Next, you prepare the model
+
+```{r}
+diag_list <- prepare_diagram(sirmodel)
+```
+
+
+Once you have the diagram list ready, you can send it to `write_diagram`, a function that writes the full code needed to generate the diagram. 
 You can specify the location and name for the file. If you don't provide those, it will be stored in the current working directory under the name `diagram_code.R`. 
 
 ```{r, eval= FALSE}
