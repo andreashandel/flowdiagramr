@@ -102,7 +102,7 @@ diagram_settings1 = list(
     flow_label_color = c(main = "blue"),
     flow_label_size = c(main = 6),
     flow_line_color = c(main = "grey50", interaction = "grey25"),
-    #flow_linetype = c(main = 1, interaction = 2),
+    flow_line_type = c(main = "solid", interaction = "dashed"),
     flow_line_size = c(main = 1.2, interaction = 0.8)
 )
 

@@ -22,24 +22,27 @@
 #'     Default is "black".
 #' \item `var_fill_color`: A named character vector of box fill colors. Can be
 #'     a named color or HEX code. Default is "#6aa4c8".
+#' \item `var_label_text`: A named character vector of label text for each flow.
 #' \item `var_label_color`: A named character vector of variable label colors.
 #'     Can be a named color or HEX code. Default is "white".
 #' \item `var_label_size`: A named character vector of text sized for variable
 #'     labels. Default is 10.
-#' \item `flow_xmin`: A named numeric vector of offsets to the minimum x
+#' \item `flow_xstart`: A named numeric vector of offsets to the minimum x
 #'     locations (flow starting points).
-#' \item `flow_xmax`: A named numeric vector of offsets to the maximum x
+#' \item `flow_xend`: A named numeric vector of offsets to the maximum x
 #'     locations (flow ending points).
-#' \item `flow_ymin`: A named numeric vector of offsets to the minimum y
+#' \item `flow_ystart`: A named numeric vector of offsets to the minimum y
 #'     locations (flow starting points).
-#' \item `flow_ymax`: A named numeric vector of offsets to the maximum y
+#' \item `flow_yend`: A named numeric vector of offsets to the maximum y
 #'     locations (flow ending points).
 #' \item `flow_xlabel`: A named numeric vector of offsets to the flow label x locations.
 #' \item `flow_ylabel`: A named numeric vector of offsets to the flow label y locations.
 #' \item `flow_curvature`: A named numeric vector numeric curvature values.
 #' \item `flow_line_color`: A named character vector specifying the color of
 #'     of flow lines. Default is "black".
-#' \item `flow_linetype`: A named character vector of linetypes. This
+#' \item `flow_line_size`: A named numeric vector of line sizes. Default
+#'     value is 1.
+#' \item `flow_line_type`: A named character vector of linetypes. This
 #'     argument is passed to the \code{linetype} argument in ggplot2. From
 #'     the ggplot2 documentation: "The linetype aesthetic can be specified
 #'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
@@ -47,8 +50,7 @@
 #'     discrete variable, or a string of an even number (up to eight) of
 #'     hexadecimal digits which give the lengths in consecutive positions in
 #'     the string." flowdiagramr uses the character name. Default is "solid".
-#' \item `flow_line_size`: A named numeric vector of line sizes. Default
-#'     value is 1.
+#' \item `flow_label_text`: A named character vector of label text for each flow.
 #' \item `flow_label_color`: A named character vector of label colors. Default
 #'     is "black".
 #' \item `flow_label_size`: A named numeric vector of label text sizes. Default
@@ -178,16 +180,17 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
 
   # possible flow settings are the following
   flow_setting_names <- paste0("flow_", c(
-    "xmin",
-    "xmax",
-    "ymin",
-    "ymax",
+    "xstart",
+    "xend",
+    "ystart",
+    "yend",
     "xlabel",
     "ylabel",
     "curvature",
     "line_color",
-    "linetype",
     "line_size",
+    "line_type",
+    "label_text",
     "label_color",
     "label_size",
     "show_label",
@@ -233,6 +236,21 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   if(length(variable_settings) > 0) {
     for(i in 1:length(variable_settings)) {
       this_setting <- variable_settings[[i]]
+
+      # check to make sure the setting has named elements
+      if(is.null(names(this_setting))) {
+        stop("All list elements must be named vectors. One the supplied settings does not contain a named vector of length 1 or greater. See examples.")
+      }
+
+      # check to make sure no duplicated names within the setting
+      test <- any(duplicated(names(this_setting)))
+      if(test == TRUE) {
+        dups <- names(this_setting)[duplicated(names(this_setting))]
+        stop(paste0("These elements within one of the settings are duplicated: ",
+                    dups,
+                    ". Each element can only be assigned once. See examples."))
+      }
+
       df_colname <- gsub("var_", "", names(variable_settings)[i])
 
       # check if this is a location setting, treated as offset below
@@ -295,10 +313,25 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
   if(length(flow_settings) > 0) {
     for(i in 1:length(flow_settings)) {
       this_setting <- flow_settings[[i]]
+
+      # check to make sure the setting has named elements
+      if(is.null(names(this_setting))) {
+        stop("All list elements must be named vectors. One the supplied settings does not contain a named vector of length 1 or greater. See examples.")
+      }
+
+      # check to make sure no duplicated names within the setting
+      test <- any(duplicated(names(this_setting)))
+      if(test == TRUE) {
+        dups <- names(this_setting)[duplicated(names(this_setting))]
+        stop(paste0("These elements within one of the settings are duplicated: ",
+                    dups,
+                    ". Each element can only be assigned once. See examples."))
+      }
+
       df_colname <- gsub("flow_", "", names(flow_settings)[i])
 
       # check if this is a location setting, treated as offset below
-      loc_flag <- grep(pattern = c("xmin|xmax|ymin|ymax|xlabel|ylabel"),
+      loc_flag <- grep(pattern = c("xstart|xend|ystart|yend|xlabel|ylabel"),
                        x = names(flow_settings)[i])
 
       # check for settings applied to all

@@ -101,10 +101,10 @@ in the diagram. Thus, the name might be duplicated in other rows.
 variable donating the flow.
 \item \code{to}: The variable to which the arrow will point. That is, the
 variable receiving the flow.
-\item \code{xmin}: The starting horizontal position of the arrow.
-\item \code{xmax}: The ending horizontal position of the arrow.
-\item \code{ymin}: The starting vertical position of the arrow.
-\item \code{ymax}: The ending vertical position of the arrow.
+\item \code{xstart}: The starting horizontal position of the arrow.
+\item \code{xend}: The ending horizontal position of the arrow.
+\item \code{ystart}: The starting vertical position of the arrow.
+\item \code{yend}: The ending vertical position of the arrow.
 \item \code{xlabel}: Horizontal position (midpoint) of label.
 \item \code{ylabel}: Vertical position (midpoint) of label.
 \item \code{curvature}: The amount of curvature applied to arrow.
@@ -114,7 +114,7 @@ duplicate of \code{name} so that user can update \code{label_text} as desired
 but retain the original math for reference.
 \item \code{line_color}: The color of the flow arrow line.
 \item \code{line_size}: The size (width) of the flow arrow line.
-\item \code{linetype}: The linetype of the flow arrow line.
+\item \code{line_type}: The linetype of the flow arrow line.
 \item \code{label_color}: Color of \code{label_text}.
 \item \code{label_size}: The text size of \code{label_text}.
 \item \code{arrow_size}: The size of the arrow point on the flow line.

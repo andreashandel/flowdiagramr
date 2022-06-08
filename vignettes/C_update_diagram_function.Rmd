@@ -189,7 +189,7 @@ Now we alter the look:
 # define new settings
 diagram_settings2 = list(var_fill_color = c(Pat = "blue", Imm = "red"), 
                          var_label_color = c(all = "orange"),
-                         flow_linetype = c(main = "dashed"),
+                         flow_line_type = c(main = "dashed"),
                          flow_line_color = c(m_gPat1Patpmax = "green", m_rPatImm = "orange"),
                          flow_line_size = c(m_gPat1Patpmax = 1.5, e_dIImm = 2.5, interaction = 3.5),
                          flow_label_size = c(e_dIImm = 8, external = 2, interaction = 12),
@@ -375,10 +375,10 @@ Next, let's move some arrows around to make things look less messy. Note that st
 diagram_settings4 = list(flow_curvature = c(i_baaSaIa = -0.5, i_bccScIc = 0.5, 
                                             i_bacSaIc = -0.3, i_bcaScIa = 0.3,
                                             i_raIa = 0, i_rcIc = 0, i_bcpScP = -0.5),
-                         flow_xmin = c(i_bcpScP = -0.5),
-                         flow_ymin = c(i_bcpScP = -0.5, i_bacSaIc = -1),
+                         flow_xstart = c(i_bcpScP = -0.5, i_bapSaP = -0.5),
+                         flow_ystart = c(i_bcpScP = -0.5, i_bapSaP = -0.5, i_bacSaIc = -1),
                          flow_line_color = c(i_baaSaIa = "#40f9cf", i_bacSaIc = "#cde9fa",
-                                             i_bapSaP = "#b2b2b2", i_bcpScP = "#b2b2b2",
+                                             i_bapSaP = "orange", i_bcpScP = "orange",
                                              i_bccScIc = "#cde9fa", i_bcaScIa = "#40f9cf"),
                          flow_line_size = c(all = 1.25)
                         )
@@ -387,7 +387,7 @@ model_plot8 <- make_diagram(diagram_list8, with_grid = TRUE)
 plot(model_plot8)
 ```
 
-AH: I AM A BIT SURPRISED THAT THE FLOWS OUT OF P ARE NOT AT EXACTLY THE SAME Y VALUE, GIVEN THAT I'M ONLY SHIFTING AROUND IN UNITS OF 0.5. NOT A BIG DEAL FOR THIS PARTICULAR EXAMPLE, BUT WONDERING IF THAT POINTS TO SOMETHING UNDERNEATH THAT'S OFF?
+<!-- AH: I AM A BIT SURPRISED THAT THE FLOWS OUT OF P ARE NOT AT EXACTLY THE SAME Y VALUE, GIVEN THAT I'M ONLY SHIFTING AROUND IN UNITS OF 0.5. NOT A BIG DEAL FOR THIS PARTICULAR EXAMPLE, BUT WONDERING IF THAT POINTS TO SOMETHING UNDERNEATH THAT'S OFF? -->
 
 
 Now we need to adjust the labels 

@@ -5,17 +5,17 @@
 
 Here are specific comments:
 
-* I updated vignette C. Seems to work, made one more comment, take a look.
+* I updated vignette C. Seems to work, made one more comment, take a look. **It looks like the i_bapSaP flow was never updated. If I apply the same -0.5 to xmin and ymin, then it leaves P from the same position as i_bcpScP. I updated in the vignette. Let me know if I am missing something, though.**
 
-* I realized that xmin/xmax/ymin/ymax for flows is not fully clear, since min/max could reference to start/end or actual min/max according to coordinate system. I think you actually had it as xstart/xend previously and I suggested to change - maybe that changing wasn't a good idea, and xstart/xend, etc are better :) Suggest switching back for flows.
+* I realized that xmin/xmax/ymin/ymax for flows is not fully clear, since min/max could reference to start/end or actual min/max according to coordinate system. I think you actually had it as xstart/xend previously and I suggested to change - maybe that changing wasn't a good idea, and xstart/xend, etc are better :) Suggest switching back for flows. **Haha! Done.**
 
-* I accidentally supplied the same element twice in flow_xlabel and instead of an error message, it plotted 2 copies of the label. So some check for multiple elements seems to not be present yet. Every entry should be checked to make sure it has a matching element and no element is matched more than once. (see also comment on checking below)
+* I accidentally supplied the same element twice in flow_xlabel and instead of an error message, it plotted 2 copies of the label. So some check for multiple elements seems to not be present yet. Every entry should be checked to make sure it has a matching element and no element is matched more than once. (see also comment on checking below) **DONE.**
 
-* var_label_text is not documented in update_diagram (but seems to work) and flow_label_text doesn't seem to be implemented. See vignette E example 1.
+* var_label_text is not documented in update_diagram (but seems to work) and flow_label_text doesn't seem to be implemented. See vignette E example 1. **FIXED**.
 
-* I accidentally wrote at some point var_label_size =  3 instead of var_label_size = c(all = 3) and it silently ignored. Should be an error message if the input for each element is not a named vector. Maybe, since you need to do various checks for those inputs, put all input checks in a separate error check function (e.g. check_update_inputs() ) that is called at the beginning of update_diagram?
+* I accidentally wrote at some point var_label_size =  3 instead of var_label_size = c(all = 3) and it silently ignored. Should be an error message if the input for each element is not a named vector. Maybe, since you need to do various checks for those inputs, put all input checks in a separate error check function (e.g. check_update_inputs() ) that is called at the beginning of update_diagram? **DONE. All checks still in the update_diagram function. They don't take up much space, but we can discuss best placement.**
 
-* Totally picky, but my sense of symmetry doesn't like that it's flow_line_color and flow_line_size but flow_linetype. Can we add an underscore before type? :)
+* Totally picky, but my sense of symmetry doesn't like that it's flow_line_color and flow_line_size but flow_linetype. Can we add an underscore before type? :) **I've been bothered by this, too! FIXED.**
 
 
 Next is I think the following:

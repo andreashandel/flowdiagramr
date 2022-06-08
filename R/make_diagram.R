@@ -99,11 +99,11 @@ make_diagram <- function (diagram_list, with_grid = FALSE) {
       diagram_plot <- diagram_plot +
         geom_curve(
           data = flows[i, ],
-          aes(x = xmin,
-              y = ymin,
-              xend = xmax,
-              yend = ymax),
-          linetype = flows[i, "linetype"],
+          aes(x = xstart,
+              y = ystart,
+              xend = xend,
+              yend = yend),
+          linetype = flows[i, "line_type"],
           arrow = arrow(length = unit(flows[i, "arrow_size"],"cm"), type = "closed"),
           color = flows[i, "line_color"],
           arrow.fill = flows[i, "line_color"],

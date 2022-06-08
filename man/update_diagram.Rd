@@ -25,24 +25,27 @@ and default values are provided:
 Default is "black".
 \item \code{var_fill_color}: A named character vector of box fill colors. Can be
 a named color or HEX code. Default is "#6aa4c8".
+\item \code{var_label_text}: A named character vector of label text for each flow.
 \item \code{var_label_color}: A named character vector of variable label colors.
 Can be a named color or HEX code. Default is "white".
 \item \code{var_label_size}: A named character vector of text sized for variable
 labels. Default is 10.
-\item \code{flow_xmin}: A named numeric vector of offsets to the minimum x
+\item \code{flow_xstart}: A named numeric vector of offsets to the minimum x
 locations (flow starting points).
-\item \code{flow_xmax}: A named numeric vector of offsets to the maximum x
+\item \code{flow_xend}: A named numeric vector of offsets to the maximum x
 locations (flow ending points).
-\item \code{flow_ymin}: A named numeric vector of offsets to the minimum y
+\item \code{flow_ystart}: A named numeric vector of offsets to the minimum y
 locations (flow starting points).
-\item \code{flow_ymax}: A named numeric vector of offsets to the maximum y
+\item \code{flow_yend}: A named numeric vector of offsets to the maximum y
 locations (flow ending points).
 \item \code{flow_xlabel}: A named numeric vector of offsets to the flow label x locations.
 \item \code{flow_ylabel}: A named numeric vector of offsets to the flow label y locations.
 \item \code{flow_curvature}: A named numeric vector numeric curvature values.
 \item \code{flow_line_color}: A named character vector specifying the color of
 of flow lines. Default is "black".
-\item \code{flow_linetype}: A named character vector of linetypes. This
+\item \code{flow_line_size}: A named numeric vector of line sizes. Default
+value is 1.
+\item \code{flow_line_type}: A named character vector of linetypes. This
 argument is passed to the \code{linetype} argument in ggplot2. From
 the ggplot2 documentation: "The linetype aesthetic can be specified
 with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
@@ -50,8 +53,7 @@ with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
 discrete variable, or a string of an even number (up to eight) of
 hexadecimal digits which give the lengths in consecutive positions in
 the string." flowdiagramr uses the character name. Default is "solid".
-\item \code{flow_line_size}: A named numeric vector of line sizes. Default
-value is 1.
+\item \code{flow_label_text}: A named character vector of label text for each flow.
 \item \code{flow_label_color}: A named character vector of label colors. Default
 is "black".
 \item \code{flow_label_size}: A named numeric vector of label text sizes. Default

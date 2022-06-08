@@ -99,10 +99,10 @@
 #'         variable donating the flow.
 #'     \item `to`: The variable to which the arrow will point. That is, the
 #'         variable receiving the flow.
-#'     \item `xmin`: The starting horizontal position of the arrow.
-#'     \item `xmax`: The ending horizontal position of the arrow.
-#'     \item `ymin`: The starting vertical position of the arrow.
-#'     \item `ymax`: The ending vertical position of the arrow.
+#'     \item `xstart`: The starting horizontal position of the arrow.
+#'     \item `xend`: The ending horizontal position of the arrow.
+#'     \item `ystart`: The starting vertical position of the arrow.
+#'     \item `yend`: The ending vertical position of the arrow.
 #'     \item `xlabel`: Horizontal position (midpoint) of label.
 #'     \item `ylabel`: Vertical position (midpoint) of label.
 #'     \item `curvature`: The amount of curvature applied to arrow.
@@ -112,7 +112,7 @@
 #'         but retain the original math for reference.
 #'     \item `line_color`: The color of the flow arrow line.
 #'     \item `line_size`: The size (width) of the flow arrow line.
-#'     \item `linetype`: The linetype of the flow arrow line.
+#'     \item `line_type`: The linetype of the flow arrow line.
 #'     \item `label_color`: Color of `label_text`.
 #'     \item `label_size`: The text size of `label_text`.
 #'     \item `arrow_size`: The size of the arrow point on the flow line.
@@ -1284,6 +1284,10 @@ prepare_diagram <- function(model_list,
                      "xlabel",
                      "ylabel",
                      "curvature")]
+
+  # update flows x/y min/max column names to be start/end for clarity
+  cols_to_change <- which(colnames(flows) %in% c("xmin","xmax","ymin","ymax"))
+  colnames(flows)[cols_to_change] <- c("xstart","xend","ystart","yend")
 
   # update variables column ordering
   variables <- variables[ , c("id",

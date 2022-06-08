@@ -70,9 +70,9 @@ check_dataframes <- function(diagram_list) {
   # Check the flows data frame.
   ###
   allowed_flow_columns <- c("id", "name", "type", "from", "to",
-                            "xmin", "xmax", "ymin", "ymax",
+                            "xstart", "xend", "ystart", "yend",
                             "xlabel", "ylabel", "curvature",
-                            "line_color", "line_size", "linetype",
+                            "line_color", "line_size", "line_type",
                             "label_text", "label_color", "label_size", "show_label",
                             "arrow_size", "show_arrow")
   flow_str_map <- data.frame(
@@ -130,7 +130,7 @@ check_dataframes <- function(diagram_list) {
   linetypes_allowed <- c("blank", "solid", "dashed", "dotted", "dotdash",
                          "longdash", "twodash")
   linetypes_used <- c(
-    flows[ , "linetype"]
+    flows[ , "line_type"]
   )
   nonrlines_used <- which(!(linetypes_used %in% linetypes_allowed))
   if(length(nonrlines_used) > 0) {

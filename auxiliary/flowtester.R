@@ -35,9 +35,10 @@ newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
                     flow_line_color = c(all = "grey25",
                                         interaction = "orange",
                                         e_n = "red"),
-                    flow_xmin = c(i_bSI = -0.5),
+                    flow_xstart = c(i_bSI = -0.5),
                     flow_xlabel = c(all = 0.1, i_bSI = -0.25),
-                    flow_ylabel = c(i_bSI = -0.1))
+                    flow_ylabel = c(i_bSI = -0.1),
+                    flow_label_text = c(i_bSI = "transmission"))
 diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
 make_diagram(diag_list_up)
 
@@ -47,7 +48,7 @@ newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
                     flow_line_color = c(all = "grey25",
                                         interaction = "orange",
                                         e_n = "red"),
-                    flow_xmin = c(z_n = 0.5))  # ERROR HERE IN NAME
+                    flow_xstart = c(z_n = 0.5))  # ERROR HERE IN NAME
 diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
 
 

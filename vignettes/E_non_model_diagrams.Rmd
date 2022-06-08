@@ -93,9 +93,9 @@ diagram_settings1 <- list(var_label_text = c(L = "Lamp doesn't\n work",
                          var_outline_color = c(all = "black"),
                          var_label_color = c(all = "black"),
                          var_label_size = c(all = 4),
-                         # flow_label_text = c(m_L = "", m_no_P = "No", 
-                         #                     m_yes_P = "Yes", m_yes_B = "Yes", 
-                         #                     m_no_B = "No"),
+                         flow_label_text = c(m_L = "", m_no_P = "No",
+                                             m_yes_P = "Yes", m_yes_B = "Yes",
+                                             m_no_B = "No"),
                          flow_label_size = c(main = 4)
                          )
 
@@ -106,8 +106,6 @@ plot(my_diagram)
 
 That looks pretty good. If you want to change the shapes of the boxes, you'll need to adjust the ggplot code, as explained in [this vignette](./D_modify_ggplot_code.html).
 
-
-AH: FLOW_LABEL_TEXT DOESN'T SEEM TO WORK
 
 
 # Example 2
