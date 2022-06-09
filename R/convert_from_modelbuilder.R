@@ -42,11 +42,6 @@ convert_from_modelbuilder <- function(mbmodel) {
     flows[[fname]] <- f  # store in the list
   }
 
-  model_list = list(varlabels = varlabels, flows = flows)
-  model_settings = list(varnames = varnames, use_varnames = TRUE, var_label_size = 5)
-
-  # return a nested list
-  mbmodel_structure = list(model_list = model_list, model_settings = model_settings)
-  return(mbmodel_structure)
-
+  model_list <- list(variables = varlabels, flows = flows)
+  return(model_list)
 }

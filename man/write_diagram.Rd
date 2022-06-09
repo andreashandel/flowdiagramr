@@ -5,28 +5,15 @@
 \title{Generate a reproducible R script to make the diagram.}
 \usage{
 write_diagram(
-  model_list = NULL,
-  model_settings = NULL,
   diagram_list = NULL,
-  diagram_settings = NULL,
   directory = "./",
   filename = "diagram_code.R",
   always_overwrite = FALSE
 )
 }
 \arguments{
-\item{model_list}{A \strong{flowdiagramr} input list. See
-\code{\link{prepare_diagram}}. Also see \code{Details} below.}
-
-\item{model_settings}{A named list of model settings.  See
-\code{\link{prepare_diagram}}. Also see \code{Details} below.}
-
 \item{diagram_list}{A \strong{flowdiagramr} input structure, resulting from
 a call to \code{\link{prepare_diagram}}. See \code{Details} below.}
-
-\item{diagram_settings}{A named list of diagram aesthetics. See
-\code{\link{make_diagram}} documentation. Default is \code{NULL} and the
-default values from \code{\link{make_diagram}} are used.}
 
 \item{directory}{File directory in which to save the produced R file.
 Default location is the current working directory.}

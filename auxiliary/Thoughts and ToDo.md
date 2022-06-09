@@ -20,9 +20,9 @@ Here are specific comments:
 
 Next is I think the following:
 
-* For write_diagram, I figured it's best if you first revisit the write_diagram function, make updates based on what we have now, update documentation/help file. Then I update that vignette. My current thought is that write_diagram takes diagram_list as required input, and directory/filename/always_overwrite as optional. Nothing else, we'll remove model_list/model_settings/diagram_settings from input. The code that's then generated is the ggplot part, based on diagram_list. I think carrying through the other stuff is just too complex and at this point I don't see a real need. Basically, if a user decides to go the write_diagram() route, they are taking a one-way out of the package towards manual adjustment. That's ok. To be reproducible, all write_diagram needs to include is the diagram_list data frame as input data, and the ggplot commands that create the diagram. Am I seeing this right or forgetting something? Happy to discuss this part more.
+* For write_diagram, I figured it's best if you first revisit the write_diagram function, make updates based on what we have now, update documentation/help file. Then I update that vignette. My current thought is that write_diagram takes diagram_list as required input, and directory/filename/always_overwrite as optional. Nothing else, we'll remove model_list/model_settings/diagram_settings from input. The code that's then generated is the ggplot part, based on diagram_list. I think carrying through the other stuff is just too complex and at this point I don't see a real need. Basically, if a user decides to go the write_diagram() route, they are taking a one-way out of the package towards manual adjustment. That's ok. To be reproducible, all write_diagram needs to include is the diagram_list data frame as input data, and the ggplot commands that create the diagram. Am I seeing this right or forgetting something? Happy to discuss this part more. **Correct and DONE.**
 
-* For the convert_from_modelbuilder, I think it only requires a few updates to work with the new setup.
+* For the convert_from_modelbuilder, I think it only requires a few updates to work with the new setup.  **DONE.**
 
 
 

@@ -49,7 +49,19 @@ newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
                                         interaction = "orange",
                                         e_n = "red"),
                     flow_xstart = c(z_n = 0.5))  # ERROR HERE IN NAME
-diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
+# diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
+
+
+
+# quick test of write_diagram
+write_diagram(diag_list_up)
+fs::file_delete("diagram_code.R")
+
+# quick test of modelbuilder converter
+source("./auxiliary/test-models/mbsir.R")  # makes an object named mbsir
+convert_from_modelbuilder(mbmodel = mbsir)
+
+
 
 
 # Test locations for SIR --------------------------------------------------
@@ -71,7 +83,7 @@ model_settings = list(varlocations = varlocs2, varspace_y_size = 1)
 make_diagram(prepare_diagram(model_list, model_settings), with_grid = F)
 
 # two columns, 3 rows
-# AH: this fails
+
 model_settings = list(varlocations = varlocs3)
 diagram_list <- prepare_diagram(model_list , model_settings)
 make_diagram(diagram_list)
@@ -172,16 +184,16 @@ make_diagram(dlist, with_grid = TRUE)
 diagram_list <- prepare_diagram(model_list)
 diagram_list_new <- update_diagram(
   diagram_list,
-  diagram_settings = list(main_flow_line_color = "orange"))
+  diagram_settings = list(flow_line_color = c(main = "orange")))
 make_diagram(diagram_list_new)
 
 # this should work
 diagram_list <- prepare_diagram(model_list)
 diagram_list_new <- update_diagram(
   diagram_list,
-  diagram_settings = list(main_flow_line_color = "orange",
-                          main_flow_arrow_size = 2,
-                          interaction_flow_show_arrow = FALSE))
+  diagram_settings = list(flow_line_color = c(main = "orange"),
+                          flow_arrow_size = c(main = 2),
+                          flow_show_arrow = c(interaction = FALSE)))
 make_diagram(diagram_list_new)
 
 # this should issue a warning about no new settings
@@ -189,49 +201,29 @@ diagram_list <- prepare_diagram(model_list)
 diagram_list_new <- update_diagram(diagram_list)  # warning issued
 
 # this should work
-diagram_settings <- list(var_outline_color = c("black", "white", "red"))
+diagram_settings <- list(var_outline_color = c(S = "black", I = "white", R = "red"))
 diagram_list_ok <- update_diagram(diagram_list, diagram_settings)
 make_diagram(diagram_list_ok)  # good!
 
 #this should work
-diagram_settings <- list(var_outline_color = c("black", "white", "red"),
-                         var_fill_color = c("red"))
+diagram_settings <- list(var_outline_color = c(S = "black", I = "white", R = "red"),
+                         var_fill_color = c(all ="red"))
 diagram_list_ok <- update_diagram(diagram_list, diagram_settings)
 make_diagram(diagram_list_ok)  # good!
 
 # this should error out - it does
-diagram_settings <- list(var_outline_color = c("black", "red"))
+diagram_settings <- list(var_outline_color = c(J = "black", K = "red"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
 # this should also error out - wrong number of entries again
 # it does error out
-diagram_settings <- list(var_outline_color = c("solid", "solid"))
+diagram_settings <- list(var_outline_color = c(all = "solid"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
 # this should also error out - it does!
-diagram_settings <- list(main_flow_linetype = c("black", "red"))
+diagram_settings <- list(flow_line_type = c(main = "black"))
 diagram_list_new <- update_diagram(diagram_list, diagram_settings)
 
-# this breaks, good.
-diagram_settings <- list(main_flow_linetype = c("black", "red", "orange"))
-diagram_list_new <- update_diagram(diagram_list, diagram_settings)
-
-
-# this should work; it does
-newylabs <- dfs$flows$ylabel
-newcurve <- dfs$flows$curvature
-newylabs[1] <- 1.2
-newcurve[1] <- -1
-new_settings <- list(flow_ylabel = newylabs, flow_curvature = newcurve)
-newdf <- update_diagram(dfs, new_settings)
-make_diagram(newdf)
-
-
-# this should throw an error; it does
-newylabs <- 1.75
-new_settings <- list(flow_ylabel = newylabs)
-newdf <- update_diagram(dfs, new_settings)
-make_diagram(newdf)
 
 
 

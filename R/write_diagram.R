@@ -160,6 +160,7 @@ for(i in 1:nrow(flows)) {
 # If with_grid == FALSE (default) then void out the theme
 # otherwise keep the grey background with grid
 # the grid can be useful for updating positions of items
+with_grid <- FALSE  # default is false
 if(with_grid == FALSE) {
   diagram_plot <- diagram_plot +
     theme_void()
