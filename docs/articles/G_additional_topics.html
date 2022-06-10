@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -54,7 +56,7 @@
   <a href="../articles/A_quickstart.html">Get started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Tutorials
      
     <span class="caret"></span>
@@ -90,7 +92,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Additional Information
      
     <span class="caret"></span>
@@ -107,7 +109,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/andreashandel/flowdiagramr">
+  <a href="https://github.com/andreashandel/flowdiagramr" class="external-link">
     <span class="fab fa-github"></span>
      
   </a>
@@ -122,197 +124,165 @@
 
       
 
-      </header><script src="G_additional_topics_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Additional topics</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/G_additional_topics.Rmd"><code>vignettes/G_additional_topics.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/HEAD/vignettes/G_additional_topics.Rmd" class="external-link"><code>vignettes/G_additional_topics.Rmd</code></a></small>
       <div class="hidden name"><code>G_additional_topics.Rmd</code></div>
 
     </div>
 
     
     
-<div id="overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h2>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p>In this vignette, we discuss a few additional topics that might be of interest to some, but likely not all users.</p>
 </div>
-<div id="using-modelbuilder-models-with-flowdiagramr" class="section level2">
-<h2 class="hasAnchor">
-<a href="#using-modelbuilder-models-with-flowdiagramr" class="anchor"></a>Using modelbuilder models with flowdiagramr</h2>
-<p>The developers of <strong>flowdiagramr</strong> have also been developing an R package called <a href="https://ahgroup.github.io/modelbuilder/"><strong>modelbuilder</strong></a> which allows users to graphically build and analyze compartmental simulation models. In fact, <strong>flowdiagramr</strong> started as a function inside <code>modelbuilder</code> to draw diagrams of user-built models. At some point, we decided to make <strong>flowdiagramr</strong> a stand-alone package. But it still works with and is used by <strong>modelbuilder</strong>. If you use <strong>modelbuilder</strong> and want to use <strong>flowdiagramr</strong> to generate a diagram for that model outside the auto-generated one shown inside <strong>modelbuilder</strong>, here are the steps.</p>
-<div id="model-conversion" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model-conversion" class="anchor"></a>Model conversion</h3>
+<div class="section level2">
+<h2 id="using-modelbuilder-models-with-flowdiagramr">Using modelbuilder models with flowdiagramr<a class="anchor" aria-label="anchor" href="#using-modelbuilder-models-with-flowdiagramr"></a>
+</h2>
+<p>The developers of <strong>flowdiagramr</strong> have also been developing an R package called <a href="https://ahgroup.github.io/modelbuilder/" class="external-link"><strong>modelbuilder</strong></a> which allows users to graphically build and analyze compartmental simulation models. In fact, <strong>flowdiagramr</strong> started as a function inside <code>modelbuilder</code> to draw diagrams of user-built models. At some point, we decided to make <strong>flowdiagramr</strong> a stand-alone package. But it still works with and is used by <strong>modelbuilder</strong>. If you use <strong>modelbuilder</strong> and want to use <strong>flowdiagramr</strong> to generate a diagram for that model outside the auto-generated one shown inside <strong>modelbuilder</strong>, here are the steps.</p>
+<div class="section level3">
+<h3 id="model-conversion">Model conversion<a class="anchor" aria-label="anchor" href="#model-conversion"></a>
+</h3>
 <p>Once you built a model with <strong>modelbuilder</strong>, you can save it as an <code>Rds</code> file. This file contains a single object, the user-created model specified as a list object. Since <strong>modelbuilder</strong> models and <strong>flowdiagramr</strong> models are slightly different, we provide a convenience function that converts one format into the other.</p>
 <p>This is a very simple process, and is done with the function <code>convert_from_modelbuilder</code>. This function takes as input the modelbuilder object and produces a list that conforms to the <strong>flowdiagramr</strong> model specification. The following examples illustrate this.</p>
 </div>
-<div id="example-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#example-1" class="anchor"></a>Example 1</h3>
+<div class="section level3">
+<h3 id="example-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1"></a>
+</h3>
 <p>Assume you built a basic SIR model with <strong>modelbuilder</strong> and saved it as an <code>R</code> object inside a <code>.Rds</code> file. First, we load the file and assign it to some variable.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mbmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="st">'SIR_model.Rds'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">mbmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'SIR_model.Rds'</span><span class="op">)</span></code></pre></div>
 <p>Next, we convert the object.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_from_modelbuilder.html">convert_from_modelbuilder</a></span><span class="op">(</span><span class="va">mbmodel</span><span class="op">)</span></code></pre></div>
 <p>If you print the content, you can see it has two lists, the required <code>model_list</code> and the optional <code>model_settings</code>. The latter contains the variable names. You can use either or both in your call to <code>prepare_diagram</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
-<span class="co">#&gt; $model_list</span>
-<span class="co">#&gt; $model_list$varlabels</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="co">#&gt; $variables</span>
 <span class="co">#&gt; [1] "S" "I" "R"</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows</span>
-<span class="co">#&gt; $model_list$flows$S_flows</span>
+<span class="co">#&gt; $flows</span>
+<span class="co">#&gt; $flows$S_flows</span>
 <span class="co">#&gt; [1] "-b*S*I"</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$I_flows</span>
+<span class="co">#&gt; $flows$I_flows</span>
 <span class="co">#&gt; [1] "+b*S*I" "-g*I"  </span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$R_flows</span>
-<span class="co">#&gt; [1] "+g*I"</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $model_settings</span>
-<span class="co">#&gt; $model_settings$varnames</span>
-<span class="co">#&gt; [1] "Susceptible" "Infected"    "Recovered"  </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $model_settings$use_varnames</span>
-<span class="co">#&gt; [1] TRUE</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $model_settings$var_label_size</span>
-<span class="co">#&gt; [1] 5</span></code></pre></div>
+<span class="co">#&gt; $flows$R_flows</span>
+<span class="co">#&gt; [1] "+g*I"</span></code></pre></div>
 <p>You can now proceed with the usual steps.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">$</span><span class="va">model_list</span>, <span class="va">mymodel</span><span class="op">$</span><span class="va">model_settings</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">mymodel</span><span class="op">)</span>
 <span class="va">sir_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sir_diagram</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="G_additional_topics_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
-<div id="example-2" class="section level3">
-<h3 class="hasAnchor">
-<a href="#example-2" class="anchor"></a>Example 2</h3>
-<p>Just to show one more example, this is a model from the <strong>modelbuilder</strong> example library called <code>Complex ID control</code>. It is a model that includes a good number of details and allows exploration of different intervention strategies. If you are not too familiar with compartmental models yet, just consider it as an example that illustrates the work flow. You can find some more details about the model in the <a href="https://ahgroup.github.io/modelbuilder/"><strong>modelbuilder</strong></a> package, or even more details in another of our packages, <a href="https://ahgroup.github.io/DSAIDE/">DSAIDE</a>, which is targeted toward learning about such infectious disease models.</p>
+<div class="section level3">
+<h3 id="example-2">Example 2<a class="anchor" aria-label="anchor" href="#example-2"></a>
+</h3>
+<p>Just to show one more example, this is a model from the <strong>modelbuilder</strong> example library called <code>Complex ID control</code>. It is a model that includes a good number of details and allows exploration of different intervention strategies. If you are not too familiar with compartmental models yet, just consider it as an example that illustrates the work flow. You can find some more details about the model in the <a href="https://ahgroup.github.io/modelbuilder/" class="external-link"><strong>modelbuilder</strong></a> package, or even more details in another of our packages, <a href="https://ahgroup.github.io/DSAIDE/" class="external-link">DSAIDE</a>, which is targeted toward learning about such infectious disease models.</p>
 <p>First, we load the model, then convert it and print it.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mbmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="st">'Complex_ID_Control.Rds'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">mbmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'Complex_ID_Control.Rds'</span><span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_from_modelbuilder.html">convert_from_modelbuilder</a></span><span class="op">(</span><span class="va">mbmodel</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
-<span class="co">#&gt; $model_list</span>
-<span class="co">#&gt; $model_list$varlabels</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="co">#&gt; $variables</span>
 <span class="co">#&gt; [1] "S"  "P"  "A"  "I"  "R"  "D"  "E"  "Sv" "Iv"</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows</span>
-<span class="co">#&gt; $model_list$flows$S_flows</span>
+<span class="co">#&gt; $flows</span>
+<span class="co">#&gt; $flows$S_flows</span>
 <span class="co">#&gt; [1] "+nH"      "-S*bP*P"  "-S*bA*A"  "-S*bI*I"  "-S*bE*E"  "-S*bV*Iv" "+w*R"    </span>
 <span class="co">#&gt; [8] "-mH*S"   </span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$P_flows</span>
+<span class="co">#&gt; $flows$P_flows</span>
 <span class="co">#&gt; [1] "+S*bP*P"     "+S*bA*A"     "+S*bI*I"     "+S*bE*E"     "+S*bV*Iv"   </span>
 <span class="co">#&gt; [6] "-f*gP*P"     "-(1-f)*gP*P" "-mH*P"      </span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$A_flows</span>
+<span class="co">#&gt; $flows$A_flows</span>
 <span class="co">#&gt; [1] "+f*gP*P" "-gA*A"   "-mH*A"  </span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$I_flows</span>
+<span class="co">#&gt; $flows$I_flows</span>
 <span class="co">#&gt; [1] "+(1-f)*gP*P" "-(1-d)*gI*I" "-d*gI*I"     "-mH*I"      </span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$R_flows</span>
+<span class="co">#&gt; $flows$R_flows</span>
 <span class="co">#&gt; [1] "+gA*A"       "+(1-d)*gI*I" "-w*R"        "-mH*R"      </span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$D_flows</span>
+<span class="co">#&gt; $flows$D_flows</span>
 <span class="co">#&gt; [1] "+d*gI*I"</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$E_flows</span>
+<span class="co">#&gt; $flows$E_flows</span>
 <span class="co">#&gt; [1] "+pI*I" "+pA*A" "-c*E" </span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$Sv_flows</span>
+<span class="co">#&gt; $flows$Sv_flows</span>
 <span class="co">#&gt; [1] "+nV"      "-bH*I*Sv" "-mV*Sv"  </span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; $model_list$flows$Iv_flows</span>
-<span class="co">#&gt; [1] "+bH*I*Sv" "-mV*Iv"  </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $model_settings</span>
-<span class="co">#&gt; $model_settings$varnames</span>
-<span class="co">#&gt; [1] "Susceptible"             "Presymptomatic"         </span>
-<span class="co">#&gt; [3] "Asymptomatic"            "Symptomatic"            </span>
-<span class="co">#&gt; [5] "Recovered"               "Dead"                   </span>
-<span class="co">#&gt; [7] "Pathogen in Environment" "Susceptible Vector"     </span>
-<span class="co">#&gt; [9] "Infected Vector"        </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $model_settings$use_varnames</span>
-<span class="co">#&gt; [1] TRUE</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $model_settings$var_label_size</span>
-<span class="co">#&gt; [1] 5</span></code></pre></div>
+<span class="co">#&gt; $flows$Iv_flows</span>
+<span class="co">#&gt; [1] "+bH*I*Sv" "-mV*Iv"</span></code></pre></div>
 <p>As promised, this is a much more complex model. We don’t expect the default diagram for this model to look great, but let’s give it a try.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_list</span> <span class="op">=</span> <span class="va">mymodel</span><span class="op">$</span><span class="va">model_list</span> <span class="co">#pull out the model list part</span>
-<span class="va">model_settings</span> <span class="op">=</span> <span class="va">mymodel</span><span class="op">$</span><span class="va">model_settings</span> <span class="co">#pull out the optional settings list</span>
-<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">model_list</span><span class="op">)</span> <span class="co">#only use the model list here</span>
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span> 
 <span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="G_additional_topics_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>The diagram is not ideal. But you now know how to make it better, once you have done the model conversion, you can use the usual approaches. As an example, let’s specify the layout for the variables/nodes. We can use the existing <code>model_settings</code> object stored in <code>mymodel</code> and can add <code>varlocations</code>.</p>
-<p>The rationale of how to place the variables is determined by the meaning of each of them and what makes logical sense. I’m not discussing this here, if you want to learn more about the model, see the <em>Complex Control Scenarios</em> app inside <a href="https://ahgroup.github.io/DSAIDE/">DSAIDE</a>.</p>
+<p>The rationale of how to place the variables is determined by the meaning of each of them and what makes logical sense. I’m not discussing this here, if you want to learn more about the model, see the <em>Complex Control Scenarios</em> app inside <a href="https://ahgroup.github.io/DSAIDE/" class="external-link">DSAIDE</a>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_settings</span> <span class="op">=</span> <span class="va">mymodel</span><span class="op">$</span><span class="va">model_settings</span>
-<span class="va">model_settings</span><span class="op">$</span><span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"E"</span>,<span class="st">""</span>,<span class="st">""</span>,
-                                              <span class="st">""</span>, <span class="st">""</span>, <span class="st">"A"</span>, <span class="st">"R"</span>,
-                                              <span class="st">"S"</span>, <span class="st">"P"</span>, <span class="st">""</span>, <span class="st">""</span>,
-                                               <span class="st">""</span>, <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">"D"</span>,
-                                              <span class="st">""</span>, <span class="st">"Sv"</span>, <span class="st">"Iv"</span>, <span class="st">""</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">5</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"E"</span>,<span class="st">""</span>,<span class="st">""</span>,
+                               <span class="st">""</span>, <span class="st">""</span>, <span class="st">"A"</span>, <span class="st">"R"</span>,
+                               <span class="st">"S"</span>, <span class="st">"P"</span>, <span class="st">""</span>, <span class="st">""</span>,
+                               <span class="st">""</span>, <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">"D"</span>,
+                               <span class="st">""</span>, <span class="st">"Sv"</span>, <span class="st">"Iv"</span>, <span class="st">""</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">5</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">model_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">$</span><span class="va">model_list</span>, <span class="va">model_settings</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, <span class="va">model_settings</span><span class="op">)</span>
 <span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="G_additional_topics_files/figure-html/unnamed-chunk-9-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>This is better, but of course still not quite good enough. Fortunately, you have learned how to use <strong>flowdiagramr</strong> to fairly easily turn this into a publication-quality diagram :).</p>
 </div>
 </div>
-<div id="cropping-white-space-from-diagram-plots" class="section level2">
-<h2 class="hasAnchor">
-<a href="#cropping-white-space-from-diagram-plots" class="anchor"></a>Cropping white-space from diagram plots</h2>
+<div class="section level2">
+<h2 id="cropping-white-space-from-diagram-plots">Cropping white-space from diagram plots<a class="anchor" aria-label="anchor" href="#cropping-white-space-from-diagram-plots"></a>
+</h2>
 <p>It is quite likely that the diagram you get back from <code>make_diagram</code> contains a good bit of white space. This is often a problem when trying to use the figure in publications.</p>
 <p>As example, consider the above diagram. If we write it into a file, then load the file and show it, it looks like this.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">"sirdiag.png"</span>,<span class="va">sir_diagram</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="st">"sirdiag.png"</span>,<span class="va">sir_diagram</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html">include_graphics</a></span><span class="op">(</span><span class="st">'sirdiag.png'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">'sirdiag.png'</span><span class="op">)</span></code></pre></div>
 <p><img src="sirdiag.png" width="90%" style="display: block; margin: auto;"></p>
 <p>As you can see, the saved image file contains a lot of unwanted white space. There are different options you can use to change the white space. Here are some we are aware of.</p>
-<div id="set-margins-in-ggplot2" class="section level3">
-<h3 class="hasAnchor">
-<a href="#set-margins-in-ggplot2" class="anchor"></a>Set margins in ggplot2</h3>
+<div class="section level3">
+<h3 id="set-margins-in-ggplot2">Set margins in ggplot2<a class="anchor" aria-label="anchor" href="#set-margins-in-ggplot2"></a>
+</h3>
 <p>One approach is to play with the margins of the gpplot object returend from <code>make_diagram</code> until things look ok. Here is an example:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#shrink top and bottom margins</span>
-<span class="va">diag_new</span> <span class="op">&lt;-</span> <span class="va">sir_diagram</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>,<span class="fl">0</span>,<span class="op">-</span><span class="fl">7</span>,<span class="fl">0</span><span class="op">)</span>, <span class="st">"in"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="va">diag_new</span> <span class="op">&lt;-</span> <span class="va">sir_diagram</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>,<span class="fl">0</span>,<span class="op">-</span><span class="fl">7</span>,<span class="fl">0</span><span class="op">)</span>, <span class="st">"in"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">"sirdiag_new.png"</span>,<span class="va">diag_new</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="st">"sirdiag_new.png"</span>,<span class="va">diag_new</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html">include_graphics</a></span><span class="op">(</span><span class="st">'sirdiag_new.png'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">'sirdiag_new.png'</span><span class="op">)</span></code></pre></div>
 <p><img src="sirdiag_new.png" width="90%" style="display: block; margin: auto;"></p>
 <p>This looks better. You will likely have to fiddle a bit with the margin settings until you get it cropped the way you want.</p>
 </div>
-<div id="use-the-magick-package" class="section level3">
-<h3 class="hasAnchor">
-<a href="#use-the-magick-package" class="anchor"></a>Use the <code>magick</code> package</h3>
+<div class="section level3">
+<h3 id="use-the-magick-package">Use the <code>magick</code> package<a class="anchor" aria-label="anchor" href="#use-the-magick-package"></a>
+</h3>
 <p>The <code>magick</code> package allows for automated trimming of a file. This means you first need to save your diagram into a file, then load, trim and resave. Here is an example</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/magick/">magick</a></span><span class="op">)</span>
-<span class="va">fig</span> <span class="op">&lt;-</span> <span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/editing.html">image_read</a></span><span class="op">(</span><span class="st">"sirdiag.png"</span><span class="op">)</span>
-<span class="va">fig2</span> <span class="op">&lt;-</span> <span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/transform.html">image_trim</a></span><span class="op">(</span><span class="va">fig</span><span class="op">)</span>
-<span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/editing.html">image_write</a></span><span class="op">(</span><span class="va">fig2</span>,<span class="st">'sirdiag2.png'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/magick/" class="external-link">magick</a></span><span class="op">)</span>
+<span class="va">fig</span> <span class="op">&lt;-</span> <span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/editing.html" class="external-link">image_read</a></span><span class="op">(</span><span class="st">"sirdiag.png"</span><span class="op">)</span>
+<span class="va">fig2</span> <span class="op">&lt;-</span> <span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/transform.html" class="external-link">image_trim</a></span><span class="op">(</span><span class="va">fig</span><span class="op">)</span>
+<span class="fu">magick</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/magick/reference/editing.html" class="external-link">image_write</a></span><span class="op">(</span><span class="va">fig2</span>,<span class="st">'sirdiag2.png'</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html">include_graphics</a></span><span class="op">(</span><span class="st">'sirdiag2.png'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">'sirdiag2.png'</span><span class="op">)</span></code></pre></div>
 <p><img src="sirdiag2.png" width="90%" style="display: block; margin: auto;"></p>
 <p>The disadvantages of this approach is that you need to use another R package and that the cropping is very tight. The advantages are that the <code>magick</code> package can do a lot more, so there might be some additional useful tweaks possible that you can apply to your figure to get it exactly the way you want.</p>
 </div>
@@ -330,11 +300,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://www.andreashandel.com">Andreas Handel</a>, Andrew Tredennick.</p>
+  <p></p>
+<p>Developed by <a href="https://www.andreashandel.com" class="external-link">Andreas Handel</a>, Andrew Tredennick.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -342,6 +314,8 @@
 
   
 
+
+  
 
   </body>
 </html>

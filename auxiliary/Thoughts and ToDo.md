@@ -1,184 +1,50 @@
 ****************************
-2022-06-02 Andreas notes
+Things to do at some later point (maybe)
+****************************
 
-* I re-activated and went through all vignettes, apart from vignette D, the ggplot code one and G, the convert_from_modelbuilder one.
+* It seems that the default placing of flow labels is just above the horizontal arrow for single-row flows, but overlaps with arrow on multi-row diagrams (see e.g. example 6 in B and the same model, example 4 in C). Maybe shifting default placement of labels up a bit? Similarly, maybe default placement for external flows could be placed at tip of arrow to minimize overlap, see e.g., Ex 2b and 3 and 4 in B. 
 
-Here are specific comments:
-
-* I updated vignette C. Seems to work, made one more comment, take a look. **It looks like the i_bapSaP flow was never updated. If I apply the same -0.5 to xmin and ymin, then it leaves P from the same position as i_bcpScP. I updated in the vignette. Let me know if I am missing something, though.**
-
-* I realized that xmin/xmax/ymin/ymax for flows is not fully clear, since min/max could reference to start/end or actual min/max according to coordinate system. I think you actually had it as xstart/xend previously and I suggested to change - maybe that changing wasn't a good idea, and xstart/xend, etc are better :) Suggest switching back for flows. **Haha! Done.**
-
-* I accidentally supplied the same element twice in flow_xlabel and instead of an error message, it plotted 2 copies of the label. So some check for multiple elements seems to not be present yet. Every entry should be checked to make sure it has a matching element and no element is matched more than once. (see also comment on checking below) **DONE.**
-
-* var_label_text is not documented in update_diagram (but seems to work) and flow_label_text doesn't seem to be implemented. See vignette E example 1. **FIXED**.
-
-* I accidentally wrote at some point var_label_size =  3 instead of var_label_size = c(all = 3) and it silently ignored. Should be an error message if the input for each element is not a named vector. Maybe, since you need to do various checks for those inputs, put all input checks in a separate error check function (e.g. check_update_inputs() ) that is called at the beginning of update_diagram? **DONE. All checks still in the update_diagram function. They don't take up much space, but we can discuss best placement.**
-
-* Totally picky, but my sense of symmetry doesn't like that it's flow_line_color and flow_line_size but flow_linetype. Can we add an underscore before type? :) **I've been bothered by this, too! FIXED.**
-
-
-Next is I think the following:
-
-* For write_diagram, I figured it's best if you first revisit the write_diagram function, make updates based on what we have now, update documentation/help file. Then I update that vignette. My current thought is that write_diagram takes diagram_list as required input, and directory/filename/always_overwrite as optional. Nothing else, we'll remove model_list/model_settings/diagram_settings from input. The code that's then generated is the ggplot part, based on diagram_list. I think carrying through the other stuff is just too complex and at this point I don't see a real need. Basically, if a user decides to go the write_diagram() route, they are taking a one-way out of the package towards manual adjustment. That's ok. To be reproducible, all write_diagram needs to include is the diagram_list data frame as input data, and the ggplot commands that create the diagram. Am I seeing this right or forgetting something? Happy to discuss this part more. **Correct and DONE.**
-
-* For the convert_from_modelbuilder, I think it only requires a few updates to work with the new setup.  **DONE.**
-
-
-
-
-A few additional thoughts/ideas, but I think less critical than those above:
+* Maybe, since you need to do various checks for those inputs, put all input checks in a separate error check function (e.g. check_update_inputs() ) that is called at the beginning of update_diagram? **DONE. All checks still in the update_diagram function. They don't take up much space, but we can discuss best placement.**
 
 * Not a focus now, but worth keeping in the back: Any tweaks the automatic/default placement of things that improve the default look are good. E.g. getting closer to the final figure in vignette C with reduced manual intervention.
 
-* Arrows in example 2 of vignette F are poorly placed. Of course user can adjust. But wondering if there's still some tweaks/improvements one can make to the logic inside prepare_diagram to make automatic placement better? Might be worth scribbling down thoughts for future implementation.
-
-* Maybe worth considering moving some of the flowtester examples into vignette F, this way they get run on every package check and we can easily see if stuff fails in the future (and it gives users more examples). I can do that.
-
-
-
-
-****************************
-2022-05-24 Andreas notes
-
-* At some point I accidentally set flow_line_size twice. Results weren't right, only one was evaluated. I suggest that update_diagram() checks that each setting matches one of the allowed ones, and none is accidentally supplied more than once. Otherwise produce error and stop. **DONE**
-
-* Some bits are not working, I made comments in vignette C, always in ALL CAPS with AH: in front. **FIXED**
-
-* I updated update_diagram such that an empty setting returns names of elements. For some reason my line break with \n doesn't work in the output when returning names. Can you get that to work? To see what I mean, see vignette C.  **DONE**
-
-* I realized that it's really hard for users to pick absolute values for changes to anything that has to do with locations or curvature, since they have no idea what an x value of say 3 actually means. They would have to look at the various xmin/xmax etc values inside the variables/flows data frames, which we want to avoid. My suggestion is to rewrite update_diagram such that any entries the user supplies are relative to the current value. So for instance var_xmin = (S = 0.1, I = -0.2) would shift the xmin of the S box by +0.1 and the I box by -0.2 This way the user can explore shifting things around on the plot without having to know the absolute numbers. Should be pretty quick to do in code, instead of replacing the old value with the new, it's just the old value plus the new. **DONE**. ~~Only finicky thing is if you offset using "all" and the offset a specific var or flow by name or type. For example, right now, if you specify var_xlabel = c(all = -0.25, R = 0.25), all the variable names get move 0.25 units to the left, then the R label gets moved back to the right 0.25 units. Not sure if we want to make this extremely flexible, or just tell users they have to either offset all the elements or do it by name. Thoughts?~~ (I made this completely flexible so we don't have to put limits on how the user specifies things. See flowtester.R)
-
-* Not urgent but maybe nice at some point: have a var_outline_width setting to adjust thickness of box borders? 
-
-* Another option one could add would be var_shape that might allow a few different shapes, e.g. rectangle, circle, diamond. Though that might potentially be difficult with the connection points of the arrows? I say not now, just noting here as something one could consider doing.
-
-
-
-
-****************************
-2022-05-19 Andreas notes
-
-* in vignette C, you write: "NOTE: THE ABOVE IS TRUE EXCEPT FOR THE LOCATION INFORMATION AND CURVATURE. THOSE MUST BE VECTORS EQUAL IN LENGTH TO THE NUMBER OF VARS OR FLOWS." does that mean if i wanted to change the xmin of one flow, i needed to enter the xmin for all of them, even the unchanged? seems a bit tedious and it would also require digging into the data frame to get the original locations. can we make it such that one can specify only the ones that should be changed? 
-
-related to this, which would solve the above issue and make other bits easier too: i'm wondering if we should allow changing elements through naming them. specifically, i'm thinking we could create a unique and descriptive name for each variable and flow. for the variable, that's just the existing "name" column. for the flows, we could maybe redefine names so they become unique. E.g. a name that has a shorthand for the type of flow (m/i/e) and then the actual flow, without the special symbols. what i mean is e.g. m_gI, i_bSI, e_mR, etc. then a user could update as follows: 
-update_diagram(diag_list, diagram_settings = list(var_label_color = c( S = "black", R = "green" ),
-                                                  external_flow_linesize = c(e_mI = 1.5, e_mR = 0.7)
-                                                  ) )  
-
-If we did that, we could allow 2 options. Either a single unnamed value that is applied to every element in a group (e.g. var_label_color = "orange" or  external_flow_linesize = 2) or a vector of named values and those are matched and applied. if a user provides a name that doesn't match, there's a warning. then we could get rid of checking if the entries have the right length. This way a user can easily target any number of elements without needing to specify values for all, and also without guessing if the one they want to change might be entry 5 or 6.
-
-We could additionally make it that a call to update_diagram with only diag_list an no diagram_list will print the names of the variables an flows to the screen. The user would often call that one first, then they know what to change and create the named vectors.
-
-This change seems to not be too hard, but I'm not sure. Let me know what you think.
-
-
-
-****************************
-2022-05-10 Andreas notes
-
-* **FIXED** Example 5 in vignette B isn't quite right. It seems the box sizes are not assigned according to the order of the elements in the variables vector, but some other order. Specifically, the I box has size 1/1 and the R box has size 1.5/1, but it should be the other way around.
-
-* Example 6 in vignette B now looks I think like it should. It's not good yet, but arrangement is ok. It will get better with each vignette we discuss :)
-
-* **DONE** I suggest we give each type of flow a different default line style. E.g. main/solid, interaction/dashed, external/dotted.
-
-* Vignette A: For the pred/prey model with custom settings through update_diagram, is that external flow style actually shown as dotted? looks dashed to me, but hard to tell. *ATT*: I looked into this and it is in fact dotted. But you're right that it doesn't look very dotted. I googled R linetypes and the examples for dotted look like what we're seeing.
-
-* **DONE** I think we should give users the option to update everything with update_diagram, including the xmin/xmax/curvature, etc. I think would be nice, this way they would rarely need to "hack" the data frames directly. Also see comments in vignette C for last 2 examples. *ATT*: I added a note vignette C about how these locations and curvature settings must be vectors. This is also in the documentation.
-
-* **DONE** When arrow is turned off, label should also be turned off. Currently label is shown even if arrow is gone. See example 2 in vignette C. Alternatively, and maybe better, we should have an XX_flow_show_label setting, which allows one to turn on/off the label separate from the arrow. (I assume this could be achieved by supplying label text as empty string, but that might not be obvious to all users.)
-
-* **DONE (but can still be updated as desired)** Can we order the columns of the diagram_list data frames logically, i.e. all the line_ settings together and all the label_ settings together, etc.
-
-* **DONE.** I noticed some flows don't have a name. For instance the b*S*I process which leads S -> I has no name and no label. The no label makes sense since it is already labeled by the b*S*I interaction flow. But maybe we should still give the flow the same b*S*I name, so a user knows which part of the model that flow corresponds to? Would it cause a problem if flows had names that showed up more than once? As far as I understand, the "name" entry isn't really further used in make_diagram, is that right? 
+* Arrows in example 2 of vignette F are poorly placed. Of course user can adjust. But wondering if there's still some tweaks/improvements one can make to the logic inside prepare_diagram to make automatic placement better? Might be worth scribbling down thoughts for future 
+implementation.
 
 * Example 4 in vignette C suggests that some of the default settings for flow placement could still be improved, e.g. trying to figure out which side of the box leads to the shortest distance to the target and placing the arrow there. Though this might not be easy, so maybe something "for later"? (Though if you end up fiddling with that part of the code anyway, see if there are quick fixes). Otherwise, for now we can ask users to manually move the arrows.
 
 
+* Maybe worth considering moving some of the flowtester examples into vignette F, this way they get run on every package check and we can easily see if stuff fails in the future (and it gives users more examples). I can do that.
 
-****************************
-
-2022-05-06 Andreas notes
-
-* Vignette A seems to work.
-
-* Vignette B fails at line 123: diagram_list4 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings2)
-Several other problems like that with other exmamples in the vignette that fail, likely all the same error. I commented out all code chunks in that vignette that currently fail.
-**Fixed. There was a missing logic chunk for right-to-left physical flows.**
-
-* Vignette B last example layout does not look like it should. My guess is the empty slots are not treated quite right? But not sure what's going on, the diagram just looks overall strange :)
-**Maybe fixed...? It looks different after I made a few changes to add_locations. But, it still looks super busy. We might need to go over this one together.**
-
-* There's code in add_locations I don't understand, it doesn't seem quite right. Around line 61, see my comment.
-
-
-* Flowtester.R around line 204, produces warning that should be checked. See also my comment starting with AH: That is likely related to the previous point. I also copied one of the examples from vignette B that failed into flowtester. Of course doesn't work there either ATM.
-**Fixed.**
-
-* I realized that this fails mymodel = list(variables, flows) since we require the entries to be named. Maybe a bit too strict? I recoded such that now we just expect mymodel to consist of a nested list with 2 elements, and we name it inside prepare_diagram, right after checking.
+* Additional nice-to-have style options: var_outline_width setting to adjust thickness of box borders. var_shape that might allow a few different shapes, e.g. rectangle, circle, diamond. Though that might potentially be difficult with the connection points of the arrows? var_label_text_font, etc. to allow changing the font for the various text elements.
 
 
 
 ****************************
-2022-03-24 Andreas notes
+2022-06-09 Andreas notes
 
-* DONE -- Is it possible/easy to reshuffle code in prepare_diagram.R such that first all variables are processed and the variables data frame completed, and then move on to flows? Seems just easier to follow along. Basically, move whatever code is needed to complete variable DF before (current) line 330. Could also consider to refactor things to have a make_variables_df() function that has all the parts for making the variables data frame. But only if easy and if it makes code more readable, so let's contemplate first if useful.
+* I accidentally defined some model settings list with providing just varlocations and not naming it.
+I wanted this
+model_settings = list(varlocations=varlocations)
+I did this:
+model_settings = list(varlocations)
+Calling prepare_diagram, it silently ignored varlocations. 
+dag_list = prepare_diagram(dag_model, model_settings)
+Should give an error message.
+
+* I added another example to vignette E, one arrow placement is wrong, see vignette. You should show that diagram in your Metrum talk :) (I can tell you more)
+
+* Would be good if each for loop in the ggplot code is labeled. Other further comments in that code wouldn't hurt either :) 
+
+* The goldilocks example in D looks good when run interactively but squished when knitted. I noticed that in general that figures look different when knitting versus printing. Same issue with the circle for P in that vignette. Do you know a way to get those closer aligned? (Might be some knitr setting, not sure).
+
+* At this stage, I suggest we merge the develop over to main, clean up/delete any other branches, and just work off main. This way I can ask others to install from github and play with it.
 
 
-Quick recap of overall structure (so I don't forget). 
-
-Main user-facing functions are:
-diagram_list <- prepare_diagram(model_list, model_settings)
-diagram_list_new <- update_diagram(diagram_list, diagram_settings)
-diag <- make_diagram(diagram_list_new, with_grid)
-write_diagram(diagram_list_new, "filename",...)
-
-ATT: This function is not tested yet.
-Helper-functions for users:
-convert_from_modelbuilder()
 
 
-YES.
-All other .R files/functions are internal helpers.
 
 ****************************
-2022-03-04 Andreas notes
-
-
-* flow data frame right now has columns label, math and label_text. Are all 3 needed/used? How do they differ? **DONE. There is now label and label_text in both the variables and flows data frames for consitency.**
-
-* Just to confirm: for flow data frame, the from/to columns are just so users can easier understand, but if they were to edit those, nothing would happen, only actual xmin/xmax, etc. values are used for making the diagram, correct? Should probably be mentioned in the help file which columns user could/should add and which ones they should leave alone. **DONE. Correct, and this information is in the details section of the help file for prepare_diagram.**
-
-* flow data frame has columns color and size. not sure what they refer to. arrows? if yes, there is another arrow_size coming later. should maybe be first all columns related to arrows and naming as arrow_color, arrow_size, arrow_type, show_arrow, then all columns related to label? **DONE. This is the size of the line and color of line. These are update to be line_color and line_size.**
-
-* general comment: sometimes hard for me to figure out what happens if code and help text are not in sync. would be good if after each round of modifications, you can check that roxygen header/help text agrees with the latest code. otherwise i'm at times lost and need to go fishing in the code to figure out what is actually the new correct way of using the functions. **DONE. All documentation update -- but there still may be errors to be caught.**
-
-* Maybe a simpler way to add locations to variables? add_locations seems very complicated. Should be a way to multiply matrix with size/spacing vectors. Need to think through it. **DONE. Rewrote the add locations function.**
-
-* Are these dummy compartments needed? It strikes me as rather complicated right now. **DONE. Dummy compartments gone and simpler, though more verbose, code used.**
-
-
-
-
-2022-02-23 Andrew and Andreas notes
-
-
-DONE.
-* Add a final check function inside `make_diagram()`. Check for:
-  - nonsense in update settings  -- DONE
-  - column names are correct -- DONE
-  - check values for basic conformity (chr, str, num, etc.)
-    - DO WE WANT TO ALLOW CHR and NUM for some (like linetypes)? -- JUST CHR for now
-  - add to end of `update_diagram()` -- DONE
-  - add to beginning of `make_diagram()` -- DONE
-
-DONE.
-* Make interaction and external arrow lengths depend on the box size (e.g., go from center out at 45 degree angle until the "edge" of the box is found).
-
-
-
-***
 2022-02-09 Andreas Notes
 
 DONE. All added.

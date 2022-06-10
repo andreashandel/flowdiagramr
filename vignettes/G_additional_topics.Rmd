@@ -65,7 +65,7 @@ print(mymodel)
 You can now proceed with the usual steps.
 
 ```{r, fig.width = 7, fig.align = "center"}
-diagram_list <- prepare_diagram(model_list = mymodel$model_list)
+diagram_list <- prepare_diagram(model_list = mymodel)
 sir_diagram <- make_diagram(diagram_list)
 plot(sir_diagram)
 ```
@@ -85,9 +85,7 @@ print(mymodel)
 As promised, this is a much more complex model. We don't expect the default diagram for this model to look great, but let's give it a try. 
 
 ```{r, fig.width = 7, fig.align = "center"}
-model_list = mymodel$model_list #pull out the model list part
-model_settings = mymodel$model_settings #pull out the optional settings list
-diagram_list <- prepare_diagram(model_list) #only use the model list here
+diagram_list <- prepare_diagram(mymodel) 
 my_diagram <- make_diagram(diagram_list)
 plot(my_diagram)
 ```
@@ -98,19 +96,19 @@ As an example, let's specify the layout for the variables/nodes. We can use the 
 The rationale of how to place the variables is determined by the meaning of each of them and what makes logical sense. I'm not discussing this here, if you want to learn more about the model, see the _Complex Control Scenarios_ app inside [DSAIDE](https://ahgroup.github.io/DSAIDE/).
 
 ```{r}
-model_settings = mymodel$model_settings
-model_settings$varlocations = matrix(data = c("","E","","",
-                                              "", "", "A", "R",
-                                              "S", "P", "", "",
-                                               "", "", "I", "D",
-                                              "", "Sv", "Iv", ""), nrow = 5, byrow = TRUE)
+varlocations = matrix(data = c("","E","","",
+                               "", "", "A", "R",
+                               "S", "P", "", "",
+                               "", "", "I", "D",
+                               "", "Sv", "Iv", ""), nrow = 5, byrow = TRUE)
+model_settings = list(varlocations = varlocations)
 ```
 
 
 ```{r, fig.height = 6, fig.width = 8, fig.align = "center"}
-#diagram_list <- prepare_diagram(mymodel$model_list, model_settings)
-#my_diagram <- make_diagram(diagram_list)
-#plot(my_diagram)
+diagram_list <- prepare_diagram(mymodel, model_settings)
+my_diagram <- make_diagram(diagram_list)
+plot(my_diagram)
 ```
 
 

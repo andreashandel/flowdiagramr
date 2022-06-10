@@ -1,8 +1,8 @@
 ---
-title: Additional diagram examples
+title: Additional examples
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{More model examples}
+  %\VignetteIndexEntry{Additional examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

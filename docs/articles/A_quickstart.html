@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -54,7 +56,7 @@
   <a href="../articles/A_quickstart.html">Get started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Tutorials
      
     <span class="caret"></span>
@@ -90,7 +92,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Additional Information
      
     <span class="caret"></span>
@@ -107,7 +109,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/andreashandel/flowdiagramr">
+  <a href="https://github.com/andreashandel/flowdiagramr" class="external-link">
     <span class="fab fa-github"></span>
      
   </a>
@@ -122,34 +124,34 @@
 
       
 
-      </header><script src="A_quickstart_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>A quick start to flowdiagramr</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/master/vignettes/A_quickstart.Rmd"><code>vignettes/A_quickstart.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/HEAD/vignettes/A_quickstart.Rmd" class="external-link"><code>vignettes/A_quickstart.Rmd</code></a></small>
       <div class="hidden name"><code>A_quickstart.Rmd</code></div>
 
     </div>
 
     
     
-<div id="overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h2>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p><strong>flowdiagramr</strong> is designed to create nice-looking diagrams for compartmental simulation models and other kinds of scenarios where a model with compartments/variables/nodes and flows/connections/edges is needed. The user provides the compartments and the flows, and gets as return a model diagram in ggplot format, as well as code that created the diagram. This allows potentially complete customization of the diagram.</p>
 </div>
-<div id="terminology" class="section level2">
-<h2 class="hasAnchor">
-<a href="#terminology" class="anchor"></a>Terminology</h2>
+<div class="section level2">
+<h2 id="terminology">Terminology<a class="anchor" aria-label="anchor" href="#terminology"></a>
+</h2>
 <p>The kinds of models and diagrams we are discussing here are used in many different areas of science. That also means there are many different ways and words to describe these models. What we mainly refer to as <em>compartments</em> or <em>variables</em> is also known as <em>stocks</em> or <em>nodes</em>. Similarly, what we mainly refer to as <em>flows</em> or <em>processes</em> is also known as <em>connections</em> or <em>edges</em>. Other terminology exists. While we try to use <strong>variables</strong> and <strong>flows</strong> as consistently as possible, we might occasionally accidentally use one of the other terms. We hope by showing examples it will be clear.</p>
 </div>
-<div id="starting-example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#starting-example" class="anchor"></a>Starting Example</h2>
+<div class="section level2">
+<h2 id="starting-example">Starting Example<a class="anchor" aria-label="anchor" href="#starting-example"></a>
+</h2>
 <p>Here is a simple example to illustrate what <strong>flowdiagramr</strong> does.</p>
-<p>Consider the <a href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology">Susceptible-Infected-Recovered (SIR) model</a> which forms the basis of many models used in infectious disease epidemiology. For this model, we have 3 compartments/variables, name susceptible individuals, <strong>S</strong>, infected/infectious individuals, <strong>I</strong>, and recovered/removed individuals, <strong>R</strong>. We also have 2 processes/flows, one process by which susceptible individuals become infected at some rate after contact with infectious individuals, <strong>b*S*I</strong> and a process by which infected individuals recover at some rate, <strong>g*I.</strong></p>
+<p>Consider the <a href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology" class="external-link">Susceptible-Infected-Recovered (SIR) model</a> which forms the basis of many models used in infectious disease epidemiology. For this model, we have 3 compartments/variables, name susceptible individuals, <strong>S</strong>, infected/infectious individuals, <strong>I</strong>, and recovered/removed individuals, <strong>R</strong>. We also have 2 processes/flows, one process by which susceptible individuals become infected at some rate after contact with infectious individuals, <strong>b*S*I</strong> and a process by which infected individuals recover at some rate, <strong>g*I.</strong></p>
 <p>Written out as differential equations, the model looks like this</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -165,57 +167,73 @@ Flow diagram for basic SIR model
 </p>
 </div>
 <p>The purpose of <strong>flowdiagramr</strong> is to automatically create this diagram for you if you supply the model specification. Here is how.</p>
-<div id="specify-the-model" class="section level3">
-<h3 class="hasAnchor">
-<a href="#specify-the-model" class="anchor"></a>Specify the model</h3>
+<div class="section level3">
+<h3 id="specify-the-model">Specify the model<a class="anchor" aria-label="anchor" href="#specify-the-model"></a>
+</h3>
 <p><strong>flowdiagramr</strong> requires that the model is specified as a simple list structure. This list needs to have 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this looks as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, 
-             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, 
-             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, 
+             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, 
+             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p><strong>Model specification conventions and requirements:</strong></p>
 <ul>
 <li>The main list (called <code>mymodel</code> above) can have any name.</li>
-<li>The elements inside the list need to be called <code>varlabels</code> and <code>flows</code>.</li>
+<li>Inside this list need to be two elements, one containing the variables, the other containing the flows.</li>
 <li>A model consists of variables and parameters, combined by basic mathematical expressions. Currently allowed are <code>+, -, *, (),/,^</code>. Mathematical operations such as <code>log</code>, <code>sin</code>, etc. are currently not supported.</li>
-<li>All variable labels need to start with an upper-case letter and can be any combination of letters and numbers.</li>
+<li>Variables need to be supplied as a vector of strings, and need to start with an upper-case letter and can be any combination of letters and numbers.</li>
 <li>All parameters need to start with a lower-case letter and can be any combination of letters and numbers.</li>
-<li>The flows for each variable need to be named <code>NN_flows</code> where NN corresponds to the variable label.</li>
+<li>The flows for each variable need to be named <code>NN_flows</code> where <code>NN</code> corresponds to the variable name.</li>
 <li>Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write <code>b*S*I</code>, writing it as <code>bSI</code> will not work.</li>
+<li>Flows need to be provided as a list, with flows for each variable as a vector.</li>
 <li>Minus signs for outflows are required, plus signs for inflows are optional.</li>
 </ul>
+<p><em>If these specifications sound confusing, just look at several of the examples and you’ll quickly understand the whole setup.</em></p>
 </div>
-<div id="create-elements-needed-for-diagram-generation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#create-elements-needed-for-diagram-generation" class="anchor"></a>Create elements needed for diagram generation</h3>
+<div class="section level3">
+<h3 id="create-elements-needed-for-diagram-generation">Create elements needed for diagram generation<a class="anchor" aria-label="anchor" href="#create-elements-needed-for-diagram-generation"></a>
+</h3>
 <p>Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which has the advantage of easier diagram modification. You’ll learn more about that in subsequent vignettes. For now, we just show the steps, then revisit them later.</p>
-<p>To get ready for diagram generation, you send your model to the <code>prepare_diagram</code> function.</p>
+<p>To get ready for diagram generation, you send your model to the <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> function.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
 <p>The <code>diagram_list</code> object returned by this function contains a list of data frames that is used to make the diagram. We’ll skip over this for now and revisit it in a later vignette.</p>
 </div>
-<div id="make-the-diagram" class="section level3">
-<h3 class="hasAnchor">
-<a href="#make-the-diagram" class="anchor"></a>Make the diagram</h3>
-<p>Now it’s time to make the diagram. This is done by sending the object you got by calling <code>prepare_diagram</code> to the <code>make_diagram</code> function, like so</p>
+<div class="section level3">
+<h3 id="make-the-diagram">Make the diagram<a class="anchor" aria-label="anchor" href="#make-the-diagram"></a>
+</h3>
+<p>Now it’s time to make the diagram. This is done by sending the object you got by calling <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> to the <code><a href="../reference/make_diagram.html">make_diagram()</a></code> function, like so</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span></code></pre></div>
 <p><code>make_diagram</code> returns a ggplot2 object (here called <code>my_diagram</code>).</p>
 <p>You you can plot the object with</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 <p><img src="A_quickstart_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 <p>or save it into a file, e.g. with</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">"sirdiagram.png"</span>,<span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="st">"sirdiagram.png"</span>,<span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<p>To re-cap, these lines of code allowed us to specify and make a fairly simple flow diagram:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#specify model</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>,
+                flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, 
+                             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, 
+                             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span>
+              <span class="op">)</span>
+<span class="co">#prepare diagram</span>
+<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
+<span class="co">#make diagram</span>
+<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
+<span class="co">#plot diagram</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div id="another-example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#another-example" class="anchor"></a>Another example</h2>
-<p>Here is another example, the classical <a href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations">predator-prey model (also known as Lotka-Volterra model)</a>. This model has two compartments/variables. The model is widely used in Ecology. It can also used in Immunology to model pathogen and immune response. In the context of immunology, the immune response is the predator, and the pathogens are the prey. We’ll label them <strong>Imm</strong> and <strong>Pat</strong>, just to show that one can use labels that are longer than a single letter. We will also include the following processes/flows:</p>
+<div class="section level2">
+<h2 id="another-example">Another example<a class="anchor" aria-label="anchor" href="#another-example"></a>
+</h2>
+<p>Here is another example, the classical <a href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations" class="external-link">predator-prey model (also known as Lotka-Volterra model)</a>. This model has two compartments/variables. The model is widely used in Ecology. It can also used in Immunology to model pathogen and immune response. In the context of immunology, the immune response is the predator, and the pathogens are the prey. We’ll label them <strong>Imm</strong> and <strong>Pat</strong>, just to show that one can use labels that are longer than a single letter. We will also include the following processes/flows:</p>
 <ol style="list-style-type: decimal">
 <li>Bacteria grow/divide at some maximum rate (which we label <em>g</em>) and saturate as they approach some maximum carrying capacity, <em>p<sub>max</sub></em>.</li>
 <li>Bacteria die at a natural death rate (which we label <em>d<sub>P</sub></em>).</li>
@@ -224,26 +242,34 @@ Flow diagram for basic SIR model
 <li>The immune response decays at some rate (which we label <em>d<sub>I</sub></em>).</li>
 </ol>
 <p>To generate the diagram, you follow the same steps as above. First, create the model structure</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Pat"</span>,<span class="st">"Imm"</span><span class="op">)</span>
-<span class="va">flows</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Pat_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g*Pat*(1-Pat/pmax)"</span>, <span class="st">"-dP*Pat"</span>, <span class="st">"-k*Pat*Imm"</span><span class="op">)</span>,
-                 Imm_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"r*Pat*Imm"</span>, <span class="st">"-dI*Imm"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
-<p>Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into <code>R</code>, they would work (provided you assigned numerical values to each variable and parameter).</p>
-<p>Next, you use the same steps as above to create the model diagram.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
-
-<span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, 
-                            diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'blue'</span>,<span class="st">'red'</span><span class="op">)</span>,
-                                                    main_flow_linetype <span class="op">=</span> <span class="st">"dashed"</span>,
-                                                    interaction_flow_size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>
-                          <span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
-<p><img src="A_quickstart_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
-<p>In this example, we also added the optional list <code>diagram_settings</code> to the call of <code>make_diagram</code>. Those some settings allow you to customize the model. You’ll learn more about this <a href="./B_modify_diagrams_simple.html">in the next vignette</a>.</p>
-<p>As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models, as we discuss <a href="./E_non_model_diagrams.html">in this vignette</a>.</p>
+<code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pat"</span>,<span class="st">"Imm"</span><span class="op">)</span>
+<span class="va">flows</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Pat_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*Pat*(1-Pat/pmax)"</span>, <span class="st">"-dP*Pat"</span>, <span class="st">"-k*Pat*Imm"</span><span class="op">)</span>,
+                 Imm_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r*Pat*Imm"</span>, <span class="st">"-dI*Imm"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">variables</span>, <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<p>Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into <code>R</code>, they would work (provided you assigned numerical values to each variable and parameter).</p>
+<p>Next, you use the same steps as above to create the model diagram. First, we prepare the diagram.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></code></pre></div>
+<p>Now we can make and plot it.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span> 
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<p><img src="A_quickstart_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
+<p>It is possible to change the look of the diagram fairly easily using the <code><a href="../reference/update_diagram.html">update_diagram()</a></code> function. You’ll learn more about this in a later vignette. Here is a quick preview. You provide the <code><a href="../reference/update_diagram.html">update_diagram()</a></code> function with the <code>diagram_list</code> object produced by <code><a href="../reference/make_diagram.html">make_diagram()</a></code> and tell it what adjustments you want to make by specifying <code>diagram_settings</code>. You get an updated object, which you can then turn into a diagram.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">diagram_list_v2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, 
+                                  diagram_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Pat <span class="op">=</span> <span class="st">'blue'</span>, Imm <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span>, 
+                                                          flow_line_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"dashed"</span>, external <span class="op">=</span> <span class="st">"solid"</span><span class="op">)</span>,
+                                                          flow_line_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>
+                                                          <span class="op">)</span>
+                                  <span class="op">)</span></code></pre></div>
+<p>Here is the figure for the updated diagram.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list_v2</span><span class="op">)</span> 
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></code></pre></div>
+<p><img src="A_quickstart_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
+<p>As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models. This is discussed in the <em>Making non-model based diagrams</em> vignette.</p>
 <p>But for completeness, here are the ODE equations for the model we just plotted.</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -252,70 +278,74 @@ Flow diagram for basic SIR model
 \end{aligned}
 \]</span></p>
 </div>
-<div id="one-more-example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#one-more-example" class="anchor"></a>One more example</h2>
+<div class="section level2">
+<h2 id="one-more-example">One more example<a class="anchor" aria-label="anchor" href="#one-more-example"></a>
+</h2>
 <p>We’ll finish with one more model, this time a more complex one.</p>
-<p>This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible individuals can get infected that way. We still allow for direct transmission. And on top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label <strong>P</strong>). This gives us 3 SIR compartments each for adults and children, i.e., 6, and 1 environmental compartment, for a total of 7 compartments.</p>
+<p>This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible individuals can get infected that way. We still allow for direct transmission. On top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label <strong>P</strong>) at rates <code>ra</code> and <code>rc</code>. Transmission occurs at rates <span class="math inline">\(b_ij\)</span>, where <span class="math inline">\(i\)</span> is the infected category (including the infected environment) and <span class="math inline">\(j\)</span> the susceptible category.</p>
+<p>This gives us 3 SIR compartments each for adults and children, i.e., 6, and 1 environmental compartment, for a total of 7 compartments.</p>
 <p>Here is the model specified in the format needed for <strong>flowdiagramr</strong>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sc*bcc*Ic"</span>,<span class="st">"-Sc*bca*Ia"</span>,<span class="st">"-Sc*bcp*P"</span><span class="op">)</span>, 
-             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc*bcc*Ic"</span>,<span class="st">"Sc*bca*Ia"</span>,<span class="st">"Sc*bcp*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, 
-             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
-             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sa*bac*Ic"</span>,<span class="st">"-Sa*baa*Ia"</span>,<span class="st">"-Sa*bap*P"</span><span class="op">)</span>, 
-             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sa*bac*Ic"</span>,<span class="st">"Sa*baa*Ia"</span>,<span class="st">"Sa*bap*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>, 
-             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
-             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sc*Ic"</span>,<span class="st">"sa*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bcc*Sc*Ic"</span>,<span class="st">"-bca*Sc*Ia"</span>,<span class="st">"-bcp*Sc*P"</span><span class="op">)</span>, 
+             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bcc*Sc*Ic"</span>,<span class="st">"bca*Sc*Ia"</span>,<span class="st">"bcp*Sc*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, 
+             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
+             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bac*Sa*Ic"</span>,<span class="st">"-baa*Sa*Ia"</span>,<span class="st">"-bap*Sa*P"</span><span class="op">)</span>, 
+             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bac*Sa*Ic"</span>,<span class="st">"baa*Sa*Ia"</span>,<span class="st">"bap*Sa*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>, 
+             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
+             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rc*Ic"</span>,<span class="st">"ra*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
              <span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
-<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>var_label_size <span class="op">=</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Before we make the diagram and look at it, it’s worth pointing out some current limitations of <strong>flowdiagramr</strong>. You might have noticed that each flow term above is defined separately. If you were to write down the model in math formulation, you would likely not do that. Instead, you would probably write something like this, with flow terms combined using parentheses:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sc*(bcc*Ic+bca*Ia+bcp*P)"</span><span class="op">)</span>,
-             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc*(bcc*Ic+bca*Ia+bcp*P)"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>,
-             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
-             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sa*(bac*Ic+baa*Ia+bap*P)"</span><span class="op">)</span>,
-             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sa*(bac*Ic+baa*Ia+bap*P)"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>,
-             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
-             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sc*Ic"</span>,<span class="st">"sa*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<p>Before we start making the diagram for this model, it is worth pointing out some current limitations of <strong>flowdiagramr</strong>. You might have noticed that each flow term above is defined separately. If you were to write down the model in math formulation, you would likely not do that. Instead, you would probably write something like this, with flow terms combined using parentheses:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
+<span class="va">flows_wrong</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-Sc*(bcc*Ic+bca*Ia+bcp*P)"</span><span class="op">)</span>,
+             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc*(bcc*Ic+bca*Ia+bcp*P)"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>,
+             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
+             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-Sa*(bac*Ic+baa*Ia+bap*P)"</span><span class="op">)</span>,
+             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sa*(bac*Ic+baa*Ia+bap*P)"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>,
+             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
+             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rc*Ic"</span>,<span class="st">"ra*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
              <span class="op">)</span>
-<span class="va">model_list_wrong</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<span class="va">model_list_wrong</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows_wrong</span><span class="op">)</span></code></pre></div>
 <p>Unfortunately, <strong>flowdiagramr</strong> currently cannot parse flows that are grouped like this (we expect that a future version will). If you try to use this model list to prepare the diagram, you will receive a (hopefully informative) error message.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">model_list_wrong</span><span class="op">)</span>
-<span class="co">#&gt; Error in prepare_diagram(model_list_wrong): flowdiagramr cannot currently process flows that include</span>
-<span class="co">#&gt; an interaction between more than two variables. Consider</span>
-<span class="co">#&gt; breaking flows apart.</span></code></pre></div>
-<p>In general, <code>prepare_diagram</code> checks your <code>model_list</code> object and tries to determine if everything is ok. As an example, here is the model with some typos. We accidentally put minus (“-”) signs in front of all the <code>Ia_flows</code>. This means the model is not properly specified. <strong>flowdiagramr</strong> throws an error suggesting where you might have gone wrong.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlabels</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sc*bcc*Ic"</span>,<span class="st">"-Sc*bca*Ia"</span>,<span class="st">"-Sc*bcp*P"</span><span class="op">)</span>,
-             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Sc*bcc*Ic"</span>,<span class="st">"Sc*bca*Ia"</span>,<span class="st">"Sc*bcp*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>,
-             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
-             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sa*bac*Ic"</span>,<span class="st">"-Sa*baa*Ia"</span>,<span class="st">"-Sa*bap*P"</span><span class="op">)</span>,
-             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-Sa*bac*Ic"</span>,<span class="st">"-Sa*baa*Ia"</span>,<span class="st">"-Sa*bap*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>,
-             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
-             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sc*Ic"</span>,<span class="st">"sa*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
-             <span class="op">)</span>
-<span class="va">model_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
-<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">model_list</span><span class="op">)</span>
-<span class="co">#&gt; Error in prepare_diagram(model_list): There are duplicate flows across variables that failed to</span>
+<span class="co">#&gt; Error in prepare_diagram(model_list_wrong): flowdiagramr cannot currently process flows that include an interaction between more than two variables.</span>
+<span class="co">#&gt;  Consider breaking flows apart.</span></code></pre></div>
+<p>In general, <code>prepare_diagram</code> checks your <code>model_list</code> object and tries to determine if everything is ok. As an example, here is the model with some typos. We accidentally put minus (“-”) signs in front of all the <code>Ia_flows</code>.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
+<span class="va">flows_wrong2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bcc*Sc*Ic"</span>,<span class="st">"-bca*Sc*Ia"</span>,<span class="st">"-bcp*Sc*P"</span><span class="op">)</span>, 
+             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bcc*Sc*Ic"</span>,<span class="st">"bca*Sc*Ia"</span>,<span class="st">"bcp*Sc*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, 
+             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
+             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bac*Sa*Ic"</span>,<span class="st">"-baa*Sa*Ia"</span>,<span class="st">"-bap*Sa*P"</span><span class="op">)</span>, 
+             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bac*Sa*Ic"</span>,<span class="st">"-baa*Sa*Ia"</span>,<span class="st">"-bap*Sa*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>, 
+             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
+             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rc*Ic"</span>,<span class="st">"ra*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">model_list_wrong2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows_wrong2</span><span class="op">)</span></code></pre></div>
+<p>This means the model is not properly specified. <strong>flowdiagramr</strong> throws an error suggesting where you might have gone wrong.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">model_list_wrong2</span><span class="op">)</span>
+<span class="co">#&gt; Error in prepare_diagram(model_list_wrong2): There are duplicate flows across variables that failed to</span>
 <span class="co">#&gt; parse easily. Are there '+' signs where you intended</span>
 <span class="co">#&gt; '-' signs, or vice versa.</span></code></pre></div>
-<p>Note that not all errors will receive nice messages. There are likely instances where you have typos or other mistakes in your model, or parts that <strong>flowdiagramr</strong> currently can’t handle, for which you won’t get a great error message.</p>
-<p>Now, let’s go back to the first, proper model specification, make the diagram, and plot it.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>Not all model bugs return informative error messages. There are likely instances where you have typos or other mistakes in your model, or you try to include components in our model that <strong>flowdiagramr</strong> currently can’t handle, and you end up with a confusing error message from flowdiagramr. In this case, the first place to check for bugs is in your model specification, especially your model flows. Of course, you could have also found a bug in flowdiagramr, in which case please file an <a href="https://github.com/andreashandel/flowdiagramr/issues" class="external-link">issue on the Github site of the package</a>!</p>
+<p>Now, let’s go back to the first, proper model specification. We’ll first prepare the diagram. Here, we supply <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> with optional settings. This is just meant as another quick preview. The next vignette will discuss this in detail.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">model_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varbox_x_size <span class="op">=</span> <span class="fl">2</span>, varbox_y_size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>
+<span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, <span class="va">model_settings</span><span class="op">)</span></code></pre></div>
+<p>Now we make the diagram and plot it.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="A_quickstart_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
-<p>As you can see, while the most basic approach of using <strong>flowdiagramr</strong> that we just explained gets you <em>somewhere</em>, you might not be able to produce a publication-quality diagram this way. Fortunately, <strong>flowdiagramr</strong> gives you ways to (easily) customize things to give you a great-looking diagram!</p>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span></code></pre></div>
+<p><img src="A_quickstart_files/figure-html/unnamed-chunk-19-1.png" width="672"></p>
+<p>As you can see, while the most basic approach of using <strong>flowdiagramr</strong> that we just explained gets you <em>somewhere</em>, you might not be able to produce a publication-quality diagram using just the default settings. Fortunately, <strong>flowdiagramr</strong> gives you ways to easily customize things to give you great-looking diagrams! (At least we think so, but we might be a bit biased.)</p>
 </div>
-<div id="next-steps" class="section level2">
-<h2 class="hasAnchor">
-<a href="#next-steps" class="anchor"></a>Next steps</h2>
-<p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way might look ok (most of the time), but it likely won’t be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. <a href="./B_modify_diagrams_simple.html">The <em>Basic Modifications</em> vignette</a>, which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments.</p>
+<div class="section level2">
+<h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h2>
+<p>You just learned the basics of using <strong>flowdiagramr</strong> to produce a diagram. The default diagram you get this way might look ok (most of the time), but it likely won’t be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. To start learning these different ways, you should continue with <a href="./B_prepare_diagram_settings.html">this vignette</a>.</p>
 </div>
   </div>
 
@@ -330,11 +360,13 @@ Flow diagram for basic SIR model
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://www.andreashandel.com">Andreas Handel</a>, Andrew Tredennick.</p>
+  <p></p>
+<p>Developed by <a href="https://www.andreashandel.com" class="external-link">Andreas Handel</a>, Andrew Tredennick.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -342,6 +374,8 @@ Flow diagram for basic SIR model
 
   
 
+
+  
 
   </body>
 </html>

@@ -191,6 +191,63 @@ plot(diag2)
 
 # Example 3
 
+This shows another DAG as example. In this case, the scenario is looking at drug treatment against cancer.
+We won't go into details here about the biology behind the whole situation, instead we'll just draw the diagram.
+
+Define variables and flows. In this example, we also specify all kinds of stylings we want, and then apply all below. Just another order of setting up things.
+
+
+```{r}
+variables = c("ID","PT","TR","PTR","CPI")
+varnames = c("Investigational\nDrug","Prior Treatment\n(Combo or Sequential)","Tumor Response","Prior Tumor\nResponse","CPI Resistance")
+names(varnames) <- variables
+varlocations = matrix(data = c("ID", "",
+                                "PT", "TR",
+                               "PTR", "CPI"),
+                               ncol = 2, byrow = TRUE)  
+varcolors = c("ID" = "white","PT"="yellow","TR"="blue","PTR"="orange","CPI"="white")
+  
+flows = list( ID_flows = c("-k1*ID"), 
+                           PT_flows = c("-k2*TR","-k3*PT"),
+                           TR_flows = c("k1*ID","k2*TR","k4*CPI"),
+                           PTR_flows = c("k3*PT","k5*CPI"),
+                           CPI_flows = c("-k4*CPI","-k5*CPI")
+        )
+
+```
+
+
+Now we step through the usual steps
+
+```{r}
+#define model
+dag_model = list(variables = variables, flows = flows)
+#define layout
+model_settings = list(varlocations=varlocations,
+                      varbox_x_size = 3)
+#prepare model
+dag_list = prepare_diagram(dag_model, model_settings)
+#update with stylings
+diagram_settings = list(var_fill_color = varcolors,
+                        var_label_text = varnames,
+                        var_label_color = c(all = "black"),
+                        flow_show_label = c(all = FALSE),
+                        var_label_size = c(all = 4))
+dag_list2 <- update_diagram(dag_list,diagram_settings)
+#create and plot diagram
+dag_diag2 <- make_diagram(dag_list2)
+plot(dag_diag2)
+```
+
+AH: LAST ARROW NOT RIGHT
+
+
+# Example 4
+
+
+
+
+
 TO COME. WANT TO SHOW SOME COMPLEX ONE WITH FEEDBACK LOOPS. IDEAS? MAYBE A (SIMPLE) FOOD WEB FROM ECOLOGY?
 
 

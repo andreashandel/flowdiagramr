@@ -7,10 +7,6 @@ output:
     toc_depth: 3
 ---
 
-```{r, echo = FALSE}
-library(emo)
-```
-
 
 This site has the recording and slides from a [useR! 2021 conference](https://user2021.r-project.org/) presentation introducing the `flowdiagramr` package.
 
