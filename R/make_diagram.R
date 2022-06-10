@@ -73,18 +73,22 @@ make_diagram <- function (diagram_list, with_grid = FALSE) {
   # colors to different rectangles/nodes/state variables. If a vector, the
   # color and fill vectors must have a length that is equal to the number
   # of rows in the nodes data frame (one value for each row).
+
+  # create the nodes/boxes/variables
+  # these are just empty rectangles with no text
   for(i in 1:nrow(variables)) {
-    diagram_plot <- diagram_plot +
+    diagram_plot <- diagram_plot +  # add new stuff to blank canvas
       geom_rect(
-        data = variables[i, ],
-        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-        color = variables[i, "outline_color"],
-        fill = variables[i, "fill_color"]
+        data = variables[i, ],  # one row of the data frame
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),  # location information
+        color = variables[i, "outline_color"],  # border color
+        fill = variables[i, "fill_color"]  # internal, fill color
       )
   }
 
+  # add label text, which goes on top of boxes based on location information
   for(i in 1:nrow(variables)) {
-    diagram_plot <- diagram_plot +
+    diagram_plot <- diagram_plot +  # add text to boxes
       geom_text(
         data = variables[i, ],
         aes(x = xlabel, y = ylabel, label = label_text),
@@ -94,10 +98,11 @@ make_diagram <- function (diagram_list, with_grid = FALSE) {
   }
 
   ## add in all the flows
+  # start with the lines/arrows
   for(i in 1:nrow(flows)) {
     if(flows[i, "show_arrow"] == TRUE) {
-      diagram_plot <- diagram_plot +
-        geom_curve(
+      diagram_plot <- diagram_plot +  # add the lines to the plot with boxes
+        geom_curve(  # always use geom_curve, which is straight when cuvature = 1
           data = flows[i, ],
           aes(x = xstart,
               y = ystart,
@@ -110,14 +115,14 @@ make_diagram <- function (diagram_list, with_grid = FALSE) {
           lineend = "round",
           size = flows[i, "line_size"],
           curvature = flows[i, "curvature"],
-          ncp = 1000
+          ncp = 1000  # controls smoothness of curve, larger number = more smooth
         )
     }
   }
 
   for(i in 1:nrow(flows)) {
     if(flows[i, "show_label"] == TRUE) {
-      diagram_plot <- diagram_plot +
+      diagram_plot <- diagram_plot +  # now add the flow labels to the canvas
         geom_text(
           data = flows[i, ],
           aes(x = xlabel, y = ylabel, label = label_text),
@@ -131,10 +136,10 @@ make_diagram <- function (diagram_list, with_grid = FALSE) {
   # the grid can be useful for updating positions of items
   if(with_grid == FALSE) {
     diagram_plot <- diagram_plot +
-      theme_void()
+      theme_void()  # makes an empty plot theme with no axes, grids, or ticks
   } else {
     # The else here may seem silly, but otherwise the returned plot is NULL
-    diagram_plot <- diagram_plot
+    diagram_plot <- diagram_plot  # just returns default ggplot2 theme
   }
 
   return(diagram_plot)

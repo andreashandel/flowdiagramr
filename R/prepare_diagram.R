@@ -853,8 +853,13 @@ prepare_diagram <- function(model_list,
       # variable box (the middle) and the xmin location is the max x of
       # the left-most (starting) box and the min x of the right-most (ending) box
       if(from_node$ymin == to_node$ymin & from_node$xmin != to_node$xmin) {
-        simple_flows[i, "xmin"] <- from_node$xmax # right edge
-        simple_flows[i, "xmax"] <- to_node$xmin  # left edge
+        if(from_node$xmin > to_node$xmin) {
+          simple_flows[i, "xmin"] <- from_node$xmin # left edge
+          simple_flows[i, "xmax"] <- to_node$xmax  # right edge
+        } else {
+          simple_flows[i, "xmin"] <- from_node$xmax # right edge
+          simple_flows[i, "xmax"] <- to_node$xmin  # left edge
+        }
         simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
         simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
       }

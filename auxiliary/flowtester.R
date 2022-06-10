@@ -75,7 +75,10 @@ varlocs3 = matrix(data = c("S", "",
 
 
 # two rows, with I in second row
-model_settings = list(varlocations = varlocs1, varspace_y_size = 1)
+model_settings = list(varlocs1)
+make_diagram(prepare_diagram(model_list, model_settings))
+
+model_settings = list(varlocations = varlocs1)
 make_diagram(prepare_diagram(model_list, model_settings))
 
 # vertical diagram -- not always the best looking

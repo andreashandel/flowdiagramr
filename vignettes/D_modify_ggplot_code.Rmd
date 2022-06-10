@@ -148,7 +148,7 @@ plot(gl_diag)
 Now we'll further modify the plot using `ggplot2` code. 
 For some more details, see the original blog post.
 
-```{r}
+```{r, fig.height=10}
 # update the plot by adding ggplot2 commands
 gl2 <- gl_diag  + 
        labs(title = "The Goldilocks Decision Tree",

@@ -16,6 +16,12 @@ check_model_settings <- function(model_list, model_settings) {
   # get default settings
   defaults <- eval(formals(flowdiagramr::prepare_diagram)$model_settings)
 
+  # check if user supplies unnamed arguments, if yes, stop
+  if(length(model_settings) != length(names(model_settings))) {
+    msg <- paste0("The list elements of model_settings must be named.")
+    return(msg)
+  }
+
   ######################################################################
   # check if user supplies a non-recognized argument, if yes, stop
   ######################################################################

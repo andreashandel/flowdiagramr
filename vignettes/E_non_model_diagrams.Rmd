@@ -239,14 +239,8 @@ dag_diag2 <- make_diagram(dag_list2)
 plot(dag_diag2)
 ```
 
-AH: LAST ARROW NOT RIGHT
-
 
 # Example 4
-
-
-
-
 
 TO COME. WANT TO SHOW SOME COMPLEX ONE WITH FEEDBACK LOOPS. IDEAS? MAYBE A (SIMPLE) FOOD WEB FROM ECOLOGY?
 

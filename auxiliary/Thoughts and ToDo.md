@@ -30,15 +30,15 @@ I did this:
 model_settings = list(varlocations)
 Calling prepare_diagram, it silently ignored varlocations. 
 dag_list = prepare_diagram(dag_model, model_settings)
-Should give an error message.
+Should give an error message. **DONE.**
 
-* I added another example to vignette E, one arrow placement is wrong, see vignette. You should show that diagram in your Metrum talk :) (I can tell you more)
+* I added another example to vignette E, one arrow placement is wrong, see vignette. **DONE**
 
-* Would be good if each for loop in the ggplot code is labeled. Other further comments in that code wouldn't hurt either :) 
+* Would be good if each for loop in the ggplot code is labeled. Other further comments in that code wouldn't hurt either :)  **DONE**
 
-* The goldilocks example in D looks good when run interactively but squished when knitted. I noticed that in general that figures look different when knitting versus printing. Same issue with the circle for P in that vignette. Do you know a way to get those closer aligned? (Might be some knitr setting, not sure).
+* The goldilocks example in D looks good when run interactively but squished when knitted. I noticed that in general that figures look different when knitting versus printing. Same issue with the circle for P in that vignette. Do you know a way to get those closer aligned? (Might be some knitr setting, not sure).  **DONE**
 
-* At this stage, I suggest we merge the develop over to main, clean up/delete any other branches, and just work off main. This way I can ask others to install from github and play with it.
+* At this stage, I suggest we merge the develop over to main, clean up/delete any other branches, and just work off main. This way I can ask others to install from github and play with it.  **DONE!!!!**
 
 
 
