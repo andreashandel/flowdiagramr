@@ -62,29 +62,33 @@ The purpose of **`r pkg`** is to automatically create this diagram for you if yo
 **`r pkg`** requires that the model is specified as a simple list structure. This list needs to have 2 elements, the variable/compartment labels and the processes/flows for each compartment. For the model above, this looks as follows:
 
 ```{r}
-varlabels = c("S","I","R")
+variables = c("S","I","R")
 flows = list(S_flows = c("-b*S*I"), 
              I_flows = c("b*S*I","-g*I"), 
              R_flows = c("g*I"))
-mymodel = list(varlabels = varlabels, flows = flows)
+mymodel = list(variables = variables, flows = flows)
 ```
 
 **Model specification conventions and requirements:**
 
 * The main list (called `mymodel` above) can have any name. 
-* The elements inside the list need to be called `varlabels` and `flows`. 
+* Inside this list need to be two elements, one containing the variables, the other containing the flows. 
 * A model consists of variables and parameters, combined by basic mathematical expressions. Currently allowed are `+, -, *, (),/,^`. Mathematical operations such as `log`, `sin`, etc. are currently not supported. 
-* All variable labels need to start with an upper-case letter and can be any combination of letters and numbers.
+* Variables need to be supplied as a vector of strings, and need to start with an upper-case letter and can be any combination of letters and numbers.
 * All parameters need to start with a lower-case letter and can be any combination of letters and numbers.
-* The flows for each variable need to be named `NN_flows` where NN corresponds to the variable label. 
+* The flows for each variable need to be named `NN_flows` where `NN` corresponds to the variable name. 
 * Each flow needs to be provided as a valid mathematical/R expression, that would evaluate in R if you assigned numbers to each parameter and variable. For instance you need to write `b*S*I`, writing it as `bSI` will not work.
+* Flows need to be provided as a list, with flows for each variable as a vector.
 * Minus signs for outflows are required, plus signs for inflows are optional.
+
+_If these specifications sound confusing, just look at several of the examples and you'll quickly understand the whole setup._
+
 
 ### Create elements needed for diagram generation
 
 Once you specified your model in the list structure just described, the next step is to process the model, then make the diagram. This happens in two steps, which has the advantage of easier diagram modification. You'll learn more about that in subsequent vignettes. For now, we just show the steps, then revisit them later. 
 
-To get ready for diagram generation, you send your model to the `prepare_diagram` function.
+To get ready for diagram generation, you send your model to the `prepare_diagram()` function.
 
 ```{r}
 diagram_list <- prepare_diagram(mymodel)
@@ -95,7 +99,7 @@ The `diagram_list` object returned by this function contains a list of data fram
 
 ### Make the diagram 
 
-Now it's time to make the diagram. This is done by sending the object you got by calling `prepare_diagram` to the `make_diagram` function, like so
+Now it's time to make the diagram. This is done by sending the object you got by calling `prepare_diagram()` to the `make_diagram()` function, like so
 
 ```{r}
 my_diagram <- make_diagram(diagram_list)
@@ -115,6 +119,22 @@ or save it into a file, e.g. with
 ggplot2::ggsave("sirdiagram.png",my_diagram)
 ```
 
+To re-cap, these lines of code allowed us to specify and make a fairly simple flow diagram:
+
+```{r, eval = FALSE}
+#specify model
+mymodel = list( variables = c("S","I","R"),
+                flows = list(S_flows = c("-b*S*I"), 
+                             I_flows = c("b*S*I","-g*I"), 
+                             R_flows = c("g*I"))
+              )
+#prepare diagram
+diagram_list <- prepare_diagram(mymodel)
+#make diagram
+my_diagram <- make_diagram(diagram_list)
+#plot diagram
+plot(my_diagram)
+```
 
 
 ## Another example
@@ -132,31 +152,49 @@ To generate the diagram, you follow the same steps as above.
 First, create the model structure
 
 ```{r}
-varlabels = c("Pat","Imm")
+variables = c("Pat","Imm")
 flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-mymodel = list(varlabels = varlabels, flows = flows)
+mymodel = list(variables, flows)
 ```
 
 Again, remember that all flows need to be valid mathematical expressions, i.e. if you typed them into `R`, they would work (provided you assigned numerical values to each variable and parameter).
 
-Next, you use the same steps as above to create the model diagram.
+Next, you use the same steps as above to create the model diagram. First, we prepare the diagram.
 
 ```{r}
 diagram_list <- prepare_diagram(mymodel)
+```
 
-my_diagram <- make_diagram(diagram_list, 
-                            diagram_settings = list(var_fill_color = c('blue','red'),
-                                                    main_flow_linetype = "dashed",
-                                                    interaction_flow_size = 1.5)
-                          )
+Now we can make and plot it.
 
+```{r}
+my_diagram <- make_diagram(diagram_list) 
 plot(my_diagram)
 ```
 
-In this example, we also added the optional list `diagram_settings` to the call of `make_diagram`. Those some settings allow you to customize the model. You'll learn more about this [in the next vignette](./B_modify_diagrams_simple.html).
+It is possible to change the look of the diagram fairly easily using the `update_diagram()` function. You'll learn more about this in a later vignette. Here is a quick preview. You provide the `update_diagram()` function with the `diagram_list` object produced by `make_diagram()` 
+and tell it what adjustments you want to make by specifying `diagram_settings`. You get an updated object, which you can then turn into a diagram.
 
-As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models, as we discuss [in this vignette](./E_non_model_diagrams.html). 
+```{r}
+diagram_list_v2 <- update_diagram(diagram_list, 
+                                  diagram_settings = list(var_fill_color = c(Pat = 'blue', Imm = 'red'), 
+                                                          flow_line_type = c(main = "dashed", external = "solid"),
+                                                          flow_line_size = c(all = 1.5)
+                                                          )
+                                  )
+```
+
+Here is the figure for the updated diagram.
+
+```{r}
+my_diagram <- make_diagram(diagram_list_v2) 
+plot(my_diagram)
+```
+
+
+
+As a reminder, for the purpose of generating the diagram, it is not required to write down ordinary differential equations (ODEs) for the model. In fact, you can make diagrams for any model that consists of compartments and flows. The underlying model could be a set of ODEs, or a discrete time model, or a stochastic one. It can even be a completely different system comprising compartments and flows, one that is not based on simulation models. This is discussed in the _Making non-model based diagrams_ vignette.
 
 But for completeness, here are the ODE equations for the model we just plotted.
 
@@ -172,39 +210,40 @@ $$
 
 We'll finish with one more model, this time a more complex one.
 
-This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible individuals can get infected that way. We still allow for direct transmission. And on top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**). This gives us 3 SIR compartments each for adults and children, i.e., 6, and 1 environmental compartment, for a total of 7 compartments. 
+This is an SIR-type model that also includes an environmental component, i.e. infected individuals can shed the pathogen into the environment (e.g., Cholera in water) and susceptible individuals can get infected that way. We still allow for direct transmission.  On top of that, we are considering 2 distinct groups (e.g., children and adults) and stratify by them. They are assumed to shed into the same environment (which we label **P**) at rates `ra` and `rc`. Transmission occurs at rates $b_ij$, where $i$ is the infected category (including the infected environment) and $j$ the susceptible category.
+
+This gives us 3 SIR compartments each for adults and children, i.e., 6, and 1 environmental compartment, for a total of 7 compartments. 
 
 Here is the model specified in the format needed for **`r pkg`**.
 
 ```{r}
-varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
-             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
+variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-bcc*Sc*Ic","-bca*Sc*Ia","-bcp*Sc*P"), 
+             Ic_flows = c("bcc*Sc*Ic","bca*Sc*Ia","bcp*Sc*P","-gc*Ic"), 
              Rc_flows = c("gc*Ic"),
-             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
-             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
+             Sa_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P"), 
+             Ia_flows = c("bac*Sa*Ic","baa*Sa*Ia","bap*Sa*P","-ga*Ia"), 
              Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             P_flows = c("rc*Ic","ra*Ia","-d*P")
              )
-mymodel = list(varlabels = varlabels, flows = flows)
-diagram_list <- prepare_diagram(mymodel, model_settings = list(var_label_size = 6))
+mymodel = list(variables = variables, flows = flows)
 ```
 
-Before we make the diagram and look at it, it's worth pointing out some current limitations of **`r pkg`**.
+Before we start making the diagram for this model, it is worth pointing out some current limitations of **`r pkg`**.
 You might have noticed that each flow term above is defined separately. If you were to write down the model in math formulation, you would likely not do that.
 Instead, you would probably write something like this, with flow terms combined using parentheses:
 
-```{r, error = TRUE}
-varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-flows = list(Sc_flows = c("-Sc*(bcc*Ic+bca*Ia+bcp*P)"),
+```{r}
+variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows_wrong = list(Sc_flows = c("-Sc*(bcc*Ic+bca*Ia+bcp*P)"),
              Ic_flows = c("Sc*(bcc*Ic+bca*Ia+bcp*P)","-gc*Ic"),
              Rc_flows = c("gc*Ic"),
              Sa_flows = c("-Sa*(bac*Ic+baa*Ia+bap*P)"),
              Ia_flows = c("Sa*(bac*Ic+baa*Ia+bap*P)","-ga*Ia"),
              Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             P_flows = c("rc*Ic","ra*Ia","-d*P")
              )
-model_list_wrong = list(varlabels = varlabels, flows = flows)
+model_list_wrong = list(variables = variables, flows = flows_wrong)
 ```
 
 Unfortunately, **`r pkg`** currently cannot parse flows that are grouped like this (we expect that a future version will). If you try to use this model list
@@ -217,36 +256,47 @@ diagram_list <- prepare_diagram(model_list_wrong)
 
 In general, `prepare_diagram` checks your `model_list` object and tries to determine if everything is ok. 
 As an example, here is the model with some typos. We accidentally put minus ("-") signs in front of all the `Ia_flows`.
+
+```{r}
+variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows_wrong2 = list(Sc_flows = c("-bcc*Sc*Ic","-bca*Sc*Ia","-bcp*Sc*P"), 
+             Ic_flows = c("bcc*Sc*Ic","bca*Sc*Ia","bcp*Sc*P","-gc*Ic"), 
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P"), 
+             Ia_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P","-ga*Ia"), 
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("rc*Ic","ra*Ia","-d*P"))
+model_list_wrong2 = list(variables = variables, flows = flows_wrong2)
+```
+
 This means the model is not properly specified. **`r pkg`** throws an error suggesting where you might have gone wrong.
 
 ```{r, error = TRUE}
-varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
-             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
-             Rc_flows = c("gc*Ic"),
-             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),
-             Ia_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P","-ga*Ia"),
-             Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
-             )
-model_list = list(varlabels = varlabels, flows = flows)
-diagram_list <- prepare_diagram(model_list)
+diagram_list <- prepare_diagram(model_list_wrong2)
 ```
 
-Note that not all errors will receive nice messages. There are likely instances where you have typos or other mistakes in your model, or parts that **`r pkg`** currently can't handle, for which you won't get a great error message. 
+Not all model bugs return informative error messages. There are likely instances where you have typos or other mistakes in your model, or you try to include components in our model that **`r pkg`** currently can't handle, and you end up with a confusing error message from `r pkg`. In this case, the first place to check for bugs is in your model specification, especially your model flows. Of course, you could have also found a bug in `r pkg`, in which case please file an [issue on the Github site of the package](https://github.com/andreashandel/flowdiagramr/issues)!
 
-Now, let's go back to the first, proper model specification, make the diagram, and plot it.
+Now, let's go back to the first, proper model specification. We'll first prepare the diagram. Here, we supply `prepare_diagram()` with optional settings. This is just meant as another quick preview. The next vignette will discuss this in detail.
+
+```{r}
+model_settings = list(varbox_x_size = 2, varbox_y_size = 1.5)
+diagram_list <- prepare_diagram(mymodel, model_settings)
+```
+
+Now we make the diagram and plot it.
 
 ```{r}
 model_plot <- make_diagram(diagram_list)
 plot(model_plot)
 ```
 
-As you can see, while the most basic approach of using **`r pkg`** that we just explained gets you _somewhere_, you might not be able to produce a publication-quality diagram this way. Fortunately, **`r pkg`** gives you ways to (easily) customize things to give you a great-looking diagram!
+As you can see, while the most basic approach of using **`r pkg`** that we just explained gets you _somewhere_, you might not be able to produce a publication-quality diagram using just the default settings. Fortunately, **`r pkg`** gives you ways to easily customize things to give you great-looking diagrams! (At least we think so, but we might be a bit biased.)
 
 
 ## Next steps
 
-You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way might look ok (most of the time), but it likely won't be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. [The _Basic Modifications_ vignette](./B_modify_diagrams_simple.html), which you should read next, describes the easiest way to adjust the look of your model. Further vignettes show more advanced and complex ways to make further adjustments. 
+You just learned the basics of using **`r pkg`** to produce a diagram. The default diagram you get this way might look ok (most of the time), but it likely won't be great. Therefore, most of the time you will likely want to make modifications to get a diagram that looks the way you want. There are different ways to do this. To start learning these different ways, you should continue with [this vignette](./B_prepare_diagram_settings.html).
+
 
 

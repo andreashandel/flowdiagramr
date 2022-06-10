@@ -1,5 +1,5 @@
 ---
-title: Modifying the code 
+title: Modifying the ggplot2 code 
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Modifying the ggplot2 code}
@@ -21,17 +21,166 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```{r setup, include = FALSE}
 pkg = 'flowdiagramr' #so we can easily switch names
 library(pkg, character.only = TRUE)
+library(ggplot2)
 ```
 
 ## Introduction
 
-We assume you went through the [getting started vignette](./A_quickstart.html) and also the [basic modification](./B_modify_diagrams_simple.html) and the [input structure modification](./C_modify_input_structure.html) vignettes. These ways of adjusting diagrams described in the previous vignettes might allow you to produce the diagram you need. That's great! But sometimes, you might want to make additional tweaks. How that's done is the topic of this vignette.
+We assume you went through the previous vignettes that showed you how to use the functionality provided by **`r pkg`** to produce fairly good looking (in our biased opinion) diagrams. We believe (hope) that this often gives you a diagram you are happy with.
+
+However, occasionally you might want to make additional tweaks beyond what **`r pkg`** can do. Fortunately for you, there is a way to do this, which is the topic of this vignette. There's one easy way, and one approach that's a bit more involved but also more flexible.
+
+
+## Modifying the ggplot object
+
+The object returned by `make_diagram()` is a ggplot object, which means you can do all the things you can do to those objects. 
+That includes further alterations and updates. Here are a few simple examples.
+
+### Example 1
+
+Back to our simple SIR model
+
+```{r}
+# specify the model
+variables = c("S","I","R")
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
+             I_flows = c("+b*S*I","-g*I", "-m*I"), 
+             R_flows = c("g*I", "-m*R"))
+sirmodel = list(variables = variables, flows = flows)
+# prepare, make and plot
+diag_list <- prepare_diagram(sirmodel)
+diag1 <- make_diagram(diag_list)
+plot(diag1)
+```
+Let's assume you want to give it a title and add some more text into the plot.
+You can just use the regular `ggplot2` syntax.
+
+```{r}
+diag2 <- diag1 + ggtitle("My diagram") + geom_label(aes(x=2,y=2),label="My label")
+plot(diag2)
+```
+
+### Example 2
+
+Here is another, somewhat more involved example. It shows the overall suggested workflow, namely first using all the functionality that **`r pkg`** provides, and then further modifying the plot with `ggplot2` commands.
+
+The following example is motivated by [this blog post](https://nrennie.rbind.io/blog/2022-06-06-creating-flowcharts-with-ggplot2/) from [Nicola Rennie](https://nrennie.rbind.io/). The blog post shows how to make a nice flow diagram using `ggplot2()`. Here, we redo part of it using **`r pkg`**.
+
+
+
+```{r}
+#the unique internal labels, just abbrevations of the full names
+variables = c("GL","P","PTH","PTC","PJR",
+              "C","CTB","CTS","CJR",
+              "B","BTH","BTS","BJR",
+              "BE")
+#the eventual names for all boxes
+varnames = c("Goldilocks",
+              "Porridge", 
+              "Too hot","Too cold","Just right",
+              "Chairs", 
+              "Too big", "Too small", "Just right",
+              "Beds", 
+              "Too hard","Too soft","Just right",
+              "Bears!")
+names(varnames) <- variables
+
+varlocations = matrix(data = c("","GL", "", "", "",
+                               "","P", "", "", "",
+                               "PTH","PTC", "PJR", "", "",
+                               "","",        "C", "", "",
+                               "","CTB",  "CTS", "CJR", "",
+                               "","", "",     "B", "",
+                               "","", "BTH", "BTS", "BJR",
+                               "","", "",     "", "BE"
+                                ),
+                               ncol = 5, byrow = TRUE)  
+
+flows = list( GL_flows = c("-k1*GL"), 
+              #P_flows = c("k1*GL","-k2*P","-k3*P","-k4**P"), #AH: THIS LEADS TO A WEIRD PLOT
+              P_flows = c("k1*GL","-k2*P","-k3*P","-k4*P"),
+              PTH_flows = c("k2*P"),
+              PTC_flows = c("k3*P"),
+              PJR_flows = c("k4*P","-k5*PJR"),
+              C_flows = c("k5*PJR","-k6*C","-k7*C","-k8*C"),
+              CTB_flows = c("k6*C"),
+              CTS_flows = c("k7*C"),
+              CJR_flows = c("k8*C","-k9*CJR"),
+              B_flows = c("k9*CJR","-k10*B","-k11*B","-k12*B"),
+              BTH_flows = c("k10*B"),
+              BTS_flows = c("k11*B"),
+              BJR_flows = c("k12*B","-k13*BJR"),
+              BE_flows = c("k13*BJR")
+        )
+```
+
+
+Prepare the model
+
+```{r}
+#define model
+gl_model = list(variables = variables, flows = flows)
+#define layout
+model_settings = list(varlocations=varlocations,
+                      varbox_x_size = 3)
+#prepare model
+gl_list = prepare_diagram(gl_model, model_settings)
+```
+
+Update the look to get closer to the original
+
+```{r}
+#set colors that are similar to original blog post
+varcolors = c("#b59dac", rep(c("#D9AF6B", "#ACACAC","#ACACAC","#ACACAC"),3), "#b59dac")
+#make them a named vector
+names(varcolors) = variables
+#update with stylings
+diagram_settings = list(var_fill_color = varcolors,
+                        var_label_text = varnames,
+                        var_label_color = c(all =  "#585c45"),
+                        flow_show_label = c(all = FALSE),
+                        var_label_size = c(all = 4))
+gl_list <- update_diagram(gl_list,diagram_settings)
+#create and plot diagram
+gl_diag <- make_diagram(gl_list)
+plot(gl_diag)
+```
+Now we'll further modify the plot using `ggplot2` code. 
+For some more details, see the original blog post.
+
+```{r, fig.height=10}
+# update the plot by adding ggplot2 commands
+gl2 <- gl_diag  + 
+       labs(title = "The Goldilocks Decision Tree",
+            caption = "Made with flowdiagramr") +
+       theme_void() +
+       theme(legend.position = "none",
+       plot.background = element_rect(colour = "#f2e4c1", fill = "#f2e4c1"),
+       panel.background = element_rect(colour = "#f2e4c1", fill = "#f2e4c1"),
+       plot.title = element_text(family = "serif", hjust = 0, face = "bold",
+                                  size = 20, color = "#585c45"),
+       plot.caption = element_text(family = "serif", hjust = 0,
+                                    size = 10, color = "#585c45",
+                                    margin = margin(t = 10)),
+       text = element_text(family = "serif")
+       )
+plot(gl2)
+```
+
+The results is something fairly close. The original post uses fancy fonts, we skip that here to avoid loading other packages.
+We'll just try a serif font. It works for the title and caption, not the previous text.
+It seems that can't be changed after the fact (at least I don't know how). 
+Fortunately, the method described next can change the font everywhere.
+
+I don't think this method was necessarily much faster than the one shown in the original post using the `igraph` package. It was fun to try though. And as you know by now, the strength of **`r pkg`** is really in flow diagrams that contain feedback loops.
+
+
+
 
 
 ## Modifying the ggplot2 code
 
-The most flexible approach to adjust diagrams is to modify the ggplot code that produces the diagram. To do this, you can retrieve the full ggplot2 code that creates the diagram and then edit it like you would any ggplot figure. This is the most flexible, but also the most time-consuming approach.
-We'll illustrate this approach with a few simple examples. It is obviously impossible to cover all options, it's fully up to you to edit the code.
+While the above approach toward modifying the `ggplot` object returned by `make_diagram()` gives you some additional flexibility, you can go a step further. The most flexible approach to adjust diagrams is to modify the ggplot code that produces the diagram. **`r pkg`** provides a function that returns the code, which you can then edit like you would any `ggplot` code. We'll illustrate this approach with a few examples. 
 
 
 ### Example 1
@@ -39,35 +188,46 @@ We'll illustrate this approach with a few simple examples. It is obviously impos
 We'll start with a very basic example. First, you define your model as usual. 
 
 ```{r}
-varlabels = c("S","I","R")
-flows = list(S_flows = c("-b*S*I"), 
-             I_flows = c("b*S*I","-g*I"), 
-             R_flows = c("g*I"))
-sirmodel1 = list(varlabels = varlabels, flows = flows)
+# specify the model
+variables = c("S","I","R")
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
+             I_flows = c("+b*S*I","-g*I", "-m*I"), 
+             R_flows = c("g*I", "-m*R"))
+sirmodel = list(variables = variables, flows = flows)
 ```
 
-Once you have your model, you can send it to `write_diagram`, a function that writes the full code needed to generate the diagram. 
-You can specify the location and name for the file. If you don't provide those, it will be stored in the current working directory under the name `diagram_code.R`. 
+Next, you prepare the model
+
+```{r}
+diag_list <- prepare_diagram(sirmodel)
+```
+
+
+Once you have the diagram list ready, you can send it to `write_diagram`, a function that writes the full code needed to generate the diagram. You can specify the location and name for the file. If you don't provide those, it will be stored in the current working directory under the name `diagram_code.R`. 
 
 ```{r, eval= FALSE}
-write_diagram(model_list = sirmodel1, filename = 'sirmodel1_diagram_code.R', always_overwrite = TRUE)
+# write the current diagram code to a file, overwrite if it exists
+write_diagram(diagram_list = diag_list, filename = 'model1_diagram_code.R', always_overwrite = TRUE)
 ```
-If things worked well, you should get a message telling you the location where the code was saved.
-The code that is generated is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure.
+
+If things worked well, you should get a message telling you the location where the code was saved. The code that is generated is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure.
 
 If you run the code that is generated, it will create the diagram structure as an object called `diagram_plot`. 
 You can then plot or save that object (there is code at the bottom of the generated file for that).
 
 For this example, here is what you get. 
 ```{r, eval = TRUE}
-source('sirmodel1_diagram_code.R')
+source('model1_diagram_code.R')
 plot(diagram_plot)
 ```
 
-Having all the code that generates the figure also allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot. 
+Having all the code that generates the figure allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot. 
 
 Let's assume for this example that you want to add some text below the `I` compartment. 
 In this case, you don't need to modify any of the existing code, just add a some code at the end. 
+You could do this using the approach described above, without editing the `R` code. 
+But here we'll do it by editing the code.
+
 The following lines of code appended to the bottom of `sirmodel1_diagram_code.R`, just before the final `plot` statement, will do the trick:
 
 ```{r, eval=FALSE}
@@ -106,7 +266,7 @@ Running the new code will add the wanted text to the diagram plot
 
 
 ```{r, eval = TRUE}
-source('sirmodel1_diagram_code_modified.R')
+source('model1_diagram_code_modified.R')
 plot(diagram_plot)
 ```
 
@@ -114,72 +274,99 @@ plot(diagram_plot)
 
 ### Example 2
 
-It is possible, and advisable, to first do modifications using the previously explained approaches. Those can be combined with this approach for editing the code. To that end, you can supply the `write_diagram` function all settings that you can send to `make_diagram`, and you can also supply your own modification of the `diagram_list` object. In the latter case, providing the model as input to `write_diagram` is not needed. You can still do so, the diagram will be stored inside the R code, but it will not be processed, instead your supplied `diagram_list` will be used.
+Let's look at another example, one that requires this approach.
+In general, it is advisable to do as much styling and adjusting as possible using the **`r pkg`** functions. If that doesn't get you all the way, use the option described at the beginning of the vignette, or produce the code and edit it.
 
-Here is a full example showing how to use the different customization options for the SIR model.
-
-Specify the model, including locations and variable names.
-
-```{r}
-varlabels = c("S","I","R")
-flows = list(S_flows = c("-b*S*I"), 
-             I_flows = c("+b*S*I","-g*I"), 
-             R_flows = c("+g*I"))
-varnames = c("Susceptible","Infected","Recovered")
-varlocations = matrix(data = c("S", "", "R",
-                               "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
-sirmodel2 = list(varlabels = varlabels, flows = flows)
-sirsettings2 = list(varnames = varnames, varlocations = varlocations)
-```
-
-Make and modify the `diagram_list` object by flipping the b*S*I interaction arrow to go below the S $\rightarrow$ I arrow. (There's no good reason to do that, other than to show an example.)
+Here is an example showing how to use the different customization options. For this example, we revisit our somewhat complex 7-compartment model. This is all the code we had previously to get a decent figure:
 
 ```{r}
-diagram_list = prepare_diagram(sirmodel2, sirsettings2)
-diagram_list$flows$ystart[3] = -2.5
-diagram_list$flows$yend[3] = -1
-diagram_list$flows$labelx[3] = 1.2
-diagram_list$flows$labely[3] = -2
-diagram_list$flows$curvature[3] = -0.7
+variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-bcc*Sc*Ic","-bca*Sc*Ia","-bcp*Sc*P"), 
+             Ic_flows = c("bcc*Sc*Ic","bca*Sc*Ia","bcp*Sc*P","-gc*Ic"), 
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P"), 
+             Ia_flows = c("bac*Sa*Ic","baa*Sa*Ia","bap*Sa*P","-ga*Ia"), 
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("rc*Ic","ra*Ia","-d*P")
+             )
+mymodel = list(variables, flows)
 ```
-
-Create the diagram the usual way using `make_diagram`, while also supplying additional settings.
-
 
 ```{r}
-#specify the settings separately so we can re-use them below
-diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
-                        var_label_size = 14,
-                        main_flow_color = "blue",
-                        main_flow_linetype = "dotted")
-sir2_diagram <- make_diagram(diagram_list, diagram_settings)
-plot(sir2_diagram)
+mysettings = list( varlocations = matrix(data = c("Sc", "", "Ic", "Rc",
+                                                  "",   "P", "",   "",
+                                                  "Sa", "", "Ia", "Ra"),nrow = 3, byrow = TRUE),
+                   varspace_x_size = 2,
+                   varspace_y_size = 1
+                   )
 ```
 
-Alternatively, you can generate the full code that produces this plot as follows
+Prepare the diagram with  additional settings.
+
+```{r}
+diagram_list <- prepare_diagram(mymodel, mysettings)
+```
+
+Apply styling
+
+```{r}
+# define list of updates
+diagram_settings = list(var_fill_color = c(Sc = "#cde9fa", Ic = "#cde9fa", 
+                                            Rc = "#cde9fa", Sa = "#40f9cf", 
+                                            Ia = "#40f9cf", Ra = "#40f9cf", 
+                                            P = "#b2b2b2"),
+                         var_outline_color = c(all = "#031e79"),
+                         var_label_size = c(all = 8),
+                         var_label_color = c(all = "black"),
+                         flow_curvature = c(i_baaSaIa = -0.5, i_bccScIc = 0.5, 
+                                            i_bacSaIc = -0.3, i_bcaScIa = 0.3,
+                                            i_raIa = 0, i_rcIc = 0, i_bcpScP = -0.5),
+                         flow_xstart = c(i_bcpScP = -0.5, i_bapSaP = -0.5),
+                         flow_ystart = c(i_bcpScP = -0.5, i_bapSaP = -0.5, i_bacSaIc = -1),
+                         flow_line_color = c(interaction = "#f94075",
+                                             external = "gray",
+                                             i_baaSaIa = "#40f9cf", i_bacSaIc = "#cde9fa",
+                                             i_bapSaP = "orange", i_bcpScP = "orange",
+                                             i_bccScIc = "#cde9fa", i_bcaScIa = "#40f9cf"),
+                         flow_line_size = c(all = 1.25),
+                         flow_xlabel = c(i_bcaScIa = 0.75, i_bacSaIc = 3.5, 
+                                         i_bapSaP = -0.75, i_bcpScP = -2,
+                                         i_raIa = -0.25, i_rcIc = 0.5), 
+                         flow_ylabel = c(i_bcaScIa = -2.5, i_bacSaIc = -0.25, 
+                                         i_baaSaIa = -2, e_dP = -0.5,
+                                         i_rcIc = -0.75,m_gcIc = 0.25, m_gaIa = 0.25)
+                         )
+diagram_list2 <- update_diagram(diagram_list, diagram_settings) 
+```
+
+
+Make diagram
+
+```{r}
+diag <- make_diagram(diagram_list2)
+```
+
+Now, export the R code.
 
 
 ```{r, eval= FALSE}
-write_diagram(model_list = sirmodel2, 
-              model_settings = sirsettings2,
-              diagram_list = diagram_list,
-              diagram_settings = diagram_settings,
-              filename = 'sirmodel2_diagram_code.R')
+write_diagram(diagram_list = diagram_list2,
+              filename = 'model2_diagram_code.R',
+              always_overwrite = TRUE)
 ```
 
 If you run the code that is generated, you should see a figure like this
 
 ```{r, eval = TRUE}
-source('sirmodel2_diagram_code.R')
+source('model2_diagram_code.R')
 plot(diagram_plot)
 ```
 
-All of this you can get by using the previous methods of modification we explained. 
 
 Let's assume that you are mostly happy with this figure, but you want to make another tweak.
-This time, you want to (for some reason) turn the shape of the `I` box into a circle.
+This time, you want to turn the shape of the `P` box into a circle. 
 
-Here is how you modify the `sirmodel2_diagram_code.R` code to achieve this.
+You can find the part of the code that creates the boxes (it's the first for loop) and modify as follows:
 
 
 ```{r, eval = FALSE}
@@ -191,101 +378,45 @@ for(i in 1:nrow(variables)) {
 #######################
 ### YOUR NEW ADDITION
 #######################
-if(i == 2) {
+if(variables$name[i] == "P") {
     diagram_plot <- diagram_plot +
       geom_point(
         data = variables[i, ],
-        aes(x = labelx, y = labely),
-        color = variables[i, "fill"],
-        fill = variables[i, "fill"],
+        aes(x = xmin+(xmax-xmin)/2, y = ymin+(ymax-ymin)/2), #centers
+        color = variables[i, "outline_color"],
+        fill = variables[i, "fill_color"],
         shape = 21,
-        size = 30
+        size = 23
       )
   } else {
-    diagram_plot <- diagram_plot +
-      geom_rect(
-        data = variables[i, ],
-        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-        color = variables[i, "color"],
-        fill = variables[i, "fill"]
-      )
+ diagram_plot <- diagram_plot +
+    geom_rect(
+      data = variables[i, ],
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+      color = variables[i, "outline_color"],
+      fill = variables[i, "fill_color"]
+       )
   }
 ```
 
 
-Now save the modified script (here We call it `sirmodel2_diagram_code_modified.R`), source it and plot the generated `diagram_plot` object to get this figure:
+Now save the modified script, source it and plot the generated `diagram_plot` object to get this figure:
 
 ```{r, eval = TRUE}
-source('sirmodel2_diagram_code_modified.R')
+source('model2_diagram_code_modified.R')
 plot(diagram_plot)
 ```
 
 
-### Example 3
 
-Let's look at one more example. We'll use the predator-prey model again.
-
-```{r}
-# specify the model
-varlabels = c("B","I")
-flows = list(B_flows = c("+g*B*(1-B/bmax)", "-dB*B", "-k*B*I"),
-             I_flows = c("+r*B*I", "-dI*I"))
-ppmodel = list(varlabels = varlabels, flows = flows)
-```
-
-We won't do any changes to the `diagram_list` structure here, but we'll send a few custom `make_diagram` settings to the `write_diagram` code.
-
-Here is first the plot using the `prepare_diagram` and make_diagram` functions. It produces as customized (somewhat ugly) diagram.
-
-```{r}
-diagram_list = prepare_diagram(ppmodel)
-diagram_settings = list(
-                          var_outline_color = "red",
-                          var_fill_color = c("#6aa4c8", "green"),
-                          var_label_color = "red",
-                          var_label_size = 10,
-                          main_flow_label_size = 4,
-                          interaction_flow_size = 2,
-                          main_flow_color = "green",
-                          main_flow_linetype = 3)
-pp_diagram <- make_diagram(diagram_list, diagram_settings)
-plot(pp_diagram)
-```
-
-Now let's generate the code for this figure.
-
-```{r, eval = FALSE}
-# make diagram with adjusted settings
-write_diagram(model_list = ppmodel, 
-              diagram_settings = diagram_settings,
-                   filename = 'ppmodel_diagram_code.R'
-                   )
-```
-
-Running the resulting code produces this diagram.
-
-```{r, eval = TRUE}
-source('ppmodel_diagram_code.R')
-plot(diagram_plot)
-```
-
-
-Let's say that for some reason, you want the rectangles with rounded corners. I didn't know how to do that, but a quick online search [provided this solution](https://stackoverflow.com/questions/52820756/roundrectgrob-equivalent-for-geom-rect-in-ggplot). Note that this is somewhat advanced and hacky, but I figured I show it as an example to illustrate that at this point, you can do anything you like with the code to make whatever you want.
-
-It's actually not much code editing. First, you need to install the [`statebins` R package](https://github.com/hrbrmstr/statebins). The version on CRAN works fine, so you can just use `install.packages('statebins')`. Then add `library('statebins')` at the top of your code file, underneath the other `library()` commands. 
-Finally, find the `geom_rect` bit in your code (close to the top) and replace it with `statebins:::geom_rrect` (yes, you need the ::: in there since `geom_rrect` is not an exported function. If you have no idea what that means, that's ok.) Everything else you can keep unchanged. Save your code (I recommend using a different name so you don't accidentally overwrite it if you run your `write_diagram` code again). Now, if you run the code, it should produce this diagram.
-
-```{r, eval = TRUE}
-source('ppmodel_diagram_code_modified.R')
-plot(diagram_plot)
-```
 
 
 ## General suggestions
 
-I think with those examples, you get the idea. At this point, the options are endless and you can change the code to get exactly what you want - at the expense of having to write/edit code yourself.
+It should be clear from these examples that once you have the ggplot code, you can do any modifications you want. At this point, the options are endless and you can change the code to get exactly what you want - at the expense of having to write/edit code yourself.
 
-In general, we recommend implementing the easiest modifications first, even if you know you'll be editing the ggplot code at the end. Thus, first use the options described in the [basic modification vignette](./B_modify_diagrams_simple.html). Then make further adjustments by editing the `diagram_list` structure as described in the [input structure modification](./C_modify_input_structure.html) vignette. Once you have gotten as far as you can with these approaches, and still want to make further edits, write the ggplot code to a file and change the code.
+
+As mentioned before, the best workflow is to use the **`r pkg`** functionality to get as far as it takes you, and then as needed make further manual modifications.
 
 Of course, once you have started manual editing of the code, things are not reversible, i.e. you have basically left the **`r pkg`** package infrastructure and are now adjusting the diagram on your own. You can of course always re-generate the code and copy your modifications over (as long as you remember to not overwrite your code.)
 

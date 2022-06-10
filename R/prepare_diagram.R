@@ -1,253 +1,450 @@
 #' Create data frames for plotting from model elements.
 #'
 #' @description
-#' This function takes as input a (typically) compartmental model
-#' consisting of variables/compartments and flows
-#' and creates a list of data frames with label and
-#' position information for plotting a flow diagram.
-#' The resulting object is used as an input to
-#' \code{\link{make_diagram}}, which creates a **ggplot2** based diagram.
-#' Attempts to make decent decisions regarding the placement of nodes (boxes),
-#' flows (arrows), and labels are made. However, complex models with
-#' complex diagrams will likely need user modification. This is documented
-#' in the vignettes.
+#' This function takes as input a model consisting of variables/compartments
+#' and flows, and creates a list of data frames with label and position
+#' information for plotting a flow diagram.
+#' The resulting object is used as an input to \code{\link{make_diagram}},
+#' which creates a **ggplot2** based diagram. The function attempts to make
+#' decent decisions regarding the placement of variables (boxes),
+#' flows (arrows), and labels. However, complex models with complex diagrams
+#' will likely need user modification. This is documented in the vignettes.
 #'
 #' @param model_list A list of model elements. This list is required and
 #' must contain these two elements:
 #' \itemize{
-#' \item `varlabels`: A character vector with labels for each variable.
-#' \item `flows`: A list that is the same length as `varlabels`. Each sub-list
+#' \item `variables`: A character vector specifying the names of all variables.
+#' \item `flows`: A list that is the same length as `variables`. Each sub-list
 #'     element is a character vector of any length specifying the flows into
 #'     and out of the variable. Note that **flowdiagramr** assumes that the
-#'     order of `flows` and `varlabels` match.
-#' \item IMPORTANT: All varlabel entries must start with an upper case letter,
-#' followed by any combination of letters and numbers (e.g.,
-#' S, Si, or Aml2). All parameters contained in the flows
-#' must start with a lower case letter
-#' followed by any combination of letters and numbers (e.g.,
-#' b, bBmax, kS, p21S). All variables and parameters MUST be separated by
-#' math notation (e.g., +, -, *, /).
+#'     order of `flows` matches that of the `variables` vector.
+#' \item IMPORTANT: All `variables` entries must start with an upper case letter,
+#'     followed by any combination of letters and numbers
+#'     (e.g., S, Si, or Aml2). All parameters contained in `flows` must start
+#'     with a lower case letter followed by any combination of letters and
+#'     numbers (e.g., b, bBmax, kS, p21S). All variables and parameters MUST
+#'     be separated by math notation (e.g., +, -, *, /). Most math functions
+#'     (e.g., `sin`, `cos`) are currently not supported.
 #' \item See examples and details below and vignettes.
 #' }
 #'
-#' @param model_settings A list of optional model settings. The following
-#'     elements are supported and default values are provided:
+#' @param model_settings A list of optional settings to adjust layout. The
+#'     following elements are supported. If not provided, they default to a
+#'     single row and all sizes of 1.
 #' \itemize{
-#' \item `varnames`: Vector of strings containing labels, one  for each variable.
-#'                   Default is `NULL`.
-#' \item `use_varnames`: A logical. If `FALSE` (default)  variable boxes will be labeled with
-#'     the `varlabels` entry from `model_list`. If `TRUE` variable boxes will be
-#'     labeled using the text provided in the `varnames` element.
-#'     If `varnames` is missing, an error occurs.
-#'     Note that labeling can be turned off through a setting in `make_diagram`.
-#' \item `var_label_size`: A numeric defining the size of the variable
-#'     labels in the plot. This is necessary because the the box sizes will
-#'     (eventually) be determined by the size of the text within. Default is
-#'     10.
-#' \item `varlocations`: A numeric matrix that specifies the locations of the
-#'     variables on an x-y grid with their desired x (columns) and y (row)
-#'     locations. See examples and vignettes. Default is `NULL`, which
-#'     results in a left-to-right diagram.
+#' \item `varlocations`: A matrix containing all `model_list$variables` entries
+#'     in specific locations on a grid. See examples.
+#' \item `varbox_x_size`: Either a scalar or a vector that changes the default
+#'     width of variable boxes. For example, `varbox_x_size = 1.5` makes each
+#'     box 1.5 units in width. If a scalar, the value is used for all variables.
+#'     If a vector, the length must correspond to number of variables,
+#'     and the provided values are applied to the variables in the order
+#'     provided in `model_list$vars`.
+#' \item `varbox_y_size`: Same as `varbox_x_size` but for the height of
+#'     the boxes.
+#' \item `varspace_x_size`:  Either a scalar or a vector that changes the
+#'     spacing between variable boxes in the x/horizontal dimension. If
+#'     `varspace_x_size` is a scalar, all spaces between boxes in the x
+#'     direction will be the same. For example, `varspace_x_size = 1.5` puts
+#'     1.5 units of space in the x direction between boxes. If you provide a
+#'     vector, it needs to be of dimension one less than the number of columns
+#'     in `varlocations`. Spacing starts at the left, thus the first number is
+#'     the spacing between the first column and second column, etc. Spacing
+#'     is measured between the right edge of one box to the left edge of
+#'     the next box.
+#' \item `varspace_y_size`:  Same as `varspace_y_size` but for the vertical
+#'     dimension. If you provide a vector, it needs to be of dimension one
+#'     less than the number of rows in `varlocations`. Spacing starts at the
+#'     bottom, thus the first number is the spacing between the lowest and
+#'     second lowest row, etc. Spacing is measured between the bottom edge
+#'     of one box to the top edge og the next box.
+#' \item See examples and details below and vignettes.
 #' }
 #'
-#' @return A list of two data frames:
+#' @return A list of two data frames containing all necessary information
+#'         for the model variables/boxes and flows/arrows to be plotted
+#'         by the \code{\link{make_diagram}} function.
+#'         The data frames are:
 #' \itemize{
 #'   \item `variables`: A data frame containing information for all variables.
 #'   The data frame contains these columns:
-#'
 #'   \itemize{
-#'     \item `label`: The variable label as provided in the model specification.
-#'     \item `name`: If provided, the full text for each variable.
-#'     \item `xmin`: Left edge location of box.
-#'     \item `xmax`: Right edge location of box.
-#'     \item `ymin`: Lower edge of location box.
-#'     \item `ymax`: Upper edge of location box.
-#'     \item `labelx`: Horizontal position (midpoint) of label.
-#'     \item `labely`: Vertical position (midpoint) of label.
-#'     \item `plot_label`: The text to be written into the box.
-#'     \item `color`: Default outline color for the box.
-#'     \item `fill`: Default fill color for the box.
-#'     \item `label color`: Default color for text label.
-#'     \item `label_size`: Size of text to be written into the box.
+#'     \item `id`: A numeric id for each variable.
+#'     \item `name`: The name of the variable as provided in the model
+#'         specification.
+#'     \item `xmin`: Left edge location of variable box.
+#'     \item `xmax`: Right edge location of variable  box.
+#'     \item `ymin`: Lower edge of location variable box.
+#'     \item `ymax`: Upper edge of location variable  box.
+#'     \item `xlabel`: Horizontal position (midpoint) of label.
+#'     \item `ylabel`: Vertical position (midpoint) of label.
+#'     \item `label_text`: Text that will appear as the label of the box. Can
+#'         be different from `name`.
+#'     \item `outline_color`: The outline color of variable boxes.
+#'     \item `fill_color`: The fill color of the variable boxes.
+#'     \item `label_color`: The color of the box labels for each variable.
+#'     \item `label_size`: Text size for variable labels.
 #'   }
 #'
 #'   \item `flows`: A data frame containing information for all flows.
 #'   The data frame contains these columns:
 #'   \itemize{
-#'     \item `to`: The variable to which the arrow will point. That is, the
-#'     variable receiving the flow.
+#'     \item `id`: A numeric id for each flow.
+#'     \item `name`: The name of the flow. Typically a mathematical expression.
+#'         If a main flow with an interaction, this name is for id purposes
+#'         only because the `label_text` will be the actual label displayed
+#'         in the diagram. Thus, the name might be duplicated in other rows.
+#'     \item `type`: Type of flow. One of main, interaction, or external.
 #'     \item `from`: The variable from which the arrow originate. That is, the
-#'     variable donating the flow.
-#'     \item `label`: The label of the flow. Typically a mathematical expression.
+#'         variable donating the flow.
+#'     \item `to`: The variable to which the arrow will point. That is, the
+#'         variable receiving the flow.
 #'     \item `xstart`: The starting horizontal position of the arrow.
 #'     \item `xend`: The ending horizontal position of the arrow.
 #'     \item `ystart`: The starting vertical position of the arrow.
 #'     \item `yend`: The ending vertical position of the arrow.
-#'     \item `labelx`: Horizontal position (midpoint) of label.
-#'     \item `labely`: Vertical position (midpoint) of label.
+#'     \item `xlabel`: Horizontal position (midpoint) of label.
+#'     \item `ylabel`: Vertical position (midpoint) of label.
 #'     \item `curvature`: The amount of curvature applied to arrow.
-#'     Higher numbers indicate more curvature; 0 = straight line.
-#'     \item `type`: Type of flow. One of main, interaction, or external.
-#'     \item `color`: Default color of the lines/arrows.
-#'     \item `linetype`: Default linetype.
-#'     \item `size`: Default size of the lines.
-#'     \item `label_color`: Default label color.
-#'     \item `label_size`: Default text size for label.
-#'     \item `arrowsize`: Default arrow size.
-#'     \item `math`: The math from the flows specified by the user. Is a
-#'     duplicate of `label` so that user can update `label` as desired but
-#'     retain the original math for reference.
+#'         Higher numbers indicate more curvature; 0 = straight line.
+#'     \item `label_text`: The label that will appear in the diagram. This is a
+#'         duplicate of `name` so that user can update `label_text` as desired
+#'         but retain the original math for reference.
+#'     \item `line_color`: The color of the flow arrow line.
+#'     \item `line_size`: The size (width) of the flow arrow line.
+#'     \item `line_type`: The linetype of the flow arrow line.
+#'     \item `label_color`: Color of `label_text`.
+#'     \item `label_size`: The text size of `label_text`.
+#'     \item `arrow_size`: The size of the arrow point on the flow line.
+#'     \item `show_arrow`: Logical for whether to plot the flow arrow line
+#'         (TRUE) or not (FALSE).
 #'   }
 #' }
-#' @details `varlabels` needs to be specified as a vector of model variables,
-#' e.g., varlabels <- c("Pred","Prey").
-#' `flows` need to be specified as a list, with each list entry containing the
-#' flows/processes for each variable in the order in which the variables appear.
-#' Flows need to be named according to VARLABEL_flows.
-#' Example: flows <- list(Pred_flows = c(`r*Pred`, `-k1*Pred*Prey`),
-#'                        Prey_flows = c(`g*Prey`, `-k2*Pred*Prey`) )
-#' Each flow, i.e. each entry in the flow vector, needs to be a valid
-#' mathematical expression made up of varlabels and parameters.
-#' The rules are as described above.
-#' As an example, the following includes a parameter *b* and two variables, *S*
-#' and *I*: `b*S*I`. The following includes a parameter *s* and two
-#' variables, *Bg* and *I2*: `Bg*s*I2`.
-#' See more examples below and in the vignettes.
+#' @details
+#'    `variables` needs to be specified as a vector of model variables,
+#'     e.g., `variables <- c("Pred","Prey")`. `flows` need to be specified as a
+#'    list, with each list entry containing the flows/processes for each
+#'    variable in the order in which the variables appear. Flows need to be
+#'    named according to `VARIABLENAME_flows`.
+#'
+#'    Example:
+#'
+#'    \code{flows <- list(Pred_flows = c(r*Pred, -k1*Pred*Prey),
+#'    Prey_flows = c(g*Prey, -k2*Pred*Prey))}. Each flow, i.e. each entry in
+#'    the flow vector, needs to be a valid mathematical expression made up of
+#'    variables and parameters. The rules are as described above.
+#'    As an example, the following includes a parameter *b* and two variables,
+#'    *S* and *I*: `b*S*I`. The following includes a parameter *s* and two
+#'    variables, *Bg* and *I2*: `Bg*s*I2`. See more examples below and in
+#'    the vignettes.
+#'
+#'    The variables and flows data frames returned in the output list from this
+#'    function contain a few columns that are provided to make it easier for
+#'    the user to make changes to the data frames manually, but are not used
+#'    by the package to make the diagram itself. In the `variables` data frame,
+#'    `id` and `name` are unique identifiers that are not used by the package
+#'    to make the diagram -- changing these will have no impact on the final
+#'    diagram. In the `flows` data frame, `id`, `name`, `from`, and `to` are
+#'    identifiers provided to make it easier for the user to understand each
+#'    row of the data frame. Changing these columns will have no impact on the
+#'    final diagram. All other columns contain information that impacts the
+#'    drawn diagram itself. Users can update them -- and may want to in many
+#'    cases -- but any updates to values in the remaining columns will be seen
+#'    in the diagram itself. See the description of the output data frames below.
 #'
 #' @examples
-#' #basic model specification
-#' varlabels <- c("S","I","R")
+#' # basic model specification
+#' variables <- c("S","I","R")
 #' flows <- list(S_flows = c("-b*S*I"),
 #'               I_flows = c("b*S*I","-g*I"),
 #'               R_flows = c("g*I"))
-#' mymodel <- list(varlabels = varlabels, flows = flows)
+#' mymodel <- list(variables = variables, flows = flows)
 #' diag_list <- prepare_diagram(model_list = mymodel)
 #' mydiag <- make_diagram(diag_list)
 #'
-#' #adding optional specifications
-#' varnames <- c("Susceptible","Infected","Recovered")
+#'
+#'
+#' # adding optional specifications
 #' varlocations <-  matrix(data = c("S", "", "R",
 #'                                  "", "I", "" ),
 #'                         nrow = 2, ncol = 3, byrow = TRUE)
-#' mysettings <- list(varnames = varnames, use_varnames = TRUE,
-#'                    var_label_size = 4, varlocations = varlocations)
+#' mysettings <- list(varlocations = varlocations)
 #' diag_list <- prepare_diagram(model_list = mymodel, model_settings = mysettings)
 #' mydiag <- make_diagram(diag_list)
 #'
-#' #another simple model
-#' varlabels = c("Pat","Imm")
+#'
+#'
+#' # use of model_settings to change sizes and spacing, including vectorization
+#' variables <- c("S","I","R")
+#' flows <- list(S_flows = c("-b*S*I"),
+#'               I_flows = c("b*S*I","-g*I"),
+#'               R_flows = c("g*I"))
+#' mymodel <- list(variables = variables, flows = flows)
+#'
+#' var_locs <- matrix(c("S", "", "R", "", "I", ""), byrow = TRUE, nrow = 2)
+#' mysettings = list(
+#'   varlocations = var_locs,
+#'   varbox_x_size = c(1,2,1),
+#'   varbox_y_size = c(0.5,0.5,2),
+#'   varspace_x_size = 2,
+#'   varspace_y_size = 1)
+#'
+#' diag_list <- prepare_diagram(model_list = mymodel,
+#'                              model_settings = mysettings)
+#' make_diagram(diag_list)
+#'
+#'
+#' # another simple model for pathogen (prey) and immune response (predator)
+#' variables = c("Pat","Imm")
 #' flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
 #'                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-#' mymodel = list(varlabels = varlabels, flows = flows)
+#' mymodel = list(variables, flows)
 #' diag_list <- prepare_diagram(mymodel)
 #' mydiag <- make_diagram(diag_list)
 #'
-#' #options to switch to vertical layout and adding names
-#' varnames <- c("Pathogen","Immune Response")
+#'
+#'
+#' # manually switch to vertical layout
 #' varlocations <-  matrix(data = c("Pat", "Imm"),
 #'                         nrow = 2, byrow = TRUE)
-#' mysettings <- list(varnames = varnames, use_varnames = TRUE,
-#'                    var_label_size = 4, varlocations = varlocations)
+#' mysettings <- list(varlocations = varlocations)
 #' diag_list <- prepare_diagram(mymodel,mysettings)
 #' mydiag <- make_diagram(diag_list)
 #'
 #' @export
 
 
+# this function calls the following helper functions
+# add_default_aes()
+# add_locations()
+# add_plus_signs()
+# check_model_list()
+# check_model_settings()
+# fix_arrow_pos()
+# get_vars_pars()
+# set_curvature()
+# set_feedback_curvature()
+# set_node_to_na()
+# update_tofroms()
+
+
+
 prepare_diagram <- function(model_list,
                             model_settings = list(
-                              varnames = NULL,
-                              use_varnames = FALSE,
-                              var_label_size = 10,
-                              varlocations = NULL)
-                            ) {
+                              varlocations = NULL,
+                              varbox_x_size = NULL,
+                              varbox_y_size = NULL,
+                              varspace_x_size = NULL,
+                              varspace_y_size = NULL)
+                            )
+{
 
-  ######################################################################
-  # check to make sure model_list is a properly specified model
-  ######################################################################
-  check <- check_model_list(model_list)
-  #check <- check_model_list(model_list)
-  if(check$bad == TRUE) {
-    stop(check$msg)
+  #############################################################################
+  ## CONDUCT PRELIMINARY CHECKS ###############################################
+  #############################################################################
+  #############################################
+  #############################################
+  # Code block that does various checks and processing of input
+  # This code block uses these helper functions:
+  # check_model_list()
+  # check_model_settings()
+  #############################################
+  #############################################
+
+  #check to make sure model_list is provided
+  #and is a properly specified model
+  if (is.null(model_list))
+  {
+    stop('Argument model_list is required.')
+  }
+  checkmsg <- check_model_list(model_list)
+  if(!is.null(checkmsg))
+  {
+    stop(checkmsg)
   }
 
+  #in case the user didn't explicitly name the variable and flow elements, we do it here
+  names(model_list) <- c("variables","flows")
 
-  # assign default settings to be updated by user
-  defaults <- eval(formals(prepare_diagram)$model_settings)
-
-  ######################################################################
-  # check user inputs provided in model_settings, if user supplies a non-recognized argument, stop
-  ######################################################################
+  # check all user-provided model_settings to make sure entries are what
+  # they should be
   if (!is.null(model_settings))
   {
-    nonrecognized_inputs <- setdiff(names(model_settings),  names(defaults))
-    if (length(nonrecognized_inputs>0) )
+    checkmsg <- check_model_settings(model_list, model_settings)
+    if(!is.null(checkmsg))
     {
-      stop('These elements of model_settings are not recognized: ', nonrecognized_inputs)
+      stop(checkmsg)
     }
-    # update defaults with user settings
-    defaults[names(model_settings)] <- model_settings
-    model_settings <- defaults  # reassign
   }
 
   ######################################################################
-  # Check if varlocation matrix is provided
-  # Make sure the varlocations matrix entries match those in model_list
+  # Set model_settings components that are not user-provided
+  # also, vectorize all entries box/space size entries
   ######################################################################
-  varlocation_matrix <- model_settings$varlocations
-  if(!is.null(model_settings$varlocations))
-     {
-       varlocnames = as.vector(model_settings$varlocations)
-       varlocnames = varlocnames[varlocnames !=""] #remove empty entries
-       if (!setequal(varlocnames, model_list$varlabels))
-          {
-            # returns fatal error if variables do not match
-            stop("varlocation entries do not match varlabels in model_list.")
-       }
+  # For each model_settings component, if user didn't set it,
+  # we set a default here
+  # default for varlocations is a matrix with a single row
+  # If user did not provide values for sizing/spacing,
+  # we set vectors of length nvars and nvars-1 for box and space sizing
+  # each with the default value of 1
+  # note that we assign it to model_settings.
+  # these updated settings will also be returned as part of the list of values
+  # this function returns
+
+  #first, if varlocations matrix is not provided, make a single-row matrix
+  if (is.null(model_settings$varlocations)) {
+    model_settings$varlocations = matrix(model_list$variables,nrow=1)
   }
 
+  # determine number of variables, rows and columns
+  nvars = length(model_list$variables)
+  nrows = nrow(model_settings$varlocations)
+  ncols = ncol(model_settings$varlocations)
+
+  # if user didn't provide a value, we use default of 1
+  # as many box size numbers as there are boxes/variables
+  if (is.null(model_settings$varbox_x_size)) {
+    model_settings$varbox_x_size = rep(1, nvars)
+  }
+  if (is.null(model_settings$varbox_y_size)) {
+    model_settings$varbox_y_size = rep(1, nvars)
+  }
+  # one more row/column less for spacing than is in the matrix
+  if (is.null(model_settings$varspace_x_size)) {
+    model_settings$varspace_x_size = rep(1, ncols - 1)
+  }
+  if (is.null(model_settings$varspace_y_size)) {
+    model_settings$varspace_y_size = rep(1, nrows - 1)
+  }
+
+  # If user provided a single number for box and space size, we turn it into vectors here
+  # this way we can consistently operate on vectors of the right size everywhere
+  if (length(model_settings$varbox_x_size) == 1) {
+    model_settings$varbox_x_size = rep(model_settings$varbox_x_size, nvars)
+  }
+  if (length(model_settings$varbox_y_size) == 1) {
+    model_settings$varbox_y_size = rep(model_settings$varbox_y_size, nvars)
+  }
+
+  if (length(model_settings$varspace_x_size) == 1) {
+    model_settings$varspace_x_size = rep(model_settings$varspace_x_size, ncols - 1)
+  }
+  if (length(model_settings$varspace_y_size) == 1) {
+    model_settings$varspace_y_size = rep(model_settings$varspace_y_size, nrows - 1)
+  }
+
+  #############################################
+  #############################################
+  # At this stage, all input checking and processing should be done
+  #############################################
+  #############################################
 
 
-  # Extract relevant details from the model_list and make a matrix
-  # of variables-by-flows for iterating and indexing the nodes and
-  # connections. Variables will go along rows and flows along columns.
+  ############################################################################
+  ## EXTRACT INFORMATION FROM USER-PROVIDED LISTS ############################
+  ############################################################################
+  #############################################
+  #############################################
+  # Code block that does some processing
+  # to make rest of code more concise
+  #############################################
+  #############################################
+
+  # This pulls out all list elements in model_settings and assigns them
+  # to individual variables with their respective names
+  # this is done for convenience so we don't have to keep calling
+  # model_settings$varlocations and can just call varlocations, etc
+  varlocations <- model_settings$varlocations
+  varbox_x_size <- model_settings$varbox_x_size
+  varbox_y_size <- model_settings$varbox_y_size
+  varspace_x_size <- model_settings$varspace_x_size
+  varspace_y_size <- model_settings$varspace_y_size
+
+
+  #assign to variables outside of model_list
+  #basically same as above for model_settings
+  variable_names <- model_list$variables  # vector of names
+  flows_list <- model_list$flows  # a list flows for each variable
+
+  #############################################
+  #############################################
+  # End code block that extracts lists
+  #############################################
+  #############################################
+
+
+
+
+
+  ############################################################################
+  ## PROCESS VARIABLES #######################################################
+  ############################################################################
+  #############################################
+  #############################################
+  # Code block that goes through all variables and
+  # creates the variables data frame
+  # This code block uses these helper functions:
+  # add_locations()
+  #############################################
+  #############################################
 
   #number of variables/compartments in model
-  nvars <- length(model_list$varlabels)
+  nvars <- length(variable_names)
 
-  #labels for the nodes and what we expect to show up in the flow math
-  varnames <- model_list$varlabels
+  # Create a data frame for all variables
+  variables <- data.frame(
+    id = 1:nvars,  # numeric id for nodes
+    name = variable_names  # names for labels
+  )
 
-  #set longvarnames to the full length names, if provided, otherwise
-  #set to NA for  storage in data frame
-  if(length(model_settings$varnames) > 1) {
-    longvarnames <- model_settings$varnames
+  # Add location information for each variable and add to data frame
+  # See comments within function for details
+  # this function only adds location information to real/named variables
+  # provided by the user.
+  variables <- add_locations(
+    variables,
+    varlocations,
+    varbox_x_size,
+    varbox_y_size,
+    varspace_x_size,
+    varspace_y_size
+  )
 
-    # replace spaces with line breaks to create two (or more) lined
-    # names that are centered in the box
-    longvarnames <- gsub(" ", "\n", longvarnames)
-  } else {
-    # store as NAs if not provided because we need this column in
-    # the nodes data frame
-    longvarnames <- rep(NA, length(varnames))
-  }
+  #############################################
+  #############################################
+  # End code block that processes variables
+  # At this stage, the variable data frame is complete and done
+  #############################################
+  #############################################
 
-  #extract the flows list
-  flows <- model_list$flows
+
+
+
+
+  ############################################################################
+  ## PROCESS FLOWS ###########################################################
+  ############################################################################
+  #############################################
+  #############################################
+  # Code block that starts processing flows
+  # This code block uses these helper functions:
+  # add_plus_signs()
+  # get_vars_pars()
+  #############################################
+  #############################################
 
   #add implicit + signs to make explicit before additional parsing
-  #flows <- add_plus_signs(flows)
-  flows <- add_plus_signs(flows)
+  flows_list <- add_plus_signs(flows_list)
 
-  #turns flow list into matrix, adding NA, found it online,
-  #not sure how exactly it works (from AH and modelbuilder code base)
+  #turns flow list into matrix, adding NA
+  #(from modelbuilder code base)
   #variables are along rows and flows along columns.
-  flowmat <- t(sapply(flows, `length<-`, max(lengths(flows))))
+  flowmat <- t(sapply(flows_list, `length<-`, max(lengths(flows_list))))
 
   # if there are just two variables and a single flow between them,
   # the flowmat is oriented incorrectly (nodes across columns). this
-  # can be diagnosed by checking to see if flowmat has rownames. if not,
-  # the then matrix needs to be transposed.
+  # can be diagnosed by checking to see if flowmat has rownames.
+  # if not, the matrix needs to be transposed.
   if(is.null(rownames(flowmat))) {
     flowmat <- t(flowmat)
   }
@@ -258,36 +455,16 @@ prepare_diagram <- function(model_list,
   #extract only the + or - signs from flows so we know the direction
   signmat <- gsub("(\\+|-).*","\\1",flowmat)
 
-  #define nodes data frame structure if not provided by user
-  # Create a node data frame
-  ndf <- data.frame(
-    id = 1:nvars,  # numeric id for nodes
-    label = varnames,  # labels for nodes
-    name = longvarnames,  # long names for labels
-    row = 1  # hard code for 1 row, will be updated below, if necessary
-  )
 
-
-  # Split variables by rows if stratification implied by numbers at
-  # the end of state variables. For example, two "S" compartments labeled
-  # "S1" and "S2" will be split across rows, assuming some stratification.
-  # Note that stratification up to 9 is currently supported.
-
-  #find any characters that are NOT numbers (0-9) and replace any
-  #non-number characters with blanks
-  strats <- gsub("[^0-9.]", "",  varnames)
-  #add implicit 1 if no strats
-  strats <- ifelse(strats == "", 1, strats)
-  #convert to numeric and make the stratifications encoded as rows
-  ndf$row <- as.numeric(strats)
-
-
-  # Create the edge data frame by looping through the variables
-  # and associated flows.
-  edf <- list()  #an empty list to be coerced to a data frame via rbind
+  ############################################################
+  #Loop over all variables, for each variable, loop over flows
+  ############################################################
+  #create a flows data frame for storing the flow information
+  flows <- data.frame()  # empty until binded to during first iteration of loop
 
   #start loop over variables (rows in the flowmatred matrix)
-  for(i in 1:nrow(flowmatred)) {
+  for(i in 1:nrow(flowmatred))
+  {
     varflowsfull <- flowmat[i, ] #all flows with sign for current variable
     varflows <- flowmatred[i, ] #all flows for current variable
     varflowsigns <- signmat[i, ] #signs of flows for current variable
@@ -299,66 +476,86 @@ prepare_diagram <- function(model_list,
 
     #start loop over all the flows in/out of the current variable (node)
     for(j in 1:length(varflows)) {
-      currentflowfull <- varflowsfull[j] #loop through all flows for variable
-      currentflow <- varflows[j] #loop through all flows for variable
-      currentsign <- varflowsigns[j] #loop through all flows for variable
+      currentflowfull <- varflowsfull[j]
+      currentflow <- varflows[j]
+      currentsign <- varflowsigns[j]
 
       # Find the variables for which the current flow appears, i.e., what
       # other rows of the matrix does it show up in.
       connectvars <- unname(which(flowmatred == currentflow, arr.ind = TRUE)[,1])
 
       # Extract the variable names in the flow expression
-      #varspars <- unique(get_vars_pars(currentflowfull))
       varspars <- unique(get_vars_pars(currentflowfull))
       varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
 
-      #vars is now a vector of the variables that are in the flow math
-      vars <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
+      # varfirsts is now a vector of the variables AND parameters that
+      # are in the flow math
+      # extract any variables that start with an upper case letter
+      # (state variable) and are present in the current flow. So, if P1 and P2
+      # are in this flow they both will be found.
+      varvec <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
 
       #extract the numeric ids for the variables in this flow
-      varsids <- ndf[which(ndf$label %in% vars), "id"]
+      varsids <- variables[which(variables$name %in% varvec), "id"]
 
-      # add a connecting var if the expression is only in one row but
-      # the flow math contains another state variable (node)
-      if(length(varsids) == 1){
+
+      ####
+      ## This first chunk further processes the connectvars vector
+      ## information. After this, the flows diagram can be created effectively.
+      ## For clarity, this chunk is kept separate from the creation of the
+      ## flows data frame below; thus, one may notice redundant IF/THEN
+      ## statements.
+      ####
+      # add a connecting variable if the expression contains only one
+      # variable, is only in one row of the flow matrix, and the row in
+      # which it occurs does not correspond with the variable in the expression.
+      # this is rare. but can occur in predator-prey style models.
+      # the multiple condition IF statement checks:
+      #  1. That there is one, and only one, variable in the expression
+      #  2. The expression occurs in one, and only one, row of the flow matrix
+      #  3. That the variable in the expression is not the variable row in which
+      #     the expression occurs in the flow matrix.
+      # Note that these must be nested.
+      if(length(varsids) == 1) {
         if(length(unique(connectvars)) == 1) {
-          if(unique(connectvars) != varsids) {
+          if(!(unique(connectvars) %in% varsids)) {
             connectvars <- c(connectvars, varsids)
-
-            # also create a flag for adding interaction
+            # also create a flag for adding interaction, this is used below
             flag <- TRUE
           }
         }
       }
 
-
-      # Assign connecting variables for inflows (+ flows)
+      # Assign connecting variables for inflows (+ flows).
+      # This block is just to update the connectvars vector. the flows
+      # data frame is created using this information below in a separate
+      # if/then block
       if(currentsign == "+") {
         # If the flow does not show up in any other rows (connectvars == 1)
         # and there are no variables in the flow math, then the only connecting
         # variable is the current (i) variable
-        if(length(connectvars) == 1 & length(vars) == 0) {
+        if(length(connectvars) == 1 & length(varvec) == 0) {
           connectvars <- i
         }
 
-        # If the flow does not show up in any other rows (connectvars == 1)
+        # If the flow does not show up in any other rows (length(connectvars) == 1)
         # and there is at least one variable in the flow math, then the
         # connecting variable(s) will either be the current variable once
         # (indicating an inflow like births) or the current variable twice
         # (indicating a feedback flow)
-        if(length(connectvars) == 1 & length(vars) >= 1){
+        if(length(connectvars) == 1 & length(varvec) >= 1){
 
           # if the current (i) variable does not show up in the flow math
           # then the connecting variable is just the current variable once,
           # indicating a independent inflow from out of the system (e.g., birth)
-          if(!varnames[i] %in% vars) {
+          if(!variables$name[i] %in% varvec) {
             connectvars <- i
           }
 
           # is the the current (i) variables shows up in the flow math, then
           # the connecting variables are the current variable twice, indicating
           # a feedback loop
-          if(varnames[i] %in% vars) {
+          if(variables$name[i] %in% varvec) {
             connectvars <- c(i, i)
           }
         }
@@ -369,9 +566,15 @@ prepare_diagram <- function(model_list,
         if(length(connectvars) > 1) {
           connectvars <- connectvars
         }
-      }
+      } #end function block for inflows
 
 
+      ####
+      ## This chunk uses information about the sign of the flow and the
+      ## connecting variables (connectvars) to generate a flows data frame
+      ## with columns for: from, to, label, interation, out_interaction,
+      ## and direct_interaction.
+      ####
       # If current sign is negative, it is an outflow and goes either to the
       # connectvar that is not equal to the current variable id (indexed by i)
       # or it goes to NA (this happens when there is an unspecified death
@@ -386,14 +589,14 @@ prepare_diagram <- function(model_list,
         # Create a data frame with all the necessary segment information
         tmp <- data.frame(from = i,
                           to = cn,
-                          label = currentflow,
+                          name = currentflow,
                           interaction = FALSE,
                           out_interaction = FALSE,
                           direct_interaction = FALSE)
 
         # Bind to edge data frame for flows
-        edf <- rbind(edf, tmp)
-      }
+        flows <- dplyr::bind_rows(flows, tmp)
+      } #end function block for outflows
 
       # If the current sign is positive AND the flow only shows up in
       # one row of the flow matrix, then this is an inflow external to the
@@ -403,16 +606,16 @@ prepare_diagram <- function(model_list,
         if(connectvars == i) {
           tmp <- data.frame(from = NA,
                             to = i,
-                            label = currentflow,
+                            name = currentflow,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
-          edf <- rbind(edf, tmp)
+          flows <- dplyr::bind_rows(flows, tmp)
         }
       }
 
       # If the current sign is positive and the length of connecting variables
-      # is equal to two, then it is :
+      # is equal to two, then it is:
       #   a feedback loop (1 unique connecting variable)
       #   a physical flow between two unique variables
       #   an interaction flow between to unique variables
@@ -421,7 +624,7 @@ prepare_diagram <- function(model_list,
         if(length(unique(connectvars)) == 1) {
           tmp <- data.frame(from = i,
                             to = i,
-                            label = currentflow,
+                            name = currentflow,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
@@ -429,7 +632,7 @@ prepare_diagram <- function(model_list,
           # These are physical flows between two variables
           tmp <- data.frame(from = connectvars[connectvars!=i],
                             to = i,
-                            label = currentflow,
+                            name = currentflow,
                             interaction = FALSE,
                             out_interaction = FALSE,
                             direct_interaction = FALSE)
@@ -438,45 +641,65 @@ prepare_diagram <- function(model_list,
           if(exists("flag")) {
             tmp$direct_interaction <- TRUE
 
-            # remove flag to make null again
+            # remove flag from the environment
             rm(flag)
           }
         }
-        edf <- rbind(edf, tmp)
+        flows <- dplyr::bind_rows(flows, tmp)
       }
 
-      # interaction flag if two variables are in the flow
-      if(length(vars) > 1) {
+      # add an interaction flag if two variables are in the flow
+      if(length(varvec) > 1) {
         if(length(unique(connectvars)) > 1) {
           # this means that the flow connects two variables and both
           # are present in the flow math
-          edf[nrow(edf), "interaction"] <- TRUE
+          flows[nrow(flows), "interaction"] <- TRUE
         } else {
           # this means that the flow comes from or goes to somewhere out
           # of the system, and only 1 variable is included in the
           # flow math. this is designated as an "out_interaction"
-          edf[nrow(edf), "out_interaction"] <- TRUE
+          flows[nrow(flows), "out_interaction"] <- TRUE
         }
       }
 
-    }  #end flow loop
-  }  #end variable loop
+    }  #end loop over all flows for a given variable
+  }  #end loop over all variables
+
+  ############################################################
+  ############################################################
+  # finished creating all flows for the flows dataframe
+  # not all information is present or correct yet
+  # code block below further update the flows DF
+  # At this stage, the flows dataframe has the following columns:
+  # from, to, name, interaction, out_interaction, direct_interaction
+  ############################################################
+  ############################################################
+
+
+  ############################################################
+  # some cleanup of flow data frame
+  # things that the code above didn't do quite right
+  ############################################################
 
   # Keep only distinct rows; duplication occurs because one variable's
   # inflow can be another variable's outflow, but we only want these once
   # in the data frame for edges (segments/arrows/flows).
-  edf <- unique(edf)
+  flows <- unique(flows)
+
+  # keep original name for all flows. this gets overwritten when the interaction
+  # flow is added. but we want to retain this for later for the user
+  flows$orig_name <- flows$name
 
   # Parse the meaning of duplicate labels. Usually this is a complex mix
   # of a direct, physical flows and interactions from several other
   # state variables. We assume that the "main" flow among the "auxilliary"
   # duplicate flows is the one that traverses left-to-right (e.g., 1 to 2)
   # with the smallest gap and has no interaction flags.
-  dups <- as.matrix(table(edf$label))  # tally the occurences of each flow
+  dups <- as.matrix(table(flows$name))  # tally the occurences of each flow
   dupids <- rownames(dups)[which(dups[,1] > 1)]  # grab the one with >1 occurence
   if(length(dupids) > 0) {
-    flowdups <- subset(edf, label %in% dupids)  # take a subset of the edge data frame
-    edf <- subset(edf, !(label %in% dupids))  # restrict edf to non-duplicate flows
+    flowdups <- subset(flows, name %in% dupids)  # take a subset of the edge data frame
+    flows <- subset(flows, !(name %in% dupids))  # restrict flows to non-duplicate flows
     flowdups <- subset(flowdups, sign(to-from) == 1)  # keep left-to-right flows
     flowdups <- subset(flowdups, interaction == FALSE &
                          out_interaction == FALSE &
@@ -491,38 +714,33 @@ prepare_diagram <- function(model_list,
     maindup <- flowdups[mainid, ]  # extract just the main flow for physical flow
     intdup <- flowdups[mainid, ]  # extract again for interaction flow, which is parsed later on
     intdup$interaction <- TRUE  # set interaction flag to TRUE
-    edf <- rbind(edf, maindup, intdup)
+    flows <- rbind(flows, maindup, intdup)
   }
 
   # Duplicate rows with out_interaction == TRUE to assign the interaction
   # flag and then remove the out_interaction flag. This is done to
   # achieve appropriate labeling. We want the physical flow to have no label
   # and for the interaction arrow to carry to the label.
-  repdf <- subset(edf, out_interaction == TRUE)
+  repdf <- subset(flows, out_interaction == TRUE)
   if(nrow(repdf) != 0) {  # avoids errors if no rows
     repdf$interaction <- TRUE  # set this to TRUE for linetypes
     repdf$out_interaction <- NULL  # remove this now
-    edf[which(edf$out_interaction == TRUE), "label"] <- ""  # take away the label for the physical flow
-    edf$out_interaction <- NULL  # remove this now
-    edf <- rbind(edf, repdf)  # tack them together
+    flows[which(flows$out_interaction == TRUE), "name"] <- ""  # take away the name for the physical flow
+    flows$out_interaction <- NULL  # remove this now
+    flows <- rbind(flows, repdf)  # tack them together
   }
 
   # remove out_interaction completely now that interaction is
   # appropriately flagged with correct labeling
-  edf$out_interaction <- NULL
+  flows$out_interaction <- NULL
 
-
-  # Break edges apart into:
-  #   direct flows
-  #   interactions to meet at edges
-  #   the flows resulting from interactions
-  # All flows are treated seperately because their start and end positions
-  # depend on state variables in different ways.
-
-  edf$linkto <- NA  #empty column for interaction flows, but needed for binding
-  edf$linkfrom <- NA  #empty column for interaction flows, but needed for binding
-  ints <- subset(edf, interaction == TRUE)
-  edf <- subset(edf, interaction == FALSE)
+  # set up columns needed to define interactions and subset out for interaction
+  # settings separate from other flows. these are all merged back together
+  # after interactions are given appropriate settings.
+  flows$linkfrom <- NA  #empty column for interaction flows, but needed for binding
+  flows$linkto <- NA  #empty column for interaction flows, but needed for binding
+  ints <- subset(flows, interaction == TRUE)
+  flows <- subset(flows, interaction == FALSE)
 
   # If there are interactions, then duplicate them and reassign the to/from
   # columns such that we have two segments for each interaction flagged
@@ -533,7 +751,7 @@ prepare_diagram <- function(model_list,
   # (the link is the "from" variable in the physical flow).
   if(nrow(ints) > 0) {  # avoids errors if no interactions
     intflows <- ints  # duplicate
-    intflows$label <- ""  # strip the label from the physical flow
+    intflows$name <- ""  # strip the name from the physical flow
     intflows <- unique(intflows)  # just keep unique flows
     intflows$interaction <- FALSE  # reset interaction to false b/c a main flow now
 
@@ -542,11 +760,10 @@ prepare_diagram <- function(model_list,
     # of the physical flow arrow.
     for(i in 1:nrow(ints)) {
       tmp <- ints[i, ]
-      #v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
-      v <- get_vars_pars(tmp$label)  #strips away math, leaving just letters
+      v <- get_vars_pars(tmp$name)  #strips away math, leaving just letters
       vf <- substr(v, start = 1, stop = 1)  #get first letters
       v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
-      ids <- subset(ndf, label %in% v)[ , "id"]  #extract the relevant numeric ids
+      ids <- variables[variables$name %in% v, "id"]  #extract the relevant numeric ids
 
       if(is.na(ints[i, "to"])){
         # If the receiving node is NA, then this is an interaction
@@ -573,452 +790,527 @@ prepare_diagram <- function(model_list,
     }
 
     # Recombine the edge data frame
-    edf <- rbind(edf, ints, intflows)
+    flows <- dplyr::bind_rows(flows, ints, intflows)
   }
 
-  # Keep only distinct rows
-  edf <- unique(edf)
+  # Keep only distinct rows, but take extra care to avoid uniquness due to
+  # original name. this takes a bit of bookkeeping
+  tmp <- flows
+  tmp$orig_name <- NULL
+  tmp <- unique(tmp)
+  tmp$orig_name <- flows[rownames(tmp), "orig_name"]
+  rm(flows)
+  flows <- tmp
+  rm(tmp)
 
-
-  # Make dummy compartment for all flows in and out of the system.
-  # Dummy compartments are given ids that start with three numbers
-  # that identify the type of dummy:
-  #   999* = dummy compartments for flows out of the system (e.g., death pool)
-  #   -999* = dummy comparments for flows in the system (e.g., birth pool)
-  #   555* = dummy compartments for interaction links
-  # These are just used to create empty nodes for arrows to originate from
-  # or go to.
-
-  # Out of the system
-  outdummies <- NULL
-  numnas <- length(edf[is.na(edf$to) & edf$interaction == FALSE, "to"])
-  if(numnas > 0) {
-    outdummies <- as.numeric(paste0("999", c(1:numnas)))
-    edf[is.na(edf$to) & edf$interaction == FALSE, "to"] <- outdummies
-  }
-
-  # In to the system
-  indummies <- NULL
-  numnas <- length(edf[is.na(edf$from) & edf$interaction == FALSE, "from"])
-  if(numnas > 0) {
-    indummies <- as.numeric(paste0("-999", c(1:numnas)))
-    edf[is.na(edf$from) & edf$interaction == FALSE, "from"] <- indummies
-  }
-
-  # Make dummy compartment for "links" in interactions
-  linkdummies <- NULL
-  numlinks <- length(edf[is.na(edf$to) &
-                           edf$interaction == TRUE &
-                           !is.na(edf$linkto), "to"])
-  if(numlinks > 0) {
-    linkdummies <- as.numeric(paste0("555", c(1:numlinks)))
-    edf[is.na(edf$to) & edf$interaction == TRUE, "to"] <- linkdummies
-  }
-
-
-  # Add dummy compartments to nodes dataframe
-  if(is.numeric(outdummies) | is.numeric(indummies) | is.numeric(linkdummies)) {
-    exnodes <- data.frame(id = c(outdummies, indummies, linkdummies),
-                          label = "",
-                          name = NA,
-                          row = 1)
-    exnodes[setdiff(names(ndf), names(exnodes))] <- NA
-    ndf <- rbind(ndf, exnodes)
-  }
-
-
-  # Add midpoint locations for nodes
-  # Here we just iterate over the nodes and take their position in the
-  # data frame rows and multiply by 3 (e.g., 1*3, 2*3, 3*3) to get
-  # arbitrary x positions. y positions take the row id and multiply by
-  # negative 2, meaning that additional rows always go below the row that
-  # was previously defined.
-  # If the varlocation_matrix is provided, then the same procedure is applied, but
-  # based on the row and column positions provided by the user.
-  if(is.null(varlocation_matrix)) {
-    ndf <- ndf[order(ndf$id), ]
-    ndf$x <- NA
-    ndf$y <- NA
-    for(rid in unique(ndf$row)) {
-      ndf[which(ndf$row == rid), "x"] <- (1:nrow(ndf[which(ndf$row == rid), ])*3)-3
-      ndf[which(ndf$row == rid), "y"] <- (as.numeric(rid) * -2)+2
-    }
-  } else {
-    ny <- (1:nrow(varlocation_matrix) * -2)+2
-    nx <- (1:ncol(varlocation_matrix) * 3)-3
-    for(nid in varnames) {
-      pos <- which(varlocation_matrix == nid, arr.ind = TRUE)
-      ndf[which(ndf$label == nid), "x"] <- nx[pos[1, 2]]
-      ndf[which(ndf$label == nid), "y"] <- ny[pos[1, 1]]
-    }
-  }
-
-  # Add xmin/max and ymin/max columns for node rectangles
-  # I use a 0.5 offset in both directions, creating a 1x1 sized square.
-  xoff <- 0.5  # default
-  yoff <- 0.5  # default
-  ndf$xmin <- with(ndf, x - xoff)
-  ndf$xmax <- with(ndf, x + xoff)
-  ndf$ymin <- with(ndf, y - yoff)
-  ndf$ymax <- with(ndf, y + yoff)
-
-
-  # update inflow node positions from nowhere (e.g. births)
-  inflownodes <- subset(ndf, id < -9990)$id
-  for(id in inflownodes) {
-    newxyid <- edf[which(edf$from == id), "to"]
-    newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
-    newxy$y <- newxy$y + 2  # above the variable
-    ndf[which(ndf$id == id), c("x", "y")] <- newxy
-
-    # set min/max to midpoint for ease because these are not actually
-    # drawn, therefore rectangle boundaries do not need to be accurate
-    ndf[which(ndf$id == id), c("xmin", "ymin")] <- newxy
-    ndf[which(ndf$id == id), c("xmax", "ymax")] <- newxy
-  }
-
-  # update outflow node positions to nowhere
-  outflownodes <- subset(ndf, id > 9990)$id
-  for(id in outflownodes) {
-    newxyid <- edf[which(edf$to == id), "from"]
-    newxy <- ndf[which(ndf$id == newxyid), c("x", "y")]
-    newxy$y <- newxy$y - 2  # below the variable
-    ndf[which(ndf$id == id), c("x", "y")] <- newxy
-
-    # set min/max to midpoint for ease because these are not actually
-    # drawn, therefore rectangle boundaries do not need to be accurate
-    ndf[which(ndf$id == id), c("xmin", "ymin")] <- newxy
-    ndf[which(ndf$id == id), c("xmax", "ymax")] <- newxy
-  }
-
-  # update invisible interaction link nodes, i.e., nodes that need to sit
-  # at the midpoint of some other arrow, but not be drawn
-  linknodes <- subset(ndf, id > 5550 & id < 9990)$id
-  for(id in linknodes) {
-    start <- edf[which(edf$to == id), "linkfrom"]
-    end <- edf[which(edf$to == id), "linkto"]
-    newx1 <- ndf[which(ndf$id == start), "x"]
-    newx2 <- ndf[which(ndf$id == end), "x"]
-    newx <- (newx1+newx2)/2  # midpoint of the physical arrow
-    newy1 <- ndf[which(ndf$id == start), "y"]
-    newy2 <- ndf[which(ndf$id == end), "y"]
-    newy <- (newy1+newy2)/2  # midpoint of the physical arrow
-    ndf[which(ndf$id == id), c("x", "y")] <- c(newx, newy)
-
-    # set min/max to midpoint for ease because these are not actually
-    # drawn, therefore rectangle boundaries do not need to be accurate
-    ndf[which(ndf$id == id), c("xmin", "ymin")] <- c(newx, newy)
-    ndf[which(ndf$id == id), c("xmax", "ymax")] <- c(newx, newy)
-  }
-
-  # Subset out interactions to in/out flows
-  extints <- subset(edf, interaction == TRUE & is.na(linkto))
-  if(nrow(extints) > 0) {
-    for(i in 1:nrow(extints)) {
-      tmp <- extints[i, ]
-      v <- get_vars_pars(tmp$label)
-      vf <- substr(v, start = 1, stop = 1)  #get first letters
-      v <- v[which(vf %in% LETTERS)]
-      ids <- subset(ndf, label %in% v)[ , "id"]
-      id <- ids[which(ids != tmp$from)]
-      extints[i, "to"] <- id
-    }
-  }
-
-
-  # Create segment coordinates by merging with node locations
-  edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "from", by.y = "id")
-  edf <- merge(edf, ndf[ , c("x", "y", "id")], by.x = "to", by.y = "id",
-               suffixes = c("start", "end"))
-
-  # label locations are mid points
-  edf$xmid <- with(edf, (xend + xstart) / 2)
-  edf$ymid <- with(edf, (yend + ystart) / 2) + 0.25  # label slightly above the arrrow
-  edf$diff <- with(edf, abs(to-from))
-
-  if(!is.null(varlocation_matrix)) {
-    xdiffs <- with(edf, abs(xstart - xend))
-    xdiffs <- ifelse(xdiffs %in% c(0, 3), 0.5, 1)
-    ydiffs <- with(edf, abs(ystart - yend))
-    ydiffs <- ifelse(ydiffs %in% c(0, 2), 0.5, 1)
-    for(i in 1:nrow(edf)) {
-      if(edf[i, "interaction"] == FALSE &
-         edf[i, "direct_interaction"] == FALSE &
-         edf[i, "to"] < 9900 &
-         edf[i, "from"] > -9900) {
-        edf[i, "diff"] <- xdiffs[i] + ydiffs[i]
-      }
-    }
-  }
+  #########################################
+  #########################################
+  # At this stage, the flows dataframe has the following columns:
+  # from, to, name, interaction, direct_interaction, linkfrom, linkto
+  #########################################
+  #########################################
 
 
 
-  # Get midpoints of in/out segments for external interactions "to" locations
-  if(nrow(extints) > 0) {
-    extlinks <- subset(edf, label == "")
-    extints <- merge(extints, ndf[,c("x", "y", "id")], by.x = "from", by.y = "id")
-    colnames(extints)[which(colnames(extints) == "x")] <- "xstart"
-    colnames(extints)[which(colnames(extints) == "y")] <- "ystart"
-    extints$xend <- NA
-    extints$yend <- NA
-    for(i in 1:nrow(extints)) {
-      tmp1 <- extints[i, ]
-      tmp1[ , c("xend", "yend")] <- NULL
-      tmp2 <- extlinks[which(tmp1$to == extlinks$from), ]
-      if(tmp2$to == tmp2$from) {
-        tmp3 <- merge(tmp1, tmp2[, c("xend", "yend", "from")],
-                         by.x = "to", by.y = "from")
-        tmp3$yend <- tmp3$yend + 0.75
-        tmp3$xend <- tmp3$xend + 0.17
-      } else {
-        tmp3 <- merge(tmp1, tmp2[, c("xmid", "ymid", "from")],
-                      by.x = "to", by.y = "from")
-      }
-      colnames(tmp3) <- c("to", "from", "label", "interaction", "link",
-                             "xstart", "ystart", "xend", "yend")
-      extints[i, ] <- tmp3
-    }
-    extints$xmid <- with(extints, (xend + xstart) / 2)
-    extints$ymid <- with(extints, (yend + ystart) / 2) + 0.25
-    extints$diff <- with(extints, abs(to-from))
 
-    edf <- rbind(edf, extints)
-  }
 
-  # split up the edges into constituent parts:
-  # - curved segments
-  # - straight (horizontal) segments
-  # - vertical segments
-  # - feedback segments (curved back onto same node)
-  cdf <- subset(edf, (diff > 1 & diff < 9000) & (to != from) | interaction == TRUE)
-  sdf <- subset(edf, (diff <= 1 | diff >= 9000) & interaction == FALSE)
-  vdf <- subset(sdf, abs(diff) >= 9900)
-  sdf <- subset(sdf, abs(diff) < 9900)
-  fdf <- subset(sdf, to == from)
-  sdf <- subset(sdf, to != from)
+  #############################################################################
+  ## ADD SPATIAL INFORMATION TO FLOWS #########################################
+  #############################################################################
+  #########################################
+  # This next large chunk assigns spatial information to all flows.
+  # Spatial information includes: xmin, xmax, xlabel, ymin, ymax, ylabel.
+  #########################################
+  #########################################
 
-  # Add offsets to straight edges. The offset depends on the variation
-  # in x and y. If xstart == xend, then this is a vertical alignment and
-  # y offsets are applied. If ystart == yend, then this is a
-  # horizontal alignment and x offsets are applied. If vertical, the midpoints
-  # are also updated to move the label to the right of the arrow.
-  if(nrow(sdf) != 0) {
-    for(i in 1:nrow(sdf)) {
-      if(sdf[i, "xstart"] == sdf[i, "xend"]) {
-        sdf[i, "ystart"] <- sdf[i, "ystart"] - yoff
-        sdf[i, "yend"] <- sdf[i, "yend"] + yoff
-        sdf[i, "ymid"] <- (sdf[i, "yend"] + sdf[i, "ystart"]) / 2
-        sdf[i, "xmid"] <- ((sdf[i, "xend"] + sdf[i, "xstart"]) / 2) + 0.25  # label to right
-      } else {
-        sdf[i, "xstart"] <- sdf[i, "xstart"] + xoff
-        sdf[i, "xend"] <- sdf[i, "xend"] - xoff
-      }
-    }
-  }
+  ####
+  ## Direct, physical flows
+  ####
+  # These are simple flows from one variable to another, identified by
+  # flows that have real numbers in the from and to columns, and are also
+  # not links
+  simple_flows <- subset(flows, !is.na(from) & !is.na(to) & is.na(linkfrom))
 
-  # The same logic above applies to curved arrows with an interaction.
-  # Add offsets to straight edges. The offset depends on the variation
-  # in x and y. If xstart == xend, then this is a vertical alignment and
-  # y offsets are applied. If ystart == yend, then this is a
-  # horizontal alignment and x offsets are applied. If vertical, the midpoints
-  # are also updated to move the label to the right of the arrow.
-  if(nrow(cdf) != 0) {
-    for(i in 1:nrow(cdf)) {
-      if(cdf[i, "interaction"] == TRUE &
-         cdf[i, "direct_interaction"] == FALSE) {
-        if(cdf[i, "xstart"] == cdf[i, "xend"]) {
-          cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
-          cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
+  if(nrow(simple_flows) > 0) { # only execute if these exist
+    # add columns for to-be added information
+    simple_flows$xmin <- NA_real_
+    simple_flows$xmax <- NA_real_
+    simple_flows$ymin <- NA_real_
+    simple_flows$ymax <- NA_real_
+
+    # Loop over the simple flows and identify the relative positions of the
+    # to and from variables. This is necessary because start and end points
+    # of arrows will change if the alignment of the nodes is horizontal
+    # or vertical
+    for(i in 1:nrow(simple_flows)) {
+      tmp <- simple_flows[i,]
+      from_node <- subset(variables, id == tmp$from)
+      to_node <- subset(variables, id == tmp$to)
+
+      # if the start and end variables are in the same row (y = y) AND
+      # the start and end variables are in different columns (x != x), then
+      # we set the y values for start and end to the mean of the y start
+      # variable box (the middle) and the xmin location is the max x of
+      # the left-most (starting) box and the min x of the right-most (ending) box
+      if(from_node$ymin == to_node$ymin & from_node$xmin != to_node$xmin) {
+        if(from_node$xmin > to_node$xmin) {
+          simple_flows[i, "xmin"] <- from_node$xmin # left edge
+          simple_flows[i, "xmax"] <- to_node$xmax  # right edge
+        } else {
+          simple_flows[i, "xmin"] <- from_node$xmax # right edge
+          simple_flows[i, "xmax"] <- to_node$xmin  # left edge
         }
+        simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
+        simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
       }
-    }
-  }
 
-  # Set the curvature using internal function
-  if(nrow(cdf) > 0) {
-    #cdf <- set_curvature(cdf, ndf)
-    cdf <- set_curvature(cdf, ndf)
-  }
-
-  # Update start and end points for curved arrows that bypass nodes,
-  # these need to start/end from the top/bottom of the nodes. If the
-  # arrow goes right to left, it will start and end on top of nodes. If
-  # the arrow goes left to right, it will start and end on the bottom of
-  # nodes. Similar logic applies if the diagram is positioned vertically
-  # rather than horizontally.
-  if(nrow(cdf) > 0) {
-    for(i in 1:nrow(cdf)) {
-      if(cdf[i, "interaction"] == FALSE &
-         cdf[i, "direct_interaction"] == FALSE) {
-        if(sign(cdf[i, "diff"]) == 1) {
-          cdf[i, "xstart"] <- cdf[i, "xstart"] + xoff
-          cdf[i, "xend"] <- cdf[i, "xend"] - xoff
-          cdf[i, "ystart"] <- cdf[i, "ystart"] + yoff
-          cdf[i, "yend"] <- cdf[i, "yend"] + yoff
-          cdf[i, "labely"] <- cdf[i, "labely"] + yoff
-        }
-        if(sign(cdf[i, "diff"]) == -1) {
-          cdf[i, "xstart"] <- cdf[i, "xstart"] - xoff
-          cdf[i, "xend"] <- cdf[i, "xend"] + xoff
-          cdf[i, "ystart"] <- cdf[i, "ystart"] - yoff
-          cdf[i, "yend"] <- cdf[i, "yend"] - yoff
-          cdf[i, "labely"] <- cdf[i, "labely"] - yoff
-        }
+      # if the start variable is above the end variable (y1 > y2) AND
+      # the start and end variables are in the same column (x = x), then
+      # we set the ymin of the arrow the bottom of the originating box and
+      # the ymax of the arrow to the top of the terminating box. the x location
+      # for start and end is set to the middle of the box (mean of top and bottom)
+      if(from_node$ymin > to_node$ymin & from_node$xmin == to_node$xmin) {
+        simple_flows[i, "xmin"] <- mean(c(from_node$xmin, from_node$xmax)) # middle
+        simple_flows[i, "xmax"] <- mean(c(to_node$xmin, to_node$xmax)) # middle
+        simple_flows[i, "ymin"] <- from_node$ymin # bottom
+        simple_flows[i, "ymax"] <- to_node$ymax # top
       }
-    }
-  }
 
-  # test to make sure splits are unique and sum up to original data frame
-  test <- nrow(vdf) + nrow(sdf) + nrow(cdf) + nrow(fdf) == nrow(edf)
-  if(!test) {
-    stop(paste0("Edges data frame is not splitting appropriately.\n",
-                "       Contact package maintainer."))
-  }
+      # if the start variable is below the end variable (y1 < y2) AND
+      # the start and end variables are in the same column (x = x), then
+      # we set the ymin of the arrow the top of the originating box and
+      # the ymax of the arrow to the bottom of the terminating box. the x location
+      # for start and end is set to the middle of the box (mean of top and bottom)
+      if(from_node$ymin < to_node$ymin & from_node$xmin == to_node$xmin) {
+        simple_flows[i, "xmin"] <- mean(c(from_node$xmin, from_node$xmax)) # middle
+        simple_flows[i, "xmax"] <- mean(c(to_node$xmin, to_node$xmax)) # middle
+        simple_flows[i, "ymin"] <- from_node$ymax # top
+        simple_flows[i, "ymax"] <- to_node$ymin # bottom
+      }
 
-  # now drop "hidden" nodes without labels
-  ndf <- subset(ndf, label != "")
+      # if the start variable is above the ending variable (y1 > y2) AND
+      # the start variable is to the left of the ending variable (x1 < x2), then
+      # the flow start is set to the right-middle of the originating box and
+      # the flow end is set to the left-middle of the terminating box. this
+      # creates an angled flow arrow pointing down and to the right.
+      if(from_node$ymin > to_node$ymin & from_node$xmin < to_node$xmin) {
+        simple_flows[i, "xmin"] <- from_node$xmax # right edge
+        simple_flows[i, "xmax"] <- to_node$xmin  # left edge
+        simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
+        simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
+      }
 
-  # update vertical edges to go in and out at angles
-  #vdf <- make_vdf_angled(vdf)
-  vdf <- make_vdf_angled(vdf)
+      # if the start variable is above the ending variable (y1 > y2) AND
+      # the start variable is to the right of the ending variable (x1 > x2), then
+      # the flow start is set to the left-middle of the originating box and
+      # the flow end is set to the right-middle of the terminating box. this
+      # creates an angled flow arrow pointing down and to the left.
+      if(from_node$ymin > to_node$ymin & from_node$xmin > to_node$xmin) {
+        simple_flows[i, "xmin"] <- from_node$xmin # left edge
+        simple_flows[i, "xmax"] <- to_node$xmax  # right edge
+        simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
+        simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
+      }
 
+      # if the start variable is below the ending variable (y1 < y2) AND
+      # the start variable is to the left of the ending variable (x1 < x2), then
+      # the flow start is set to the right-middle of the originating box and
+      # the flow end is set to the left-middle of the terminating box. this
+      # creates an angled flow arrow pointing up and to the right.
+      if(from_node$ymin < to_node$ymin & from_node$xmin < to_node$xmin) {
+        simple_flows[i, "xmin"] <- from_node$xmax # right edge
+        simple_flows[i, "xmax"] <- to_node$xmin # left edge
+        simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
+        simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
+      }
+
+      # if the start variable is below the ending variable (y1 < y2) AND
+      # the start variable is to the right of the ending variable (x1 > x2), then
+      # the flow start is set to the left-middle of the originating box and
+      # the flow end is set to the right-middle of the terminating box. this
+      # creates an angled flow arrow pointing up and to the left.
+      if(from_node$ymin < to_node$ymin & from_node$xmin > to_node$xmin) {
+        simple_flows[i, "xmin"] <- from_node$xmin # left edge
+        simple_flows[i, "xmax"] <- to_node$xmax # right edge
+        simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
+        simple_flows[i, "ymax"] <- mean(c(to_node$ymin, to_node$ymax)) # middle
+      }
+
+      # if the flow starts and ends in the same place, this is a feedback
+      # flow that needs minor offsets in the x direction.
+      if(from_node$xmin == to_node$xmin & from_node$ymin == to_node$ymin) {
+        middle <- mean(c(from_node$xmin, from_node$xmax))
+        simple_flows[i, "xmin"] <- middle - 0.25  # minor offset to the left for start
+        simple_flows[i, "xmax"] <- middle + 0.25  # minor offset to the right for end
+        simple_flows[i, "ymin"] <- from_node$ymax  # top
+        simple_flows[i, "ymax"] <- to_node$ymax  # top
+      }
+    } # end loop over simple, physical flows
+  } # end direct physical flows if/then for existence
+
+
+  ####
+  ## In flows
+  ####
+  # These flows only have a to id and from is NA
+  in_flows <- subset(flows, is.na(from) & !is.na(to) & is.na(linkfrom))
+
+  if(nrow(in_flows) > 0) { # only exectute if these exist
+    # The xlabel, ymax locations define the top/middle of the node, which
+    # is xmax/ymax for in-flows
+    in_flows <- merge(in_flows, variables[,c("xlabel","ymax", "id")],
+                      by.x = "to",
+                      by.y = "id")
+    in_flows$xmax <- in_flows$xlabel
+    in_flows$xlabel <- NULL  # remove the column
+
+    # ymin is the y starting point of the arrow, defined as the end point (ymax) + 0.5
+    in_flows$ymin <- in_flows$ymax + 0.5
+
+    # xmin is the x starting point of the arrow, defined as left-edge of the node
+    left_edges <- variables[,c("id", "xmin")]
+    in_flows <- merge(in_flows, left_edges, by.x = "to", by.y = "id")
+  } # end in flows if/then for existence
+
+
+  ####
+  ## Out flows
+  ####
+  # These flows only have a from id and to is NA
+  # also cannot be a interaction
+  out_flows <- subset(flows, !is.na(from) & is.na(to) &
+                              is.na(linkfrom) & interaction == FALSE)
+
+  if(nrow(out_flows) > 0) { # only execute if these exist
+    # The xlabel, ymin locations define the bottom/middle of the node, which
+    # is xmin/ymin for out-flows
+    out_flows <- merge(out_flows, variables[,c("xlabel","ymin", "id")],
+                       by.x = "from",
+                       by.y = "id")
+    out_flows$xmin <- out_flows$xlabel
+    out_flows$xlabel <- NULL  # remove the column
+
+    # ymax is the y end point of the arrow, defined as the start point (ymin) - 0.5
+    out_flows$ymax <- out_flows$ymin - 0.5
+
+    # xmax is the x end point of the arrow, defined as right-edge of the node
+    right_edges <- variables[,c("id", "xmax")]
+    out_flows <- merge(out_flows, right_edges, by.x = "from", by.y = "id")
+  } # end out flows if/then for existence
+
+
+  ####
+  ## Interaction flows
+  ####
+  # These are flows where the interaction column is TRUE and both linkfrom
+  # and linkto have values
+  int_flows <- subset(flows, interaction == TRUE & !is.na(linkfrom) & !is.na(linkto))
+
+  if(nrow(int_flows) > 0) { # only execute if these exist
+    # add columns for to-be added information
+    int_flows$xmin <- NA_real_
+    int_flows$xmax <- NA_real_
+    int_flows$ymin <- NA_real_
+    int_flows$ymax <- NA_real_
+
+    # the end point is the middle of the simple flow going from "linkfrom" to "linkto"
+    # loop over the out_flows to get correct matching of the simple flows
+    for(i in 1:nrow(int_flows)) {
+      int_tmp <- int_flows[i,]  # get one row to work with
+      simple_to <- int_tmp$linkto # to variable id
+      simple_from <- int_tmp$linkfrom # from variable id
+
+      # get the direct flow arrow for end positions
+      simple_tmp <- subset(simple_flows, to == simple_to & from == simple_from)
+      this_ymax <- mean(c(simple_tmp$ymin, simple_tmp$ymax)) # middle of direct flow
+      this_xmax <- mean(c(simple_tmp$xmin, simple_tmp$xmax)) # middle of direct flow
+
+      # get the from variable for start positions
+      var_tmp <- subset(variables, id == int_tmp$from)
+      this_ymin <- var_tmp$ymax # top of box
+      this_xmin <- mean(c(var_tmp$xmin, var_tmp$xmax)) # middle of box
+
+      # replace NAs
+      int_flows[i, "xmin"] <- this_xmin
+      int_flows[i, "xmax"] <- this_xmax
+      int_flows[i, "ymin"] <- this_ymin
+      int_flows[i, "ymax"] <- this_ymax
+
+      # remove from memory to avoid overwriting potential
+      rm(this_xmin, this_xmax, this_ymax,this_ymin)
+    } # end interaction variable loop
+  } # end interaction variable if/then for existence
+
+
+  ####
+  ## External interaction flows
+  ####
+  # These are interaction arrows that go from a state variable (node) to
+  # another arrow that is either an outflow, inflow, or feedback flow.
+  # Regular interactions for physical flows between variables are already
+  # handled above. These external interaction flows are special, and we
+  # treat them as such.
+  # External flows are identified as having the interaction as TRUE and
+  # the linkto is NA.
+  ext_flows <- subset(flows, interaction == TRUE & is.na(linkto))
+  # We also need to know the locations of all the other flows, so create
+  # a temporary flows dataframe here
+  other_flows <- dplyr::bind_rows(simple_flows, in_flows, out_flows, int_flows)
   # update vertical edges to avoid overlaps
-  #vdf <- fix_arrow_pos(vdf)
-  vdf <- fix_arrow_pos(vdf)
+  other_flows <- fix_arrow_pos(other_flows)
+  # Now loop through the ext_flows for spatial processing, if there is at least 1 row
+  if(nrow(ext_flows) > 0) {
+    # add columns for to-be added information
+    ext_flows$xmin <- NA_real_
+    ext_flows$xmax <- NA_real_
+    ext_flows$ymin <- NA_real_
+    ext_flows$ymax <- NA_real_
+    for(i in 1:nrow(ext_flows)) {
+      tmp <- ext_flows[i,]
 
-  # set to/from columns to NA if value is not in node dataframe
-  sdf <- set_node_to_na(sdf, ndf)
-  vdf <- set_node_to_na(vdf, ndf)
-  cdf <- set_node_to_na(cdf, ndf)
-  fdf <- set_node_to_na(fdf, ndf)
+      # use the flow math to determine if this is associated with an
+      # outflow or inflow
+      direction <- signmat[which(flowmatred == tmp$name)]
+
+      if(direction == "-") {
+        # if an outflow (direction == "-"), then this is associated with a
+        # row in the other_flows data frame where the from location
+        # is different than the from location in the tmp data frame AND
+        # the name is empty
+        to_flow <- NULL  # null out to avoid errors
+        to_flow <- other_flows[other_flows$from != tmp$from &
+                                 is.na(other_flows$to) &
+                                 other_flows$name == "", ]
+        # this can sometimes produce a data frame with an NA row because of
+        # an NA in the fields used above in the logical constraint, that
+        # row is dropped here
+        drops <- which(is.na(to_flow$from) & is.na(to_flow$to))
+        if(length(drops) > 0){
+          to_flow <- to_flow[-drops, ]
+        }
+
+
+        # And it is associated with the variable in the from element
+        from_node <- NULL  # null this out to avoid errors
+        from_node <- variables[variables$id == tmp$from, ]
+
+        # For these complex interactions, we assume a horizontal flow
+        # arrangment, user must update if more complex
+        if(from_node$xlabel > mean(c(to_flow$xmax, to_flow$xmax))) {
+          # this implies and arrow going from right to left
+          tmp$xmin <- from_node$xmin # left edge
+          tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
+          tmp$ymin <- from_node$ylabel # middle
+          tmp$ymax <- mean(c(to_flow$ymin, to_flow$ymax)) # middle
+        } else { # assume left to right
+          tmp$xmin <- from_node$xmax # right edge
+          tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
+          tmp$ymin <- from_node$ylabel # middle
+          tmp$ymax <- mean(c(to_flow$ymin, to_flow$ymax)) # middle
+        } # end left-right if/then
+      } # end direction "-" if
+
+      if(direction == "+") {
+        # if the flow is a "+", then this associated with either a feedback
+        # flow or an external flow into the system
+        # first find the to_flow, which will be the flow with a to variable
+        # that is not the current from variable and the name is empty
+        to_flow <- NULL  # null out to avoid errors
+        to_flow <- other_flows[other_flows$to != tmp$from &
+                                 other_flows$name == "", ]
+        # this can sometimes produce a data frame with an NA row because of
+        # an NA in the fields used above in the logical constraint, that
+        # row is dropped here
+        drops <- which(is.na(to_flow$from) & is.na(to_flow$to))
+        if(length(drops) > 0){
+          to_flow <- to_flow[-drops, ]
+        }
+
+        # And it is associated with the variable in the from element
+        from_node <- NULL  # null this out to avoid errors
+        from_node <- variables[variables$id == tmp$from, ]
+
+        # For these complex interactions, we assume a horizontal flow
+        # arrangment, user must update if more complex
+        if(from_node$xlabel > mean(c(to_flow$xmax, to_flow$xmax))) {
+          # this implies and arrow going from right to left
+          tmp$xmin <- from_node$xmin # left edge
+          tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
+          tmp$ymin <- from_node$ylabel # middle
+          tmp$ymax <- mean(c(to_flow$ymin, to_flow$ymax)) # middle
+        } else { # assume left to right
+          tmp$xmin <- from_node$xmax # right edge
+          tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
+          tmp$ymin <- from_node$ylabel # middle
+          tmp$ymax <- mean(c(to_flow$ymin, to_flow$ymax)) # middle
+        } # end left-right if/then
+
+        # Last, the "+" flows can be either an external entry or a feedback.
+        # External entries will have no "from", feedbacks will. If the flow
+        # is pointing to an external entry, then all location information is
+        # fine. If it is pointing to a feedback loop, we need to update it
+        # slightly to hit the curve. Manual adjustments will be required by the
+        # user, still.
+        if(!is.na(tmp$from)) {
+          tmp$ymax <- tmp$ymax + 0.5  # this hits the top of the curve, generally
+        }
+
+      } # end direction "+"
+      loc_cols <- c("xmin", "xmax", "ymin", "ymax")
+      ext_flows[i, loc_cols] <- tmp[ , loc_cols]
+    } # end external flow loop
+  } # end external flow if
+
+
+  ####
+  ## Combine flows back together
+  ####
+  flows <- NULL # set original df to null to avoid/identify any potential errors
+  flows <- dplyr::bind_rows(other_flows, ext_flows)
+
+
+  ####
+  ## Add label locations for all flows
+  ####
+  # label locations are mid points, which are means of the start and end positions
+  flows$xlabel <- with(flows, (xmax + xmin) / 2)
+  flows$ylabel <- with(flows, (ymax + ymin) / 2)
+
+  # set default curvature of all flows, this also applies label updates
+  # to curved arrows, so we do this before making minor adjustments below
+  flows <- set_curvature(variables, flows)
+
+  # apply a minor offset to move the label away from the line
+  # this is done flow by flow to determine if it is vertical or horizontal
+  for(i in 1:nrow(flows)) {
+    tmp <- flows[i, ]
+    # processing for direct flows
+    if(tmp$interaction == FALSE & is.na(tmp$from) == FALSE & is.na(tmp$to) == FALSE) {
+      if(tmp$xmin == tmp$xmax) { # vertical
+        flows[i, "xlabel"] <- flows[i, "xlabel"] - 0.25  # move to left
+      } else { # horizontal
+        flows[i, "ylabel"] <- flows[i, "ylabel"] + 0.1  # move up
+      }
+    } else if((is.na(tmp$from) | is.na(tmp$to)) &
+              tmp$interaction == FALSE) { # processing for in/out flows
+      flows[i, "xlabel"] <- flows[i, "xlabel"] + 0.2  # move to right
+    }
+
+    # processing for interactions
+    if(tmp$interaction == TRUE) {
+      if(tmp$xmax == tmp$xmin) {  # vertical
+        flows[i, "xlabel"] <- flows[i, "xlabel"] + 0.02
+      } else { # horizontal
+        flows[i, "ylabel"] <- flows[i, "ylabel"] + 0.2
+      }
+    }
+  }
+
+  # add a diff column so we can identify flows that traverse more than
+  # one variable. these will be updated to have curvature that goes over
+  # or under the nodes it is bypassing. works best with just a couple. if there
+  # is lots of traversing, then manual intervention will be required by the user
+  flows$diff <- with(flows, abs(to-from))
+
+  # set curvature of feedback loops. this is pretty different from the
+  # "regular" curvature settings, so we made a separate function for this
+  # operation.
+  flows <- set_feedback_curvature(flows)
+
+  # set to/from columns in flows to NA if value is not in node dataframe
+  flows <- set_node_to_na(flows, variables)
 
   # remove rows with no location information
-  sdf <- remove_na_rows(sdf)
-  vdf <- remove_na_rows(vdf)
-  cdf <- remove_na_rows(cdf)
-  fdf <- remove_na_rows(fdf)
+  flows <- flows[!is.na(flows$xmin) &
+                   !is.na(flows$xmax) &
+                   !is.na(flows$ymin) &
+                   !is.na(flows$ymax), ]
 
   # convert direct interaction to flag to regular interaction flag,
   # now only relevant for plotting
-  sdf <- update_interactions(sdf)
-  vdf <- update_interactions(vdf)
-  cdf <- update_interactions(cdf)
-  fdf <- update_interactions(fdf)
+  # get row ids for the "direct interactions"
+  ids <- which(flows$interaction == FALSE & flows$direct_interaction == TRUE)
+  # set interaction to TRUE since this now is just for plotting aesthetics
+  flows[ids, "interaction"] <- TRUE
+  # remove the direct_interaction column because all processing is complete
+  flows$direct_interaction <- NULL  # delete the flagging column
 
   # update all to and froms such that each is the variable label
-  sdf <- update_tofroms(sdf, ndf)
-  vdf <- update_tofroms(vdf, ndf)
-  cdf <- update_tofroms(cdf, ndf)
-  fdf <- update_tofroms(fdf, ndf)
+  # until now, the to/from in flows has just been numeric. these
+  # need to be character strings for the variable labels for plotting
+  flows <- update_tofroms(flows, variables)
 
-  # rename data frames for exporting
-  ndf$labelx <- ndf$x
-  ndf$labely <- ndf$y
-  #nodes <- subset(ndf, select = -c(id, row, x, y))
-  nodes <- subset(ndf, select = -c(row, x, y))
-
-  # change the label to full name, if requested
-  # this will be move farther up once code to adjust box size to text is
-  # implemented
-
-  # first check that varnames are provided, if not cause error
-  if(model_settings$use_varnames & is.null(model_settings$varnames)) {
-    stop("If you want to use `varnames` you need to specify them.")
-  }
-
-  # SHOULD CHECK HERE TO MAKE SURE VARNAMES HAS THE RIGHT LENGTH - MAYBE ALREADY DONE ABOVE?
-  if(model_settings$use_varnames) {
-    nodes$plot_label <- nodes$name
-  } else {
-    nodes$plot_label <- nodes$label
-  }
-
-  sdf$labelx <- sdf$xmid
-  sdf$labely <- sdf$ymid
-  horizontal_edges <- subset(sdf, select = -c(diff, linkto, linkfrom, xmid, ymid))
-  if(nrow(horizontal_edges) > 0) {
-    horizontal_edges$curvature <- 0
-  } else {
-    horizontal_edges$curvature <- numeric()
-  }
-
-  vdf$labelx <- vdf$xmid
-  vdf$labely <- vdf$ymid
-  vertical_edges <- subset(vdf, select = -c(diff, interaction, linkto,
-                                            linkfrom, xmid, ymid))
-  if(nrow(vertical_edges) > 0) {
-    vertical_edges$curvature <- 0
-    vertical_edges$interaction <- FALSE
-  } else {
-    vertical_edges$curvature <- numeric()
-    vertical_edges$interaction <- logical()
-  }
-
-  cdf$row <- NULL
-  curved_edges <- subset(cdf, select = -c(diff, linkto, linkfrom, ymid, xmid))
-
-  fdf$labelx <- fdf$xmid
-  fdf$labely <- fdf$ymid
-  fdf$labely <- fdf$labely + 0.85  # this offset makes the label a little above the big curved arrow
-  # last, adjust the xs and ys to get arrow above and feeding back into the node
-  fdf$xstart <- fdf$xstart-0.25
-  fdf$ystart <- fdf$ystart+0.5
-  fdf$xend <- fdf$xend+0.25
-  fdf$yend <- fdf$yend+0.5
-  feedback_edges <-  subset(fdf, select = -c(diff, linkto, linkfrom, interaction,
-                                             xmid, ymid))
-  if(nrow(feedback_edges) > 0) {
-    feedback_edges$curvature <- -2
-    feedback_edges$interaction <- FALSE
-  } else {
-    feedback_edges$curvature <- numeric()
-    feedback_edges$interaction <- logical()
-  }
-
-
-  # combine all the edge data frames
-  flows <- rbind(horizontal_edges,
-                 vertical_edges,
-                 curved_edges,
-                 feedback_edges)
 
   # update interaction column to be type column, one of
-  # main, interaction, or external.
-  flows$type <- "main"
+  # main, interaction, or external. this is needed for plotting
+  flows$type <- "main"  # intialize the column as all "main" flows
+  # set the interaction flows according to the interaction flag
   flows$type <- ifelse(flows$interaction == TRUE, "interaction", flows$type)
+  # external flows are not interactions and either the to or from id NA
   flows$type <- ifelse(flows$interaction == FALSE & (is.na(flows$to) | is.na(flows$from)),
                        "external", flows$type)
-  flows$interaction <- NULL
-
-
-  # add text size arguments
-  nodes$plot_label_size <- model_settings$var_label_size
-  variables <- nodes  # rename for user facing data frame
+  flows$interaction <- NULL  # remove the interaction column
 
   #sort flows by type, main/external/interaction
-  flows = rbind(flows[flows$type=="main",],flows[flows$type=="external",],flows[flows$type=="interaction",])
-
+  flows <- dplyr::bind_rows(
+    flows[flows$type == "main", ],
+    flows[flows$type == "external", ],
+    flows[flows$type == "interaction", ]
+  )
 
   #add a row id so it's easier for users to know which row to alter
   flows$id = 1:nrow(flows)
 
-  # add a math column to differentiate from label if needed
-  flows$math <- flows$label
+  # add a unique id for users when interacting with update_diagram()
+  # for variables, this is just the name columne
+  # for flows, the unique id is the first letter of the "type" and
+  # then the collapsed original name, separated by "_"
+  part1 <- substr(flows$type, 1, 1)
+  paste_it_too <- function(x) {  # little helper function for lapply
+    ch <- get_vars_pars(x)
+    paste0(ch, collapse = "")
+  }
+  part2 <- unlist(lapply(flows$orig_name, paste_it_too))
+  # overwrite orig_name, gets changed to name in add_default_aes after
+  # label column is created
+  flows$orig_name <- paste0(part1, "_", part2)
 
   # update flows column ordering
-  flows <- flows[, c("id","to", "from", "label", "xstart", "xend", "ystart", "yend",
-                     "labelx", "labely", "curvature", "type","math")]
+  flows <- flows[, c("id",
+                     "orig_name",
+                     "name",
+                     "type",
+                     "from",
+                     "to",
+                     "xmin",
+                     "xmax",
+                     "ymin",
+                     "ymax",
+                     "xlabel",
+                     "ylabel",
+                     "curvature")]
+
+  # update flows x/y min/max column names to be start/end for clarity
+  cols_to_change <- which(colnames(flows) %in% c("xmin","xmax","ymin","ymax"))
+  colnames(flows)[cols_to_change] <- c("xstart","xend","ystart","yend")
+
+  # update variables column ordering
+  variables <- variables[ , c("id",
+                              "name",
+                              "xmin",
+                              "xmax",
+                              "ymin",
+                              "ymax",
+                              "xlabel",
+                              "ylabel")]
 
 
-  #remove row names, those are confusing
+  # remove row names, those are confusing
   rownames(flows) <- NULL
   rownames(variables) <- NULL
 
-  # apply default aesthetics
-  dflist <- apply_default_aesthetics(list(variables = variables,
-                                          flows = flows))
-
-
+  # add default aesthetics and unique ids
+  dflist <- add_default_aes(variables, flows)
 
   return(dflist)
 }

@@ -1,130 +1,64 @@
 #' Sets the curvature values for curved arrows. used by prepare_diagram
 #'
-#' @param cdf Curved edge df
-#' @param ndf Nodes df
-#' @return A data frame
-#' @noRd
+#'
+#' @param flows flow data frame
+#' @param variables variable data frame
+#' @return An updated flow data frame
+#' @export
 
-set_curvature <- function(cdf, ndf) {
+set_curvature <- function(variables, flows) {
   # default for all to start
-  cdf$curvature <- 0.5
+  flows$curvature <- 0  # straight lines
 
-  # add in row info
-  cdf <- merge(cdf, ndf[ , c("id", "row")], by.x = "to", by.y = "id")
-  cdf$row <- as.numeric(cdf$row)
+  # if the connection is an interaction, then set to different values of
+  # curvature to avoid overlapping top of "from" node
+  flows[flows$interaction==TRUE | flows$direct_interaction == TRUE, "curvature"] <- 0.4  # default to be updated if conditions below are met
 
-  # Update curvature based on row, if only 2 rows
-  if(max(as.numeric(ndf$row)) > 1 & max(as.numeric(ndf$row)) <= 2) {
-    cdf$curvature <- ifelse(cdf$row == 1, 0.25, -0.25)
-
-    # also update ystart and yend
-    cdf$ystart <- ifelse(cdf$row == 2, cdf$ystart-1, cdf$ystart)
-    cdf$yend <- ifelse(cdf$row == 2, cdf$ystart, cdf$yend)
-  }
-
-  cdf[cdf$interaction==TRUE, "curvature"] <- 0.4
-
-  for(i in 1:nrow(cdf)) {
-    if(cdf[i, "interaction"] == TRUE & is.na(cdf[i, "linkfrom"])) {
-      cdf[i, "curvature"] <- 0.1
+  for(i in 1:nrow(flows)) {
+    # set to lower curvature if the arrow is going from an "invisible" node
+    # to another flow
+    if(flows[i, "interaction"] == TRUE & is.na(flows[i, "linkfrom"])) {
+      # # have the arrow bend down if pointing up (-1); otherwise bend up
+      ## FROM ATT: I REMOVED THIS FUNCTIONALITY FOR NOW, BUT AM LEAVING
+      ## IN CASE WE WANT TO CHANGE TO AESTHETICS AT SOME POINT
+      # bend <- ifelse(flows[i, "ymin"] < flows[i, "ymax"], -1, 1)
+      bend <- -1  # bend up
+      flows[i, "curvature"] <- 0.2*bend
     }
-    if(cdf[i, "interaction"] == TRUE & !is.na(cdf[i, "linkfrom"])) {
-      if(cdf[i, "xmid"] == cdf[i, "xend"]) {
+
+    # set to higher values if the arrow is going from one node to
+    # another. 0.7 is used for vertical alignments, 0.4 is used for
+    # horizontal alignments
+    if(flows[i, "interaction"] == TRUE & !is.na(flows[i, "linkfrom"])) {
+      if(abs(flows[i, "ymin"] - flows[i, "ymax"]) > 0.5) {
         # this indicates that the alignment is vertical, requiring
         # more curvature to bend around the top of the box
-        cdf[i, "curvature"] <- 0.7
+        flows[i, "curvature"] <- 0.7
       } else {
-        cdf[i, "curvature"] <- 0.4
+        # this will be the "regular" horizontal aliment
+        flows[i, "curvature"] <- 0.5
       }
-    }
-
-    if(!is.na(cdf[i, "linkfrom"])) {
-      # curves need to move up 0.5 units to connect with tops/bottoms
-      # of node rectangles, only when linking to horizontal flow
-      cdf[i, "ystart"] <- cdf[i, "ystart"] + 0.5
-      cdf[i, "yend"] <- cdf[i, "yend"]  + 0.5
-      cdf[i, "ymid"]  <- cdf[i, "ymid"]  + 0.5
-
-      # if curve is for an interaction term, then yend needs to be moved
-      # back down by 0.5 to meet up with the edge rather than the node
-      if(cdf[i, "interaction"] == TRUE) {
-        cdf[i, "yend"] <- cdf[i, "yend"] - 0.5
-      }
-    }
-
-    if(is.na(cdf[i, "linkfrom"])) {
-      s <- cdf[i, "xstart"]
-      e <- cdf[i, "xend"]
-      if(s < e) {
-        cdf[i, "xstart"] <- cdf[i, "xstart"] + 0.5
-        cdf[i, "xend"] <- cdf[i, "xend"]  - 0.5
-        cdf[i, "xmid"]  <- cdf[i, "xmid"]  - 0.5
-      }
-      if(s > e) {
-        cdf[i, "xstart"] <- cdf[i, "xstart"] - 0.5
-        cdf[i, "xend"] <- cdf[i, "xend"]  + 0.5
-        cdf[i, "xmid"]  <- cdf[i, "xmid"]  + 0.5
-      }
-      if(s == e) {
-        sy <- cdf[i, "ystart"]
-        ey <- cdf[i, "yend"]
-        if(sy > ey) {
-          cdf[i, "ystart"] <- cdf[i, "ystart"] - 0.5
-          cdf[i, "yend"] <- cdf[i, "yend"] + 0.5
-          cdf[i, "ymid"]  <- cdf[i, "ymid"]  + 0.5
-        } else {
-          cdf[i, "ystart"] <- cdf[i, "ystart"] + 0.5
-          cdf[i, "yend"] <- cdf[i, "yend"] - 0.5
-          cdf[i, "ymid"]  <- cdf[i, "ymid"]  - 0.5
-        }
-      }
-
     }
   }
 
-  # add curvature midpoint for accurate label placement
-  cdf$labelx <- NA
-  cdf$labely <- NA
-  for(i in 1:nrow(cdf)) {
-    tmp <- cdf[i, ]
-    if(!is.na(tmp$linkfrom) | (is.na(tmp$linkfrom) & (!is.na(tmp$to) | !is.na(tmp$from)))) {
-      mids <- calc_control_points(x1 = tmp$xstart,
-                                  y1 = tmp$ystart,
-                                  x2 = tmp$xend,
-                                  y2 = tmp$yend,
+  # add curvature midpoint for accurate label placement, easiest to loop
+  # over rows to apply the calc_control_points function
+  for(i in 1:nrow(flows)) {
+    tmp <- flows[i, ]
+
+    # only update labels for arrows with a curve
+    if(tmp$curvature != 0) {
+      mids <- calc_control_points(x1 = tmp$xmin,
+                                  y1 = tmp$ymin,
+                                  x2 = tmp$xmax,
+                                  y2 = tmp$ymax,
                                   angle = 90,
                                   curvature = tmp$curvature,
                                   ncp = 1)
-      cdf[i, "labelx"] <- mids$x
-      cdf[i, "labely"] <- mids$y
-      if(cdf[i, "curvature"] == 0.7) {
-        # this indicates vertical alignment, so x location of label
-        # needs to be nudged away from the larger curve.
-        cdf[i, "labelx"] <- mids$x + 0.15
-      }
-    } else {
-      s <- cdf[i, "xstart"]
-      e <- cdf[i, "xend"]
-      if(s < e) {
-        cdf[i, "labelx"] <- tmp$xend - 0.25
-        cdf[i, "labely"] <- tmp$yend - 0.25
-      }
-      if(s > e) {
-        cdf[i, "labelx"] <- tmp$xend + 0.15
-        cdf[i, "labely"] <- tmp$yend + 0.05
-      }
-
+      flows[i, "xlabel"] <- mids$x
+      flows[i, "ylabel"] <- mids$y
     }
-
   }
 
-
-  # add y offset to curve labels according to row
-  for(i in 1:nrow(cdf)) {
-    tmp <- cdf[i, ]
-    offset <- ifelse(cdf[i, "row"] == 2, -0.2, 0.2)
-    cdf[i, "labely"] <- cdf[i, "labely"] + offset
-  }
-
-  return(cdf)
+  return(flows)
 }

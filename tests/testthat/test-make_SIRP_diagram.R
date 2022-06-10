@@ -1,14 +1,14 @@
 #This is the "Environmental Transmission" model from DSAIDE
 #https://shiny.ovpr.uga.edu/DSAIDE/
 
-varlabels = c("S","I","R","P")
+variables = c("S","I","R","P")
 flows = list(S_flows = c("n","-m*S","-bI*S*I", "-bP*S*P"),
              I_flows = c("bI*S*I", "bP*S*P", "-g*I", "-m*I"),
              R_flows = c("g*I", "-m*R"),
              P_flows = c("q*I", "-c*P")
             )
 
-mymodel = list(varlabels = varlabels, flows = flows)
+mymodel = list(variables = variables, flows = flows)
 
 diagram_list = prepare_diagram(mymodel)
 

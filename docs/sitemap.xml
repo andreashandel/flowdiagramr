@@ -1,22 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/index.html</loc>
-  </url>
-  <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/convert_from_modelbuilder.html</loc>
-  </url>
-  <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/flowdiagramr.html</loc>
-  </url>
-  <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/make_diagram.html</loc>
-  </url>
-  <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/prepare_diagram.html</loc>
-  </url>
-  <url>
-    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/write_diagram.html</loc>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/404.html</loc>
   </url>
   <url>
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/A_quickstart.html</loc>
@@ -25,13 +10,22 @@
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/B_modify_diagrams_simple.html</loc>
   </url>
   <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/B_prepare_diagram_settings.html</loc>
+  </url>
+  <url>
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/C_modify_input_structure.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/C_update_diagram_function.html</loc>
   </url>
   <url>
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/D_modify_ggplot_code.html</loc>
   </url>
   <url>
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/E_non_model_diagrams.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/F_additional_examples.html</loc>
   </url>
   <url>
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/F_more_model_examples.html</loc>
@@ -43,6 +37,81 @@
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/H_comparison_to_other_packages.html</loc>
   </url>
   <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/index.html</loc>
+  </url>
+  <url>
     <loc>https://andreashandel.github.io/flowdiagramr/index.html/articles/otherinformation/useR2021_presentation.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/authors.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/index.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/news/index.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/add_default_aes.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/add_locations.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/add_plus_signs.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/check_dataframes.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/check_model_list.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/check_model_settings.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/convert_from_modelbuilder.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/fix_arrow_pos.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/flowdiagramr.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/get_code.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/get_vars_pars.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/make_diagram.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/prepare_diagram.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/set_curvature.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/set_feedback_curvature.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/set_node_to_na.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/test_setting_lengths.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/update_diagram.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/update_tofroms.html</loc>
+  </url>
+  <url>
+    <loc>https://andreashandel.github.io/flowdiagramr/index.html/reference/write_diagram.html</loc>
   </url>
 </urlset>

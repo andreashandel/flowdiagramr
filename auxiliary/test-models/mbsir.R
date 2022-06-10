@@ -60,4 +60,3 @@ time[[3]]$timeval = 0.1
 mbmodel$time = time
 
 mbsir <- mbmodel
-usethis::use_data(mbsir, overwrite = TRUE)

@@ -1,52 +1,285 @@
+# This is a internal development testing script for the
+# flowdiagramr R package. Mostly used by ATT and AH for
+# finding edge cases where errors might occur.
+
+
+
+# Load flowdiagramr! ------------------------------------------------------
+
 library(flowdiagramr)
-varlabels = c("S","I","R")
+
+
+
+# Simple SIR model for an easy test ---------------------------------------
+
+# make model
+variables = c("S","I","R")
 flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
              I_flows = c("+b*S*I","-g*I", "-m*I"),
              R_flows = c("g*I", "-m*R"))
-varnames = c("Susceptible","Infected","Recovered")
-varlocations = matrix(data = c("S", "", "R",
-                               "", "I", "" ),nrow = 2, ncol = 3, byrow = TRUE)
-model_list = list(varlabels = varlabels, flows = flows)
-model_settings = list(varnames = varnames, varlocations = varlocations, use_varnames = TRUE)
-diagram_list <- prepare_diagram(model_list, model_settings)
+model_list = list(variables = variables, flows = flows)
 
-write_diagram(model_list, model_settings)
-write_diagram(diagram_list = diagram_list)
+check_model_list(model_list)
 
-?make_diagram()
 
+dfs <- prepare_diagram(model_list)
+make_diagram(dfs)  # prints the model diagram
+make_diagram(dfs, with_grid = TRUE)  # show the grid
+
+
+# quick test of update
+newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
+                    var_xlabel = c(all = -0.25, R = 0.25),
+                    var_ylabel = c(all = 0.25, R = -0.25),
+                    flow_line_size = c(interaction = 1.5),
+                    flow_line_color = c(all = "grey25",
+                                        interaction = "orange",
+                                        e_n = "red"),
+                    flow_xstart = c(i_bSI = -0.5),
+                    flow_xlabel = c(all = 0.1, i_bSI = -0.25),
+                    flow_ylabel = c(i_bSI = -0.1),
+                    flow_label_text = c(i_bSI = "transmission"))
+diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
+make_diagram(diag_list_up)
+
+# and one with an error
+newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
+                    flow_line_size = c(interaction = 1.5),
+                    flow_line_color = c(all = "grey25",
+                                        interaction = "orange",
+                                        e_n = "red"),
+                    flow_xstart = c(z_n = 0.5))  # ERROR HERE IN NAME
+# diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
+
+
+
+# quick test of write_diagram
+write_diagram(diag_list_up)
+fs::file_delete("diagram_code.R")
+
+# quick test of modelbuilder converter
+source("./auxiliary/test-models/mbsir.R")  # makes an object named mbsir
+convert_from_modelbuilder(mbmodel = mbsir)
+
+
+
+
+# Test locations for SIR --------------------------------------------------
+
+varlocs1 = matrix(c("S","","R","","I",""),byrow=TRUE,nrow=2)
+varlocs2 = matrix(c("S","I","R"),byrow=TRUE,nrow=3)
+varlocs3 = matrix(data = c("S", "",
+                           "", "I",
+                           "R", "" ),
+                        nrow = 3, ncol = 2, byrow = TRUE)
+
+
+# two rows, with I in second row
+model_settings = list(varlocs1)
+make_diagram(prepare_diagram(model_list, model_settings))
+
+model_settings = list(varlocations = varlocs1)
+make_diagram(prepare_diagram(model_list, model_settings))
+
+# vertical diagram -- not always the best looking
+model_settings = list(varlocations = varlocs2, varspace_y_size = 1)
+make_diagram(prepare_diagram(model_list, model_settings), with_grid = F)
+
+# two columns, 3 rows
+
+model_settings = list(varlocations = varlocs3)
+diagram_list <- prepare_diagram(model_list , model_settings)
 make_diagram(diagram_list)
-make_diagram(diagram_list, diagram_settings = list(main_flow_on = FALSE))
-make_diagram(diagram_list, diagram_settings = list(external_flow_on = FALSE))
-make_diagram(diagram_list, diagram_settings = list(interaction_flow_on = FALSE))
-make_diagram(diagram_list, diagram_settings = list(interaction_flow_label_on = FALSE))
-make_diagram(diagram_list, diagram_settings = list(main_flow_label_on = FALSE))
-make_diagram(diagram_list, diagram_settings = list(external_flow_label_on = FALSE))
-make_diagram(diagram_list, diagram_settings = list(external_flow_label_on = FALSE,
-                                                   external_flow_on = FALSE))
-
-make_diagram(diagram_list, diagram_settings = list(main_flow_color = "blue",
-                                                   interaction_flow_color = "red",
-                                                   external_flow_color = "orange",
-                                                   external_flow_linetype = "dotted",
-                                                   var_fill_color = c("salmon", "cyan"),
-                                                   var_outline_color = "dodgerblue",
-                                                   main_flow_size = 5))
-
-
-make_diagram(diagram_list, diagram_settings = list(main_flow_color = "blue",
-                                                   interaction_flow_color = "red",
-                                                   external_flow_color = "orange",
-                                                   external_flow_linetype = 6,
-                                                   var_fill_color = c("salmon", "cyan"),
-                                                   var_outline_color = "dodgerblue",
-                                                   main_flow_size = 5))
 
 
 
+# Test model_settings and errors/warnings ---------------------------------
+
+# these settings are good model settings, should work
+model_settings1g = list(
+  varbox_x_size = 0.5,
+  varbox_y_size = 2)
+
+model_settings2g = list(
+  varlocations = varlocs2,
+  varbox_x_size = 0.5,
+  varbox_y_size = 0.5,
+  varspace_x_size = 1,
+  varspace_y_size = 1)
+
+model_settings3g = list(
+  varlocations = varlocs1,
+  varbox_x_size = c(1,2,1),
+  varbox_y_size = c(0.5,0.5,2),
+  varspace_x_size = 1,
+  varspace_y_size = 1)
+
+model_settings4g = list(
+  varlocations = varlocs1,
+  varbox_x_size = c(1,2,1),
+  varbox_y_size = c(0.5,0.5,2)
+  )
+
+model_settings5g = list(
+  varlocations = varlocs1,
+  varbox_x_size = c(1,0.5,1),
+  varbox_y_size = c(0.5,2,2)
+)
+
+model_settings6g = list(
+  varlocations = varlocs2,
+  varspace_y_size = c(1,2)
+)
+
+# now try them out...no errors/warnings should be produced
+diagram_list_orig <- prepare_diagram(model_list)
+diagram_list1g <- prepare_diagram(model_list, model_settings1g)
+diagram_list2g <- prepare_diagram(model_list, model_settings2g)
+diagram_list3g <- prepare_diagram(model_list, model_settings3g)
+diagram_list4g <- prepare_diagram(model_list, model_settings4g)
+diagram_list5g <- prepare_diagram(model_list, model_settings5g)
+diagram_list6g <- prepare_diagram(model_list, model_settings6g)
+
+# do they all print as expected?
+make_diagram(diagram_list_orig)
+make_diagram(diagram_list1g)
+make_diagram(diagram_list2g)
+make_diagram(diagram_list3g)
+make_diagram(diagram_list4g)
 
 
 
+# these are bad settings, should fail
+model_settings1b = list(
+  varlocations = varlocs1,
+  varbox_x_size = 0.5,
+  varbox_y_size = 0.5,
+  varspace_x_size = c(1, 1),
+  varspace_y_size = c(0.1, 0.1))
+prepare_diagram(model_list, model_settings1b)  # isses Error
+
+
+# test sizes for each box
+variables = c("S","I","R")
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"),
+             I_flows = c("+b*S*I","-g*I", "-m*I"),
+             R_flows = c("g*I", "-m*R"))
+model_list = list(variables = variables, flows = flows)
+test_settings = list(varlocations = matrix(data = c("S", "",
+                                                   "", "I",
+                                                   "R", "" ),
+                                          nrow = 3, ncol = 2, byrow = TRUE),
+                    varbox_x_size = c(1, 1.5, 1),
+                    varbox_y_size = c(2, 1, 1),
+                    varspace_x_size = 1.5,
+                    varspace_y_size = c(0.5,1)
+)
+
+dlist <- prepare_diagram(model_list, test_settings)
+make_diagram(dlist, with_grid = TRUE)
+
+
+
+
+# Test model updating -----------------------------------------------------
+
+# this should work
+diagram_list <- prepare_diagram(model_list)
+diagram_list_new <- update_diagram(
+  diagram_list,
+  diagram_settings = list(flow_line_color = c(main = "orange")))
+make_diagram(diagram_list_new)
+
+# this should work
+diagram_list <- prepare_diagram(model_list)
+diagram_list_new <- update_diagram(
+  diagram_list,
+  diagram_settings = list(flow_line_color = c(main = "orange"),
+                          flow_arrow_size = c(main = 2),
+                          flow_show_arrow = c(interaction = FALSE)))
+make_diagram(diagram_list_new)
+
+# this should issue a warning about no new settings
+diagram_list <- prepare_diagram(model_list)
+diagram_list_new <- update_diagram(diagram_list)  # warning issued
+
+# this should work
+diagram_settings <- list(var_outline_color = c(S = "black", I = "white", R = "red"))
+diagram_list_ok <- update_diagram(diagram_list, diagram_settings)
+make_diagram(diagram_list_ok)  # good!
+
+#this should work
+diagram_settings <- list(var_outline_color = c(S = "black", I = "white", R = "red"),
+                         var_fill_color = c(all ="red"))
+diagram_list_ok <- update_diagram(diagram_list, diagram_settings)
+make_diagram(diagram_list_ok)  # good!
+
+# this should error out - it does
+diagram_settings <- list(var_outline_color = c(J = "black", K = "red"))
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+
+# this should also error out - wrong number of entries again
+# it does error out
+diagram_settings <- list(var_outline_color = c(all = "solid"))
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+
+# this should also error out - it does!
+diagram_settings <- list(flow_line_type = c(main = "black"))
+diagram_list_new <- update_diagram(diagram_list, diagram_settings)
+
+
+
+
+# Test make_diagram -------------------------------------------------------
+
+make_diagram(diagram_list_orig)
+
+# this works
+make_diagram(diagram_list_ok)
+
+
+
+# test predator prey model
+variables = c("Pat","Imm")
+flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
+                 Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
+model_list = list(variables = variables, flows = flows)
+diagram_list <- prepare_diagram(model_list)
+make_diagram(diagram_list)
+
+
+# environmental transmission
+variables = c("S","I","R","P")
+flows = list(S_flows = c("n","-m*S","-bI*S*I", "-bP*S*P"),
+             I_flows = c("bI*S*I", "bP*S*P", "-g*I", "-m*I"),
+             R_flows = c("g*I", "-m*R"),
+             P_flows = c("q*I", "-c*P")
+)
+
+mymodel = list(variables = variables, flows = flows)
+diagram_list = prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# better positioning
+myvarlocs = matrix(c("","P","","S","I","R"),byrow=TRUE,nrow=2)
+model_settings = list(varlocations = myvarlocs)
+make_diagram(prepare_diagram(mymodel, model_settings = model_settings))
+
+
+
+# Check help pages --------------------------------------------------------
+
+?flowdiagramr
+?prepare_diagram
+?update_diagram
+?make_diagram
+?write_diagram
+
+
+
+
+
+# Check a too-complex model -----------------------------------------------
 
 varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
 varnames = c("Susceptible Children","Infected Children","Recovered Children",
@@ -63,17 +296,11 @@ flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
 varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-model_list = list(varlabels = varlabels, flows = flows)
-model_settings = list(varlocations = varlocations,
-                  varnames = varnames, use_varnames = TRUE, var_label_size = 4)
-diagram_list <- prepare_diagram(model_list,model_settings)
-
-diagram_settings <- list(
-  var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
-  interaction_flow_label_size = 4,
-  interaction_flow_color = "blue",
-  with_grid = TRUE
-)
-model_plot <- make_diagram(diagram_list, diagram_settings)
-plot(model_plot)
+model_list = list(variables = varlabels, flows = flows)
+model_settings = list(varlocations = NULL, varbox_x_scaling = 1,
+                      varbox_y_scaling = 1,
+                      varspace_x_scaling = 1,
+                      varspace_y_scaling = 1)
+diagram_list <- prepare_diagram(model_list)
+make_diagram(diagram_list)
 

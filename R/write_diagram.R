@@ -5,15 +5,8 @@
 #' produce a diagram. By editing the generated code, the user can
 #' make manual adjustments to the diagram.
 #'
-#' @param model_list A **flowdiagramr** input list. See
-#'     \code{\link{prepare_diagram}}. Also see `Details` below.
-#' @param model_settings A named list of model settings.  See
-#'     \code{\link{prepare_diagram}}. Also see `Details` below.
 #' @param diagram_list A **flowdiagramr** input structure, resulting from
 #'     a call to \code{\link{prepare_diagram}}. See `Details` below.
-#' @param diagram_settings A named list of diagram aesthetics. See
-#'    \code{\link{make_diagram}} documentation. Default is `NULL` and the
-#'    default values from \code{\link{make_diagram}} are used.
 #' @param directory File directory in which to save the produced R file.
 #'     Default location is the current working directory.
 #' @param filename Name of the file, must end in '.R'. Default name is
@@ -55,10 +48,7 @@
 #' }
 
 
-write_diagram <- function(model_list = NULL,
-                          model_settings = NULL,
-                          diagram_list = NULL,
-                          diagram_settings = NULL,
+write_diagram <- function(diagram_list = NULL,
                           directory = "./",
                           filename = "diagram_code.R",
                           always_overwrite = FALSE
@@ -66,265 +56,140 @@ write_diagram <- function(model_list = NULL,
 {
 
   # make sure at least one of model_list or diagram_list is provided
-  if(is.null(model_list) & is.null(diagram_list)) {
-    stop("Please provide at least one of the model list or the diagram list as input")
+  if(is.null(diagram_list)) {
+    stop("The diagram list is a required input and was not provided.")
   }
 
-  # The R script for writing out is built as a series of blocks
-  # that are concatenated at the very end of the function.
+  # create a text block that loads libraries
+  lib_block <- paste("## load libraries ----",
+                     "library(ggplot2)",
+                     "library(flowdiagramr)",
+                     sep = "\n")
 
-  # Linetypes block
-  lty_block <- paste(
-    "# setup linetypes mapping from numeric to text",
-    'ltys <- data.frame(code = 0:6,
-                   text = c("blank", "solid", "dashed",
-                            "dotted", "dotdash", "longdash",
-                            "twodash"))',
-    sep = "\n")
-
-  # Load libraries block ---
-  lib_block <- paste0("library(ggplot2)",
-                      "\n",
-                      "library(flowdiagramr)")
-
-  # Get model settings
-  mod_defs <- eval(formals(prepare_diagram)$model_settings)
-  if(!is.null(model_settings)) {
-    mod_defs[names(model_settings)] <- model_settings
-  }
-  model_settings <- mod_defs
-
-
-
-  # Graphing aesthetics block ---
-  # The ggplot aesthetic arguments need to be defined, here we just
-  # pull the defaults from the function and then make them look like code
-
-  # Get graphing arguments
-  defaults <- eval(formals(make_diagram)$diagram_settings)
-
-  if(!is.null(diagram_settings)) {
-    defaults[names(diagram_settings)] <- diagram_settings
-  }
-  args <- defaults
-
-  # Make a character vector to hold all the aes assignments
-  args_block <- character(length(args))
-  for(i in 1:length(args_block)) {
-    argtext <- args[[i]]
-    if(length(argtext) > 1) {
-      if(is.character(argtext[1])) {
-        argtext <- paste0("c('", paste(argtext, collapse = "', '"), "')")
-      } else {
-        argtext <- paste0("c(", paste(argtext, collapse = ", "), ")")
-      }
-
-      args_block[i] <- paste0(names(args)[[i]], " <- ", argtext)
-
-    } else {
-      if(is.logical(argtext) | is.numeric(argtext)) {
-          # if logical or numeric, does not need quotes
-          args_block[i] <- paste0(names(args)[[i]], " <- ", argtext)
-        } else {
-          # otherwise the argument is a string and needs quotes
-          args_block[i] <- paste0(names(args)[[i]], " <- '", argtext, "'")
-        }
+  # create a text block that makes the data frames from diagram_list
+  df_block <- 2  # this is always 2, one for variables and one for flows
+  for(i in 1:2) {
+    dfname <- names(diagram_list)[i]
+    start <- paste(dfname, "<- data.frame(")
+    end <- ")"
+    tmp <- diagram_list[[i]]
+    dtmp <- character(length(ncol(tmp)))
+    for(j in 1:ncol(tmp)) {
+      cname <- colnames(tmp)[j]
+      dtmp[j] <- paste(cname, "=", deparse1(tmp[ , j]))
     }
+    dftmp <- paste0(start, "\n  ", paste(dtmp, collapse = ",\n  "), "\n", end)
+    df_block[i] <- dftmp
   }
+  df_block <- paste(df_block, collapse = "\n\n")
 
-  # Collapse the aes args block with line breaks
-  args_block <- paste(args_block, collapse = "\n")
-
-  # Recycle aesthetics as needed
-  var_rec_block <- paste(
-    "# recycle values as needed",
-    "variables$color <- recycle_values(var_outline_color, nrow(variables))",
-    "variables$fill <- recycle_values(var_fill_color, nrow(variables))",
-    "variables$label_color <- recycle_values(var_label_color, nrow(variables))",
-    "variables$label_size <- recycle_values(var_label_size, nrow(variables))",
-    "variables$plot_label_size <- NULL",
-    sep = "\n"
-  )
-
-  main_rec_block <- paste(
-    'mains <- subset(flows, type == "main")',
-    "mains$color <- recycle_values(main_flow_color, nrow(mains))",
-    "if(is.numeric(main_flow_linetype)) {",
-      '  main_flow_linetype <- subset(ltys, code == main_flow_linetype)[,"text"]',
-    "}",
-    "mains$linetype <- recycle_values(main_flow_linetype, nrow(mains))",
-    "mains$size <- recycle_values(main_flow_size, nrow(mains))",
-    "mains$label_color <- recycle_values(main_flow_label_color, nrow(mains))",
-    "mains$label_size <- recycle_values(main_flow_label_size, nrow(mains))",
-    sep = "\n"
-  )
-
-  ints_rec_block <- paste(
-    'ints <- subset(flows, type == "interaction")',
-    "ints$color <- recycle_values(interaction_flow_color, nrow(ints))",
-    "if(is.numeric(interaction_flow_linetype)) {",
-    '  interaction_flow_linetype <- subset(ltys, code == interaction_flow_linetype)[,"text"]',
-    "}",
-    "ints$linetype <- recycle_values(interaction_flow_linetype, nrow(ints))",
-    "ints$size <- recycle_values(interaction_flow_size, nrow(ints))",
-    "ints$label_color <- recycle_values(interaction_flow_label_color, nrow(ints))",
-    "ints$label_size <- recycle_values(interaction_flow_label_size, nrow(ints))",
-    sep = "\n"
-  )
-
-  exts_rec_block <- paste(
-    'exts <- subset(flows, type == "external")',
-    'exts$color <- recycle_values(external_flow_color, nrow(exts))',
-    'if(is.numeric(external_flow_linetype)){',
-      '  external_flow_linetype <- subset(ltys, code == external_flow_linetype)[,"text"]',
-    '}',
-    "exts$linetype <- recycle_values(external_flow_linetype, nrow(exts))",
-    "exts$size <- recycle_values(external_flow_size, nrow(exts))",
-    "exts$label_color <- recycle_values(external_flow_label_color, nrow(exts))",
-    "exts$label_size <- recycle_values(external_flow_label_size, nrow(exts))",
-    sep = "\n"
-  )
-
-  # Final aesthetics block
-  final_aes <- paste(
-    "# recombine flows data frame with aesthetics as columns",
-   " flows <- rbind(mains, ints, exts)",
-    "flows$arrowsize <- 0.25  # default arrow size",
-    "\n",
-    "# turn off flows completely by setting linetype to blank as needed",
-    "if(main_flow_on == FALSE) {",
-      '  flows[flows$type == "main", "linetype"] <- "blank"',
-      '  flows[flows$type == "main", "arrowsize"] <- 0',
-    "}",
-    "if(interaction_flow_on == FALSE) {",
-      '  flows[flows$type == "interaction", "linetype"] <- "blank"',
-      '  flows[flows$type == "interaction", "arrowsize"] <- 0',
-    "}",
-    "if(external_flow_on == FALSE) {",
-      ' flows[flows$type == "external", "linetype"] <- "blank"',
-      ' flows[flows$type == "external", "arrowsize"] <- 0',
-    "}",
-    "\n",
-    '# set label to "" to suppress label if requested',
-    '# also do not show label if the flow itself is turned off',
-    "flows$math <- flows$label",
-    "if(main_flow_on == FALSE || main_flow_label_on == FALSE) {",
-      '  flows[flows$type == "main", "label"] <- ""',
-    "}",
-    "if(interaction_flow_on == FALSE || interaction_flow_label_on == FALSE) {",
-      '  flows[flows$type == "interaction", "label"] <- ""',
-    "}",
-    "if(external_flow_on == FALSE || external_flow_label_on == FALSE) {",
-      '  flows[flows$type == "external", "label"] <- ""',
-    "}",
-    sep = "\n"
-  )
+  # create a text block of the ggplot2 code
+  gg_block <- ' ## ggplot2 code ----
+###
+# make the diagram with ggplot2
+###
+# Start with an empty ggplot2 canvas. The coord_equal function ensures
+# that the x and y coordinates are displayed in equal proportions to
+# on another (that is, it makes sure that the squares look like squares).
+# All layers are added sequentially onto this blank canvas.
+diagram_plot <- ggplot() +
+  coord_equal(clip = "off")
 
 
-  # ggplot2 code block ---
-  gg_block <- get_code()  # gets the code used by flowdiagramr
+# LAYER 1: STATE VARIABLES
+# plot the states variable nodes as rectangles
+
+# The variables data frame is used to create rectangles, with size determined
+# by the xmin, xmax, ymin, and ymax values in the nodes data frame. The
+# outline color of the rectangles is defined by var_outline_color; the
+# inside color (fill) of the rectangles is defined by var_fill_color.
+# The color variables can be a single value or a vector, giving different
+# colors to different rectangles/nodes/state variables. If a vector, the
+# color and fill vectors must have a length that is equal to the number
+# of rows in the nodes data frame (one value for each row).
+
+# create the nodes/boxes/variables
+# these are just empty rectangles with no text
+for(i in 1:nrow(variables)) {
+  diagram_plot <- diagram_plot +  # add new stuff to blank canvas
+    geom_rect(
+      data = variables[i, ],  # one row of the data frame
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),  # location information
+      color = variables[i, "outline_color"],  # border color
+      fill = variables[i, "fill_color"]  # internal, fill color
+    )
+}
+
+# add label text, which goes on top of boxes based on location information
+for(i in 1:nrow(variables)) {
+  diagram_plot <- diagram_plot +  # add text to boxes
+    geom_text(
+      data = variables[i, ],
+      aes(x = xlabel, y = ylabel, label = label_text),
+      size = variables[i, "label_size"],
+      color = variables[i, "label_color"]
+    )
+}
+
+## add in all the flows
+# start with the lines/arrows
+for(i in 1:nrow(flows)) {
+  if(flows[i, "show_arrow"] == TRUE) {
+    diagram_plot <- diagram_plot +  # add the lines to the plot with boxes
+      geom_curve(  # always use geom_curve, which is straight when cuvature = 1
+        data = flows[i, ],
+        aes(x = xstart,
+            y = ystart,
+            xend = xend,
+            yend = yend),
+        linetype = flows[i, "line_type"],
+        arrow = arrow(length = unit(flows[i, "arrow_size"],"cm"), type = "closed"),
+        color = flows[i, "line_color"],
+        arrow.fill = flows[i, "line_color"],
+        lineend = "round",
+        size = flows[i, "line_size"],
+        curvature = flows[i, "curvature"],
+        ncp = 1000  # controls smoothness of curve, larger number = more smooth
+      )
+  }
+}
+
+for(i in 1:nrow(flows)) {
+  if(flows[i, "show_label"] == TRUE) {
+    diagram_plot <- diagram_plot +  # now add the flow labels to the canvas
+      geom_text(
+        data = flows[i, ],
+        aes(x = xlabel, y = ylabel, label = label_text),
+        size = flows[i, "label_size"],
+        color = flows[i, "label_color"])
+  }
+}
+
+# If with_grid == FALSE (default) then void out the theme
+# otherwise keep the grey background with grid
+# the grid can be useful for updating positions of items
+with_grid <- FALSE  # default is false
+if(with_grid == FALSE) {
+  diagram_plot <- diagram_plot +
+    theme_void()  # makes an empty plot theme with no axes, grids, or ticks
+} else {
+  # The else here may seem silly, but otherwise the returned plot is NULL
+  diagram_plot <- diagram_plot  # just returns default ggplot2 theme
+}
+  '
 
   # Plotting and saving block ---
   plot_save_block <- "# These lines plot or save the generated diagram. \n# Uncomment them if you want to perform either action. \n# plot(diagram_plot) \n# ggsave('diagram_plot.png',diagram_plot)"
 
-  # Model structure block ---
-  # If model is provided, we simply deparse the list and then make
-  # the necessary data frames. This is all stored as text blocks that
-  # are collapsed with line breaks.
 
-  if(!is.null(model_list)) {
-    input_block <- paste("model_list <-", deparse1(model_list))
-    input_settings_block <- paste("model_settings <-", deparse1(model_settings))
-
-    if(is.null(diagram_list)) {
-      prep_block <- "diagram_list <- prepare_diagram(model_list = model_list, model_settings = model_settings)"
-      unlist_block <- paste("variables <- diagram_list$variables",
-                            "flows <- diagram_list$flows",
-                            sep = "\n")
-    } else {
-      msg <- paste0("# Since a user-supplied diagram_list is provided,\n",
-                    "# the default one created by prepare_diagram() is not used")
-      prep_block <- paste(msg,
-                          "# diagram_list <- prepare_diagram(model_list = model_list, model_settings = model_settings)",
-                          sep = "\n")
-      unlist_block <- paste("# variables <- diagram_list$variables",
-                            "# flows <- diagram_list$flows",
-                            sep = "\n")
-    }
-  }
-
-  if(!is.null(diagram_list)) {
-    df_block <- character(length(diagram_list))
-    for(i in 1:length(diagram_list)) {
-      dfname <- names(diagram_list)[i]
-      start <- paste(dfname, "<- data.frame(")
-      end <- ")"
-      tmp <- diagram_list[[i]]
-      dtmp <- character(length(ncol(tmp)))
-      for(j in 1:ncol(tmp)) {
-        cname <- colnames(tmp)[j]
-        dtmp[j] <- paste(cname, "=", deparse1(tmp[ , j]))
-      }
-      dftmp <- paste0(start, "\n  ", paste(dtmp, collapse = ",\n  "), "\n", end)
-      df_block[i] <- dftmp
-    }
-
-    df_block <- paste(df_block, collapse = "\n\n")
-  }
-
-
-  # Entire script
-  if(!is.null(model_list) & is.null(diagram_list)) {
-    # if just the model_list is provided, include the list prepping blocks
-    outcode <- paste(lib_block,
-                     input_block,
-                     input_settings_block,
-                     prep_block,
-                     unlist_block,
-                     lty_block,
-                     args_block,
-                     var_rec_block,
-                     main_rec_block,
-                     ints_rec_block,
-                     exts_rec_block,
-                     final_aes,
-                     gg_block,
-                     plot_save_block,
-                     sep = "\n\n")
-  } else if(is.null(model_list) & !is.null(diagram_list)) {
-    # If just the diagram_list is provided, just include the data frames blocks
-    outcode <- paste(lib_block,
-                     df_block,
-                     lty_block,
-                     args_block,
-                     var_rec_block,
-                     main_rec_block,
-                     ints_rec_block,
-                     exts_rec_block,
-                     final_aes,
-                     gg_block,
-                     plot_save_block,
-                     sep = "\n\n")
-  } else {
-    # If both are provided, return all blocks
-    outcode <- paste(lib_block,
-                     input_block,
-                     input_settings_block,
-                     prep_block,
-                     unlist_block,
-                     df_block,
-                     lty_block,
-                     args_block,
-                     var_rec_block,
-                     main_rec_block,
-                     ints_rec_block,
-                     exts_rec_block,
-                     final_aes,
-                     gg_block,
-                     plot_save_block,
-                     sep = "\n\n")
-  }
-
+  # Concatenate all blocks to generate a stand-alone script
+  outcode <- paste(
+    lib_block,
+    df_block,
+    gg_block,
+    plot_save_block,
+    sep = "\n\n\n"
+  )
 
 
   # create the full path output directory

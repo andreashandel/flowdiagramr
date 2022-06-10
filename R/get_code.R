@@ -1,6 +1,6 @@
 #' Returns the ggplot2 code so that this can be in one place
 #'
-#' @noRd
+#' @export
 
 get_code <- function() {
   code <- '
@@ -28,8 +28,8 @@ for(i in 1:nrow(variables)) {
     geom_rect(
       data = variables[i, ],
       aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-      color = variables[i, "color"],
-      fill = variables[i, "fill"]
+      color = variables[i, "outline_color"],
+      fill = variables[i, "fill_color"]
     )
 }
 
@@ -37,36 +37,39 @@ for(i in 1:nrow(variables)) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = variables[i, ],
-      aes(x = labelx, y = labely, label = plot_label),
+      aes(x = xlabel, y = ylabel, label = label_text),
       size = variables[i, "label_size"],
       color = variables[i, "label_color"]
     )
 }
 
+## add in all the flows
 for(i in 1:nrow(flows)) {
-  diagram_plot <- diagram_plot +
+  if(flows[i, "show_arrow"] == TRUE) {
+    diagram_plot <- diagram_plot +
     geom_curve(
       data = flows[i, ],
-      aes(x = xstart,
-          y = ystart,
-          xend = xend,
-          yend = yend),
+      aes(x = xmin,
+          y = ymin,
+          xend = xmax,
+          yend = ymax),
       linetype = flows[i, "linetype"],
-      arrow = arrow(length = unit(flows[i, "arrowsize"],"cm"), type = "closed"),
-      color = flows[i, "color"],
-      arrow.fill = flows[i, "color"],
+      arrow = arrow(length = unit(flows[i, "arrow_size"],"cm"), type = "closed"),
+      color = flows[i, "line_color"],
+      arrow.fill = flows[i, "line_color"],
       lineend = "round",
-      size = flows[i, "size"],
+      size = flows[i, "line_size"],
       curvature = flows[i, "curvature"],
       ncp = 1000
     )
+  }
 }
 
 for(i in 1:nrow(flows)) {
   diagram_plot <- diagram_plot +
     geom_text(
       data = flows[i, ],
-      aes(x = labelx, y = labely, label = label),
+      aes(x = xlabel, y = ylabel, label = label_text),
       size = flows[i, "label_size"],
       color = flows[i, "label_color"])
 }

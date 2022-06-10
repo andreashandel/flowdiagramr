@@ -100,18 +100,18 @@ Let's modify this object somewhat. The following code makes the `I` box bigger, 
 #assign to a new variable so we preserve the original
 modified_diagram_list <- sir_diagram_list 
 #increase the I box a bit both on left and right 
-modified_diagram_list$variables$xmin[2] = 5
-modified_diagram_list$variables$xmax[2] = 7
+modified_diagram_list$variables$xmin[2] = 2
+modified_diagram_list$variables$xmax[2] = 5
 #modify inflow and outflow arrows to align with new box size 
-modified_diagram_list$flows$xend[1] = 5
-modified_diagram_list$flows$xstart[2] = 7
+modified_diagram_list$flows$xmax[1] = 2
+modified_diagram_list$flows$xmin[2] =5
 #move the b*S*I arrow end a bit
-modified_diagram_list$flows$xend[7] = 4
+modified_diagram_list$flows$xmax[7] = 1.5
 #move the b*S*I label 
-modified_diagram_list$flows$labely[7] = 0.2
-modified_diagram_list$flows$labelx[7] = 4.6
+modified_diagram_list$flows$ylabel[7] = 1.25
+modified_diagram_list$flows$xlabel[7] = 2
 #move the g*I arrow over just a bit
-modified_diagram_list$flows$labelx[2] = 7.75
+modified_diagram_list$flows$xlabel[2] = 5.5
 ```
 
 With those modifications, the resulting diagram looks like this
@@ -189,19 +189,19 @@ And here is the code that makes some changes
 
 ```{r}
 #increase boxes
-diagram_list$variables$xmin[1] = -0.75
-diagram_list$variables$xmax[1] = 0.75
-diagram_list$variables$xmin[2] = 2.25
-diagram_list$variables$xmax[2] = 3.75
+diagram_list$variables$xmin[1] = -0.25
+diagram_list$variables$xmax[1] = 1.25
+diagram_list$variables$xmin[2] = 2.75
+diagram_list$variables$xmax[2] = 4.25
 #relabel boxes
-diagram_list$variables$plot_label[1] = "Pat \n (Bacteria)"
-diagram_list$variables$plot_label[2] = "Imm \n (T cells)"
+diagram_list$variables$label[1] = "Pat \n (Bacteria)"
+diagram_list$variables$label[2] = "Imm \n (T cells)"
 #adjust arrow locations to start/end at box edges
-diagram_list$flows$xstart[6] <- 0.75
-diagram_list$flows$xstart[7] <- 2.25
+diagram_list$flows$xmin[6] <- 2.75
+diagram_list$flows$xmin[7] <- 1.25
+diagram_list$flows$xmax[7] <- 3.2
 #move k*Pat*Imm label
-diagram_list$flows$labelx[7] <- 1.75
-diagram_list$flows$labely[7] <- -0.4
+diagram_list$flows$ylabel[6] <- 0.1
 #change label
 diagram_list$flows$label[1] <- "g*Pat*(1-Pat/Pmax)"
 ```
@@ -231,14 +231,13 @@ flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
              )
 mymodel = list(varlabels = varlabels, flows = flows)
 
-varnames = c("Susceptible Children","Infected Children","Recovered Children",
-             "Susceptible adults","Infected adults","Recovered adults",
-             "Pathogen in Environment")
+varnames = c("Susceptible\nChildren","Infected\nChildren","Recovered\nChildren",
+             "Susceptible\nAdults","Infected\nAdults","Recovered\nAdults",
+             "Pathogen\nin\nEnvironment")
 varlocations = matrix(data = c("Sc", "Ic", "Rc",
                                "",   "P",   "",
                                "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-mysettings = list(varlocations = varlocations, 
-                  varnames = varnames, use_varnames = TRUE, var_label_size = 4)
+mysettings = list(varlocations = varlocations)
 diagram_list <- prepare_diagram(mymodel, mysettings)
 ```
 
@@ -247,7 +246,7 @@ If you print the resulting `diagram_list`, you can see details for each box/vari
 The main problems are the location of the labels and some of the arrows, so let's move them around.
 
 
-```{r}
+```{r, eval = FALSE}
 # change some of the flow arrows
 diagram_list$flows$xstart[11] <- 2.5
 diagram_list$flows$ystart[11] <- 0
@@ -279,7 +278,9 @@ Finally, we make the diagram, and also apply custom styling as previously
 diagram_settings <- list(
                         var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
                         var_outline_color = "black",
-                        var_label_color = "black"
+                        var_label_color = "black",
+                        var_label_text = varnames,
+                        var_label_size = 3
                         )
 model_plot <- make_diagram(diagram_list, diagram_settings)
 plot(model_plot)

@@ -2,123 +2,28 @@
 #'
 #' @description
 #' `make_diagram()` generates a **ggplot2** object based on the data frames
-#' made with \code{\link{prepare_diagram}}. The function only applies
-#' aesthetics that are not associated with x, y locations. Colors, linetypes,
-#' and other graphical options can be set by the user.
+#'     made with \code{\link{prepare_diagram}} and, optionally, updated with
+#'     \code{\link{update_diagram}}.
 #'
 #' @param diagram_list A required list of data frames returned from the
-#'     \code{prepare_diagram} function. See that function for details
+#'     \code{\link{prepare_diagram}} function and, optionally, updated with
+#'     \code{\link{update_diagram}}. See those functions for details
 #'     about this object.
-#' @param diagram_settings An optional list of diagram aesthetic settings. The
-#'     following elements are supported and default values are provided:
-#' \itemize{
-#' \item `var_outline_color`: A character string or vector of character strings
-#'     specifying the color of variable outlines. If a vector, the colors will be
-#'     recycled in the order of the variables in the supplied data frame.
-#' \item `var_fill_color`: A character string or vector of character strings
-#'     specifying the fill color of variables. If a vector, the colors will be
-#'     recycled in the order of the variables in the supplied data frame.
-#' \item `var_label_on`: A logical indicating if the labels for the variables
-#'     should be plotted.
-#' \item `var_label_color`: A character string or vector of character strings
-#'     specifying the text color for variable labels. If a vector, the colors will
-#'     be recycled in the order of the variables in the supplied data frame.
-#' \item `var_label_size`: A numeric scalar specifying the text size for variable
-#'     labels. Note that any value supplied here overwrites
-#'     entries in the list structure returned by \code{\link{prepare_diagram}}.
-#'     Specifically, if you set this parameter when calling \code{\link{prepare_diagram}}
-#'     with \code{use_varnames = TRUE}, the value is used to compute box size,
-#'     but then the actual size of the label as provided here is applied.
-#'
-#' \item `main_flow_on`: A logical indicating if the main flow arrows should be plotted.
-#' \item `main_flow_color`: A character string or vector of character strings
-#'     specifying the text color for non-interaction flow arrows.
-#'     If a vector, the values will be recycled in the order of the flows
-#'     in the supplied data frame.
-#' \item `main_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
-#'     specifying the linetype for main flows (non-interaction flows). This
-#'     argument is passed to the \code{linetype} argument in ggplot2. From
-#'     the ggplot2 documentation: "The linetype aesthetic can be specified
-#'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
-#'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
-#'     discrete variable, or a string of an even number (up to eight) of
-#'     hexadecimal digits which give the lengths in consecutive positions in
-#'     the string." Default is 1 (solid). If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `main_flow_size`: A numeric scalar or vector specifying the line size for the
-#'     main flows (non-interaction flows). If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `main_flow_label_on`: A logical indicating if the labels for the main
-#'     flows should be plotted.
-#' \item `main_flow_label_color`: A character string or vector of character strings
-#'     specifying the text color for main flow labels. If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `main_flow_label_size`: A scalar or numeric vector
-#'     specifying the text size for main flow labels. If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#'
-#' \item `interaction_flow_on`: A logical indicating if the interaction flow arrows should be plotted.
-#' \item `interaction_flow_color`: A character string or vector of character strings
-#'     specifying the text color for non-interaction flow arrows.
-#'     If a vector, the values will be recycled in the order of the flows
-#'     in the supplied data frame.
-#' \item `interaction_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
-#'     specifying the linetype for interaction flows. This
-#'     argument is passed to the \code{linetype} argument in ggplot2. From
-#'     the ggplot2 documentation: "The linetype aesthetic can be specified
-#'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
-#'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
-#'     discrete variable, or a string of an even number (up to eight) of
-#'     hexadecimal digits which give the lengths in consecutive positions in
-#'     the string." Default is 1 (solid). If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `interaction_flow_size`: A numeric scalar or vector specifying the line size for the
-#'     interaction flows (non-interaction flows). If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `interaction_flow_label_on`: A logical indicating if the labels for the interaction
-#'     flows should be plotted.
-#' \item `interaction_flow_label_color`: A character string or vector of character strings
-#'     specifying the text color for interaction flow labels. If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `interaction_flow_label_size`: A scalar or numeric vector
-#'     specifying the text size for interaction flow labels. If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#'
-#' \item `external_flow_on`: A logical indicating if the external flow arrows should be plotted.
-#' \item `external_flow_color`: A character string or vector of character strings
-#'     specifying the text color for non-interaction flow arrows.
-#'     If a vector, the values will be recycled in the order of the flows
-#'     in the supplied data frame.
-#' \item `external_flow_linetype`: Either a numeric scalar/vector or a character scalar/vector
-#'     specifying the linetype for external flows. This
-#'     argument is passed to the \code{linetype} argument in ggplot2. From
-#'     the ggplot2 documentation: "The linetype aesthetic can be specified
-#'     with either an integer (0-6), a name (0 = blank, 1 = solid, 2 = dashed,
-#'     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash), a mapping to a
-#'     discrete variable, or a string of an even number (up to eight) of
-#'     hexadecimal digits which give the lengths in consecutive positions in
-#'     the string." Default is 1 (solid). If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `external_flow_size`: A numeric scalar or vector specifying the line size for the
-#'     external flows (non-interaction flows). If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `external_flow_label_on`: A logical indicating if the labels for the external
-#'     flows should be plotted.
-#' \item `external_flow_label_color`: A character string or vector of character strings
-#'     specifying the text color for external flow labels. If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#' \item `external_flow_label_size`: A scalar or numeric vector
-#'     specifying the text size for external flow labels. If a vector, the values will
-#'     be recycled in the order of the flows in the supplied data frame.
-#`
-#' \item `with_grid` A logical indicating whether to return the ggplot
+#' @param with_grid A logical indicating whether to return the ggplot
 #'     with a grid. Default is FALSE. The grid can be helpful if you
 #'     want/need to move items around.
-#' }
 #'
 #' @return A ggplot2 object.
+#'
+#' @details This function uses all the information in the data frames list
+#'    generated by \code{\link{prepare_diagram}} and, optionally, updated with
+#'    \code{\link{update_diagram}} to make a `ggplot2` object. All location
+#'    information and aesthetics are assumed fixed at this point -- no updates
+#'    are made within this function. The underlying `ggplot2` code can be
+#'    viewed by typing \code{make_diagram} with no parentheses in the R console.
+#'
 #' @examples
-#' mymodel = list(varlabels = c("S","I","R"),
+#' mymodel = list(variables = c("S","I","R"),
 #'                flows = list(S_flows = c("-b*S*I"),
 #'                             I_flows = c("b*S*I","-g*I"),
 #'                             R_flows = c("g*I") ) )
@@ -128,170 +33,114 @@
 #' diagram <- make_diagram(diagram_list)
 #'
 #' # make diagram with grid
-#' diagram_with_grid <- make_diagram(diagram_list, diagram_settings = list(with_grid = TRUE))
+#' diagram_with_grid <- make_diagram(diagram_list, with_grid = TRUE)
+#'
 #' @import ggplot2
 #' @export
 #'
 
-make_diagram <- function (diagram_list,
-                          diagram_settings = list(
-                            var_outline_color = NA,
-                            var_fill_color = "#6aa4c8",
-                            var_label_on = TRUE,
-                            var_label_color = "white",
-                            var_label_size = NA,
-                            main_flow_on = TRUE,
-                            main_flow_color = "grey25",
-                            main_flow_linetype = "solid",
-                            main_flow_size = 0.7,
-                            main_flow_label_on = TRUE,
-                            main_flow_label_color = "black",
-                            main_flow_label_size = 5,
-                            interaction_flow_on = TRUE,
-                            interaction_flow_color = "grey25",
-                            interaction_flow_linetype = "dashed",
-                            interaction_flow_size = 0.7,
-                            interaction_flow_label_on = TRUE,
-                            interaction_flow_label_color = "black",
-                            interaction_flow_label_size = 5,
-                            external_flow_on = TRUE,
-                            external_flow_color = "grey25",
-                            external_flow_linetype = "solid",
-                            external_flow_size = 0.7,
-                            external_flow_label_on = TRUE,
-                            external_flow_label_color = "black",
-                            external_flow_label_size = 5,
-                            with_grid = FALSE)
-                          ) {
-  # TODO error checking
+make_diagram <- function (diagram_list, with_grid = FALSE) {
+
+  # check input data frames for conformity
+  test <- check_dataframes(diagram_list)
+  if(!is.null(test)) {
+    stop(test)
+  }
 
   # unlist the data frames to objects
   variables <- diagram_list$variables
   flows <- diagram_list$flows
 
-  # assign default settings to be updated by user
-  defaults <- eval(formals(make_diagram)$diagram_settings)
+  ###
+  # make the diagram with ggplot2
+  ###
+  # Start with an empty ggplot2 canvas. The coord_equal function ensures
+  # that the x and y coordinates are displayed in equal proportions to
+  # on another (that is, it makes sure that the squares look like squares).
+  # All layers are added sequentially onto this blank canvas.
+  diagram_plot <- ggplot() +
+    coord_equal(clip = "off")
 
-  # check user inputs provided in diagram_settings, if user supplies a non-recognized argument, stop
-  nonrecognized_inputs <- setdiff(names(diagram_settings),  names(defaults))
-  if (length(nonrecognized_inputs>0) )
-  {
-    stop('These elements of diagram_settings are not recognized: ', nonrecognized_inputs)
+
+  # LAYER 1: STATE VARIABLES
+  # plot the states variable nodes as rectangles
+
+  # The variables data frame is used to create rectangles, with size determined
+  # by the xmin, xmax, ymin, and ymax values in the nodes data frame. The
+  # outline color of the rectangles is defined by var_outline_color; the
+  # inside color (fill) of the rectangles is defined by var_fill_color.
+  # The color variables can be a single value or a vector, giving different
+  # colors to different rectangles/nodes/state variables. If a vector, the
+  # color and fill vectors must have a length that is equal to the number
+  # of rows in the nodes data frame (one value for each row).
+
+  # create the nodes/boxes/variables
+  # these are just empty rectangles with no text
+  for(i in 1:nrow(variables)) {
+    diagram_plot <- diagram_plot +  # add new stuff to blank canvas
+      geom_rect(
+        data = variables[i, ],  # one row of the data frame
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),  # location information
+        color = variables[i, "outline_color"],  # border color
+        fill = variables[i, "fill_color"]  # internal, fill color
+      )
   }
 
-  # update defaults with user settings
-  defaults[names(diagram_settings)] <- diagram_settings
+  # add label text, which goes on top of boxes based on location information
+  for(i in 1:nrow(variables)) {
+    diagram_plot <- diagram_plot +  # add text to boxes
+      geom_text(
+        data = variables[i, ],
+        aes(x = xlabel, y = ylabel, label = label_text),
+        size = variables[i, "label_size"],
+        color = variables[i, "label_color"]
+      )
+  }
 
-  # check whether defaults are updated, except for with_grid
-  with_grid <- defaults$with_grid
-  defaults$with_grid <- NULL
-  def2 <- eval(formals(make_diagram)$diagram_settings)
-  def2$with_grid <- NULL
-  check <- all.equal(def2, defaults)
-
-  # if the two lists are different, user wants to update the settings,
-  # so we do so. otherwise we can just use the settings already in the
-  # dataframes.
-  if(check[1] != TRUE) {
-    # assign settings list to objects
-    for(i in 1:length(defaults)) {
-      assign(names(defaults)[i], defaults[[i]])
-    }
-
-    # if(interaction_flow_label_on == FALSE) {
-    #   # This removes interaction segments and puts the flow label
-    #   # back with the physical flow.
-    #   flows <- move_interaction_label(flows)
-    # }
-
-    # if text size is not provided (NA), then use text sizes in the data
-    # frames. otherwise, override and use the provided sizes for all.
-    if(is.na(var_label_size)) {
-      var_label_size <- variables$label_size
-    } else {
-      var_label_size <- recycle_values(var_label_size, nrow(variables))
-    }
-
-    # setup linetypes mapping from numeric to text
-    ltys <- data.frame(code = 0:6,
-                       text = c("blank", "solid", "dashed",
-                                "dotted", "dotdash", "longdash",
-                                "twodash"))
-
-    # recycle values as needed
-    variables$color <- recycle_values(var_outline_color, nrow(variables))
-    variables$fill <- recycle_values(var_fill_color, nrow(variables))
-    variables$label_color <- recycle_values(var_label_color, nrow(variables))
-    variables$label_size <- recycle_values(var_label_size, nrow(variables))
-    variables$plot_label_size <- NULL
-
-    mains <- subset(flows, type == "main")
-    mains$color <- recycle_values(main_flow_color, nrow(mains))
-    if(is.numeric(main_flow_linetype)){
-      main_flow_linetype <- subset(ltys, code == main_flow_linetype)[,"text"]
-    }
-    mains$linetype <- recycle_values(main_flow_linetype, nrow(mains))
-    mains$size <- recycle_values(main_flow_size, nrow(mains))
-    mains$label_color <- recycle_values(main_flow_label_color, nrow(mains))
-    mains$label_size <- recycle_values(main_flow_label_size, nrow(mains))
-
-    ints <- subset(flows, type == "interaction")
-    ints$color <- recycle_values(interaction_flow_color, nrow(ints))
-    if(is.numeric(interaction_flow_linetype)){
-      interaction_flow_linetype <- subset(ltys, code == interaction_flow_linetype)[,"text"]
-    }
-    ints$linetype <- recycle_values(interaction_flow_linetype, nrow(ints))
-    ints$size <- recycle_values(interaction_flow_size, nrow(ints))
-    ints$label_color <- recycle_values(interaction_flow_label_color, nrow(ints))
-    ints$label_size <- recycle_values(interaction_flow_label_size, nrow(ints))
-
-    exts <- subset(flows, type == "external")
-    exts$color <- recycle_values(external_flow_color, nrow(exts))
-    if(is.numeric(external_flow_linetype)){
-      external_flow_linetype <- subset(ltys, code == external_flow_linetype)[,"text"]
-    }
-    exts$linetype <- recycle_values(external_flow_linetype, nrow(exts))
-    exts$size <- recycle_values(external_flow_size, nrow(exts))
-    exts$label_color <- recycle_values(external_flow_label_color, nrow(exts))
-    exts$label_size <- recycle_values(external_flow_label_size, nrow(exts))
-
-    # recombine flows data frame with aesthetics as columns
-    flows <- rbind(mains, ints, exts)
-    flows$arrowsize <- 0.25  # default arrow size
-
-    # turn off flows completely by setting linetype to blank as needed
-    if(main_flow_on == FALSE) {
-      flows[flows$type == "main", "linetype"] <- "blank"
-      flows[flows$type == "main", "arrowsize"] <- 0
-    }
-    if(interaction_flow_on == FALSE) {
-      flows[flows$type == "interaction", "linetype"] <- "blank"
-      flows[flows$type == "interaction", "arrowsize"] <- 0
-    }
-    if(external_flow_on == FALSE) {
-      flows[flows$type == "external", "linetype"] <- "blank"
-      flows[flows$type == "external", "arrowsize"] <- 0
-    }
-
-    # set label to "" to suppress label if requested
-    # also don't show label if the flow itself is turned off
-    flows$math <- flows$label
-    if(main_flow_on == FALSE || main_flow_label_on == FALSE) {
-      flows[flows$type == "main", "label"] <- ""
-    }
-    if(interaction_flow_on == FALSE || interaction_flow_label_on == FALSE) {
-      flows[flows$type == "interaction", "label"] <- ""
-    }
-    if(external_flow_on == FALSE || external_flow_label_on == FALSE) {
-      flows[flows$type == "external", "label"] <- ""
+  ## add in all the flows
+  # start with the lines/arrows
+  for(i in 1:nrow(flows)) {
+    if(flows[i, "show_arrow"] == TRUE) {
+      diagram_plot <- diagram_plot +  # add the lines to the plot with boxes
+        geom_curve(  # always use geom_curve, which is straight when cuvature = 1
+          data = flows[i, ],
+          aes(x = xstart,
+              y = ystart,
+              xend = xend,
+              yend = yend),
+          linetype = flows[i, "line_type"],
+          arrow = arrow(length = unit(flows[i, "arrow_size"],"cm"), type = "closed"),
+          color = flows[i, "line_color"],
+          arrow.fill = flows[i, "line_color"],
+          lineend = "round",
+          size = flows[i, "line_size"],
+          curvature = flows[i, "curvature"],
+          ncp = 1000  # controls smoothness of curve, larger number = more smooth
+        )
     }
   }
 
-  # get the ggplot2 code as text
-  code <- get_code()
+  for(i in 1:nrow(flows)) {
+    if(flows[i, "show_label"] == TRUE) {
+      diagram_plot <- diagram_plot +  # now add the flow labels to the canvas
+        geom_text(
+          data = flows[i, ],
+          aes(x = xlabel, y = ylabel, label = label_text),
+          size = flows[i, "label_size"],
+          color = flows[i, "label_color"])
+    }
+  }
 
-  # evaluate the ggplot2 code using current environment args
-  theplot <- eval(parse(text = code))
+  # If with_grid == FALSE (default) then void out the theme
+  # otherwise keep the grey background with grid
+  # the grid can be useful for updating positions of items
+  if(with_grid == FALSE) {
+    diagram_plot <- diagram_plot +
+      theme_void()  # makes an empty plot theme with no axes, grids, or ticks
+  } else {
+    # The else here may seem silly, but otherwise the returned plot is NULL
+    diagram_plot <- diagram_plot  # just returns default ggplot2 theme
+  }
 
-  return(theplot)
+  return(diagram_plot)
 }

@@ -6,162 +6,221 @@
 \usage{
 prepare_diagram(
   model_list,
-  model_settings = list(varnames = NULL, use_varnames = FALSE, var_label_size = 10,
-    varlocations = NULL)
+  model_settings = list(varlocations = NULL, varbox_x_size = NULL, varbox_y_size =
+    NULL, varspace_x_size = NULL, varspace_y_size = NULL)
 )
 }
 \arguments{
 \item{model_list}{A list of model elements. This list is required and
 must contain these two elements:
 \itemize{
-\item \code{varlabels}: A character vector with labels for each variable.
-\item \code{flows}: A list that is the same length as \code{varlabels}. Each sub-list
+\item \code{variables}: A character vector specifying the names of all variables.
+\item \code{flows}: A list that is the same length as \code{variables}. Each sub-list
 element is a character vector of any length specifying the flows into
 and out of the variable. Note that \strong{flowdiagramr} assumes that the
-order of \code{flows} and \code{varlabels} match.
-\item IMPORTANT: All varlabel entries must start with an upper case letter,
-followed by any combination of letters and numbers (e.g.,
-S, Si, or Aml2). All parameters contained in the flows
-must start with a lower case letter
-followed by any combination of letters and numbers (e.g.,
-b, bBmax, kS, p21S). All variables and parameters MUST be separated by
-math notation (e.g., +, -, *, /).
+order of \code{flows} matches that of the \code{variables} vector.
+\item IMPORTANT: All \code{variables} entries must start with an upper case letter,
+followed by any combination of letters and numbers
+(e.g., S, Si, or Aml2). All parameters contained in \code{flows} must start
+with a lower case letter followed by any combination of letters and
+numbers (e.g., b, bBmax, kS, p21S). All variables and parameters MUST
+be separated by math notation (e.g., +, -, *, /). Most math functions
+(e.g., \code{sin}, \code{cos}) are currently not supported.
 \item See examples and details below and vignettes.
 }}
 
-\item{model_settings}{A list of optional model settings. The following
-elements are supported and default values are provided:
+\item{model_settings}{A list of optional settings to adjust layout. The
+following elements are supported. If not provided, they default to a
+single row and all sizes of 1.
 \itemize{
-\item \code{varnames}: Vector of strings containing labels, one  for each variable.
-Default is \code{NULL}.
-\item \code{use_varnames}: A logical. If \code{FALSE} (default)  variable boxes will be labeled with
-the \code{varlabels} entry from \code{model_list}. If \code{TRUE} variable boxes will be
-labeled using the text provided in the \code{varnames} element.
-If \code{varnames} is missing, an error occurs.
-Note that labeling can be turned off through a setting in \code{make_diagram}.
-\item \code{var_label_size}: A numeric defining the size of the variable
-labels in the plot. This is necessary because the the box sizes will
-(eventually) be determined by the size of the text within. Default is
-10.
-\item \code{varlocations}: A numeric matrix that specifies the locations of the
-variables on an x-y grid with their desired x (columns) and y (row)
-locations. See examples and vignettes. Default is \code{NULL}, which
-results in a left-to-right diagram.
+\item \code{varlocations}: A matrix containing all \code{model_list$variables} entries
+in specific locations on a grid. See examples.
+\item \code{varbox_x_size}: Either a scalar or a vector that changes the default
+width of variable boxes. For example, \code{varbox_x_size = 1.5} makes each
+box 1.5 units in width. If a scalar, the value is used for all variables.
+If a vector, the length must correspond to number of variables,
+and the provided values are applied to the variables in the order
+provided in \code{model_list$vars}.
+\item \code{varbox_y_size}: Same as \code{varbox_x_size} but for the height of
+the boxes.
+\item \code{varspace_x_size}:  Either a scalar or a vector that changes the
+spacing between variable boxes in the x/horizontal dimension. If
+\code{varspace_x_size} is a scalar, all spaces between boxes in the x
+direction will be the same. For example, \code{varspace_x_size = 1.5} puts
+1.5 units of space in the x direction between boxes. If you provide a
+vector, it needs to be of dimension one less than the number of columns
+in \code{varlocations}. Spacing starts at the left, thus the first number is
+the spacing between the first column and second column, etc. Spacing
+is measured between the right edge of one box to the left edge of
+the next box.
+\item \code{varspace_y_size}:  Same as \code{varspace_y_size} but for the vertical
+dimension. If you provide a vector, it needs to be of dimension one
+less than the number of rows in \code{varlocations}. Spacing starts at the
+bottom, thus the first number is the spacing between the lowest and
+second lowest row, etc. Spacing is measured between the bottom edge
+of one box to the top edge og the next box.
+\item See examples and details below and vignettes.
 }}
 }
 \value{
-A list of two data frames:
+A list of two data frames containing all necessary information
+for the model variables/boxes and flows/arrows to be plotted
+by the \code{\link{make_diagram}} function.
+The data frames are:
 \itemize{
 \item \code{variables}: A data frame containing information for all variables.
 The data frame contains these columns:
-
 \itemize{
-\item \code{label}: The variable label as provided in the model specification.
-\item \code{name}: If provided, the full text for each variable.
-\item \code{xmin}: Left edge location of box.
-\item \code{xmax}: Right edge location of box.
-\item \code{ymin}: Lower edge of location box.
-\item \code{ymax}: Upper edge of location box.
-\item \code{labelx}: Horizontal position (midpoint) of label.
-\item \code{labely}: Vertical position (midpoint) of label.
-\item \code{plot_label}: The text to be written into the box.
-\item \code{color}: Default outline color for the box.
-\item \code{fill}: Default fill color for the box.
-\item \verb{label color}: Default color for text label.
-\item \code{label_size}: Size of text to be written into the box.
+\item \code{id}: A numeric id for each variable.
+\item \code{name}: The name of the variable as provided in the model
+specification.
+\item \code{xmin}: Left edge location of variable box.
+\item \code{xmax}: Right edge location of variable  box.
+\item \code{ymin}: Lower edge of location variable box.
+\item \code{ymax}: Upper edge of location variable  box.
+\item \code{xlabel}: Horizontal position (midpoint) of label.
+\item \code{ylabel}: Vertical position (midpoint) of label.
+\item \code{label_text}: Text that will appear as the label of the box. Can
+be different from \code{name}.
+\item \code{outline_color}: The outline color of variable boxes.
+\item \code{fill_color}: The fill color of the variable boxes.
+\item \code{label_color}: The color of the box labels for each variable.
+\item \code{label_size}: Text size for variable labels.
 }
 
 \item \code{flows}: A data frame containing information for all flows.
 The data frame contains these columns:
 \itemize{
-\item \code{to}: The variable to which the arrow will point. That is, the
-variable receiving the flow.
+\item \code{id}: A numeric id for each flow.
+\item \code{name}: The name of the flow. Typically a mathematical expression.
+If a main flow with an interaction, this name is for id purposes
+only because the \code{label_text} will be the actual label displayed
+in the diagram. Thus, the name might be duplicated in other rows.
+\item \code{type}: Type of flow. One of main, interaction, or external.
 \item \code{from}: The variable from which the arrow originate. That is, the
 variable donating the flow.
-\item \code{label}: The label of the flow. Typically a mathematical expression.
+\item \code{to}: The variable to which the arrow will point. That is, the
+variable receiving the flow.
 \item \code{xstart}: The starting horizontal position of the arrow.
 \item \code{xend}: The ending horizontal position of the arrow.
 \item \code{ystart}: The starting vertical position of the arrow.
 \item \code{yend}: The ending vertical position of the arrow.
-\item \code{labelx}: Horizontal position (midpoint) of label.
-\item \code{labely}: Vertical position (midpoint) of label.
+\item \code{xlabel}: Horizontal position (midpoint) of label.
+\item \code{ylabel}: Vertical position (midpoint) of label.
 \item \code{curvature}: The amount of curvature applied to arrow.
 Higher numbers indicate more curvature; 0 = straight line.
-\item \code{type}: Type of flow. One of main, interaction, or external.
-\item \code{color}: Default color of the lines/arrows.
-\item \code{linetype}: Default linetype.
-\item \code{size}: Default size of the lines.
-\item \code{label_color}: Default label color.
-\item \code{label_size}: Default text size for label.
-\item \code{arrowsize}: Default arrow size.
-\item \code{math}: The math from the flows specified by the user. Is a
-duplicate of \code{label} so that user can update \code{label} as desired but
-retain the original math for reference.
+\item \code{label_text}: The label that will appear in the diagram. This is a
+duplicate of \code{name} so that user can update \code{label_text} as desired
+but retain the original math for reference.
+\item \code{line_color}: The color of the flow arrow line.
+\item \code{line_size}: The size (width) of the flow arrow line.
+\item \code{line_type}: The linetype of the flow arrow line.
+\item \code{label_color}: Color of \code{label_text}.
+\item \code{label_size}: The text size of \code{label_text}.
+\item \code{arrow_size}: The size of the arrow point on the flow line.
+\item \code{show_arrow}: Logical for whether to plot the flow arrow line
+(TRUE) or not (FALSE).
 }
 }
 }
 \description{
-This function takes as input a (typically) compartmental model
-consisting of variables/compartments and flows
-and creates a list of data frames with label and
-position information for plotting a flow diagram.
-The resulting object is used as an input to
-\code{\link{make_diagram}}, which creates a \strong{ggplot2} based diagram.
-Attempts to make decent decisions regarding the placement of nodes (boxes),
-flows (arrows), and labels are made. However, complex models with
-complex diagrams will likely need user modification. This is documented
-in the vignettes.
+This function takes as input a model consisting of variables/compartments
+and flows, and creates a list of data frames with label and position
+information for plotting a flow diagram.
+The resulting object is used as an input to \code{\link{make_diagram}},
+which creates a \strong{ggplot2} based diagram. The function attempts to make
+decent decisions regarding the placement of variables (boxes),
+flows (arrows), and labels. However, complex models with complex diagrams
+will likely need user modification. This is documented in the vignettes.
 }
 \details{
-\code{varlabels} needs to be specified as a vector of model variables,
-e.g., varlabels <- c("Pred","Prey").
-\code{flows} need to be specified as a list, with each list entry containing the
-flows/processes for each variable in the order in which the variables appear.
-Flows need to be named according to VARLABEL_flows.
-Example: flows <- list(Pred_flows = c(\code{r*Pred}, \code{-k1*Pred*Prey}),
-Prey_flows = c(\code{g*Prey}, \code{-k2*Pred*Prey}) )
-Each flow, i.e. each entry in the flow vector, needs to be a valid
-mathematical expression made up of varlabels and parameters.
-The rules are as described above.
-As an example, the following includes a parameter \emph{b} and two variables, \emph{S}
-and \emph{I}: \code{b*S*I}. The following includes a parameter \emph{s} and two
-variables, \emph{Bg} and \emph{I2}: \code{Bg*s*I2}.
-See more examples below and in the vignettes.
+\code{variables} needs to be specified as a vector of model variables,
+e.g., \code{variables <- c("Pred","Prey")}. \code{flows} need to be specified as a
+list, with each list entry containing the flows/processes for each
+variable in the order in which the variables appear. Flows need to be
+named according to \code{VARIABLENAME_flows}.
+
+Example:
+
+\code{flows <- list(Pred_flows = c(r*Pred, -k1*Pred*Prey),
+   Prey_flows = c(g*Prey, -k2*Pred*Prey))}. Each flow, i.e. each entry in
+the flow vector, needs to be a valid mathematical expression made up of
+variables and parameters. The rules are as described above.
+As an example, the following includes a parameter \emph{b} and two variables,
+\emph{S} and \emph{I}: \code{b*S*I}. The following includes a parameter \emph{s} and two
+variables, \emph{Bg} and \emph{I2}: \code{Bg*s*I2}. See more examples below and in
+the vignettes.
+
+The variables and flows data frames returned in the output list from this
+function contain a few columns that are provided to make it easier for
+the user to make changes to the data frames manually, but are not used
+by the package to make the diagram itself. In the \code{variables} data frame,
+\code{id} and \code{name} are unique identifiers that are not used by the package
+to make the diagram -- changing these will have no impact on the final
+diagram. In the \code{flows} data frame, \code{id}, \code{name}, \code{from}, and \code{to} are
+identifiers provided to make it easier for the user to understand each
+row of the data frame. Changing these columns will have no impact on the
+final diagram. All other columns contain information that impacts the
+drawn diagram itself. Users can update them -- and may want to in many
+cases -- but any updates to values in the remaining columns will be seen
+in the diagram itself. See the description of the output data frames below.
 }
 \examples{
-#basic model specification
-varlabels <- c("S","I","R")
+# basic model specification
+variables <- c("S","I","R")
 flows <- list(S_flows = c("-b*S*I"),
               I_flows = c("b*S*I","-g*I"),
               R_flows = c("g*I"))
-mymodel <- list(varlabels = varlabels, flows = flows)
+mymodel <- list(variables = variables, flows = flows)
 diag_list <- prepare_diagram(model_list = mymodel)
 mydiag <- make_diagram(diag_list)
 
-#adding optional specifications
-varnames <- c("Susceptible","Infected","Recovered")
+
+
+# adding optional specifications
 varlocations <-  matrix(data = c("S", "", "R",
                                  "", "I", "" ),
                         nrow = 2, ncol = 3, byrow = TRUE)
-mysettings <- list(varnames = varnames, use_varnames = TRUE,
-                   var_label_size = 4, varlocations = varlocations)
+mysettings <- list(varlocations = varlocations)
 diag_list <- prepare_diagram(model_list = mymodel, model_settings = mysettings)
 mydiag <- make_diagram(diag_list)
 
-#another simple model
-varlabels = c("Pat","Imm")
+
+
+# use of model_settings to change sizes and spacing, including vectorization
+variables <- c("S","I","R")
+flows <- list(S_flows = c("-b*S*I"),
+              I_flows = c("b*S*I","-g*I"),
+              R_flows = c("g*I"))
+mymodel <- list(variables = variables, flows = flows)
+
+var_locs <- matrix(c("S", "", "R", "", "I", ""), byrow = TRUE, nrow = 2)
+mysettings = list(
+  varlocations = var_locs,
+  varbox_x_size = c(1,2,1),
+  varbox_y_size = c(0.5,0.5,2),
+  varspace_x_size = 2,
+  varspace_y_size = 1)
+
+diag_list <- prepare_diagram(model_list = mymodel,
+                             model_settings = mysettings)
+make_diagram(diag_list)
+
+
+# another simple model for pathogen (prey) and immune response (predator)
+variables = c("Pat","Imm")
 flows     = list(Pat_flows = c("g*Pat*(1-Pat/pmax)", "-dP*Pat", "-k*Pat*Imm"),
                  Imm_flows = c("r*Pat*Imm", "-dI*Imm"))
-mymodel = list(varlabels = varlabels, flows = flows)
+mymodel = list(variables, flows)
 diag_list <- prepare_diagram(mymodel)
 mydiag <- make_diagram(diag_list)
 
-#options to switch to vertical layout and adding names
-varnames <- c("Pathogen","Immune Response")
+
+
+# manually switch to vertical layout
 varlocations <-  matrix(data = c("Pat", "Imm"),
                         nrow = 2, byrow = TRUE)
-mysettings <- list(varnames = varnames, use_varnames = TRUE,
-                   var_label_size = 4, varlocations = varlocations)
+mysettings <- list(varlocations = varlocations)
 diag_list <- prepare_diagram(mymodel,mysettings)
 mydiag <- make_diagram(diag_list)
 

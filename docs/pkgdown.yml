@@ -1,17 +1,17 @@
-pandoc: 2.11.4
-pkgdown: 1.6.1
+pandoc: 2.14.1
+pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
   A_quickstart: A_quickstart.html
-  B_modify_diagrams_simple: B_modify_diagrams_simple.html
-  C_modify_input_structure: C_modify_input_structure.html
+  B_prepare_diagram_settings: B_prepare_diagram_settings.html
+  C_update_diagram_function: C_update_diagram_function.html
   D_modify_ggplot_code: D_modify_ggplot_code.html
   E_non_model_diagrams: E_non_model_diagrams.html
-  F_more_model_examples: F_more_model_examples.html
+  F_additional_examples: F_additional_examples.html
   G_additional_topics: G_additional_topics.html
   H_comparison_to_other_packages: H_comparison_to_other_packages.html
-  otherinformation/useR2021_presentation: useR2021_presentation.html
-last_built: 2021-07-24T13:36Z
+  useR2021_presentation: otherinformation/useR2021_presentation.html
+last_built: 2022-06-10T00:33Z
 urls:
   reference: https://andreashandel.github.io/flowdiagramr/index.html/reference
   article: https://andreashandel.github.io/flowdiagramr/index.html/articles

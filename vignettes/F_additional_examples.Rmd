@@ -1,8 +1,8 @@
 ---
-title: Additional diagram examples
+title: Additional examples
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{More model examples}
+  %\VignetteIndexEntry{Additional examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -27,7 +27,7 @@ library(pkg, character.only = TRUE)
 
 The previous tutorials/vignettes showed several example models as way to illustrate how to use **`r pkg`**.
 
-This vignette is a (growing) list of further model examples, which might be helpful to illustrate further ways of using the package.
+This vignette is a (growing) list of additional model examples, which might be helpful to illustrate further ways of using the package.
 
 
 ## Example 1
@@ -49,17 +49,20 @@ $$
 
 This is the same information formatted as a structure that can be used as input for `prepare_diagram`.
 
+**PREPARE_DIAGRAM CURRENTLY ERRORS OUT ON THIS. IT SHOULD THEORETICALLY WORK, I THINK THE MODEL AND FLOWS ARE PROPERLY SPECIFIED. BUT THE FLOWS MIGHT BE TOO COMPLEX TO PARSE?**
+
 ```{r, error = TRUE}
-varlabels = c("H","F","T","B","A")
-#varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")
-flows = list(H_flows = c("-kA*A*H", "- dH * H"),
-             F_flows = c("pF" ,"- dF*F", "H / (H + hH) * gF * (fmax - F)"),
+variables = c("H","F","T","B","A")
+flows = list(H_flows = c("-kA*A*H", "-dH*H"),
+             F_flows = c("pF" ,"-dF*F", "H/H + hH) * gF * (fmax - F)"),
              T_flows = c("F*H*T/(F*H + hT)" ,"+ gT*T"),
              B_flows = c("gB * B * rH*F*H/(s1+F*H)",  "gB * B *rT*F*T/(s2+F*T)" ),
              A_flows = c("rA*B",  "- dA*A", "- kA*A*H") 
              )
-model_list = list(varlabels = varlabels, flows = flows)
-diagram_list <- prepare_diagram(model_list)
+model_list = list(variables = variables, flows = flows)
+#diagram_list <- prepare_diagram(model_list)
+#varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")
+
 ```
 
 
@@ -72,10 +75,10 @@ First, we specify the model again. We did a bit of renaming here, what we called
 
 ```{r}
 # specify the model
-varlabels = c("B","I")
+variables = c("B","I")
 flows = list(B_flows = c("+g*B*(1-B/bmax)", "-dB*B", "-k*B*I"),
              I_flows = c("+r*B*I", "-dI*I"))
-ppmodel = list(varlabels = varlabels, flows = flows)
+ppmodel = list(variables = variables, flows = flows)
 ```
 
 Next, we prepare the input list of data frames
@@ -85,31 +88,29 @@ Next, we prepare the input list of data frames
 pp_diagram_list <- prepare_diagram(ppmodel)
 ```
 
-Finally, we can make a diagram with settings adjusted to our liking.
+Now we apply some styling:
 
 ```{r}
+# get element names
+update_diagram(pp_diagram_list)
+
 # define adjusted settings for layout
-diagram_settings = list(
-    var_fill_color = c("#6aa4c8", "#eb5600"),
-    var_label_color = "gray",
-    var_label_size = 12,
-    main_flow_label_color = "blue",
-    main_flow_label_size = 6,
-    main_flow_color = "grey50",
-    main_flow_linetype = 1,
-    main_flow_size = 1.2,
-    interaction_flow_color = "grey25",
-    interaction_flow_linetype = 2,
-    interaction_flow_size = 0.8
-)
-    
-# make diagram with adjusted settings
-diag1 <- make_diagram(
-  diagram_list = pp_diagram_list,
-  diagram_settings = diagram_settings
+diagram_settings1 = list(
+    var_fill_color = c(B = "#6aa4c8", I = "#eb5600"),
+    var_label_color = c(all = "gray"),
+    var_label_size = c(all = 12),
+    flow_label_color = c(main = "blue"),
+    flow_label_size = c(main = 6),
+    flow_line_color = c(main = "grey50", interaction = "grey25"),
+    flow_line_type = c(main = "solid", interaction = "dashed"),
+    flow_line_size = c(main = 1.2, interaction = 0.8)
 )
 
-plot(diag1)
+pp_diag_list2 <- update_diagram(pp_diagram_list, diagram_settings1)
+
+# make diagram with adjusted settings
+diag2 <- make_diagram(pp_diag_list2)
+plot(diag2)
 ```
 
 
@@ -117,44 +118,34 @@ For the next diagram, we are turning off the interactions and only show the main
 
 ```{r}
 # specify custom settings for the diagram layout
-diagram_settings <- list(
-    var_fill_color = c("#6aa4c8", "#eb5600"),
-    var_label_color = "gray",
-    var_label_size = 12,
-    main_flow_label_color = "blue",
-    main_flow_label_size = 6,
-    main_flow_color = "grey50",
-    main_flow_linetype = 1,
-    main_flow_size = 1.2,
-    interaction_flow_on = FALSE,  
-    interaction_flow_color = "grey25",
-    interaction_flow_linetype = 2,
-    interaction_flow_size = 0.8,
-    external_flow_on = TRUE,
-    external_flow_label_on = FALSE
+diagram_settings2 <- list(
+    flow_show_arrow = c(interaction = FALSE),  
+    flow_show_label = c(external = FALSE)
 )
 
-# make another diagram with adjusted settings
-diag2 <- make_diagram(
-  diagram_list = pp_diagram_list,
-  diagram_settings = diagram_settings
-)
-
-plot(diag2)
+pp_diag_list3 <- update_diagram(pp_diag_list2, diagram_settings2)
+diag3 <- make_diagram(pp_diag_list3)
+plot(diag3)
 ```
+
 
 As you can see, not showing the interactions or not labeling some of the flows doesn't produce a very useful diagram. In general, as long as it is decently readable, you should show and label all components of your model.
 
 Here is another example, the model shown with vertical alignment
 
+**THIS LOOKS PRETTY BAD AT THE MOMENT**
+
 ```{r, fig.height = 4}
-varnames <- c("Bacteria","Immune Response")
 varlocations <-  matrix(data = c("B", "I"),
                         nrow = 2, byrow = TRUE)
-mysettings <- list(varnames = varnames, use_varnames = TRUE,
-                   var_label_size = 4, varlocations = varlocations)
+mysettings <- list(varlocations = varlocations)
 diag_list <- prepare_diagram(ppmodel, mysettings)
-mydiag <- make_diagram(diag_list)
+diagram_settings = list(var_label_text = c(B = "Bacteria", I = "Immune Response"),
+                                               var_label_size = c(all = 4)
+                        )
+diag_list2 <- update_diagram(diag_list, diagram_settings)
+
+mydiag <- make_diagram(diag_list2)
 plot(mydiag)
 ```
 
@@ -162,4 +153,4 @@ plot(mydiag)
             
 ## Example 3
 
-More examples to come.
+MORE EXAMPLES TO COME

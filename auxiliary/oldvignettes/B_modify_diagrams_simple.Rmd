@@ -1,0 +1,430 @@
+---
+title: Basic modification of diagrams 
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic modification of diagrams}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7
+)
+
+# avoid check where vignette filename must equal the vignette title
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup, include = FALSE}
+pkg = 'flowdiagramr' #so we can easily switch names
+library(pkg, character.only = TRUE)
+```
+
+## Introduction
+
+We assume you went through the [getting started vignette](./A_quickstart.html) and know the basics of using **`r pkg`**. 
+In this vignette, you will learn the simplest ways of customizing diagrams. Further vignettes show more advanced approaches.
+
+To re-cap, the simple workflow is like this
+
+```{r}
+#specify model
+sirmodel1 = list( varlabels = c("S","I","R"),
+                flows = list(S_flows = c("-b*S*I"), 
+                             I_flows = c("b*S*I","-g*I"), 
+                             R_flows = c("g*I"))
+              )
+#prepare diagram
+diagram_list1 <- prepare_diagram(model_list = sirmodel1)
+#make diagram
+sir_diagram1 <- make_diagram(diagram_list = diagram_list1)
+#plot diagram
+plot(sir_diagram1)
+```
+
+Both `prepare_diagram()` and `make_diagram()` can be supplied with additional settings that allow you to customize your diagram rather easily.
+Let's look at both.
+
+## Setting arguments in `prepare_diagram()`
+
+You always need to provide a `model_list` input to `prepare_diagram`. In addition, you can provide an optional `model_settings` argument, which allows you to influence the placement and sizing of the variables/boxes and arrows. Check the help file with `help('prepare_diagram')` for all the details. Here we explore some of the options through a few examples.
+
+
+
+### Example 1
+
+We'll take the model defined above, and now specify an additional `model_settings` argument called `varlocations`. This allows you to specify the placement of the variable boxes. 
+
+For simple models, the default setting of **`r pkg`** of having all compartments/boxes along a single row might be ok. But unless your model is very simple, you likely do not want all variables/boxes on the same row. Thus, specifying `varlocations` is often very useful and necessary to produce a decent looking diagram.
+
+The `varlocations` argument is a matrix and should contain the model variables aligned in a grid of rows and columns. This will correspond to their placement in the diagram. 
+In this example, we decided that instead of having all three variables on a single row (the default), we want **S** and **R** on a bottom row in the left and right corners, and **I** on a top row in the middle. 
+
+To accomplish that, we define a grid/matrix with 2 rows and 3 columns and in that matrix, we place the **S** and **R** compartments in the left and right corner of the bottom row and the **I** compartment in the middle of the top row. All other slots are empty, and need to be specified as empty strings. The following code accomplishes that.
+
+```{r}
+#optional list of settings
+sirsettings1 = list(varlocations = matrix(data = c("",  "I", "",
+                                                  "S", "",  "R" ),
+                                         nrow = 2, ncol = 3, byrow = TRUE)
+                  )
+```
+
+With these additional settings, the model diagram looks as follows
+
+```{r, fig.height=4}
+# prepare inputs 
+diagram_list2 <- prepare_diagram(model_list = sirmodel1, model_settings = sirsettings1)
+# make  diagram
+sir_diagram2 <- make_diagram(diagram_list = diagram_list2)
+plot(sir_diagram2)
+```
+
+
+
+
+### Example 2
+
+Let's look at a slightly extended SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the **S** compartment at some fixed flow, **n**, while deaths occur at rate **m** out of all compartments. The model is specified as follows
+
+```{r}
+# specify the model
+varlabels = c("S","I","R")
+flows = list(S_flows = c("n", "-b*S*I", "-m*S"), 
+             I_flows = c("+b*S*I","-g*I", "-m*I"), 
+             R_flows = c("g*I", "-m*R"))
+sirmodel2 = list(varlabels = varlabels, flows = flows)
+```
+
+We'll make two diagrams, one with the default placement of all compartments in a single row, and one where we suppyl `varlocations`. For this example, we'll place **S** and **R** in a left column on the top and bottom, and move **I** to a right column in the middle.
+
+```{r}
+#optional list of settings
+sirsettings2 = list(varlocations = matrix(data = c("S", "",
+                                                   "", "I",
+                                                   "R", "" ),
+                                         nrow = 3, ncol = 2, byrow = TRUE)
+                  )
+```
+
+This prepares and plots both versions of the diagram.
+
+```{r}
+diagram_list3 <- prepare_diagram(model_list = sirmodel2)
+diagram_list4 <- prepare_diagram(model_list = sirmodel2, model_settings = sirsettings2)
+sir_diagram3 <- make_diagram(diagram_list = diagram_list3)
+sir_diagram4 <- make_diagram(diagram_list = diagram_list4)
+plot(sir_diagram3)
+plot(sir_diagram4)
+```
+
+
+
+
+
+### Example 2
+
+Let's look at another example, one that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by again specifying a `varlocations` matrix. In addition, we change the size and spacing of the boxes and space between the boxes here.
+
+
+```{r}
+sir_vertical_settings = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
+                   varbox_y_size = 0.5,
+                   varspace_y_size = 1
+                   )
+```
+
+With this setup, the diagram looks like this
+
+```{r, fig.height=5}
+sir_vertical <- prepare_diagram(model_list = sirmodel2, model_settings = sir_vertical_settings)
+sir_diagram <- make_diagram(diagram_list = sir_vertical)
+plot(sir_diagram)
+ggplot2::ggsave("sirdiagram1.png",sir_diagram)
+```
+
+The placement of the flow labels could be improved, which is not hard to do with **`r pkg`** and you'll learn that in a future vignette.
+
+**MODEL CHECK. CHANGING Y SCALING HERE ALSO SEEMS TO CHANGE BOX SIZE, LABELS DON'T FIT ANYMORE. CAN ONE MAKE IT SUCH THAT THERE IS NO RELATIVE ADJUSTMENT OF SOME COMPONENTS AS OTHERS CHANGE? SAME ISSUE HAPPENS NOT ONLY FOR FIGURE DISPLAY INSIDE VIGNETTE BUT ALSO WHEN SAVED WITH GGSAVE. ALSO, THE SPACING IN THE VARIABLES DATA FRAME IS NOT RIGHT - SEE BELOW.** 
+
+```{r, fig.height=5}
+sir_vertical_settings2 = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
+                   varbox_y_size = 0.5,
+                   varspace_y_size = 1
+                   )
+sir_vertical2 <- prepare_diagram(model_list = sirmodel2, model_settings = sir_vertical_settings2)
+sir_diagram <- make_diagram(diagram_list = sir_vertical2)
+plot(sir_diagram)
+ggplot2::ggsave("sirdiagram2.png",sir_diagram)
+```
+
+**ATT: WERE YOU CHANGING THE VARBOX SIZE OR THE VARSPACE SIZE? WHEN I CHANGE varspace_y_size, IT ALL SEEMS TO WORK**
+
+```{r, fig.height=5}
+sir_vertical_settings2 = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
+                   varbox_y_size = 1,
+                   varspace_y_size = 0.5
+                   )
+sir_vertical2 <- prepare_diagram(model_list = sirmodel2, model_settings = sir_vertical_settings2)
+sir_diagram <- make_diagram(diagram_list = sir_vertical2)
+plot(sir_diagram)
+ggplot2::ggsave("sirdiagram2.png",sir_diagram)
+```
+
+
+
+
+```{r}
+print(sir_vertical$variables)
+print(sir_vertical2$variables)
+```
+
+
+**VECTORIZATION DOES NOT SEEM TO WORK.**
+
+The scaling arguments can be vectorized to allow different spacing and sizing of different boxes.
+
+```{r, eval = FALSE}
+sir_vertical_settings2 = list(varlocations = matrix(data = c("S", "I", "R"), nrow = 3,  byrow = TRUE),
+                   varbox_x_size = c(1.5, 1, 1.5),
+                   varbox_y_size = c(0.5, 1, 0.5),
+                   varspace_y_size = c(0.5, 1, 0.5)
+                   )
+sir_vertical2 <- prepare_diagram(model_list = sirmodel2, model_settings = sir_vertical_settings2)
+sir_diagram <- make_diagram(diagram_list = sir_vertical2)
+plot(sir_diagram)
+ggplot2::ggsave("sirdiagram2.png",sir_diagram)
+```
+
+
+
+## Setting arguments in `make_diagram()`
+
+The same idea just shown for `prepare_diagram()` applies to `make_diagram()`. The function can take optional arguments that impact the look of the diagram.
+The `diagram_list` input is always required. The `diagram_settings` input is optional and gives you a lot of options to quickly change the look of your diagram. Check the help file with `help('make_diagram')` to see all options. We again explore a few options through examples. 
+
+We'll continue with the model from above. First, we call `prepare_diagram` without any additional settings. This produces a list of data frames needed as input for `make_model`. We'll skip over this step again for now, you'll learn more about these data frames, and how to potentially modify them, in a later vignette.
+
+```{r}
+# prepare inputs 
+sir_diagram_list <- prepare_diagram(sirmodel)
+```
+
+Now, let's first produce a basic diagram by calling `make_diagram` with its defaults.
+
+```{r}
+# make a default diagram
+default_diagram <- make_diagram(sir_diagram_list)
+plot(default_diagram)
+```
+
+This looks ok, but maybe you want to make some adjustments. So let's define some custom settings as a list. 
+
+```{r}
+#define settings that change the look of the diagram
+sir_diagram_settings <- list(
+    var_outline_color = "black",
+    var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    var_label_color = c("black","white","black"),
+    var_label_size = c(12,16,12),
+    main_flow_color = "blue",
+    main_flow_size = c(1,2),
+    external_flow_linetype = "dashed",
+    external_flow_label_size = c(4,2),
+    interaction_flow_color = "red",
+    interaction_flow_linetype = "dotted"
+    )
+
+# make a diagram with adjusted settings
+new_diagram <- make_diagram(
+  diagram_list = sir_diagram_list,
+  diagram_settings = sir_diagram_settings 
+  )
+plot(new_diagram)
+```
+
+As you can see, it is possible to change the look of the diagram considerably by simply providing custom values to the `make_diagram` input options. All inputs are vectorized. If you provide a single argument, it will be applied to all elements, otherwise the entries in the vector will be applied in the order the variables and flows are listed in the object returned from `prepare_diagram` (which we'll discuss more in the next vignette.) As an example, `external_flow_label_size = 4` sets all labels for external flows to size 4, while `external_flow_label_size = c(4,2)` set the first external flow to label text to size 4, the next to size 2, then 4 again, etc.  
+
+You will note that there is only one type of variable in the optional `diagram_settings` list (labeled `var`), but there are 3 types of flows, namely `main_flow`, `interaction_flow` and `external_flow`. **`r pkg`** groups flows into those 3 categories. _Main flows_ roughly correspond to flows between compartments, _interaction flows_ correspond to processes in which variables interact, and _external flows_ represent inflows from or outflows to non-modeled entities that are outside the system. **`r pkg`** tries to guess the types of flows based on the model structure, and might not always place the flows into the same conceptual category that you would. That's ok since as you will learn later, you can change the appearance of each flow individually. Thus, this grouping is mainly for convenience to let you make modifications to conceptually similar flows in an easy manner.
+
+Let's look at a few more options that you can configure. By default, **`r pkg`** shows all flows and labels them all. 
+While it is generally a good idea to show as much information as possible in your diagram, sometimes having too much detail leads to a messy and hard-to-read diagram. In such cases, not showing certain parts of the model might make sense. 
+
+You can easily turn on and off the different diagram components. The following code shows an example where we turned off showing the external flows completely, and turn off the labeling of the interaction flows. 
+
+Note that if you turn off certain components, any settings that apply styling to those settings will be ignored. You can see that in this example, where we kept some settings for the styling, but since flow labels and external flows are not plotted, any styling applied to them is ignored.
+
+
+```{r}
+#define settings that remove plotting of all flow labels and inflows/outflows
+simpler_diagram_settings <- list(
+    var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+    var_label_text = c("Susceptible","Infected","Recovered"),
+    var_label_size = 6,
+    main_flow_color = "blue",
+    external_flow_on = FALSE,
+    external_flow_linetype = "dashed", #ignored
+    external_flow_label_size = 4, #ignored
+    interaction_flow_label_on = FALSE,
+    interaction_flow_color = "red")
+
+# make a diagram with adjusted settings
+simpler_diagram <- make_diagram(
+  diagram_list = sir_diagram_list,
+  diagram_settings = simpler_diagram_settings 
+  )
+plot(simpler_diagram)
+```
+
+As you can see, the external flows are not shown anymore. We also labeled the boxes with custom names. They don't quite fit into the boxes. We could either shrink the text size, or increase the box size. We'll do that in the next section.
+
+
+## Combining the two approaches
+
+It is of course possible to adjust the look of the diagram by combining the two approaches we just described.
+Let's quickly revisit the last example and use the optional settings for `prepare_model` to change the box size.
+
+```{r}
+#make the boxes larger
+model_settings = list(varbox_x_size = 2)
+#prepare diagram with additional optional settings
+sir_diagram_list <- prepare_diagram(model_list = sirmodel, 
+                                    model_settings = model_settings)
+#make diagram, using the above optional settings
+simpler_diagram_2 <- make_diagram(diagram_list = sir_diagram_list,
+                                  diagram_settings = simpler_diagram_settings 
+                              )
+plot(simpler_diagram_2)
+```
+
+
+
+
+Let's look at one more example, the somewhat large model with 7 compartments shown in the _Getting Started_ vignette. 
+
+Here is the model again.
+
+```{r}
+varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"), 
+             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"), 
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"), 
+             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"), 
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("sc*Ic","sa*Ia","-d*P")
+             )
+mymodel = list(varlabels = varlabels, flows = flows)
+```
+
+This time, we specify locations for the variables. We place the 2 *SIR* compartments on the top and the bottom, and the **P** compartment in the middle. We also resize the boxes so the text we print into the boxes below will fit.
+
+```{r}
+mysettings = list( varlocations = matrix(data = c("Sc", "Ic", "Rc",
+                                                  "",   "P",   "",
+                                                  "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE),
+                   varbox_x_size = 3,
+                   varbox_y_size = 2
+                   )
+```
+
+This prepares the diagram with those additional settings.
+
+```{r}
+diagram_list <- prepare_diagram(mymodel, mysettings)
+```
+
+We also specify some optional settings for `make_diagram()` to influence the look of the diagram. Note the `\n` elements in the text for the variables, this leads to the text being placed on multiple lines.
+
+```{r, fig.height=5}
+diagram_settings <- list(
+       var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988", "#2987c2", "#e38b59", "#5c948c", "#e8e656"),
+       var_label_text = c("Susceptible\nChildren","Infected\nChildren","Recovered\nChildren",
+                          "Susceptible\nadults","Infected\nadults","Recovered\nadults",
+                          "Pathogen in\nEnvironment"), 
+       var_label_size = 4,
+       interaction_flow_label_size = 4,
+       interaction_flow_color = "blue"
+       )
+```
+
+
+Now we make the diagram with all these additional settings, the resulting plot looks as follows.
+
+```{r}
+model_plot <- make_diagram(diagram_list, diagram_settings)
+plot(model_plot)
+```
+
+This is getting better, though not quite publication quality yet. We'll get there, so read on.
+
+## Recap
+
+Both `prepare_diagram()` and `make_diagram()` take optional arguments that allow you to do a good bit of customizing of the diagrams in a fairly easy manner.
+The full workflow is as follows
+
+```{r}
+#specify model
+mymodel = list( varlabels = c("S","I","R"),
+                flows = list(S_flows = c("-b*S*I"), 
+                             I_flows = c("b*S*I","-g*I"), 
+                             R_flows = c("g*I"))
+              )
+#specify extra settings for prepare_diagram
+my_model_settings = list(  varbox_x_size = 4,
+                           varspace_x_size = 0.5
+                        )
+#prepare diagram
+diagram_list <- prepare_diagram(model_list = mymodel, model_settings = my_model_settings)
+#specify extra settings for make_diagram
+my_diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                          var_label_text = c("Susceptible","Infected","Recovered"))
+#make diagram
+my_diagram <- make_diagram(diagram_list = diagram_list, diagram_settings = my_diagram_settings)
+#plot diagram
+plot(my_diagram)
+```
+
+
+**NOT QUITE WORKING, ADJUSTING BOX IN X-DIRECTION DOES NOT FIT TEXT**
+
+
+```{r}
+#specify model
+mymodel = list( varlabels = c("S","I","R"),
+                flows = list(S_flows = c("-b*S*I"), 
+                             I_flows = c("b*S*I","-g*I"), 
+                             R_flows = c("g*I"))
+              )
+#specify extra settings for prepare_diagram
+my_model_settings = list(  varbox_x_size = 6,
+                           varspace_x_size = 0.5
+                        )
+#prepare diagram
+diagram_list2 <- prepare_diagram(model_list = mymodel, model_settings = my_model_settings)
+#specify extra settings for make_diagram
+my_diagram_settings = list(var_fill_color = c("#6aa4c8", "#eb5600", "#1a9988"),
+                          var_label_text = c("Susceptible","Infected","Recovered"))
+#make diagram
+my_diagram <- make_diagram(diagram_list = diagram_list, diagram_settings = my_diagram_settings)
+#plot diagram
+plot(my_diagram)
+```
+
+
+
+## Next steps
+
+With the approach just discussed, you can modify the look of the diagram a good bit. This might give you a diagram that's good enough for what you want. However, at times you might want to make further changes. For instance you might want to tweak the placement of the boxes and arrows or add some extra text somewhere on the diagram. **`r pkg`** gives you ways of doing this. 
+
+As a next step toward tweaking the diagram to look exactly the way you want, you can modify the `diagram_list` object produced by the `prepare_diagram` function before sending it to the `make_diagram` function. This gives you additional flexibility in adjusting the model. [The next vignette](./C_modify_input_structure.html) explains how to do that.    
+
+
+
+
+
+
+

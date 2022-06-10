@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -54,7 +56,7 @@
   <a href="articles/A_quickstart.html">Get started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Tutorials
      
     <span class="caret"></span>
@@ -90,7 +92,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Additional Information
      
     <span class="caret"></span>
@@ -107,7 +109,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/andreashandel/flowdiagramr">
+  <a href="https://github.com/andreashandel/flowdiagramr" class="external-link">
     <span class="fab fa-github"></span>
      
   </a>
@@ -124,49 +126,47 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="flowdiagramr-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#flowdiagramr-" class="anchor"></a>flowdiagramr <img src="reference/figures/logo.png" align="right" alt="" width="120">
+<div class="section level1">
+<div class="page-header"><h1 id="flowdiagramr-">flowdiagramr <img src="reference/figures/logo.png" align="right" alt="" width="120"><a class="anchor" aria-label="anchor" href="#flowdiagramr-"></a>
 </h1></div>
 <!-- badges: start -->
-
 <p><strong>This package is still under active development. If you see this message, assume that several parts of the package don’t quite work yet.</strong></p>
-<div id="description" class="section level2">
-<h2 class="hasAnchor">
-<a href="#description" class="anchor"></a>Description</h2>
+<div class="section level2">
+<h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
+</h2>
 <p>This package allows automated creation of flow diagrams for compartmental simulation models using ggplot. Other types of flow charts are also supported.</p>
 </div>
-<div id="getting-started" class="section level2">
-<h2 class="hasAnchor">
-<a href="#getting-started" class="anchor"></a>Getting Started</h2>
-<p>For an introduction to the package, step-by-step instructions on getting started, and more information on the different ways you can use the package <a href="https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html">see the <em>Quick Start</em> tutorial (vignette)</a>.</p>
+<div class="section level2">
+<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
+<p>For an introduction to the package, step-by-step instructions on getting started, and more information on the different ways you can use the package <a href="https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html" class="external-link">see the <em>Quick Start</em> tutorial (vignette)</a>.</p>
 </div>
-<div id="further-information" class="section level2">
-<h2 class="hasAnchor">
-<a href="#further-information" class="anchor"></a>Further information</h2>
+<div class="section level2">
+<h2 id="further-information">Further information<a class="anchor" aria-label="anchor" href="#further-information"></a>
+</h2>
 <p>We wrote several tutorials/vignettes that explain all features of <code>flowdiagramr</code>. Here they are listed for convenience.</p>
 <p><strong>Main tutorials/vignettes</strong></p>
 <p><em>You should go through them in this order</em></p>
-<ol>
-<li><a href="https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html">Quick start guide</a></li>
-<li><a href="https://andreashandel.github.io/flowdiagramr/articles/B_modify_diagrams_simple.html">Basic modification of diagrams</a></li>
-<li><a href="https://andreashandel.github.io/flowdiagramr/articles/C_modify_input_structure.html">Modifying the input structure</a></li>
-<li><a href="https://andreashandel.github.io/flowdiagramr/articles/D_modify_ggplot_code.html">Modifying the ggplot2 code</a></li>
+<ol style="list-style-type: decimal">
+<li><a href="https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html" class="external-link">Quick start guide</a></li>
+<li><a href="https://andreashandel.github.io/flowdiagramr/articles/B_modify_diagrams_simple.html" class="external-link">Basic modification of diagrams</a></li>
+<li><a href="https://andreashandel.github.io/flowdiagramr/articles/C_modify_input_structure.html" class="external-link">Modifying the input structure</a></li>
+<li><a href="https://andreashandel.github.io/flowdiagramr/articles/D_modify_ggplot_code.html" class="external-link">Modifying the ggplot2 code</a></li>
 </ol>
 <p><strong>Additional tutorials/vignettes</strong></p>
 <p><em>Read them based on interest, in any order</em></p>
 <ul>
-<li><a href="https://andreashandel.github.io/flowdiagramr/articles/E_non_model_diagrams.html">More model examples</a></li>
-<li><a href="https://andreashandel.github.io/flowdiagramr/articles/F_more_model_examples.html">Making non-model based diagrams</a></li>
-<li><a href="https://andreashandel.github.io/flowdiagramr/articles/G_additional_topics.html">Some additional topics</a></li>
-<li><a href="https://andreashandel.github.io/flowdiagramr/articles/H_comparison_to_other_packages.html">Comparison to other R packages</a></li>
+<li><a href="https://andreashandel.github.io/flowdiagramr/articles/E_non_model_diagrams.html" class="external-link">More model examples</a></li>
+<li><a href="https://andreashandel.github.io/flowdiagramr/articles/F_more_model_examples.html" class="external-link">Making non-model based diagrams</a></li>
+<li><a href="https://andreashandel.github.io/flowdiagramr/articles/G_additional_topics.html" class="external-link">Some additional topics</a></li>
+<li><a href="https://andreashandel.github.io/flowdiagramr/articles/H_comparison_to_other_packages.html" class="external-link">Comparison to other R packages</a></li>
 </ul>
-<p>The package website (if you are not already on it) is <a href="https://andreashandel.github.io/flowdiagramr/">here.</a> You can access all the tutorials from there, as well as some additional information.</p>
+<p>The package website (if you are not already on it) is <a href="https://andreashandel.github.io/flowdiagramr/" class="external-link">here.</a> You can access all the tutorials from there, as well as some additional information.</p>
 </div>
-<div id="citation-and-contributors" class="section level2">
-<h2 class="hasAnchor">
-<a href="#citation-and-contributors" class="anchor"></a>Citation and Contributors</h2>
-<p>This R package was developed by <a href="https://atredennick.github.io/">Andrew Tredennick</a> and <a href="https://www.andreashandel.com/">Andreas Handel</a>. It is maintained Andreas Handel. A full list of contributors and a Bibtex entry for the citation <a href="https://andreashandel.github.io/flowdiagramr/authors.html">can be found here</a>.</p>
+<div class="section level2">
+<h2 id="citation-and-contributors">Citation and Contributors<a class="anchor" aria-label="anchor" href="#citation-and-contributors"></a>
+</h2>
+<p>This R package was developed by <a href="https://atredennick.github.io/" class="external-link">Andrew Tredennick</a> and <a href="https://www.andreashandel.com/" class="external-link">Andreas Handel</a>. It is maintained Andreas Handel. A full list of contributors and a Bibtex entry for the citation <a href="https://andreashandel.github.io/flowdiagramr/authors.html" class="external-link">can be found here</a>.</p>
 <p>This project was/is partially supported by NIH grants R01 GM124280 and GM 12480-03S1.</p>
 </div>
 </div>
@@ -174,47 +174,58 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/andreashandel/flowdiagramr/">https://​github.com/​andreashandel/​flowdiagramr/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/andreashandel/flowdiagramr/issues">https://​github.com/​andreashandel/​flowdiagramr/​issues</a>
-</li>
-</ul>
-</div>
-<div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://www.andreashandel.com">Andreas Handel</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-4622-1146" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Andrew Tredennick <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-1254-3339" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="https://github.com/andreashandel/flowdiagramr/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/andreashandel/flowdiagramr/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/andreashandel/flowdiagramr/actions"><img src="https://github.com/andreashandel/flowdiagramr/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://github.com/andreashandel/flowdiagramr/actions"><img src="https://github.com/andreashandel/flowdiagramr/workflows/test-coverage/badge.svg" alt="test-coverage"></a></li>
-<li><a href="https://codecov.io/gh/andreashandel/flowdiagramr?branch=main"><img src="https://codecov.io/gh/andreashandel/flowdiagramr/branch/main/graph/badge.svg" alt="Codecov coverage"></a></li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing flowdiagramr</a></li>
+</ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>
+<a href="https://www.andreashandel.com" class="external-link">Andreas Handel</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-4622-1146" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Andrew Tredennick <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-1254-3339" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/andreashandel/flowdiagramr/actions" class="external-link"><img src="https://github.com/andreashandel/flowdiagramr/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/andreashandel/flowdiagramr/actions" class="external-link"><img src="https://github.com/andreashandel/flowdiagramr/workflows/test-coverage/badge.svg" alt="test-coverage"></a></li>
+<li><a href="https://codecov.io/gh/andreashandel/flowdiagramr?branch=main" class="external-link"><img src="https://codecov.io/gh/andreashandel/flowdiagramr/branch/main/graph/badge.svg" alt="Codecov coverage"></a></li>
+</ul>
+</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://www.andreashandel.com">Andreas Handel</a>, Andrew Tredennick.</p>
+  <p></p>
+<p>Developed by <a href="https://www.andreashandel.com" class="external-link">Andreas Handel</a>, Andrew Tredennick.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -222,6 +233,8 @@
 
   
 
+
+  
 
   </body>
 </html>
