@@ -3,10 +3,160 @@
 # finding edge cases where errors might occur.
 
 
-
 # Load flowdiagramr! ------------------------------------------------------
 
 library(flowdiagramr)
+
+######################
+# More tests, all currently showing something wrong ---------------------------------------
+######################
+
+# I think this should produce just a stand-alone R box
+# instead it has an inflow
+variables = c("S","I","R")
+flows = list(
+  S_flows = c("-b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("")
+)
+mymodel = list(variables = variables, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# The following 3 examples show problems with duplicate flows
+# Can probably be all fixed by throwing an error during checking?
+
+# The -bSI flow is a duplicate
+# seems like right now it gets processed twice.
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "-b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+#Here, with the bSI flow duplicate
+# it shows two different flows (label is there twice)
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I"),
+  I_flows = c("b*S*I","b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# this variant of including a duplicate flow produces an error
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I"),
+  I_flows = c("b*S*I","-g*I","b*S*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# this has flows in a weird/wrong form
+# basically a single outflow matched by 2 inflows
+# right now the bSI inflow term in S is ignored
+# I think logically this is a wrong model
+# we should throw an error for any flows where the number of inflows/outflows doesn't match
+# unless there is a single inflow/outflow and no matching out/in, since those are the external flows.
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+
+# this should probably throw an error too
+# user might have wanted b1SI and b2SI with flows going back and forth
+# I guess if the same flow shows up in more than one place, we should throw an error
+# I can't think of a reason why one would need exactly the same flow in more than one place
+# usually if it's an outflow somewhere, it's inflow somewhere else
+# If a user wanted say an inflow at a constant rate into compartments S and I
+# they could label it 2 different ways, e.g. "r1" and "r2".
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "b*S*I"),
+  I_flows = c("b*S*I","-g*I", "-b*S*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# this model with an outflow right back into itself
+# seems to be a poorly formulated model
+# right now an error is produced, but it's confusing
+# maybe we should do error checking to make sure no single compartment
+# has a setup like this, with flows in and out
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "-b*S", "b*S"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+
+# this currently treats S^2 as a single variable and preserves it
+# I think that's ok right now? We don't really support "to the power" yet though, do we?
+# The diagram looks ok based on the model, just wondering if/how things can go wrong with the ^ symbol
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S^2*I"),
+  I_flows = c("b*S^2*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# trying the power thing again
+# seems actually ok, but the arrow goes through a box
+# so placement of interaction arrow needs some tweaking
+# otherwise seems ok
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S^2*I"),
+  I_flows = c("b*S^2*I","-g*I"),
+  R_flows = c("g*I","-k*R*I^2")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# this is a trick one. The model is properly formulated
+# the arrow placement is somewhat off
+# i think flipping curvature for cSI would make it right
+# though the double-directional arrow between S and I is hard to read
+# such loops show up I think rarely enough that we could ask the user
+# to manually offset one of the arrows between S and I so it's clear those are
+# 2 separate loops/processes
+# UPDATE: I think back and forth might actually happen, see my updated goldilocks example
+# (now as blog post)
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "c*S*I"),
+  I_flows = c("b*S*I","-g*I", "-c*S*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
 
 
 

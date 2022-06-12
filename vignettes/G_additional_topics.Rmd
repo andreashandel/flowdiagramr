@@ -175,3 +175,12 @@ knitr::include_graphics('sirdiag2.png')
 The disadvantages of this approach is that you need to use another R package and that the cropping is very tight. The advantages are that the `magick` package can do a lot more, so there might be some additional useful tweaks possible that you can apply to your figure to get it exactly the way you want.
 
 
+## Using **`r pkg`` helper functions
+
+By now, you are familiar with the main functions 
+
+
+
+
+
+

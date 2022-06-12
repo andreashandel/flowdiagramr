@@ -19,18 +19,24 @@ implementation.
 * Additional nice-to-have style options: var_outline_width setting to adjust thickness of box borders. var_shape that might allow a few different shapes, e.g. rectangle, circle, diamond. Though that might potentially be difficult with the connection points of the arrows? var_label_text_font, etc. to allow changing the font for the various text elements.
 
 
+****************************
+2022-06-11 Andreas notes
+
+* Went through old stuff, processed/cleaned up.
+
+* I added several examples to the top of flowtester.R that currently don't work as they should.
+
+* The weird thing when having double ** happened in the goldilocks example:
+P_flows = c("k1*GL","-k2*P","-k3*P","-k4**P"), #AH: THIS LEADS TO A WEIRD PLOT
+Note that this example got removed from vignette, I turned it into a blog post, see here:
+https://www.andreashandel.com/posts/flowdiagramr-r-package/
+
+
+
 
 ****************************
 2022-06-09 Andreas notes
 
-* I accidentally defined some model settings list with providing just varlocations and not naming it.
-I wanted this
-model_settings = list(varlocations=varlocations)
-I did this:
-model_settings = list(varlocations)
-Calling prepare_diagram, it silently ignored varlocations. 
-dag_list = prepare_diagram(dag_model, model_settings)
-Should give an error message. **DONE.**
 
 * I added another example to vignette E, one arrow placement is wrong, see vignette. **DONE**
 
@@ -38,7 +44,6 @@ Should give an error message. **DONE.**
 
 * The goldilocks example in D looks good when run interactively but squished when knitted. I noticed that in general that figures look different when knitting versus printing. Same issue with the circle for P in that vignette. Do you know a way to get those closer aligned? (Might be some knitr setting, not sure).  **DONE**
 
-* At this stage, I suggest we merge the develop over to main, clean up/delete any other branches, and just work off main. This way I can ask others to install from github and play with it.  **DONE!!!!**
 
 
 
@@ -47,17 +52,7 @@ Should give an error message. **DONE.**
 ****************************
 2022-02-09 Andreas Notes
 
-DONE. All added.
-* Currently, data frames returned from prepare_diagram do not contain all columns/settings that can be changed. Add them or not?
 
-DONE (I think). Still may be some mismatching to update.
-* Need to make sure matching between column names in diagram_list data frames and inputs to update_diagram() is obvious. E.g. suggest to change color -> border_color (or outline_color) and fill -> fill_color in variable dataframe (and same names in update_diagram)
-
-DONE.
-* Not sure we want to have default values in update_diagram. Defaults should be spit out after prepare_diagram. Then in update_, only whatever the user provides is processed/updated, everything else remains untouched.
-
-ADDED. DONE.
-* Why are the logicals (show/hide) for arrows not part of update_?
 
 DONE.
 * Right now, update_diagram allows for nonsensical entries (e.g. linetype = "green"). Such nonsense can also arise if user manipulates data frames by hand. Thus, we might need a function at start of make_diagram that makes sure all columns in diag_list have the right names, and all entries are ok ones (e.g. anything that's numeric needs to be a number), color needs to be a color, etc. We could then also run that function during update_diagram to prevent nonsense (or ignore for update diagram and just do the check before making diagram).

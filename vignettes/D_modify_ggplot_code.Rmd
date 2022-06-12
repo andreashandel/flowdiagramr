@@ -1,8 +1,8 @@
 ---
-title: Modifying the ggplot2 code 
+title: Modifying the ggplot2 object or code 
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Modifying the ggplot2 code}
+  %\VignetteIndexEntry{Modifying the ggplot2 object or code}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -64,115 +64,36 @@ plot(diag2)
 
 Here is another, somewhat more involved example. It shows the overall suggested workflow, namely first using all the functionality that **`r pkg`** provides, and then further modifying the plot with `ggplot2` commands.
 
-The following example is motivated by [this blog post](https://nrennie.rbind.io/blog/2022-06-06-creating-flowcharts-with-ggplot2/) from [Nicola Rennie](https://nrennie.rbind.io/). The blog post shows how to make a nice flow diagram using `ggplot2()`. Here, we redo part of it using **`r pkg`**.
+For this one, we return to the big 7-compartment model we've been exploring in previous vignettes.
+
+Here is what we did previously.
 
 
-
-```{r}
-#the unique internal labels, just abbrevations of the full names
-variables = c("GL","P","PTH","PTC","PJR",
-              "C","CTB","CTS","CJR",
-              "B","BTH","BTS","BJR",
-              "BE")
-#the eventual names for all boxes
-varnames = c("Goldilocks",
-              "Porridge", 
-              "Too hot","Too cold","Just right",
-              "Chairs", 
-              "Too big", "Too small", "Just right",
-              "Beds", 
-              "Too hard","Too soft","Just right",
-              "Bears!")
-names(varnames) <- variables
-
-varlocations = matrix(data = c("","GL", "", "", "",
-                               "","P", "", "", "",
-                               "PTH","PTC", "PJR", "", "",
-                               "","",        "C", "", "",
-                               "","CTB",  "CTS", "CJR", "",
-                               "","", "",     "B", "",
-                               "","", "BTH", "BTS", "BJR",
-                               "","", "",     "", "BE"
-                                ),
-                               ncol = 5, byrow = TRUE)  
-
-flows = list( GL_flows = c("-k1*GL"), 
-              #P_flows = c("k1*GL","-k2*P","-k3*P","-k4**P"), #AH: THIS LEADS TO A WEIRD PLOT
-              P_flows = c("k1*GL","-k2*P","-k3*P","-k4*P"),
-              PTH_flows = c("k2*P"),
-              PTC_flows = c("k3*P"),
-              PJR_flows = c("k4*P","-k5*PJR"),
-              C_flows = c("k5*PJR","-k6*C","-k7*C","-k8*C"),
-              CTB_flows = c("k6*C"),
-              CTS_flows = c("k7*C"),
-              CJR_flows = c("k8*C","-k9*CJR"),
-              B_flows = c("k9*CJR","-k10*B","-k11*B","-k12*B"),
-              BTH_flows = c("k10*B"),
-              BTS_flows = c("k11*B"),
-              BJR_flows = c("k12*B","-k13*BJR"),
-              BE_flows = c("k13*BJR")
-        )
-```
-
-
-Prepare the model
+Define model:
 
 ```{r}
-#define model
-gl_model = list(variables = variables, flows = flows)
-#define layout
-model_settings = list(varlocations=varlocations,
-                      varbox_x_size = 3)
-#prepare model
-gl_list = prepare_diagram(gl_model, model_settings)
+variables = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
+flows = list(Sc_flows = c("-bcc*Sc*Ic","-bca*Sc*Ia","-bcp*Sc*P"), 
+             Ic_flows = c("bcc*Sc*Ic","bca*Sc*Ia","bcp*Sc*P","-gc*Ic"), 
+             Rc_flows = c("gc*Ic"),
+             Sa_flows = c("-bac*Sa*Ic","-baa*Sa*Ia","-bap*Sa*P"), 
+             Ia_flows = c("bac*Sa*Ic","baa*Sa*Ia","bap*Sa*P","-ga*Ia"), 
+             Ra_flows = c("ga*Ia"),
+             P_flows = c("rc*Ic","ra*Ia","-d*P")
+             )
+mymodel = list(variables, flows)
 ```
 
-Update the look to get closer to the original
+Define layout:
 
 ```{r}
-#set colors that are similar to original blog post
-varcolors = c("#b59dac", rep(c("#D9AF6B", "#ACACAC","#ACACAC","#ACACAC"),3), "#b59dac")
-#make them a named vector
-names(varcolors) = variables
-#update with stylings
-diagram_settings = list(var_fill_color = varcolors,
-                        var_label_text = varnames,
-                        var_label_color = c(all =  "#585c45"),
-                        flow_show_label = c(all = FALSE),
-                        var_label_size = c(all = 4))
-gl_list <- update_diagram(gl_list,diagram_settings)
-#create and plot diagram
-gl_diag <- make_diagram(gl_list)
-plot(gl_diag)
+mysettings = list( varlocations = matrix(data = c("Sc", "", "Ic", "Rc",
+                                                  "",   "P", "",   "",
+                                                  "Sa", "", "Ia", "Ra"),nrow = 3, byrow = TRUE),
+                   varspace_x_size = 2,
+                   varspace_y_size = 1
+                   )
 ```
-Now we'll further modify the plot using `ggplot2` code. 
-For some more details, see the original blog post.
-
-```{r, fig.height=10}
-# update the plot by adding ggplot2 commands
-gl2 <- gl_diag  + 
-       labs(title = "The Goldilocks Decision Tree",
-            caption = "Made with flowdiagramr") +
-       theme_void() +
-       theme(legend.position = "none",
-       plot.background = element_rect(colour = "#f2e4c1", fill = "#f2e4c1"),
-       panel.background = element_rect(colour = "#f2e4c1", fill = "#f2e4c1"),
-       plot.title = element_text(family = "serif", hjust = 0, face = "bold",
-                                  size = 20, color = "#585c45"),
-       plot.caption = element_text(family = "serif", hjust = 0,
-                                    size = 10, color = "#585c45",
-                                    margin = margin(t = 10)),
-       text = element_text(family = "serif")
-       )
-plot(gl2)
-```
-
-The results is something fairly close. The original post uses fancy fonts, we skip that here to avoid loading other packages.
-We'll just try a serif font. It works for the title and caption, not the previous text.
-It seems that can't be changed after the fact (at least I don't know how). 
-Fortunately, the method described next can change the font everywhere.
-
-I don't think this method was necessarily much faster than the one shown in the original post using the `igraph` package. It was fun to try though. And as you know by now, the strength of **`r pkg`** is really in flow diagrams that contain feedback loops.
 
 
 

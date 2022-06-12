@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Modifying the ggplot2 code • flowdiagramr</title>
+<title>Modifying the ggplot2 object or code • flowdiagramr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Modifying the ggplot2 code">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Modifying the ggplot2 object or code">
 <meta property="og:description" content="flowdiagramr">
 <meta property="og:image" content="https://andreashandel.github.io/flowdiagramr/index.html/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.5</span>
       </span>
     </div>
 
@@ -127,7 +127,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Modifying the ggplot2 code</h1>
+      <h1 data-toc-skip>Modifying the ggplot2 object or code</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/HEAD/vignettes/D_modify_ggplot_code.Rmd" class="external-link"><code>vignettes/D_modify_ggplot_code.Rmd</code></a></small>
@@ -172,97 +172,28 @@
 <h3 id="example-2">Example 2<a class="anchor" aria-label="anchor" href="#example-2"></a>
 </h3>
 <p>Here is another, somewhat more involved example. It shows the overall suggested workflow, namely first using all the functionality that <strong>flowdiagramr</strong> provides, and then further modifying the plot with <code>ggplot2</code> commands.</p>
-<p>The following example is motivated by <a href="https://nrennie.rbind.io/blog/2022-06-06-creating-flowcharts-with-ggplot2/" class="external-link">this blog post</a> from <a href="https://nrennie.rbind.io/" class="external-link">Nicola Rennie</a>. The blog post shows how to make a nice flow diagram using <code>ggplot2()</code>. Here, we redo part of it using <strong>flowdiagramr</strong>.</p>
+<p>For this one, we return to the big 7-compartment model we’ve been exploring in previous vignettes.</p>
+<p>Here is what we did previously.</p>
+<p>Define model:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#the unique internal labels, just abbrevations of the full names</span>
-<span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GL"</span>,<span class="st">"P"</span>,<span class="st">"PTH"</span>,<span class="st">"PTC"</span>,<span class="st">"PJR"</span>,
-              <span class="st">"C"</span>,<span class="st">"CTB"</span>,<span class="st">"CTS"</span>,<span class="st">"CJR"</span>,
-              <span class="st">"B"</span>,<span class="st">"BTH"</span>,<span class="st">"BTS"</span>,<span class="st">"BJR"</span>,
-              <span class="st">"BE"</span><span class="op">)</span>
-<span class="co">#the eventual names for all boxes</span>
-<span class="va">varnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Goldilocks"</span>,
-              <span class="st">"Porridge"</span>, 
-              <span class="st">"Too hot"</span>,<span class="st">"Too cold"</span>,<span class="st">"Just right"</span>,
-              <span class="st">"Chairs"</span>, 
-              <span class="st">"Too big"</span>, <span class="st">"Too small"</span>, <span class="st">"Just right"</span>,
-              <span class="st">"Beds"</span>, 
-              <span class="st">"Too hard"</span>,<span class="st">"Too soft"</span>,<span class="st">"Just right"</span>,
-              <span class="st">"Bears!"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">varnames</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">variables</span>
-
-<span class="va">varlocations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"GL"</span>, <span class="st">""</span>, <span class="st">""</span>, <span class="st">""</span>,
-                               <span class="st">""</span>,<span class="st">"P"</span>, <span class="st">""</span>, <span class="st">""</span>, <span class="st">""</span>,
-                               <span class="st">"PTH"</span>,<span class="st">"PTC"</span>, <span class="st">"PJR"</span>, <span class="st">""</span>, <span class="st">""</span>,
-                               <span class="st">""</span>,<span class="st">""</span>,        <span class="st">"C"</span>, <span class="st">""</span>, <span class="st">""</span>,
-                               <span class="st">""</span>,<span class="st">"CTB"</span>,  <span class="st">"CTS"</span>, <span class="st">"CJR"</span>, <span class="st">""</span>,
-                               <span class="st">""</span>,<span class="st">""</span>, <span class="st">""</span>,     <span class="st">"B"</span>, <span class="st">""</span>,
-                               <span class="st">""</span>,<span class="st">""</span>, <span class="st">"BTH"</span>, <span class="st">"BTS"</span>, <span class="st">"BJR"</span>,
-                               <span class="st">""</span>,<span class="st">""</span>, <span class="st">""</span>,     <span class="st">""</span>, <span class="st">"BE"</span>
-                                <span class="op">)</span>,
-                               ncol <span class="op">=</span> <span class="fl">5</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  
-
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> GL_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-k1*GL"</span><span class="op">)</span>, 
-              <span class="co">#P_flows = c("k1*GL","-k2*P","-k3*P","-k4**P"), #AH: THIS LEADS TO A WEIRD PLOT</span>
-              P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k1*GL"</span>,<span class="st">"-k2*P"</span>,<span class="st">"-k3*P"</span>,<span class="st">"-k4*P"</span><span class="op">)</span>,
-              PTH_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k2*P"</span><span class="op">)</span>,
-              PTC_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k3*P"</span><span class="op">)</span>,
-              PJR_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k4*P"</span>,<span class="st">"-k5*PJR"</span><span class="op">)</span>,
-              C_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k5*PJR"</span>,<span class="st">"-k6*C"</span>,<span class="st">"-k7*C"</span>,<span class="st">"-k8*C"</span><span class="op">)</span>,
-              CTB_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k6*C"</span><span class="op">)</span>,
-              CTS_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k7*C"</span><span class="op">)</span>,
-              CJR_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k8*C"</span>,<span class="st">"-k9*CJR"</span><span class="op">)</span>,
-              B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k9*CJR"</span>,<span class="st">"-k10*B"</span>,<span class="st">"-k11*B"</span>,<span class="st">"-k12*B"</span><span class="op">)</span>,
-              BTH_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k10*B"</span><span class="op">)</span>,
-              BTS_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k11*B"</span><span class="op">)</span>,
-              BJR_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k12*B"</span>,<span class="st">"-k13*BJR"</span><span class="op">)</span>,
-              BE_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"k13*BJR"</span><span class="op">)</span>
-        <span class="op">)</span></code></pre></div>
-<p>Prepare the model</p>
+<code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
+<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bcc*Sc*Ic"</span>,<span class="st">"-bca*Sc*Ia"</span>,<span class="st">"-bcp*Sc*P"</span><span class="op">)</span>, 
+             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bcc*Sc*Ic"</span>,<span class="st">"bca*Sc*Ia"</span>,<span class="st">"bcp*Sc*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, 
+             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
+             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bac*Sa*Ic"</span>,<span class="st">"-baa*Sa*Ia"</span>,<span class="st">"-bap*Sa*P"</span><span class="op">)</span>, 
+             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bac*Sa*Ic"</span>,<span class="st">"baa*Sa*Ia"</span>,<span class="st">"bap*Sa*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>, 
+             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
+             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rc*Ic"</span>,<span class="st">"ra*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
+             <span class="op">)</span>
+<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">variables</span>, <span class="va">flows</span><span class="op">)</span></code></pre></div>
+<p>Define layout:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#define model</span>
-<span class="va">gl_model</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
-<span class="co">#define layout</span>
-<span class="va">model_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations<span class="op">=</span><span class="va">varlocations</span>,
-                      varbox_x_size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-<span class="co">#prepare model</span>
-<span class="va">gl_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">gl_model</span>, <span class="va">model_settings</span><span class="op">)</span></code></pre></div>
-<p>Update the look to get closer to the original</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#set colors that are similar to original blog post</span>
-<span class="va">varcolors</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#b59dac"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#D9AF6B"</span>, <span class="st">"#ACACAC"</span>,<span class="st">"#ACACAC"</span>,<span class="st">"#ACACAC"</span><span class="op">)</span>,<span class="fl">3</span><span class="op">)</span>, <span class="st">"#b59dac"</span><span class="op">)</span>
-<span class="co">#make them a named vector</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">varcolors</span><span class="op">)</span> <span class="op">=</span> <span class="va">variables</span>
-<span class="co">#update with stylings</span>
-<span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>var_fill_color <span class="op">=</span> <span class="va">varcolors</span>,
-                        var_label_text <span class="op">=</span> <span class="va">varnames</span>,
-                        var_label_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span>  <span class="st">"#585c45"</span><span class="op">)</span>,
-                        flow_show_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
-                        var_label_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
-<span class="va">gl_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">gl_list</span>,<span class="va">diagram_settings</span><span class="op">)</span>
-<span class="co">#create and plot diagram</span>
-<span class="va">gl_diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">gl_list</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gl_diag</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-6-1.png" width="672"> Now we’ll further modify the plot using <code>ggplot2</code> code. For some more details, see the original blog post.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># update the plot by adding ggplot2 commands</span>
-<span class="va">gl2</span> <span class="op">&lt;-</span> <span class="va">gl_diag</span>  <span class="op">+</span> 
-       <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"The Goldilocks Decision Tree"</span>,
-            caption <span class="op">=</span> <span class="st">"Made with flowdiagramr"</span><span class="op">)</span> <span class="op">+</span>
-       <span class="fu">theme_void</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-       <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>,
-       plot.background <span class="op">=</span> <span class="fu">element_rect</span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"#f2e4c1"</span>, fill <span class="op">=</span> <span class="st">"#f2e4c1"</span><span class="op">)</span>,
-       panel.background <span class="op">=</span> <span class="fu">element_rect</span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"#f2e4c1"</span>, fill <span class="op">=</span> <span class="st">"#f2e4c1"</span><span class="op">)</span>,
-       plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>family <span class="op">=</span> <span class="st">"serif"</span>, hjust <span class="op">=</span> <span class="fl">0</span>, face <span class="op">=</span> <span class="st">"bold"</span>,
-                                  size <span class="op">=</span> <span class="fl">20</span>, color <span class="op">=</span> <span class="st">"#585c45"</span><span class="op">)</span>,
-       plot.caption <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>family <span class="op">=</span> <span class="st">"serif"</span>, hjust <span class="op">=</span> <span class="fl">0</span>,
-                                    size <span class="op">=</span> <span class="fl">10</span>, color <span class="op">=</span> <span class="st">"#585c45"</span>,
-                                    margin <span class="op">=</span> <span class="fu">margin</span><span class="op">(</span>t <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,
-       text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>family <span class="op">=</span> <span class="st">"serif"</span><span class="op">)</span>
-       <span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gl2</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
-<p>The results is something fairly close. The original post uses fancy fonts, we skip that here to avoid loading other packages. We’ll just try a serif font. It works for the title and caption, not the previous text. It seems that can’t be changed after the fact (at least I don’t know how). Fortunately, the method described next can change the font everywhere.</p>
-<p>I don’t think this method was necessarily much faster than the one shown in the original post using the <code>igraph</code> package. It was fun to try though. And as you know by now, the strength of <strong>flowdiagramr</strong> is really in flow diagrams that contain feedback loops.</p>
+<code class="sourceCode R"><span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>, <span class="st">""</span>, <span class="st">"Ic"</span>, <span class="st">"Rc"</span>,
+                                                  <span class="st">""</span>,   <span class="st">"P"</span>, <span class="st">""</span>,   <span class="st">""</span>,
+                                                  <span class="st">"Sa"</span>, <span class="st">""</span>, <span class="st">"Ia"</span>, <span class="st">"Ra"</span><span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
+                   varspace_x_size <span class="op">=</span> <span class="fl">2</span>,
+                   varspace_y_size <span class="op">=</span> <span class="fl">1</span>
+                   <span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -273,7 +204,7 @@
 <h3 id="example-1-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1-1"></a>
 </h3>
 <p>We’ll start with a very basic example. First, you define your model as usual.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the model</span>
 <span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
 <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="st">"-b*S*I"</span>, <span class="st">"-m*S"</span><span class="op">)</span>, 
@@ -281,23 +212,23 @@
              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span>, <span class="st">"-m*R"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">sirmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
 <p>Next, you prepare the model</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">sirmodel</span><span class="op">)</span></code></pre></div>
 <p>Once you have the diagram list ready, you can send it to <code>write_diagram</code>, a function that writes the full code needed to generate the diagram. You can specify the location and name for the file. If you don’t provide those, it will be stored in the current working directory under the name <code>diagram_code.R</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># write the current diagram code to a file, overwrite if it exists</span>
 <span class="fu"><a href="../reference/write_diagram.html">write_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diag_list</span>, filename <span class="op">=</span> <span class="st">'model1_diagram_code.R'</span>, always_overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>If things worked well, you should get a message telling you the location where the code was saved. The code that is generated is completely self-contained, that means you can give it to anyone, who can run it and reproduce your model figure.</p>
 <p>If you run the code that is generated, it will create the diagram structure as an object called <code>diagram_plot</code>. You can then plot or save that object (there is code at the bottom of the generated file for that).</p>
 <p>For this example, here is what you get.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">'model1_diagram_code.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <p>Having all the code that generates the figure allows you to do some fine-tuning. We provided hopefully enough comments in the code to make it clear what happens where. That said, to be able to tweak the diagram this way requires being familiar with creating figures in ggplot.</p>
 <p>Let’s assume for this example that you want to add some text below the <code>I</code> compartment. In this case, you don’t need to modify any of the existing code, just add a some code at the end. You could do this using the approach described above, without editing the <code>R</code> code. But here we’ll do it by editing the code.</p>
 <p>The following lines of code appended to the bottom of <code>sirmodel1_diagram_code.R</code>, just before the final <code>plot</code> statement, will do the trick:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#######################</span>
 <span class="co">### LAST PART OF THE GENERATED CODE BEFORE ADDITION</span>
 <span class="co">#######################</span>
@@ -327,17 +258,17 @@
 <span class="co"># plot(diagram_plot) </span>
 <span class="co"># ggsave('diagram_plot.png',diagram_plot)</span></code></pre></div>
 <p>Then save the new code, let’s call it <code>sirmodel1_diagram_code_modified.R</code>. Running the new code will add the wanted text to the diagram plot</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">'model1_diagram_code_modified.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="example-2-1">Example 2<a class="anchor" aria-label="anchor" href="#example-2-1"></a>
 </h3>
 <p>Let’s look at another example, one that requires this approach. In general, it is advisable to do as much styling and adjusting as possible using the <strong>flowdiagramr</strong> functions. If that doesn’t get you all the way, use the option described at the beginning of the vignette, or produce the code and edit it.</p>
 <p>Here is an example showing how to use the different customization options. For this example, we revisit our somewhat complex 7-compartment model. This is all the code we had previously to get a decent figure:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
 <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bcc*Sc*Ic"</span>,<span class="st">"-bca*Sc*Ia"</span>,<span class="st">"-bcp*Sc*P"</span><span class="op">)</span>, 
              Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bcc*Sc*Ic"</span>,<span class="st">"bca*Sc*Ia"</span>,<span class="st">"bcp*Sc*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, 
@@ -348,7 +279,7 @@
              P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rc*Ic"</span>,<span class="st">"ra*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
              <span class="op">)</span>
 <span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">variables</span>, <span class="va">flows</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>, <span class="st">""</span>, <span class="st">"Ic"</span>, <span class="st">"Rc"</span>,
                                                   <span class="st">""</span>,   <span class="st">"P"</span>, <span class="st">""</span>,   <span class="st">""</span>,
                                                   <span class="st">"Sa"</span>, <span class="st">""</span>, <span class="st">"Ia"</span>, <span class="st">"Ra"</span><span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
@@ -356,10 +287,10 @@
                    varspace_y_size <span class="op">=</span> <span class="fl">1</span>
                    <span class="op">)</span></code></pre></div>
 <p>Prepare the diagram with additional settings.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, <span class="va">mysettings</span><span class="op">)</span></code></pre></div>
 <p>Apply styling</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># define list of updates</span>
 <span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Sc <span class="op">=</span> <span class="st">"#cde9fa"</span>, Ic <span class="op">=</span> <span class="st">"#cde9fa"</span>, 
                                             Rc <span class="op">=</span> <span class="st">"#cde9fa"</span>, Sa <span class="op">=</span> <span class="st">"#40f9cf"</span>, 
@@ -388,52 +319,52 @@
                          <span class="op">)</span>
 <span class="va">diagram_list2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span>, <span class="va">diagram_settings</span><span class="op">)</span> </code></pre></div>
 <p>Make diagram</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list2</span><span class="op">)</span></code></pre></div>
 <p>Now, export the R code.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/write_diagram.html">write_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list2</span>,
               filename <span class="op">=</span> <span class="st">'model2_diagram_code.R'</span>,
               always_overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>If you run the code that is generated, you should see a figure like this</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">'model2_diagram_code.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-20-1.png" width="672"></p>
+<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
 <p>Let’s assume that you are mostly happy with this figure, but you want to make another tweak. This time, you want to turn the shape of the <code>P</code> box into a circle.</p>
 <p>You can find the part of the code that creates the boxes (it’s the first for loop) and modify as follows:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="do">### LAST PART OF THE GENERATED CODE BEFORE ADDITION</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(variables)) {</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="do">### YOUR NEW ADDITION</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(variables<span class="sc">$</span>name[i] <span class="sc">==</span> <span class="st">"P"</span>) {</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    diagram_plot <span class="ot">&lt;-</span> diagram_plot <span class="sc">+</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>(</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> variables[i, ],</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> xmin<span class="sc">+</span>(xmax<span class="sc">-</span>xmin)<span class="sc">/</span><span class="dv">2</span>, <span class="at">y =</span> ymin<span class="sc">+</span>(ymax<span class="sc">-</span>ymin)<span class="sc">/</span><span class="dv">2</span>), <span class="co">#centers</span></span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> variables[i, <span class="st">"outline_color"</span>],</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">fill =</span> variables[i, <span class="st">"fill_color"</span>],</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">shape =</span> <span class="dv">21</span>,</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">size =</span> <span class="dv">23</span></span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a> diagram_plot <span class="ot">&lt;-</span> diagram_plot <span class="sc">+</span></span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_rect</span>(</span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> variables[i, ],</span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">xmin =</span> xmin, <span class="at">xmax =</span> xmax, <span class="at">ymin =</span> ymin, <span class="at">ymax =</span> ymax),</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> variables[i, <span class="st">"outline_color"</span>],</span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill =</span> variables[i, <span class="st">"fill_color"</span>]</span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>       )</span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>  }</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="do">### LAST PART OF THE GENERATED CODE BEFORE ADDITION</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(variables)) {</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="do">### YOUR NEW ADDITION</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(variables<span class="sc">$</span>name[i] <span class="sc">==</span> <span class="st">"P"</span>) {</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    diagram_plot <span class="ot">&lt;-</span> diagram_plot <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>(</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> variables[i, ],</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> xmin<span class="sc">+</span>(xmax<span class="sc">-</span>xmin)<span class="sc">/</span><span class="dv">2</span>, <span class="at">y =</span> ymin<span class="sc">+</span>(ymax<span class="sc">-</span>ymin)<span class="sc">/</span><span class="dv">2</span>), <span class="co">#centers</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> variables[i, <span class="st">"outline_color"</span>],</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">fill =</span> variables[i, <span class="st">"fill_color"</span>],</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">size =</span> <span class="dv">23</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a> diagram_plot <span class="ot">&lt;-</span> diagram_plot <span class="sc">+</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_rect</span>(</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> variables[i, ],</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">xmin =</span> xmin, <span class="at">xmax =</span> xmax, <span class="at">ymin =</span> ymin, <span class="at">ymax =</span> ymax),</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> variables[i, <span class="st">"outline_color"</span>],</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill =</span> variables[i, <span class="st">"fill_color"</span>]</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>       )</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>  }</span></code></pre></div>
 <p>Now save the modified script, source it and plot the generated <code>diagram_plot</code> object to get this figure:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">'model2_diagram_code_modified.R'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diagram_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-22-1.png" width="672"></p>
+<p><img src="D_modify_ggplot_code_files/figure-html/unnamed-chunk-20-1.png" width="672"></p>
 </div>
 </div>
 <div class="section level2">
