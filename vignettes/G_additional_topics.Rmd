@@ -177,10 +177,15 @@ The disadvantages of this approach is that you need to use another R package and
 
 ## Using **`r pkg`` helper functions
 
-By now, you are familiar with the main functions 
+By now, you are familiar with the main functions of **`r pkg``, namely `prepare_diagram()`, `update_diagram()`, `make_diagram()` and `write_diagram()`. The package contains additional helper functions. Those are generally not very useful by themselves and do work behind the scenes. However, a few might be occasionally useful, therefore we describe them briefly.
+
+* `check_model_list()` - This function does what its name implies. It takes a model list, consisting of the `variables` and `flows` entry and checks if everything seems to make sense. If everything is fine, nothing is returned. Otherwise, a hopefully somewhat informative error message is provided.
+
+* `check_model_settings()` - This function also does what its name implies `r emoji::emoji('grin')`. It checks that the optional `model_settings` list one can supply to `prepare_diagram()` is correct.
+
+* `check_dataframes()` - this function takes the diagram list one gets after running `prepare_diagram()` and checks to make sure the `variables` and `flows` data frames are correct.
 
 
-
-
+These checking functions are run behind the scenes as part of the the main functions
 
 

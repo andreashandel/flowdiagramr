@@ -27,16 +27,16 @@ navbar:
       menu:
         - text: Quick Start Guide
           href: articles/A_quickstart.html
-        - text: Basic modification of diagrams
-          href: articles/B_modify_diagrams_simple.html
-        - text: Modifying the input structure
-          href: articles/C_modify_input_structure.html
-        - text: Modifying the code
+        - text: Modifying diagrams I
+          href: articles/B_prepare_diagram_settings.html
+        - text: Modifying diagrams I
+          href: articles/C_update_diagram_function.html
+        - text: Modifying the ggplot2 object or code
           href: articles/D_modify_ggplot_code.html
         - text: Making non-model based diagrams
           href: articles/E_non_model_diagrams.html
         - text: Additional diagram examples
-          href: articles/F_more_model_examples.html
+          href: articles/F_additional_examples.html
         - text: Additional topics
           href: articles/G_additional_topics.html
         - text: Comparison to other R packages
