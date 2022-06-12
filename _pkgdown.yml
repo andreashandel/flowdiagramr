@@ -29,7 +29,7 @@ navbar:
           href: articles/A_quickstart.html
         - text: Modifying diagrams I
           href: articles/B_prepare_diagram_settings.html
-        - text: Modifying diagrams I
+        - text: Modifying diagrams II
           href: articles/C_update_diagram_function.html
         - text: Modifying the ggplot2 object or code
           href: articles/D_modify_ggplot_code.html
@@ -47,11 +47,11 @@ navbar:
     news:
       text: Changelog
       href: news/index.html
-    other:
-      text: Additional Information
-      menu:
-        - text: "UseR! 2021 Presentation"
-          href: articles/otherinformation/useR2021_presentation.html
+    # other:
+    #   text: Additional Information
+    #   menu:
+    #     - text: "UseR! 2021 Presentation"
+    #       href: articles/otherinformation/useR2021_presentation.html
     github:
       icon: fab fa-github
       href: https://github.com/andreashandel/flowdiagramr
