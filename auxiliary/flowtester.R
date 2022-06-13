@@ -158,6 +158,59 @@ diagram_list <- prepare_diagram(mymodel)
 make_diagram(diagram_list)
 
 
+# covid model
+variables <- c("S", "L", "Ia", "Isu", "Isd", "C", "H", "D", "R")
+flows <- list(
+  S_flows = c("-f(t)*S"),
+  L_flows = c("f(t)*S", "-g*a*L", "-(1-g)*(1-a)*L", "-(1-g)*a*L"),
+  Ia_flows = c("g*a*L", "-s*Ia"),
+  Isu_flows = c("(1-g)*(1-a)*L", "-s*Isu"),
+  Isd_flows = c("(1-g)*a*L", "-s*v(t)*Isu"),
+  C_flows = c("s*v(t)*Isu", "-w*C*(1-h)/v(t)", "-w*C*h/v(t)"),
+  H_flows = c("w*C*h/v(t)", "-z*H*(1-m(t))", "-z*H*m(t)"),
+  D_flows = c("z*H*m(t)"),
+  R_flows = c("s*Ia", "s*Isu", "w*C*(1-h)/v(t)", "z*H*(1-m(t))")
+)
+
+model_list <- list(variables = variables, flows = flows)
+locs <- matrix(data = c("", "", "Ia", "", "", "",
+                        "S", "L", "Isu", "", "", "R",
+                        "", "", "Isd", "C", "H", "D"),
+               nrow = 3, ncol = 6, byrow = TRUE)
+setts <- list(varlocations = locs, varspace_x_size = 1, varbox_x_size = 1.5)
+mod <- prepare_diagram(model_list, model_settings = setts)
+newsettings <- list(var_outline_color = c(all = "white",
+                                          Ia = "#ef6677",
+                                          Isu = "#ef6677"),
+                    var_fill_color = c(S = "#91cdf0",
+                                       L = "#cdbb44",
+                                       Ia = "white",
+                                       Isu = "#fbd9dd",
+                                       Isd = "#ef6677",
+                                       C = "#a6a6a6",
+                                       H = "#322f8a",
+                                       D = "#842257",
+                                       R = "#50aa98"),
+                    var_label_color = c(Ia = "grey25",
+                                        Isu = "grey25"),
+                    var_label_text = c(S = "susceptible",
+                                       L = "latent",
+                                       Ia = "asymptomic\ninfectious",
+                                       Isu = "undetected\ninfectious",
+                                       Isd = "detected\ninfectious",
+                                       C = "cases",
+                                       H = "hospitalizations",
+                                       D = "deaths",
+                                       R = "recovered"),
+                    var_label_size = c(all = 4,
+                                       H = 3.5),
+                    flow_line_color = c(all = "grey15"),
+                    flow_label_text = c(all = ""),
+                    flow_ystart = c(m_wC1hvt = 0.25, m_zH1mt = 0.25),
+                    flow_yend = c(m_wC1hvt = -0.25, m_zH1mt = -0.5, m_sIa = 0.25))
+mod2 <- update_diagram(mod, newsettings)
+make_diagram(mod2)
+# ggplot2::ggsave("../../Desktop/covid-model.png", height=4, width = 10, units = "in", dpi = 360)
 
 
 # Simple SIR model for an easy test ---------------------------------------
