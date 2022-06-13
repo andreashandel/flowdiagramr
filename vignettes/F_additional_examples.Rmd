@@ -153,4 +153,7 @@ plot(mydiag)
             
 ## Example 3
 
-MORE EXAMPLES TO COME
+More examples to come. If you have a nice one that we could include, we'd love to hear about it!
+
+
+

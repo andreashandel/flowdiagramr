@@ -149,7 +149,7 @@
 <p>Next, we convert the object.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_from_modelbuilder.html">convert_from_modelbuilder</a></span><span class="op">(</span><span class="va">mbmodel</span><span class="op">)</span></code></pre></div>
-<p>If you print the content, you can see it has two lists, the required <code>model_list</code> and the optional <code>model_settings</code>. The latter contains the variable names. You can use either or both in your call to <code>prepare_diagram</code>.</p>
+<p>If you print the content, you can see it has the required <code>model_list</code> with the <code>variables</code> and <code>flows</code> objects. You can now use this <code>model_list</code> object when you call <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
 <span class="co">#&gt; $variables</span>
@@ -249,7 +249,7 @@
 <div class="section level3">
 <h3 id="set-margins-in-ggplot2">Set margins in ggplot2<a class="anchor" aria-label="anchor" href="#set-margins-in-ggplot2"></a>
 </h3>
-<p>One approach is to play with the margins of the gpplot object returend from <code>make_diagram</code> until things look ok. Here is an example:</p>
+<p>One approach is to play with the margins of the gpplot object returned from <code>make_diagram</code> until things look ok. Here is an example:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#shrink top and bottom margins</span>
 <span class="va">diag_new</span> <span class="op">&lt;-</span> <span class="va">sir_diagram</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>,<span class="fl">0</span>,<span class="op">-</span><span class="fl">7</span>,<span class="fl">0</span><span class="op">)</span>, <span class="st">"in"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -276,7 +276,7 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="using-flowdiagramr-helper-functions">Using **flowdiagramr` helper functions<a class="anchor" aria-label="anchor" href="#using-flowdiagramr-helper-functions"></a>
+<h2 id="using-flowdiagramr-helper-functions">Using <strong>flowdiagramr`</strong> helper functions<a class="anchor" aria-label="anchor" href="#using-flowdiagramr-helper-functions"></a>
 </h2>
 <p>By now, you are familiar with the main functions of **flowdiagramr<code>, namely</code>prepare_diagram()<code>,</code>update_diagram()<code>,</code>make_diagram()<code>and</code>write_diagram()`. The package contains additional helper functions. Those are generally not very useful by themselves and do work behind the scenes. However, a few might be occasionally useful, therefore we describe them briefly.</p>
 <ul>
