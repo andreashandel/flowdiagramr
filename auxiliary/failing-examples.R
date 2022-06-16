@@ -1,14 +1,11 @@
 #######################
 # Collection of examples that currently don't work right
 #######################
-
-
-
-
 library(flowdiagramr)
 
+
 #######################
-# acute virus and IR model
+# acute virus and IR model - DSAIRM
 # original version fails
 # several alternatives I tried also fail
 # seems the division component is not processed right?
@@ -32,6 +29,33 @@ model <- list(variables = variables, flows = flows)
 dlist <- prepare_diagram(model)
 diag <- make_diagram(dlist)
 plot(diag)
+
+
+#######################
+# extended bacteria model - DSAIRM
+# version with log() kinda works (surprising to me, since I didn't think we supported that yet
+# but arrow placement is poor
+# taking out log doesn't improve arrow placement
+#######################
+
+variables = c("B","I","A")
+flows = list(B_flows = c("g*B*(1-B/bmax)","-dB*B","-kI*B*I", "-kA*B*A"),
+             I_flows = c("rI*B*(1-I/imax)", "-dI*I"),
+             A_flows = c("rA*A*I/(h+I)","-dA*A") #gives pretty much same result
+             #A_flows = c("rA*A*log(I)/(h+log(I))","-dA*A") #original
+)
+model <- list(variables = variables, flows = flows)
+
+layout = list(varlocations = matrix(c("","B","",
+                                      "I","","A"),
+                                    nrow = 2, byrow = TRUE)
+)
+dlist <- prepare_diagram(model,layout)
+diag <- make_diagram(dlist)
+plot(diag)
+
+
+
 
 
 
