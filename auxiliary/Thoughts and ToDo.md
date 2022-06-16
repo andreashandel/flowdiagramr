@@ -17,7 +17,8 @@ implementation.
 
 * Maybe worth considering moving some of the flowtester examples into vignette F, this way they get run on every package check and we can easily see if stuff fails in the future (and it gives users more examples). I can do that.
 
-* Additional nice-to-have style options: var_outline_width setting to adjust thickness of box borders. var_shape that might allow a few different shapes, e.g. rectangle, circle, diamond. Though that might potentially be difficult with the connection points of the arrows? var_label_text_font, etc. to allow changing the font for the various text elements.
+* Additional nice-to-have style options: var_outline_width setting to adjust thickness of box borders. var_shape that might allow a few different shapes, e.g. rectangle, circle, diamond. Though that might potentially be difficult with the connection points of the arrows? var_label_text_font, etc. to allow changing the font for the various text elements. Different shapes would be quite nice since they are used in DAG to differentiate things. Should look into that soon(ish).
+
 
 
 ****************************
@@ -25,6 +26,8 @@ implementation.
 ****************************
 
 * Went through old stuff, processed/cleaned up.
+
+* I added a few examples to failing-examples.R that currently don't work as they should. Would be good to address those first since diagrams like that are frequent (and I'm trying to make them in flowdiagramr for a new release of DSAIRM which I need to get on CRAN in the next 1-2 weeks).
 
 * I added several examples to the top of flowtester.R that currently don't work as they should.
 
