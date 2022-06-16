@@ -1,10 +1,42 @@
-#
+#######################
 # Collection of examples that currently don't work right
-#
+#######################
+
 
 
 
 library(flowdiagramr)
+
+#######################
+# acute virus and IR model
+# original version fails
+# several alternatives I tried also fail
+# seems the division component is not processed right?
+# getting this to work is important since models like that
+# show up a lot in DSAIRM (and other places)
+#######################
+
+variables = c("U","I","V","F","T")
+flows = list(U_flows = c("-b*U*V"),
+             I_flows = c("b*U*V","-dI*I","-kT*T*I"),
+             V_flows = c("p*I", "-dV*V","-g*b*U*V"), # works
+             #V_flows = c("I/F", "-dV*V","-g*b*U*V"), # also fails
+             #V_flows = c("p*I/F", "-dV*V","-g*b*U*V"), #also fails
+             #V_flows = c("p*I/(kF*F)", "-dV*V","-g*b*U*V"), #also fails
+             #V_flows = c("p*I/(1+kF*F)","-dV*V","-g*b*U*V"), #original, fails
+             F_flows = c("rF*I","-dF*F"),
+             T_flows = c("rT*T*F","-dT*T")
+)
+model <- list(variables = variables, flows = flows)
+
+dlist <- prepare_diagram(model)
+diag <- make_diagram(dlist)
+plot(diag)
+
+
+
+
+
 
 
 #######################
