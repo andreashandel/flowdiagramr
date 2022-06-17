@@ -854,9 +854,10 @@ prepare_diagram <- function(model_list,
       # the left-most (starting) box and the min x of the right-most (ending) box
       if(from_node$ymin == to_node$ymin & from_node$xmin != to_node$xmin) {
         if(from_node$xmin > to_node$xmin) {
+          # flow from right to left if from-node to right of to-node
           simple_flows[i, "xmin"] <- from_node$xmin # left edge
           simple_flows[i, "xmax"] <- to_node$xmax  # right edge
-        } else {
+        } else {  # otherwise flow left to right
           simple_flows[i, "xmin"] <- from_node$xmax # right edge
           simple_flows[i, "xmax"] <- to_node$xmin  # left edge
         }
@@ -865,11 +866,14 @@ prepare_diagram <- function(model_list,
       }
 
       # if the start variable is above the end variable (y1 > y2) AND
-      # the start and end variables are in the same column (x = x), then
-      # we set the ymin of the arrow the bottom of the originating box and
+      # the start and end variables are in the same column (x ranges overalap),
+      # then we set the ymin of the arrow the bottom of the originating box and
       # the ymax of the arrow to the top of the terminating box. the x location
       # for start and end is set to the middle of the box (mean of top and bottom)
-      if(from_node$ymin > to_node$ymin & from_node$xmin == to_node$xmin) {
+
+      # overlap test for x ranges to apply to all vertical alignments
+      overlap_test <- from_node$xmax >= to_node$xmin & from_node$xmin <= to_node$xmax
+      if(from_node$ymin > to_node$ymin & overlap_test) {
         simple_flows[i, "xmin"] <- mean(c(from_node$xmin, from_node$xmax)) # middle
         simple_flows[i, "xmax"] <- mean(c(to_node$xmin, to_node$xmax)) # middle
         simple_flows[i, "ymin"] <- from_node$ymin # bottom
@@ -881,7 +885,7 @@ prepare_diagram <- function(model_list,
       # we set the ymin of the arrow the top of the originating box and
       # the ymax of the arrow to the bottom of the terminating box. the x location
       # for start and end is set to the middle of the box (mean of top and bottom)
-      if(from_node$ymin < to_node$ymin & from_node$xmin == to_node$xmin) {
+      if(from_node$ymin < to_node$ymin & overlap_test) {
         simple_flows[i, "xmin"] <- mean(c(from_node$xmin, from_node$xmax)) # middle
         simple_flows[i, "xmax"] <- mean(c(to_node$xmin, to_node$xmax)) # middle
         simple_flows[i, "ymin"] <- from_node$ymax # top
@@ -893,7 +897,7 @@ prepare_diagram <- function(model_list,
       # the flow start is set to the right-middle of the originating box and
       # the flow end is set to the left-middle of the terminating box. this
       # creates an angled flow arrow pointing down and to the right.
-      if(from_node$ymin > to_node$ymin & from_node$xmin < to_node$xmin) {
+      if(from_node$ymin > to_node$ymin & !overlap_test & from_node$xmin < to_node$xmin) {
         simple_flows[i, "xmin"] <- from_node$xmax # right edge
         simple_flows[i, "xmax"] <- to_node$xmin  # left edge
         simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
@@ -905,7 +909,7 @@ prepare_diagram <- function(model_list,
       # the flow start is set to the left-middle of the originating box and
       # the flow end is set to the right-middle of the terminating box. this
       # creates an angled flow arrow pointing down and to the left.
-      if(from_node$ymin > to_node$ymin & from_node$xmin > to_node$xmin) {
+      if(from_node$ymin > to_node$ymin & !overlap_test & from_node$xmin > to_node$xmin) {
         simple_flows[i, "xmin"] <- from_node$xmin # left edge
         simple_flows[i, "xmax"] <- to_node$xmax  # right edge
         simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
@@ -917,7 +921,7 @@ prepare_diagram <- function(model_list,
       # the flow start is set to the right-middle of the originating box and
       # the flow end is set to the left-middle of the terminating box. this
       # creates an angled flow arrow pointing up and to the right.
-      if(from_node$ymin < to_node$ymin & from_node$xmin < to_node$xmin) {
+      if(from_node$ymin < to_node$ymin & !overlap_test & from_node$xmin < to_node$xmin) {
         simple_flows[i, "xmin"] <- from_node$xmax # right edge
         simple_flows[i, "xmax"] <- to_node$xmin # left edge
         simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle
@@ -929,7 +933,7 @@ prepare_diagram <- function(model_list,
       # the flow start is set to the left-middle of the originating box and
       # the flow end is set to the right-middle of the terminating box. this
       # creates an angled flow arrow pointing up and to the left.
-      if(from_node$ymin < to_node$ymin & from_node$xmin > to_node$xmin) {
+      if(from_node$ymin < to_node$ymin & !overlap_test & from_node$xmin > to_node$xmin) {
         simple_flows[i, "xmin"] <- from_node$xmin # left edge
         simple_flows[i, "xmax"] <- to_node$xmax # right edge
         simple_flows[i, "ymin"] <- mean(c(from_node$ymin, from_node$ymax)) # middle

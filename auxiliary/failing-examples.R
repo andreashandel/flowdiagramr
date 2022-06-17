@@ -16,11 +16,11 @@ library(flowdiagramr)
 variables = c("U","I","V","F","T")
 flows = list(U_flows = c("-b*U*V"),
              I_flows = c("b*U*V","-dI*I","-kT*T*I"),
-             V_flows = c("p*I", "-dV*V","-g*b*U*V"), # works
-             #V_flows = c("I/F", "-dV*V","-g*b*U*V"), # also fails
-             #V_flows = c("p*I/F", "-dV*V","-g*b*U*V"), #also fails
+             # V_flows = c("p*I", "-dV*V","-g*b*U*V"), # works
+             # V_flows = c("I/F", "-dV*V","-g*b*U*V"), # also fails
+             # V_flows = c("p*I", "-dV*V","-g*b*U*V"), #also fails
              #V_flows = c("p*I/(kF*F)", "-dV*V","-g*b*U*V"), #also fails
-             #V_flows = c("p*I/(1+kF*F)","-dV*V","-g*b*U*V"), #original, fails
+             V_flows = c("p*I/(1+kF*I)","-dV*V","-g*b*U*V"), #original, fails
              F_flows = c("rF*I","-dF*F"),
              T_flows = c("rT*T*F","-dT*T")
 )
@@ -88,7 +88,7 @@ locations = matrix( c("Me","","Hb",
                     nrow = 3, byrow = TRUE)
 model_settings <- list(varlocations = locations,
                        varbox_x_size = c(2,2,1,1,3) #this produces bad default placement
-                       #varbox_x_size = c(2,2,2,2,3) #this works ok
+                       # varbox_x_size = c(2,2,2,2,3) #this works ok
 
 )
 diag_list <- prepare_diagram(model, model_settings)
