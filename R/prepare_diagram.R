@@ -366,6 +366,7 @@ prepare_diagram <- function(model_list,
   variable_names <- model_list$variables  # vector of names
   flows_list <- model_list$flows  # a list flows for each variable
 
+
   #############################################
   #############################################
   # End code block that extracts lists
@@ -432,6 +433,12 @@ prepare_diagram <- function(model_list,
   # get_vars_pars()
   #############################################
   #############################################
+
+  # if a flow element is a single empty character string, then no flow is
+  # generated and those flows can be removed here
+  first_elements <- sapply(flows_list, "[[", 1)
+  nonempty_flows <- which(first_elements != "")
+  flows_list <- flows_list[nonempty_flows]
 
   #add implicit + signs to make explicit before additional parsing
   flows_list <- add_plus_signs(flows_list)
