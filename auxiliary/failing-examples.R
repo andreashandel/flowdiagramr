@@ -19,7 +19,7 @@ flows = list(U_flows = c("-b*U*V"),
              # V_flows = c("p*I", "-dV*V","-g*b*U*V"), # works
              # V_flows = c("I/F", "-dV*V","-g*b*U*V"), # also fails
              # V_flows = c("p*I", "-dV*V","-g*b*U*V"), #also fails
-             #V_flows = c("p*I/(kF*F)", "-dV*V","-g*b*U*V"), #also fails
+             # V_flows = c("p*I/(kF*F)", "-dV*V","-g*b*U*V"), #also fails
              V_flows = c("p*I/(1+kF*I)","-dV*V","-g*b*U*V"), #original, fails
              F_flows = c("rF*I","-dF*F"),
              T_flows = c("rT*T*F","-dT*T")
@@ -27,6 +27,16 @@ flows = list(U_flows = c("-b*U*V"),
 model <- list(variables = variables, flows = flows)
 
 dlist <- prepare_diagram(model)
+diag <- make_diagram(dlist)
+plot(diag)
+
+
+## ATT testing
+model_list <- model
+layout = list(varlocations = matrix(c("U", "I", "V",
+                                      "F", "T", ""),
+                                    nrow = 2, byrow = TRUE))
+dlist <- prepare_diagram(model, layout)
 diag <- make_diagram(dlist)
 plot(diag)
 
