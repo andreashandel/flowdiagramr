@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.6</span>
       </span>
     </div>
 
@@ -66,19 +66,19 @@
       <a href="../articles/A_quickstart.html">Quick Start Guide</a>
     </li>
     <li>
-      <a href="../articles/B_modify_diagrams_simple.html">Basic modification of diagrams</a>
+      <a href="../articles/B_prepare_diagram_settings.html">Modifying diagrams I</a>
     </li>
     <li>
-      <a href="../articles/C_modify_input_structure.html">Modifying the input structure</a>
+      <a href="../articles/C_update_diagram_function.html">Modifying diagrams II</a>
     </li>
     <li>
-      <a href="../articles/D_modify_ggplot_code.html">Modifying the code</a>
+      <a href="../articles/D_modify_ggplot_code.html">Modifying the ggplot2 object or code</a>
     </li>
     <li>
       <a href="../articles/E_non_model_diagrams.html">Making non-model based diagrams</a>
     </li>
     <li>
-      <a href="../articles/F_more_model_examples.html">Additional diagram examples</a>
+      <a href="../articles/F_additional_examples.html">Additional diagram examples</a>
     </li>
     <li>
       <a href="../articles/G_additional_topics.html">Additional topics</a>
@@ -90,18 +90,6 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Additional Information
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/otherinformation/useR2021_presentation.html">UseR! 2021 Presentation</a>
-    </li>
-  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -161,7 +149,7 @@
 <p>Next, we convert the object.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_from_modelbuilder.html">convert_from_modelbuilder</a></span><span class="op">(</span><span class="va">mbmodel</span><span class="op">)</span></code></pre></div>
-<p>If you print the content, you can see it has two lists, the required <code>model_list</code> and the optional <code>model_settings</code>. The latter contains the variable names. You can use either or both in your call to <code>prepare_diagram</code>.</p>
+<p>If you print the content, you can see it has the required <code>model_list</code> with the <code>variables</code> and <code>flows</code> objects. You can now use this <code>model_list</code> object when you call <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span>
 <span class="co">#&gt; $variables</span>
@@ -261,7 +249,7 @@
 <div class="section level3">
 <h3 id="set-margins-in-ggplot2">Set margins in ggplot2<a class="anchor" aria-label="anchor" href="#set-margins-in-ggplot2"></a>
 </h3>
-<p>One approach is to play with the margins of the gpplot object returend from <code>make_diagram</code> until things look ok. Here is an example:</p>
+<p>One approach is to play with the margins of the gpplot object returned from <code>make_diagram</code> until things look ok. Here is an example:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#shrink top and bottom margins</span>
 <span class="va">diag_new</span> <span class="op">&lt;-</span> <span class="va">sir_diagram</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>,<span class="fl">0</span>,<span class="op">-</span><span class="fl">7</span>,<span class="fl">0</span><span class="op">)</span>, <span class="st">"in"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -286,6 +274,17 @@
 <p><img src="sirdiag2.png" width="90%" style="display: block; margin: auto;"></p>
 <p>The disadvantages of this approach is that you need to use another R package and that the cropping is very tight. The advantages are that the <code>magick</code> package can do a lot more, so there might be some additional useful tweaks possible that you can apply to your figure to get it exactly the way you want.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="using-flowdiagramr-helper-functions">Using <strong>flowdiagramr`</strong> helper functions<a class="anchor" aria-label="anchor" href="#using-flowdiagramr-helper-functions"></a>
+</h2>
+<p>By now, you are familiar with the main functions of **flowdiagramr<code>, namely</code>prepare_diagram()<code>,</code>update_diagram()<code>,</code>make_diagram()<code>and</code>write_diagram()`. The package contains additional helper functions. Those are generally not very useful by themselves and do work behind the scenes. However, a few might be occasionally useful, therefore we describe them briefly.</p>
+<ul>
+<li><p><code><a href="../reference/check_model_list.html">check_model_list()</a></code> - This function does what its name implies. It takes a model list, consisting of the <code>variables</code> and <code>flows</code> entry and checks if everything seems to make sense. If everything is fine, nothing is returned. Otherwise, a hopefully somewhat informative error message is provided.</p></li>
+<li><p><code><a href="../reference/check_model_settings.html">check_model_settings()</a></code> - This function also does what its name implies 😁. It checks that the optional <code>model_settings</code> list one can supply to <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> is correct.</p></li>
+<li><p><code><a href="../reference/check_dataframes.html">check_dataframes()</a></code> - this function takes the diagram list one gets after running <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> and checks to make sure the <code>variables</code> and <code>flows</code> data frames are correct.</p></li>
+</ul>
+<p>These checking functions are run behind the scenes as part of the the main functions</p>
 </div>
   </div>
 

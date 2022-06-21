@@ -55,8 +55,8 @@ Next, we convert the object.
 mymodel <- convert_from_modelbuilder(mbmodel)
 ```
 
-If you print the content, you can see it has two lists, the required `model_list` and the optional `model_settings`. The latter contains 
-the variable names. You can use either or both in your call to `prepare_diagram`. 
+If you print the content, you can see it has the required `model_list` with the `variables` and `flows` objects. 
+You can now use this `model_list` object when you call `prepare_diagram()`. 
 
 ```{r}
 print(mymodel)
@@ -133,7 +133,7 @@ As you can see, the saved image file contains a lot of unwanted white space. The
 
 ### Set margins in ggplot2
 
-One approach is to play with the margins of the gpplot object returend from `make_diagram` until things look ok. 
+One approach is to play with the margins of the gpplot object returned from `make_diagram` until things look ok. 
 Here is an example:
 
 ```{r}
@@ -173,5 +173,19 @@ knitr::include_graphics('sirdiag2.png')
 
 
 The disadvantages of this approach is that you need to use another R package and that the cropping is very tight. The advantages are that the `magick` package can do a lot more, so there might be some additional useful tweaks possible that you can apply to your figure to get it exactly the way you want.
+
+
+## Using **`r pkg``** helper functions
+
+By now, you are familiar with the main functions of **`r pkg``, namely `prepare_diagram()`, `update_diagram()`, `make_diagram()` and `write_diagram()`. The package contains additional helper functions. Those are generally not very useful by themselves and do work behind the scenes. However, a few might be occasionally useful, therefore we describe them briefly.
+
+* `check_model_list()` - This function does what its name implies. It takes a model list, consisting of the `variables` and `flows` entry and checks if everything seems to make sense. If everything is fine, nothing is returned. Otherwise, a hopefully somewhat informative error message is provided.
+
+* `check_model_settings()` - This function also does what its name implies `r emoji::emoji('grin')`. It checks that the optional `model_settings` list one can supply to `prepare_diagram()` is correct.
+
+* `check_dataframes()` - this function takes the diagram list one gets after running `prepare_diagram()` and checks to make sure the `variables` and `flows` data frames are correct.
+
+
+These checking functions are run behind the scenes as part of the the main functions
 
 

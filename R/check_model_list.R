@@ -87,7 +87,19 @@ check_model_list <- function(model_list) {
   #and a flow at a time is easy to follow along
   for (nv in 1:length(variables))
   {
-    varflows = flows[[nv]]
+    varflows <- flows[[nv]]
+    vartext <- add_plus_signs(flows[[nv]])
+    # now remove all leading characters, this way we can catch any duplicates
+    # within the same variable.
+    vartext <- substr(vartext, 2, nchar(vartext))
+
+    # check for duplicate flows
+    if(any(duplicated(vartext))) {
+      msg <- paste0("One or more flows are duplicated in ", names(flows)[nv], ".")
+      return(msg)
+    }
+
+
     for (nf in 1:length(varflows))
     {
       nowflow = varflows[nf]

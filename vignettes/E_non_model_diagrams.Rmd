@@ -205,7 +205,7 @@ varlocations = matrix(data = c("ID", "",
                                 "PT", "TR",
                                "PTR", "CPI"),
                                ncol = 2, byrow = TRUE)  
-varcolors = c("ID" = "white","PT"="yellow","TR"="blue","PTR"="orange","CPI"="white")
+varcolors = c("ID" = "white","PT"="yellow","TR"="lightblue","PTR"="orange","CPI"="white")
   
 flows = list( ID_flows = c("-k1*ID"), 
                            PT_flows = c("-k2*TR","-k3*PT"),
@@ -232,6 +232,7 @@ diagram_settings = list(var_fill_color = varcolors,
                         var_label_text = varnames,
                         var_label_color = c(all = "black"),
                         flow_show_label = c(all = FALSE),
+                        flow_line_color = c("m_k4CPI" = "red","m_k5CPI" = "red", "m_k3PT" = "red"),
                         var_label_size = c(all = 4))
 dag_list2 <- update_diagram(dag_list,diagram_settings)
 #create and plot diagram
@@ -242,7 +243,8 @@ plot(dag_diag2)
 
 # Example 4
 
-TO COME. WANT TO SHOW SOME COMPLEX ONE WITH FEEDBACK LOOPS. IDEAS? MAYBE A (SIMPLE) FOOD WEB FROM ECOLOGY?
+If you want to see another example that showcases Goldilocks eating porridge (among other things), check out a short post on my (Andreas Handel's) site [here](https://www.andreashandel.com/posts/flowdiagramr-r-package/). That example was inspired by [this blog post](https://nrennie.rbind.io/blog/2022-06-06-creating-flowcharts-with-ggplot2/). 
+
 
 
 

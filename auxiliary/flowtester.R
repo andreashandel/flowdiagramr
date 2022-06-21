@@ -3,11 +3,214 @@
 # finding edge cases where errors might occur.
 
 
-
 # Load flowdiagramr! ------------------------------------------------------
 
 library(flowdiagramr)
 
+######################
+# More tests, all currently showing something wrong ---------------------------------------
+######################
+
+# I think this should produce just a stand-alone R box
+# instead it has an inflow
+variables = c("S","I","R")
+flows = list(
+  S_flows = c("-b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("")
+)
+mymodel = list(variables = variables, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# The following 3 examples show problems with duplicate flows
+# Can probably be all fixed by throwing an error during checking?
+
+# The -bSI flow is a duplicate
+# seems like right now it gets processed twice.
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "-b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+#Here, with the bSI flow duplicate
+# it shows two different flows (label is there twice)
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I"),
+  I_flows = c("b*S*I","b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# this variant of including a duplicate flow produces an error
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I"),
+  I_flows = c("b*S*I","-g*I","b*S*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# this has flows in a weird/wrong form
+# basically a single outflow matched by 2 inflows
+# right now the bSI inflow term in S is ignored
+# I think logically this is a wrong model
+# we should throw an error for any flows where the number of inflows/outflows doesn't match
+# unless there is a single inflow/outflow and no matching out/in, since those are the external flows.
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "b*S*I"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+
+# this should probably throw an error too
+# user might have wanted b1SI and b2SI with flows going back and forth
+# I guess if the same flow shows up in more than one place, we should throw an error
+# I can't think of a reason why one would need exactly the same flow in more than one place
+# usually if it's an outflow somewhere, it's inflow somewhere else
+# If a user wanted say an inflow at a constant rate into compartments S and I
+# they could label it 2 different ways, e.g. "r1" and "r2".
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "b*S*I"),
+  I_flows = c("b*S*I","-g*I", "-b*S*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# this model with an outflow right back into itself
+# seems to be a poorly formulated model
+# right now an error is produced, but it's confusing
+# maybe we should do error checking to make sure no single compartment
+# has a setup like this, with flows in and out
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "-b*S", "b*S"),
+  I_flows = c("b*S*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+
+# this currently treats S^2 as a single variable and preserves it
+# I think that's ok right now? We don't really support "to the power" yet though, do we?
+# The diagram looks ok based on the model, just wondering if/how things can go wrong with the ^ symbol
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S^2*I"),
+  I_flows = c("b*S^2*I","-g*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# trying the power thing again
+# seems actually ok, but the arrow goes through a box
+# so placement of interaction arrow needs some tweaking
+# otherwise seems ok
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S^2*I"),
+  I_flows = c("b*S^2*I","-g*I"),
+  R_flows = c("g*I","-k*R*I^2")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+# this is a trick one. The model is properly formulated
+# the arrow placement is somewhat off
+# i think flipping curvature for cSI would make it right
+# though the double-directional arrow between S and I is hard to read
+# such loops show up I think rarely enough that we could ask the user
+# to manually offset one of the arrows between S and I so it's clear those are
+# 2 separate loops/processes
+# UPDATE: I think back and forth might actually happen, see my updated goldilocks example
+# (now as blog post)
+varlabels = c("S", "I", "R")
+flows = list(
+  S_flows = c("-b*S*I", "c*S*I"),
+  I_flows = c("b*S*I","-g*I", "-c*S*I"),
+  R_flows = c("g*I")
+)
+mymodel = list(variables = varlabels, flows = flows)
+diagram_list <- prepare_diagram(mymodel)
+make_diagram(diagram_list)
+
+
+# covid model
+variables <- c("S", "L", "Ia", "Isu", "Isd", "C", "H", "D", "R")
+flows <- list(
+  S_flows = c("-f(t)*S"),
+  L_flows = c("f(t)*S", "-g*a*L", "-(1-g)*(1-a)*L", "-(1-g)*a*L"),
+  Ia_flows = c("g*a*L", "-s*Ia"),
+  Isu_flows = c("(1-g)*(1-a)*L", "-s*Isu"),
+  Isd_flows = c("(1-g)*a*L", "-s*v(t)*Isu"),
+  C_flows = c("s*v(t)*Isu", "-w*C*(1-h)/v(t)", "-w*C*h/v(t)"),
+  H_flows = c("w*C*h/v(t)", "-z*H*(1-m(t))", "-z*H*m(t)"),
+  D_flows = c("z*H*m(t)"),
+  R_flows = c("s*Ia", "s*Isu", "w*C*(1-h)/v(t)", "z*H*(1-m(t))")
+)
+
+model_list <- list(variables = variables, flows = flows)
+locs <- matrix(data = c("", "", "Ia", "", "", "",
+                        "S", "L", "Isu", "", "", "R",
+                        "", "", "Isd", "C", "H", "D"),
+               nrow = 3, ncol = 6, byrow = TRUE)
+setts <- list(varlocations = locs, varspace_x_size = 1, varbox_x_size = 1.5)
+mod <- prepare_diagram(model_list, model_settings = setts)
+newsettings <- list(var_outline_color = c(all = "white",
+                                          Ia = "#ef6677",
+                                          Isu = "#ef6677"),
+                    var_fill_color = c(S = "#91cdf0",
+                                       L = "#cdbb44",
+                                       Ia = "white",
+                                       Isu = "#fbd9dd",
+                                       Isd = "#ef6677",
+                                       C = "#a6a6a6",
+                                       H = "#322f8a",
+                                       D = "#842257",
+                                       R = "#50aa98"),
+                    var_label_color = c(Ia = "grey25",
+                                        Isu = "grey25"),
+                    var_label_text = c(S = "susceptible",
+                                       L = "latent",
+                                       Ia = "asymptomic\ninfectious",
+                                       Isu = "undetected\ninfectious",
+                                       Isd = "detected\ninfectious",
+                                       C = "cases",
+                                       H = "hospitalizations",
+                                       D = "deaths",
+                                       R = "recovered"),
+                    var_label_size = c(all = 4,
+                                       H = 3.5),
+                    flow_line_color = c(all = "grey15"),
+                    flow_label_text = c(all = ""),
+                    flow_ystart = c(m_wC1hvt = 0.25, m_zH1mt = 0.25),
+                    flow_yend = c(m_wC1hvt = -0.25, m_zH1mt = -0.5, m_sIa = 0.25))
+mod2 <- update_diagram(mod, newsettings)
+make_diagram(mod2)
+# ggplot2::ggsave("../../Desktop/covid-model.png", height=4, width = 10, units = "in", dpi = 360)
 
 
 # Simple SIR model for an easy test ---------------------------------------
