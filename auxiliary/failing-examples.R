@@ -37,7 +37,7 @@ layout = list(varlocations = matrix(c("U", "I", "V",
                                       "F", "T", ""),
                                     nrow = 2, byrow = TRUE))
 dlist <- prepare_diagram(model, layout)
-diag <- make_diagram(dlist)
+diag <- make_diagram(dlist, with_grid = TRUE)
 plot(diag)
 
 
