@@ -526,8 +526,7 @@ prepare_diagram <- function(model_list,
       if(length(varsids) == 1) {
         if(length(unique(connectvars)) == 1) {
           if(!(unique(connectvars) %in% varsids)) {
-            connectvars <- c(connectvars, varsids)
-            # also create a flag for adding interaction, this is used below
+            # create a flag for adding interaction, this is used below
             flag <- TRUE
           }
         }
@@ -1089,9 +1088,10 @@ prepare_diagram <- function(model_list,
         # is different than the from location in the tmp data frame AND
         # the name is empty
         to_flow <- NULL  # null out to avoid errors
-        to_flow <- other_flows[other_flows$from != tmp$from &
-                                 is.na(other_flows$to) &
-                                 other_flows$name == "", ]
+        # to_flow <- other_flows[other_flows$from != tmp$from &
+        #                          is.na(other_flows$to) &
+        #                          other_flows$name == "", ]
+        to_flow <- subset(other_flows, orig_name == tmp$orig_name)
         # this can sometimes produce a data frame with an NA row because of
         # an NA in the fields used above in the logical constraint, that
         # row is dropped here
@@ -1127,8 +1127,7 @@ prepare_diagram <- function(model_list,
         # first find the to_flow, which will be the flow with a to variable
         # that is not the current from variable and the name is empty
         to_flow <- NULL  # null out to avoid errors
-        to_flow <- other_flows[other_flows$to != tmp$from &
-                                 other_flows$name == "", ]
+        to_flow <- other_flows[other_flows$orig_name == tmp$name, ]
         # this can sometimes produce a data frame with an NA row because of
         # an NA in the fields used above in the logical constraint, that
         # row is dropped here

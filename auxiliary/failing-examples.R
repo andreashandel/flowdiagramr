@@ -26,18 +26,18 @@ flows = list(U_flows = c("-b*U*V"),
 )
 model <- list(variables = variables, flows = flows)
 
-dlist <- prepare_diagram(model)
-diag <- make_diagram(dlist)
-plot(diag)
+# dlist <- prepare_diagram(model)
+# diag <- make_diagram(dlist)
+# plot(diag)
 
 
 ## ATT testing
 model_list <- model
-layout = list(varlocations = matrix(c("U", "I", "V",
+model_settings = list(varlocations = matrix(c("U", "I", "V",
                                       "F", "T", ""),
                                     nrow = 2, byrow = TRUE))
-dlist <- prepare_diagram(model, layout)
-diag <- make_diagram(dlist)
+dlist <- prepare_diagram(model_list, model_settings)
+diag <- make_diagram(dlist, with_grid = TRUE)
 plot(diag)
 
 
