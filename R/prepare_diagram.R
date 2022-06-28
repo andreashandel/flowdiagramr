@@ -527,6 +527,7 @@ prepare_diagram <- function(model_list,
         if(length(unique(connectvars)) == 1) {
           if(!(unique(connectvars) %in% varsids)) {
             # create a flag for adding interaction, this is used below
+            connectvars <- unique(c(connectvars, varsids))
             flag <- TRUE
           }
         }

@@ -40,6 +40,51 @@ dlist <- prepare_diagram(model_list, model_settings)
 diag <- make_diagram(dlist, with_grid = TRUE)
 plot(diag)
 
+# try to make it prettier...
+model_settings = list(varlocations = matrix(c("", "V", "",
+                                              "U", "", "I",
+                                              "F", "", "T"),
+                                            nrow = 3, byrow = TRUE))
+dlist <- prepare_diagram(model_list, model_settings)
+diag <- make_diagram(dlist, with_grid = TRUE)
+plot(diag)
+update_diagram(diagram_list = dlist)
+newd <- update_diagram(
+  diagram_list = dlist,
+  diagram_settings = list(
+    flow_xstart = c(i_pI1kFI = 0.5, i_bUV = 0.5),
+    flow_ystart = c(
+      i_pI1kFI = 0.5,
+      i_rTTF = -0.25,
+      i_rFI = -0.25,
+      i_bUV = -0.75
+    ),
+    flow_xend = c(
+      i_rFI = -0.5,
+      i_bUV = 0.5,
+      i_gbUV = -0.5
+    ),
+    flow_yend = c(i_rFI = 0.5),
+    flow_ylabel = c(
+      i_rFI = -0.2,
+      i_rTTF = -0.1,
+      i_bUV = -0.75
+    ),
+    flow_xlabel = c(
+      i_pI1kFI = 0.9,
+      i_kTTI = 1.1,
+      i_bUV = 1.6,
+      i_gbUV = -0.25,
+      e_dVV = 0.55
+    ),
+    flow_curvature = c(
+      i_kTTI = 1,
+      i_rFI = 0.1,
+      i_bUV = -0.8
+    )
+  )
+)
+make_diagram(newd)
 
 #######################
 # extended bacteria model - DSAIRM
