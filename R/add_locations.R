@@ -36,7 +36,8 @@ add_locations <- function(variables,
 
   #### box sizes on grid
   # to start, make a matrix of the size of each variable, one for
-  # x size and one for y size
+  # x size and one for y size, these are used later in combination
+  # with midpoints to define the rectangle coordinates.
   xsize_mat <- matrix(data = NA,  # default size
                       nrow = num_rows,
                       ncol = num_cols,
@@ -49,6 +50,7 @@ add_locations <- function(variables,
                       byrow = TRUE)
   ysize_mat[match(names(varbox_y_size), varlocations)] <- varbox_y_size
 
+
   #### x mins, mids, and maxs
   # create a vector of distances, assuming start point left edge of box 1 at 0.
   # This is a vector that starts with the first box size and then alternates
@@ -56,6 +58,8 @@ add_locations <- function(variables,
   # First, process for situations with more than one column in varlocations
   if(ncol(varlocations) > 1) {
     # take the maximum xsize to form the grid so that everything is centered
+    # these means each invisible column is the same width, which is the max
+    # encountered. then box size is defined appropriately according to args.
     x_size <- max(xsize_mat, na.rm = TRUE)
 
     # define the number of widths needed as number of columns (boxes) plus
@@ -68,8 +72,8 @@ add_locations <- function(variables,
     # take cumulative sum of the distance vector to get distance from 0
     x_from_zero <- cumsum(dist_vector)
 
-    # every odd element is the end of a box, which we can use to fill
-    # in the locations matrix elements by row with x-max locations
+    # every odd element is the middle of a box, which we can use to fill
+    # in the locations matrix elements by row with xmid locations
     xmids <- matrix(x_from_zero[c(TRUE, FALSE)],
                     nrow = nrow(varlocations),
                     ncol = ncol(varlocations),
@@ -92,7 +96,9 @@ add_locations <- function(variables,
   #### y mins, mids, and maxs
   ## First process is if there is more than one row
   if(num_rows > 1) {
-    # take the maximum ysize to form the grid so that everything is centered
+    # take the maximum xsize to form the grid so that everything is centered
+    # these means each invisible row is the same height, which is the max
+    # encountered. then box size is defined appropriately according to args.
     y_size <- max(ysize_mat, na.rm = TRUE)
 
     # add row(s) in ysize_mat for spacing in y direction
