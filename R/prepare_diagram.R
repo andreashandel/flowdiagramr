@@ -1335,8 +1335,8 @@ prepare_diagram <- function(model_list,
       targ <- compare[, "id"]
       ids <- which(targ == test)
       if(length(ids) > 0) {
-        newname <- paste(tmp[ids, "name"], collapse = "_")
-        new_tmp[i, "name"] <- newname
+        newname <- paste(tmp[ids, "orig_name"], collapse = "_")
+        new_tmp[i, "orig_name"] <- newname
       }
     }
     new_flows <- dplyr::bind_rows(new_flows, new_tmp)

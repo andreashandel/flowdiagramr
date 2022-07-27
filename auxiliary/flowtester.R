@@ -279,10 +279,10 @@ varlocs3 = matrix(data = c("S", "",
 
 # two rows, with I in second row
 model_settings = list(varlocs1)
-make_diagram(prepare_diagram(model_list, model_settings))
+make_diagram(prepare_diagram(model_list, model_settings))  #should error
 
 model_settings = list(varlocations = varlocs1)
-make_diagram(prepare_diagram(model_list, model_settings))
+make_diagram(prepare_diagram(model_list, model_settings))  #should work
 
 # vertical diagram -- not always the best looking
 model_settings = list(varlocations = varlocs2, varspace_y_size = 1)
