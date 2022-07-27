@@ -298,8 +298,8 @@ prepare_diagram <- function(model_list,
 
   # determine number of variables, rows and columns
   nvars = length(model_list$variables)
-  nrows = nrow(model_settings$varlocations)
-  ncols = ncol(model_settings$varlocations)
+  nrows = nrow(model_settings$varlocations)  # varlocations is a matrix
+  ncols = ncol(model_settings$varlocations)  # varlocations is a matrix
 
   # if user didn't provide a value, we use default of 1
   # as many box size numbers as there are boxes/variables
@@ -436,11 +436,14 @@ prepare_diagram <- function(model_list,
 
   # if a flow element is a single empty character string, then no flow is
   # generated and those flows can be removed here
-  first_elements <- sapply(flows_list, "[[", 1)
-  nonempty_flows <- which(first_elements != "")
-  flows_list <- flows_list[nonempty_flows]
+  # if a variable in the flows_list has no flows, then the result is a
+  # variable box with no flows in or out.
+  first_elements <- sapply(flows_list, "[[", 1)  # first element of each sublist
+  nonempty_flows <- which(first_elements != "")  # find non-blank elements
+  flows_list <- flows_list[nonempty_flows]  # keep the non-blank list elements
 
   #add implicit + signs to make explicit before additional parsing
+  # implicit + signs are added to any flow without an explicit "-" in front
   flows_list <- add_plus_signs(flows_list)
 
   #turns flow list into matrix, adding NA
@@ -456,7 +459,9 @@ prepare_diagram <- function(model_list,
     flowmat <- t(flowmat)
   }
 
-  #strip leading +/- from flows and replace with no space
+  #strip leading +/- from flows and replace with no space, this way we have
+  #character vectors of the flows without leading math, which we need for
+  #processing labels
   flowmatred <- sub("\\+|-","",flowmat)
 
   #extract only the + or - signs from flows so we know the direction
@@ -473,7 +478,7 @@ prepare_diagram <- function(model_list,
   for(i in 1:nrow(flowmatred))
   {
     varflowsfull <- flowmat[i, ] #all flows with sign for current variable
-    varflows <- flowmatred[i, ] #all flows for current variable
+    varflows <- flowmatred[i, ] #all flows for current variable, without sign
     varflowsigns <- signmat[i, ] #signs of flows for current variable
 
     #remove NA entries because these only show up to match the
@@ -488,16 +493,21 @@ prepare_diagram <- function(model_list,
       currentsign <- varflowsigns[j]
 
       # Find the variables for which the current flow appears, i.e., what
-      # other rows of the matrix does it show up in.
+      # other rows of the matrix does it show up in. It may not show up in
+      # any other rows, and this logic is evaluated later on.
       connectvars <- unname(which(flowmatred == currentflow, arr.ind = TRUE)[,1])
 
       # Extract the variable names in the flow expression
       varspars <- unique(get_vars_pars(currentflowfull))
-      varfirsts <- substr(varspars, start = 1, stop = 1)  #get first letters
+
+      # Extract first letter of each character string. As evaluated below, if
+      # the first letter is UPPERCASE, then it is a variable. Otherwise, is
+      # is a parameter.
+      varfirsts <- substr(varspars, start = 1, stop = 1)
 
       # varfirsts is now a vector of the variables AND parameters that
       # are in the flow math
-      # extract any variables that start with an upper case letter
+      # extract any strings that start with an upper case letter
       # (state variable) and are present in the current flow. So, if P1 and P2
       # are in this flow they both will be found.
       varvec <- varspars[which(varfirsts %in% LETTERS)]  #variables are UPPERCASE
@@ -511,7 +521,8 @@ prepare_diagram <- function(model_list,
       ## information. After this, the flows diagram can be created effectively.
       ## For clarity, this chunk is kept separate from the creation of the
       ## flows data frame below; thus, one may notice redundant IF/THEN
-      ## statements.
+      ## statements. The connectvars vector is the backbone that defines
+      ## which variables each flow connects/interacts with.
       ####
       # add a connecting variable if the expression contains only one
       # variable, is only in one row of the flow matrix, and the row in
@@ -522,11 +533,14 @@ prepare_diagram <- function(model_list,
       #  2. The expression occurs in one, and only one, row of the flow matrix
       #  3. That the variable in the expression is not the variable row in which
       #     the expression occurs in the flow matrix.
+      # This ends up being an internal feedback loop mediated by another
+      # variable's state.
       # Note that these must be nested.
       if(length(varsids) == 1) {
         if(length(unique(connectvars)) == 1) {
           if(!(unique(connectvars) %in% varsids)) {
             # create a flag for adding interaction, this is used below
+            connectvars <- unique(c(connectvars, varsids))
             flag <- TRUE
           }
         }
@@ -537,7 +551,7 @@ prepare_diagram <- function(model_list,
       # data frame is created using this information below in a separate
       # if/then block
       if(currentsign == "+") {
-        # If the flow does not show up in any other rows (connectvars == 1)
+        # If the flow does not show up in any other rows (length(connectvars) == 1)
         # and there are no variables in the flow math, then the only connecting
         # variable is the current (i) variable
         if(length(connectvars) == 1 & length(varvec) == 0) {
@@ -589,6 +603,8 @@ prepare_diagram <- function(model_list,
         if(length(connectvars) == 1) {
           cn <- NA  #placeholder for unspecified compartment (deaths, typically)
         } else {
+          #flow goes to the variable that is not i because variable i is the
+          #donating variable.
           cn <- connectvars[connectvars!=i]
         }
 
@@ -799,15 +815,8 @@ prepare_diagram <- function(model_list,
     flows <- dplyr::bind_rows(flows, ints, intflows)
   }
 
-  # Keep only distinct rows, but take extra care to avoid uniquness due to
-  # original name. this takes a bit of bookkeeping
-  tmp <- flows
-  tmp$orig_name <- NULL
-  tmp <- unique(tmp)
-  tmp$orig_name <- flows[rownames(tmp), "orig_name"]
-  rm(flows)
-  flows <- tmp
-  rm(tmp)
+  # Keep only distinct rows.
+  flows <- unique(flows)
 
   #########################################
   #########################################
@@ -1088,9 +1097,6 @@ prepare_diagram <- function(model_list,
         # is different than the from location in the tmp data frame AND
         # the name is empty
         to_flow <- NULL  # null out to avoid errors
-        # to_flow <- other_flows[other_flows$from != tmp$from &
-        #                          is.na(other_flows$to) &
-        #                          other_flows$name == "", ]
         to_flow <- subset(other_flows, orig_name == tmp$orig_name)
         # this can sometimes produce a data frame with an NA row because of
         # an NA in the fields used above in the logical constraint, that
@@ -1107,7 +1113,7 @@ prepare_diagram <- function(model_list,
 
         # For these complex interactions, we assume a horizontal flow
         # arrangment, user must update if more complex
-        if(from_node$xlabel > mean(c(to_flow$xmax, to_flow$xmax))) {
+        if(from_node$xlabel > mean(c(to_flow$xmin, to_flow$xmax))) {
           # this implies and arrow going from right to left
           tmp$xmin <- from_node$xmin # left edge
           tmp$xmax <- mean(c(to_flow$xmin, to_flow$xmax)) # middle
@@ -1314,6 +1320,30 @@ prepare_diagram <- function(model_list,
                               "xlabel",
                               "ylabel")]
 
+  # one final check for duplicated arrows within types that need to have names
+  # combined so that only one arrow is plotted
+  new_flows <- data.frame()
+  # find flows within type that overlap and combine down to one line
+  for(do_type in unique(flows$type)) {
+    tmp <- subset(flows, type == do_type)
+    new_tmp <- tmp
+    compare <- tmp[ , c("xstart", "xend", "ystart", "yend")]
+    compare$id <- with(compare, paste0(xstart, xend, ystart, yend))
+    # loop over compare to find which rows are duplicated with which
+    for(i in 1:nrow(compare)) {
+      test <- compare[i, "id"]
+      targ <- compare[, "id"]
+      ids <- which(targ == test)
+      if(length(ids) > 0) {
+        newname <- paste(tmp[ids, "orig_name"], collapse = "_")
+        new_tmp[i, "orig_name"] <- newname
+      }
+    }
+    new_flows <- dplyr::bind_rows(new_flows, new_tmp)
+  }
+  new_flows$id <- NA_real_
+  flows <- unique(new_flows)
+  flows$id <- 1:nrow(flows)
 
   # remove row names, those are confusing
   rownames(flows) <- NULL

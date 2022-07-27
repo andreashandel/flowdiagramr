@@ -40,6 +40,51 @@ dlist <- prepare_diagram(model_list, model_settings)
 diag <- make_diagram(dlist, with_grid = TRUE)
 plot(diag)
 
+# try to make it prettier...
+model_settings = list(varlocations = matrix(c("", "V", "",
+                                              "U", "", "I",
+                                              "F", "", "T"),
+                                            nrow = 3, byrow = TRUE))
+dlist <- prepare_diagram(model_list, model_settings)
+diag <- make_diagram(dlist, with_grid = TRUE)
+plot(diag)
+update_diagram(diagram_list = dlist)
+newd <- update_diagram(
+  diagram_list = dlist,
+  diagram_settings = list(
+    flow_xstart = c(i_pI1kFI = 0.5, i_bUV = 0.5),
+    flow_ystart = c(
+      i_pI1kFI = 0.5,
+      i_rTTF = -0.25,
+      i_rFI = -0.25,
+      i_bUV = -0.75
+    ),
+    flow_xend = c(
+      i_rFI = -0.5,
+      i_bUV = 0.5,
+      i_gbUV = -0.5
+    ),
+    flow_yend = c(i_rFI = 0.5),
+    flow_ylabel = c(
+      i_rFI = -0.2,
+      i_rTTF = -0.1,
+      i_bUV = -0.75
+    ),
+    flow_xlabel = c(
+      i_pI1kFI = 0.9,
+      i_kTTI = 1.1,
+      i_bUV = 1.6,
+      i_gbUV = -0.25,
+      e_dVV = 0.55
+    ),
+    flow_curvature = c(
+      i_kTTI = 1,
+      i_rFI = 0.1,
+      i_bUV = -0.8
+    )
+  )
+)
+make_diagram(newd)
 
 #######################
 # extended bacteria model - DSAIRM
@@ -51,21 +96,37 @@ plot(diag)
 variables = c("B","I","A")
 flows = list(B_flows = c("g*B*(1-B/bmax)","-dB*B","-kI*B*I", "-kA*B*A"),
              I_flows = c("rI*B*(1-I/imax)", "-dI*I"),
-             A_flows = c("rA*A*I/(h+I)","-dA*A") #gives pretty much same result
-             #A_flows = c("rA*A*log(I)/(h+log(I))","-dA*A") #original
+             # A_flows = c("rA*A*I/(h+I)","-dA*A") #gives pretty much same result
+             A_flows = c("rA*A*log(I)/(h+log(I))","-dA*A") #original
 )
-model <- list(variables = variables, flows = flows)
+model_list <- list(variables = variables, flows = flows)
 
-layout = list(varlocations = matrix(c("","B","",
+model_settings = list(varlocations = matrix(c("","B","",
                                       "I","","A"),
                                     nrow = 2, byrow = TRUE)
 )
-dlist <- prepare_diagram(model,layout)
+dlist <- prepare_diagram(model_list, model_settings)
 diag <- make_diagram(dlist)
 plot(diag)
 
-
-
+# make it pretty
+model_settings = list(varlocations = matrix(c("B","","I",
+                                              "","A",""),
+                                            nrow = 2, byrow = TRUE))
+dlist <- prepare_diagram(model_list, model_settings)
+make_diagram(dlist)
+update_diagram(diagram_list = dlist)
+newd <- update_diagram(
+  diagram_list = dlist,
+  diagram_settings = list(
+    flow_xstart = c(e_dBB = -0.2, e_kIBI = 0.2, i_rAAlogIhlogI = 0.2),
+    flow_xend = c(e_dBB = -0.2, e_kIBI = 0.2, i_kIBI = 0.2, i_rAAlogIhlogI = 0.3),
+    flow_ystart = c(i_kIBI = 0.2, i_rAAlogIhlogI = -0.5),
+    flow_yend = c(i_rAAlogIhlogI = -0.2),
+    flow_xlabel = c(e_dBB = -0.6, i_kABA = -0.6),
+    flow_ylabel = c(i_kABA = -0.5, i_kIBI = 0.4, i_rAAlogIhlogI = -0.3),
+    flow_curvature = c(i_kABA = -0.5, i_kIBI = 0)))
+make_diagram(newd)
 
 
 
@@ -91,7 +152,7 @@ flows <- list(Me_flows = c("-k1*Me","k2*Ac"),
               Di_flows = c("-k3*Di","k5*So"),
               So_flows = c("-k4*So","-k5*So")
 )
-model <- list(variables = variables, flows = flows)
+model_list <- list(variables = variables, flows = flows)
 locations = matrix( c("Me","","Hb",
                       "Ac","","Di",
                       "","So",""),
@@ -101,7 +162,7 @@ model_settings <- list(varlocations = locations,
                        # varbox_x_size = c(2,2,2,2,3) #this works ok
 
 )
-diag_list <- prepare_diagram(model, model_settings)
+diag_list <- prepare_diagram(model_list, model_settings)
 
 styling = list(var_fill_color = c(all = "white", Me = "yellow", Hb = "lightblue"),
                var_label_text = varnames,
