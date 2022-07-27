@@ -19,6 +19,14 @@ implementation.
 
 * Additional nice-to-have style options: var_outline_width setting to adjust thickness of box borders. var_shape that might allow a few different shapes, e.g. rectangle, circle, diamond. Though that might potentially be difficult with the connection points of the arrows? var_label_text_font, etc. to allow changing the font for the various text elements. Different shapes would be quite nice since they are used in DAG to differentiate things. Should look into that soon(ish).
 
+****************************
+2022-07-27 Andreas notes
+****************************
+
+* Implemented all DSAIRM models with flowdiagramr, see DSAIRM_diagram_generation.R script. Most currently do not work. Need to figure out how much we can enhance DSAIRM to get more working. Might not be able to get them all to work.
+
+* Should we place the label for interaction flows close to the tip of that flow? Seems like that is where it might often look best.
+
 
 
 ****************************

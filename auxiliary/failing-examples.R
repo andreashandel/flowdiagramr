@@ -25,10 +25,14 @@ flows = list(U_flows = c("-b*U*V"),
              T_flows = c("rT*T*F","-dT*T")
 )
 model <- list(variables = variables, flows = flows)
-
-# dlist <- prepare_diagram(model)
-# diag <- make_diagram(dlist)
-# plot(diag)
+layout = list(varlocations = matrix(c("U","","I","","V",
+                                      "","F","","T",""),
+                                    nrow = 2, byrow = TRUE),
+              varspace_x_size = 0.3
+)
+dlist <- prepare_diagram(model,layout)
+diag <- make_diagram(dlist)
+plot(diag)
 
 
 ## ATT testing
