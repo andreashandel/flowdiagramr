@@ -438,9 +438,9 @@ prepare_diagram <- function(model_list,
   # generated and those flows can be removed here
   # if a variable in the flows_list has no flows, then the result is a
   # variable box with no flows in or out.
-  first_elements <- sapply(flows_list, "[[", 1)  # first element of each sublist
-  nonempty_flows <- which(first_elements != "")  # find non-blank elements
-  flows_list <- flows_list[nonempty_flows]  # keep the non-blank list elements
+  # first_elements <- sapply(flows_list, "[[", 1)  # first element of each sublist
+  # nonempty_flows <- which(first_elements != "")  # find non-blank elements
+  # flows_list <- flows_list[nonempty_flows]  # keep the non-blank list elements
 
   #add implicit + signs to make explicit before additional parsing
   # implicit + signs are added to any flow without an explicit "-" in front
@@ -683,9 +683,13 @@ prepare_diagram <- function(model_list,
           flows[nrow(flows), "out_interaction"] <- TRUE
         }
       }
-
     }  #end loop over all flows for a given variable
   }  #end loop over all variables
+
+  # At this point, we can remove any rows where the name is blank. These
+  # are only included above so that proper indexing through flowmat is
+  # done.
+  flows <- subset(flows, name != "")
 
   ############################################################
   ############################################################
@@ -772,10 +776,45 @@ prepare_diagram <- function(model_list,
   # column is added to identify which variable is linking the interaction
   # (the link is the "from" variable in the physical flow).
   if(nrow(ints) > 0) {  # avoids errors if no interactions
+
+    # Here we check for "mediation" flows: flows that should go directly from
+    # from one variable to another, but are not physical flows. For example,
+    # infected cells produce new virus, but it is not a flow of cells, per se.
+    # Mediation flows can be identified as interaction flows where
+    # is.na(from) == TRUE. This is because the flow only shows up as a positive
+    # in one row of the flow matrix AND it contains variables beyond the one
+    # whose math it shows up in. The from variable is set to the first variable
+    # encountered, and then the typical logic after this sets the other
+    # variable encountered as the linking variable.
+    ##
+    ##
+    ## TODO(andrew): make a "mediation" column to indicate that this should
+    ##               be a dashed line by default?
+    ##
+    ##
+    for(i in 1:nrow(ints)) {
+      if(is.na(ints[i,"from"])) {
+        # extract variable ids in the flowmath
+        v <- get_vars_pars(ints[i, "name"])  #strips away math, leaving just letters
+        vf <- substr(v, start = 1, stop = 1)  #get first letters
+        v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
+        ids <- variables[variables$name %in% v, "id"]  #extract the relevant numeric ids
+        ints[i, "from"] <- ids[1]  # set from variable to first var encountered
+
+        # if the mediation flow is added, we can remove this from the main
+        # flows because it will look like an external flow with from == NA.
+        fid <- which(flows$orig_name == ints[i, "name"])
+        if(length(fid) > 0) {
+          flows <- flows[-fid, ]
+        }
+      }
+    }
+
     intflows <- ints  # duplicate
     intflows$name <- ""  # strip the name from the physical flow
     intflows <- unique(intflows)  # just keep unique flows
     intflows$interaction <- FALSE  # reset interaction to false b/c a main flow now
+
 
     # Redefine the from, to, and link columns for the interaction
     # arrows. "to" is NA until updated to meet at the center
@@ -793,10 +832,10 @@ prepare_diagram <- function(model_list,
         ints[i, "linkfrom"] <- NA
         ints[i, "linkto"] <- NA
       } else if(ints[i, "to"] == ints[i, "from"]) {
-        # If the to and from nodes are tha same, this is a feedback
-        # flow that does not require a link, so NAs.
-        ints[i, "linkfrom"] <- NA
-        ints[i, "linkto"] <- NA
+          # If the to and from nodes are the same, this is a feedback
+          # flow that does not require a link, so NAs.
+          ints[i, "linkfrom"] <- NA
+          ints[i, "linkto"] <- NA
       } else {
         # In all other cases, the "link from" node will be the current
         # "from" node and the "link to" node will be the current "to" node.

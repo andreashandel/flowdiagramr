@@ -451,6 +451,15 @@ diagram_list <- prepare_diagram(model_list)
 make_diagram(diagram_list)
 
 
+# test an inflow
+variables <- c("A", "B", "C")
+flows = list(A_flows = c(""),
+             B_flows = c("r*A*C"),
+             C_flows = c(""))
+model_list <- list(variables = variables, flows = flows)
+make_diagram(prepare_diagram(model_list))
+
+
 # environmental transmission
 variables = c("S","I","R","P")
 flows = list(S_flows = c("n","-m*S","-bI*S*I", "-bP*S*P"),

@@ -12,8 +12,8 @@ library(flowdiagramr)
 variables = c("U","I","V")
 flows = list(U_flows = c("n","-dU*U","-b*U*V"),
              I_flows = c("b*U*V","-dI*I"),
-             V_flows = c("p*I", "-dV*V")
-#             V_flows = c("p*I", "-dV*V","-g*b*U*V") #original
+             # V_flows = c("p*I", "-dV*V")
+            V_flows = c("p*I", "-dV*V","-g*b*U*V") #original
 )
 model <- list(variables = variables, flows = flows)
 layout = list(varlocations = matrix(c("U","I","V"),
@@ -33,13 +33,12 @@ variables = c("U","I","V","F","T")
 flows = list(U_flows = c("-b*U*V"),
              I_flows = c("b*U*V","-dI*I","-kT*T*I"),
              V_flows = c("p*I/(1+kF*F)","-dV*V","-g*b*U*V"), #original, fails
-             #V_flows = c("p*I/(1+kF*I)","-dV*V","-g*b*U*V"), #this version (which makes no biological sense) works
              F_flows = c("rF*I","-dF*F"),
              T_flows = c("rT*T*F","-dT*T")
              )
 model <- list(variables = variables, flows = flows)
 layout = list(varlocations = matrix(c("U","","I","","V",
-                                      "","F","","T",""),
+                                      "","T","","F",""),
                             nrow = 2, byrow = TRUE),
               varspace_x_size = 0.3
               )
