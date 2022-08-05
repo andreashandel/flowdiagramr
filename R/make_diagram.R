@@ -121,7 +121,8 @@ make_diagram <- function (diagram_list, with_grid = FALSE) {
   }
 
   for(i in 1:nrow(flows)) {
-    if(flows[i, "show_label"] == TRUE) {
+    # only plot the label if the arrow is plotted, too
+    if(flows[i, "show_label"] == TRUE & flows[i, "show_arrow"] == TRUE) {
       diagram_plot <- diagram_plot +  # now add the flow labels to the canvas
         geom_text(
           data = flows[i, ],

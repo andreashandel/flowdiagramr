@@ -1,3 +1,6 @@
+
+
+
 library(flowdiagramr)
 
 # For hand-drawn diagrams see the 'model' section/tab for each app
@@ -46,7 +49,28 @@ dlist <- prepare_diagram(model,layout)
 diag <- make_diagram(dlist)
 plot(diag)
 
-
+# make it pretty
+update_diagram(dlist)
+newlist <- update_diagram(
+  diagram_list = dlist,
+  diagram_settings = list(
+    flow_curvature = c(i_pI1kFF = 0, i_rTTF = 0, i_rFI = -0.2),
+    flow_ystart = c(m_rTTF = -0.25, i_kTTI = 0.5, i_rFI = -0.25),
+    flow_yend = c(m_rTTF = -0.75, i_rTTF = -1, i_rFI = 0.5),
+    flow_xstart = c(m_rTTF = 0.75, i_kTTI = -0.5),
+    flow_xend = c(m_rTTF = 0.25, i_rTTF = 1, i_kTTI = -0.5, i_rFI = 0.15),
+    flow_xlabel = c(i_rTTF = 0.5, i_rFI = 0.6, e_dII = 0.15, i_pI1kFF = -0.1),
+    flow_ylabel = c(i_rTTF = -0.7, i_rFI = 0.5, i_pI1kFF = -0.25),
+    flow_show_arrow = c(i_gbUV = FALSE, e_gbUV = FALSE)
+  )
+)
+# remove the gBUV row
+finallist <- newlist
+# trm <- which(finallist$flows$name %in% c("i_gbUV", "e_gbUV"))
+# finallist$flows <- finallist$flows[-trm, ]
+make_diagram(finallist)
+make_diagram(newlist)
+make_diagram(dlist)
 
 
 
