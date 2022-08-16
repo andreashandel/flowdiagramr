@@ -527,7 +527,7 @@ prepare_diagram <- function(model_list,
       # add a connecting variable if the expression contains only one
       # variable, is only in one row of the flow matrix, and the row in
       # which it occurs does not correspond with the variable in the expression.
-      # this is rare. but can occur in predator-prey style models.
+      # this is rare, but can occur in predator-prey style models.
       # the multiple condition IF statement checks:
       #  1. That there is one, and only one, variable in the expression
       #  2. The expression occurs in one, and only one, row of the flow matrix
@@ -765,6 +765,7 @@ prepare_diagram <- function(model_list,
   # after interactions are given appropriate settings.
   flows$linkfrom <- NA  #empty column for interaction flows, but needed for binding
   flows$linkto <- NA  #empty column for interaction flows, but needed for binding
+  flows$generator <- FALSE  #empty column for interaction/generation flows, but needed for binding
   ints <- subset(flows, interaction == TRUE)
   flows <- subset(flows, interaction == FALSE)
 
@@ -786,12 +787,6 @@ prepare_diagram <- function(model_list,
     # whose math it shows up in. The from variable is set to the first variable
     # encountered, and then the typical logic after this sets the other
     # variable encountered as the linking variable.
-    ##
-    ##
-    ## TODO(andrew): make a "mediation" column to indicate that this should
-    ##               be a dashed line by default?
-    ##
-    ##
     for(i in 1:nrow(ints)) {
       if(is.na(ints[i,"from"])) {
         # extract variable ids in the flowmath
@@ -800,6 +795,7 @@ prepare_diagram <- function(model_list,
         v <- v[which(vf %in% LETTERS)]  #subset to upper case VARIABLES
         ids <- variables[variables$name %in% v, "id"]  #extract the relevant numeric ids
         ints[i, "from"] <- ids[1]  # set from variable to first var encountered
+        ints[i, "generator"] <- TRUE
 
         # if the mediation flow is added, we can remove this from the main
         # flows because it will look like an external flow with from == NA.
@@ -1231,6 +1227,35 @@ prepare_diagram <- function(model_list,
   flows$xlabel <- with(flows, (xmax + xmin) / 2)
   flows$ylabel <- with(flows, (ymax + ymin) / 2)
 
+  ####
+  ## Update 'generator' column for single interaction flows
+  ####
+  # here we do one final update to the generator column to move some flows
+  # that are conviently identified as 'direct_interactions' to be identified
+  # as 'generator' instead. these are identified by flows where:
+  #    direct_interaction == TRUE  AND
+  #    is.na(linkto) == TRUE  AND
+  #    is.na(linkfrom) == TRUE  AND
+  #    is.na(to) == FALSE  AND
+  #    is.na(from) == FALSE
+  gen_ids <- which(flows$direct_interaction == TRUE &
+                     is.na(flows$linkto) == TRUE &
+                     is.na(flows$linkfrom) == TRUE &
+                     is.na(flows$from) == FALSE &
+                     is.na(flows$to) == FALSE)
+  if(length(gen_ids) > 0) {
+    flows[gen_ids, "direct_interaction"] <- FALSE
+    flows[gen_ids, "generator"] <- TRUE
+  }
+
+  # flows cannot be both an interaction and a generator, default back to
+  # interaction because that is the most common meaning
+  gen_int_ids <- which(flows$generator == TRUE & flows$interaction == TRUE)
+  if(length(gen_int_ids) > 0) {
+    flows[gen_int_ids, "generator"] <- FALSE
+  }
+
+
   # set default curvature of all flows, this also applies label updates
   # to curved arrows, so we do this before making minor adjustments below
   flows <- set_curvature(variables, flows)
@@ -1304,11 +1329,15 @@ prepare_diagram <- function(model_list,
   # external flows are not interactions and either the to or from id NA
   flows$type <- ifelse(flows$interaction == FALSE & (is.na(flows$to) | is.na(flows$from)),
                        "external", flows$type)
+  # generators are id'd in the generator column
+  flows$type <- ifelse(flows$generator == TRUE, "generator", flows$type)
   flows$interaction <- NULL  # remove the interaction column
+  flows$generator <- NULL  # remove the generator column
 
   #sort flows by type, main/external/interaction
   flows <- dplyr::bind_rows(
     flows[flows$type == "main", ],
+    flows[flows$type == "generator", ],
     flows[flows$type == "external", ],
     flows[flows$type == "interaction", ]
   )

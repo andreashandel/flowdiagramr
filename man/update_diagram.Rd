@@ -92,7 +92,8 @@ of the \code{variables$name}. For visual aesthetics for flows (e.g.,
 line_color), the user must specify a named vector, where allowable
 names are: "all" (color for all lines,  regardless of type or name),
 "main" (color for main flows), "interaction" (color for interaction
-flows), "external" (color for external flows), or the name of one of the
+flows), "external" (color for external flows), "generator" (color for
+all generator flows), or the name of one of the
 character values in \code{flows$name}. If a mix of type and name are supplied,
 the type is applied first and name-specific values are applied second.
 See examples.

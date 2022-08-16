@@ -82,7 +82,8 @@
 #'     line_color), the user must specify a named vector, where allowable
 #'     names are: "all" (color for all lines,  regardless of type or name),
 #'     "main" (color for main flows), "interaction" (color for interaction
-#'     flows), "external" (color for external flows), or the name of one of the
+#'     flows), "external" (color for external flows), "generator" (color for
+#'     all generator flows), or the name of one of the
 #'     character values in `flows$name`. If a mix of type and name are supplied,
 #'     the type is applied first and name-specific values are applied second.
 #'     See examples.
@@ -385,7 +386,7 @@ update_diagram <- function(diagram_list, diagram_settings = NULL) {
 
       # now apply name specific settings -- not "all" or any possible types
       named_settings <- this_setting[names(this_setting) != "all"]
-      avail_types <- c("main", "external", "interaction")
+      avail_types <- c("main", "external", "interaction", "generator")
       named_settings <- named_settings[!names(named_settings) %in% avail_types]
       test <- which(!names(named_settings) %in% flows$name)
       if(length(test) > 0) {

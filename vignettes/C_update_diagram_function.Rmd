@@ -374,7 +374,7 @@ Next, let's move some arrows around to make things look less messy. Note that st
 # define list of updates
 diagram_settings4 = list(flow_curvature = c(i_baaSaIa = -0.5, i_bccScIc = 0.5, 
                                             i_bacSaIc = -0.3, i_bcaScIa = 0.3,
-                                            i_raIa = 0, i_rcIc = 0, i_bcpScP = -0.5),
+                                            g_raIa = 0, g_rcIc = 0, i_bcpScP = -0.5),
                          flow_xstart = c(i_bcpScP = -0.5, i_bapSaP = -0.5),
                          flow_ystart = c(i_bcpScP = -0.5, i_bapSaP = -0.5, i_bacSaIc = -1),
                          flow_line_color = c(i_baaSaIa = "#40f9cf", i_bacSaIc = "#cde9fa",
@@ -397,10 +397,10 @@ Now we need to adjust the labels
 # define list of updates
 diagram_settings5 = list(flow_xlabel = c(i_bcaScIa = 0.75, i_bacSaIc = 3.5, 
                                          i_bapSaP = -0.75, i_bcpScP = -2,
-                                         i_raIa = -0.25, i_rcIc = 0.5), 
+                                         g_raIa = -0.25, g_rcIc = 0.5), 
                          flow_ylabel = c(i_bcaScIa = -2.5, i_bacSaIc = -0.25, 
                                          i_baaSaIa = -2, e_dP = -0.5,
-                                         i_rcIc = -0.75)
+                                         g_rcIc = -0.75)
                         )
 diagram_list9 <- update_diagram(diagram_list8, diagram_settings5) 
 model_plot9 <- make_diagram(diagram_list9, with_grid = FALSE)

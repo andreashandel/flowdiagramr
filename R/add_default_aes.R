@@ -20,6 +20,7 @@ add_default_aes <- function(variables, flows) {
   flows$line_size <- 0.7
   flows$line_type <- ifelse(flows$type == "interaction", "longdash", "solid")
   flows$line_type <- ifelse(flows$type == "external", "dotted", flows$line_type)
+  flows$line_type <- ifelse(flows$type == "generator", "longdash", flows$line_type)
   flows$label_text <- flows$name
   flows$name <- flows$orig_name
   flows$orig_name <- NULL

@@ -241,7 +241,7 @@ diagram_settings = list(var_fill_color = c(Sc = "#cde9fa", Ic = "#cde9fa",
                          var_label_color = c(all = "black"),
                          flow_curvature = c(i_baaSaIa = -0.5, i_bccScIc = 0.5, 
                                             i_bacSaIc = -0.3, i_bcaScIa = 0.3,
-                                            i_raIa = 0, i_rcIc = 0, i_bcpScP = -0.5),
+                                            g_raIa = 0, g_rcIc = 0, i_bcpScP = -0.5),
                          flow_xstart = c(i_bcpScP = -0.5, i_bapSaP = -0.5),
                          flow_ystart = c(i_bcpScP = -0.5, i_bapSaP = -0.5, i_bacSaIc = -1),
                          flow_line_color = c(interaction = "#f94075",
@@ -252,10 +252,10 @@ diagram_settings = list(var_fill_color = c(Sc = "#cde9fa", Ic = "#cde9fa",
                          flow_line_size = c(all = 1.25),
                          flow_xlabel = c(i_bcaScIa = 0.75, i_bacSaIc = 3.5, 
                                          i_bapSaP = -0.75, i_bcpScP = -2,
-                                         i_raIa = -0.25, i_rcIc = 0.5), 
+                                         g_raIa = -0.25, g_rcIc = 0.5), 
                          flow_ylabel = c(i_bcaScIa = -2.5, i_bacSaIc = -0.25, 
                                          i_baaSaIa = -2, e_dP = -0.5,
-                                         i_rcIc = -0.75,m_gcIc = 0.25, m_gaIa = 0.25)
+                                         g_rcIc = -0.75,m_gcIc = 0.25, m_gaIa = 0.25)
                          )
 diagram_list2 <- update_diagram(diagram_list, diagram_settings) 
 ```

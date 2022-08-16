@@ -54,13 +54,13 @@ update_diagram(dlist)
 newlist <- update_diagram(
   diagram_list = dlist,
   diagram_settings = list(
-    flow_curvature = c(i_pI1kFF = 0, i_rTTF = 0, i_rFI = -0.2),
-    flow_ystart = c(m_rTTF = -0.25, i_kTTI = 0.5, i_rFI = -0.25),
-    flow_yend = c(m_rTTF = -0.75, i_rTTF = -1, i_rFI = 0.5),
+    flow_curvature = c(i_pI1kFF = 0, i_rTTF = 0, g_rFI = -0.2),
+    flow_ystart = c(m_rTTF = -0.25, i_kTTI = 0.5, g_rFI = -0.25),
+    flow_yend = c(m_rTTF = -0.75, i_rTTF = -1, g_rFI = 0.5),
     flow_xstart = c(m_rTTF = 0.75, i_kTTI = -0.5),
-    flow_xend = c(m_rTTF = 0.25, i_rTTF = 1, i_kTTI = -0.5, i_rFI = 0.15),
-    flow_xlabel = c(i_rTTF = 0.5, i_rFI = 0.6, e_dII = 0.15, i_pI1kFF = -0.1),
-    flow_ylabel = c(i_rTTF = -0.7, i_rFI = 0.5, i_pI1kFF = -0.25),
+    flow_xend = c(m_rTTF = 0.25, i_rTTF = 1, i_kTTI = -0.5, g_rFI = 0.15),
+    flow_xlabel = c(i_rTTF = 0.5, g_rFI = 0.35, e_dII = 0.15, i_pI1kFF = 0.25),
+    flow_ylabel = c(i_rTTF = -0.7, g_rFI = 0.5, i_pI1kFF = -0.4),
     flow_show_arrow = c(i_gbUV = FALSE, e_gbUV = FALSE)
   )
 )
