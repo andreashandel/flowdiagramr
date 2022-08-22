@@ -106,14 +106,14 @@ plot(diag)
 variables = c("U","I","V","F","T","B","A")
 flows = list(U_flows = c("n","-dU*U","-b*U*V"),
              I_flows = c("b*U*V","-dI*I","-kT*T*I"),
-             V_flows = c("p*I","-dV*V","-b*U*V","-kA*A*V"),
-             F_flows = c("pF","-dF*F","-V*gF*F"),
+             #V_flows = c("p*I","-dV*V","-b*U*V","-kA*A*V"),
+             V_flows = c("p*I/(1+sF*F)","-dV*V","-b*U*V","-kA*A*V"), #original, not working
+             F_flows = c("pF","-dF*F","V*gF*(fmax-F)/(V+hV)"), #original, not working
+             #F_flows = c("pF","-dF*F","-V*gF*F"),
              T_flows = c("gT*F*V","rT*T"),
              B_flows = c("gB*B*F"),
-             A_flows = c("rA*B","-dA*A","-kA*A*V")
-             #V_flows = c("p*I/(1+sF*F)","-dV*V","-b*U*V","-kA*A*V"), #original, not working
-             #F_flows = c("pF","-dF*F","V*gF*(fmax-F)/(V+hV)"), #original, not working
              #B_flows = c("gB*B*F*V/(F*V+hF)"), #original doesn't work
+             A_flows = c("rA*B","-dA*A","-kA*A*V")
 )
 model <- list(variables = variables, flows = flows)
 layout = list(varlocations = matrix(c("U","I","V",
