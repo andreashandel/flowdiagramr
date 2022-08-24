@@ -598,7 +598,9 @@ prepare_diagram <- function(model_list,
       # If current sign is negative, it is an outflow and goes either to the
       # connectvar that is not equal to the current variable id (indexed by i)
       # or it goes to NA (this happens when there is an unspecified death
-      # compartment, for example).
+      # compartment, for example). in the code below, the 'cn' object is used
+      # to store the "to" variable id. it is either NA or one of the ids in the
+      # 'connectvars' vector.
       if(currentsign == "-") {
         if(length(connectvars) == 1) {
           cn <- NA  #placeholder for unspecified compartment (deaths, typically)
@@ -661,6 +663,7 @@ prepare_diagram <- function(model_list,
 
           # update interaction flag if flag exists
           if(exists("flag")) {
+            # the flag for interactions was set above
             tmp$direct_interaction <- TRUE
 
             # remove flag from the environment
@@ -713,7 +716,8 @@ prepare_diagram <- function(model_list,
   flows <- unique(flows)
 
   # keep original name for all flows. this gets overwritten when the interaction
-  # flow is added. but we want to retain this for later for the user
+  # flow is added. but we want to retain this for later for the user and to
+  # match up interaction flows.
   flows$orig_name <- flows$name
 
   # Parse the meaning of duplicate labels. Usually this is a complex mix
@@ -746,7 +750,7 @@ prepare_diagram <- function(model_list,
   # Duplicate rows with out_interaction == TRUE to assign the interaction
   # flag and then remove the out_interaction flag. This is done to
   # achieve appropriate labeling. We want the physical flow to have no label
-  # and for the interaction arrow to carry to the label.
+  # and for the interaction arrow to carry the label.
   repdf <- subset(flows, out_interaction == TRUE)
   if(nrow(repdf) != 0) {  # avoids errors if no rows
     repdf$interaction <- TRUE  # set this to TRUE for linetypes
@@ -1030,8 +1034,7 @@ prepare_diagram <- function(model_list,
   ####
   ## Out flows
   ####
-  # These flows only have a from id and to is NA
-  # also cannot be a interaction
+  # These flows only have a from id, to is NA, linkfrom is NA, and no interaction
   out_flows <- subset(flows, !is.na(from) & is.na(to) &
                               is.na(linkfrom) & interaction == FALSE)
 
@@ -1389,7 +1392,9 @@ prepare_diagram <- function(model_list,
                               "ylabel")]
 
   # one final check for duplicated arrows within types that need to have names
-  # combined so that only one arrow is plotted
+  # combined so that only one arrow is plotted. if this is not done, then
+  # duplicate arrows are plotted on top of one another. the diagram looks
+  # correct, but the heavy arrow is not pleasing.
   new_flows <- data.frame()
   # find flows within type that overlap and combine down to one line
   for(do_type in unique(flows$type)) {
