@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.7</span>
       </span>
     </div>
 
@@ -128,111 +128,169 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The previous tutorials/vignettes showed several example models as way to illustrate how to use <strong>flowdiagramr</strong>.</p>
-<p>This vignette is a (growing) list of additional model examples, which might be helpful to illustrate further ways of using the package.</p>
+<p>The previous tutorials/vignettes showed several example models as way
+to illustrate how to use <strong>flowdiagramr</strong>.</p>
+<p>This vignette is a (growing) list of additional model examples, which
+might be helpful to illustrate further ways of using the package. It
+shows both additional examples, and also illustrates several tricks and
+approaches to get things looking decently, even if
+<strong>flowdiagramr</strong> is not fully cooperating.</p>
+<div class="section level3">
+<h3 id="dsairm-models">DSAIRM Models<a class="anchor" aria-label="anchor" href="#dsairm-models"></a>
+</h3>
+<p>The following set of models and diagrams comes from our <a href="https://ahgroup.github.io/DSAIRM/" class="external-link">DSAIRM package</a>, which is
+used to teach within-host modeling for immunology. We do not discuss the
+meaning of the models and equations here. If you want to see that,
+please check out the DSAIRM package. We only show the model diagrams
+here as further examples. Doing so, we also show how one can</p>
+<div class="section level4">
+<h4 id="virus-model">Virus model<a class="anchor" aria-label="anchor" href="#virus-model"></a>
+</h4>
+<p>This is a model for a basic virus infection.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"U"</span>,<span class="st">"I"</span>,<span class="st">"V"</span><span class="op">)</span></span>
+<span><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>U_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n"</span>,<span class="st">"-dU*U"</span>,<span class="st">"-b*U*V"</span><span class="op">)</span>,</span>
+<span>             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*U*V"</span>,<span class="st">"-dI*I"</span><span class="op">)</span>,</span>
+<span>             <span class="co"># V_flows = c("p*I", "-dV*V")</span></span>
+<span>            V_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p*I"</span>, <span class="st">"-dV*V"</span>,<span class="st">"-g*b*U*V"</span><span class="op">)</span> <span class="co">#original</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></span>
+<span><span class="va">layout</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"U"</span>,<span class="st">"I"</span>,<span class="st">"V"</span><span class="op">)</span>,</span>
+<span>                                    nrow <span class="op">=</span> <span class="fl">1</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>              varspace_x_size <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">model</span>,<span class="va">layout</span><span class="op">)</span></span>
+<span><span class="va">diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">dlist</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></span></code></pre></div>
+<p><img src="F_additional_examples_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
+</div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="example-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1"></a>
 </h2>
-<p><strong>Currently not working, is here to remind us to extend to more then 2 variables.</strong></p>
-<p>This is a model that describes the infection or vaccination dynamics of an acute viral infection in a simplified manner. The model tracks virus/antigen (H), and a few immune response components. These are the differential equations for the model.</p>
+<p><strong>Currently not working, is here to remind us to extend to more
+then 2 variables.</strong></p>
+<p>This is a model that describes the infection or vaccination dynamics
+of an acute viral infection in a simplified manner. The model tracks
+virus/antigen (H), and a few immune response components. These are the
+differential equations for the model.</p>
 <p><span class="math display">\[
 \begin{aligned}
-\textrm{Antigen} \qquad  \dot{H} &amp; =   - kAH - c H \\ 
-\textrm{Interferon} \qquad \dot{F} &amp; = p - m F +  q (F_{max} - F) \frac{H}{H + n}   \\
-\textrm{CD4 T-cells} \qquad \dot{T} &amp; =  \frac{FHT}{FH + h_T} + g_TT   \\
-\textrm{B-cells} \qquad \dot{B} &amp; =  g B(\frac{r_H HF }{s_1 + HF} + \frac{r_T TF}{s_2 + TF})    \\
+\textrm{Antigen} \qquad  \dot{H} &amp; =   - kAH - c H \\
+\textrm{Interferon} \qquad \dot{F} &amp; = p - m F +  q (F_{max} - F)
+\frac{H}{H + n}   \\
+\textrm{CD4 T-cells} \qquad \dot{T} &amp; =  \frac{FHT}{FH + h_T} +
+g_TT   \\
+\textrm{B-cells} \qquad \dot{B} &amp; =  g B(\frac{r_H HF }{s_1 + HF} +
+\frac{r_T TF}{s_2 + TF})    \\
 \textrm{Antibodies} \qquad \dot{A} &amp; =   r B  - kAH - d A   \\
 \end{aligned}
 \]</span></p>
-<p>This is the same information formatted as a structure that can be used as input for <code>prepare_diagram</code>.</p>
-<p><strong>PREPARE_DIAGRAM CURRENTLY ERRORS OUT ON THIS. IT SHOULD THEORETICALLY WORK, I THINK THE MODEL AND FLOWS ARE PROPERLY SPECIFIED. BUT THE FLOWS MIGHT BE TOO COMPLEX TO PARSE?</strong></p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>,<span class="st">"F"</span>,<span class="st">"T"</span>,<span class="st">"B"</span>,<span class="st">"A"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>H_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-kA*A*H"</span>, <span class="st">"-dH*H"</span><span class="op">)</span>,
-             F_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pF"</span> ,<span class="st">"-dF*F"</span>, <span class="st">"H/H + hH) * gF * (fmax - F)"</span><span class="op">)</span>,
-             T_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F*H*T/(F*H + hT)"</span> ,<span class="st">"+ gT*T"</span><span class="op">)</span>,
-             B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gB * B * rH*F*H/(s1+F*H)"</span>,  <span class="st">"gB * B *rT*F*T/(s2+F*T)"</span> <span class="op">)</span>,
-             A_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rA*B"</span>,  <span class="st">"- dA*A"</span>, <span class="st">"- kA*A*H"</span><span class="op">)</span> 
-             <span class="op">)</span>
-<span class="va">model_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span>
-<span class="co">#diagram_list &lt;- prepare_diagram(model_list)</span>
-<span class="co">#varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")</span></code></pre></div>
+<p>This is the same information formatted as a structure that can be
+used as input for <code>prepare_diagram</code>.</p>
+<p><strong>PREPARE_DIAGRAM CURRENTLY ERRORS OUT ON THIS. IT SHOULD
+THEORETICALLY WORK, I THINK THE MODEL AND FLOWS ARE PROPERLY SPECIFIED.
+BUT THE FLOWS MIGHT BE TOO COMPLEX TO PARSE?</strong></p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>,<span class="st">"F"</span>,<span class="st">"T"</span>,<span class="st">"B"</span>,<span class="st">"A"</span><span class="op">)</span></span>
+<span><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>H_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-kA*A*H"</span>, <span class="st">"-dH*H"</span><span class="op">)</span>,</span>
+<span>             F_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pF"</span> ,<span class="st">"-dF*F"</span>, <span class="st">"H/H + hH) * gF * (fmax - F)"</span><span class="op">)</span>,</span>
+<span>             T_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F*H*T/(F*H + hT)"</span> ,<span class="st">"+ gT*T"</span><span class="op">)</span>,</span>
+<span>             B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gB * B * rH*F*H/(s1+F*H)"</span>,  <span class="st">"gB * B *rT*F*T/(s2+F*T)"</span> <span class="op">)</span>,</span>
+<span>             A_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rA*B"</span>,  <span class="st">"- dA*A"</span>, <span class="st">"- kA*A*H"</span><span class="op">)</span> </span>
+<span>             <span class="op">)</span></span>
+<span><span class="va">model_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></span>
+<span><span class="co">#diagram_list &lt;- prepare_diagram(model_list)</span></span>
+<span><span class="co">#varnames = c("Antigen","Interferon","T-cells","B-cells","Antibody")</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example-2">Example 2<a class="anchor" aria-label="anchor" href="#example-2"></a>
 </h2>
-<p>This is the simple predator-prey model, with some styling applied.</p>
-<p>First, we specify the model again. We did a bit of renaming here, what we called pathogen before is now called bacteria and labeled <strong>B</strong> and the Immune response is abbreviated as <strong>I</strong>. Parameter names have been adjusted accordingly, but otherwise it is the same model you already saw.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># specify the model</span>
-<span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>,<span class="st">"I"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+g*B*(1-B/bmax)"</span>, <span class="st">"-dB*B"</span>, <span class="st">"-k*B*I"</span><span class="op">)</span>,
-             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+r*B*I"</span>, <span class="st">"-dI*I"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">ppmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
-<p>Next, we prepare the input list of data frames</p>
+<p>This is the simple predator-prey model, with some styling
+applied.</p>
+<p>First, we specify the model again. We did a bit of renaming here,
+what we called pathogen before is now called bacteria and labeled
+<strong>B</strong> and the Immune response is abbreviated as
+<strong>I</strong>. Parameter names have been adjusted accordingly, but
+otherwise it is the same model you already saw.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># prepare inputs </span>
-<span class="va">pp_diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span></code></pre></div>
-<p>Now we apply some styling:</p>
+<code class="sourceCode R"><span><span class="co"># specify the model</span></span>
+<span><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>,<span class="st">"I"</span><span class="op">)</span></span>
+<span><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>B_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+g*B*(1-B/bmax)"</span>, <span class="st">"-dB*B"</span>, <span class="st">"-k*B*I"</span><span class="op">)</span>,</span>
+<span>             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+r*B*I"</span>, <span class="st">"-dI*I"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ppmodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></span></code></pre></div>
+<p>Next, we prepare the input list of data frames</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># get element names</span>
-<span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">pp_diagram_list</span><span class="op">)</span>
-<span class="co">#&gt; No settings were provided; returning names of elements in diagram_list dataframes.</span>
-<span class="co">#&gt; Variables: B, I</span>
-<span class="co">#&gt; Flows: m_gB1Bbmax, m_rBI, e_dII, e_dBB, e_kBI, i_kBI, i_rBI</span>
-
-<span class="co"># define adjusted settings for layout</span>
-<span class="va">diagram_settings1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>B <span class="op">=</span> <span class="st">"#6aa4c8"</span>, I <span class="op">=</span> <span class="st">"#eb5600"</span><span class="op">)</span>,
-    var_label_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="st">"gray"</span><span class="op">)</span>,
-    var_label_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,
-    flow_label_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span>,
-    flow_label_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,
-    flow_line_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"grey50"</span>, interaction <span class="op">=</span> <span class="st">"grey25"</span><span class="op">)</span>,
-    flow_line_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"solid"</span>, interaction <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span>,
-    flow_line_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="fl">1.2</span>, interaction <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">pp_diag_list2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">pp_diagram_list</span>, <span class="va">diagram_settings1</span><span class="op">)</span>
-
-<span class="co"># make diagram with adjusted settings</span>
-<span class="va">diag2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_diag_list2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></code></pre></div>
-<p><img src="F_additional_examples_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
-<p>For the next diagram, we are turning off the interactions and only show the main flows, that means processes that actually move some entity (here bacteria and immune response) from one state to the next. Any settings pertaining to the styling of the not shown components are ignored.</p>
+<code class="sourceCode R"><span><span class="co"># prepare inputs </span></span>
+<span><span class="va">pp_diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span><span class="op">)</span></span></code></pre></div>
+<p>Now we apply some styling:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># specify custom settings for the diagram layout</span>
-<span class="va">diagram_settings2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    flow_show_arrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>interaction <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,  
-    flow_show_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>external <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">pp_diag_list3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">pp_diag_list2</span>, <span class="va">diagram_settings2</span><span class="op">)</span>
-<span class="va">diag3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_diag_list3</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diag3</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># get element names</span></span>
+<span><span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">pp_diagram_list</span><span class="op">)</span></span>
+<span><span class="co">#&gt; No settings were provided; returning names of elements in diagram_list dataframes.</span></span>
+<span><span class="co">#&gt; Variables: B, I</span></span>
+<span><span class="co">#&gt; Flows: m_gB1Bbmax, m_rBI, e_dII, e_dBB, e_kBI, i_kBI, i_rBI</span></span>
+<span></span>
+<span><span class="co"># define adjusted settings for layout</span></span>
+<span><span class="va">diagram_settings1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    var_fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>B <span class="op">=</span> <span class="st">"#6aa4c8"</span>, I <span class="op">=</span> <span class="st">"#eb5600"</span><span class="op">)</span>,</span>
+<span>    var_label_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="st">"gray"</span><span class="op">)</span>,</span>
+<span>    var_label_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
+<span>    flow_label_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span>,</span>
+<span>    flow_label_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span>
+<span>    flow_line_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"grey50"</span>, interaction <span class="op">=</span> <span class="st">"grey25"</span><span class="op">)</span>,</span>
+<span>    flow_line_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">"solid"</span>, interaction <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span>,</span>
+<span>    flow_line_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>main <span class="op">=</span> <span class="fl">1.2</span>, interaction <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pp_diag_list2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">pp_diagram_list</span>, <span class="va">diagram_settings1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># make diagram with adjusted settings</span></span>
+<span><span class="va">diag2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_diag_list2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diag2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="F_additional_examples_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
-<p>As you can see, not showing the interactions or not labeling some of the flows doesn’t produce a very useful diagram. In general, as long as it is decently readable, you should show and label all components of your model.</p>
+<p>For the next diagram, we are turning off the interactions and only
+show the main flows, that means processes that actually move some entity
+(here bacteria and immune response) from one state to the next. Any
+settings pertaining to the styling of the not shown components are
+ignored.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># specify custom settings for the diagram layout</span></span>
+<span><span class="va">diagram_settings2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    flow_show_arrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>interaction <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,  </span>
+<span>    flow_show_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>external <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pp_diag_list3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">pp_diag_list2</span>, <span class="va">diagram_settings2</span><span class="op">)</span></span>
+<span><span class="va">diag3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">pp_diag_list3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">diag3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="F_additional_examples_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+<p>As you can see, not showing the interactions or not labeling some of
+the flows doesn’t produce a very useful diagram. In general, as long as
+it is decently readable, you should show and label all components of
+your model.</p>
 <p>Here is another example, the model shown with vertical alignment</p>
 <p><strong>THIS LOOKS PRETTY BAD AT THE MOMENT</strong></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"I"</span><span class="op">)</span>,
-                        nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">mysettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span>
-<span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span>, <span class="va">mysettings</span><span class="op">)</span>
-<span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>var_label_text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>B <span class="op">=</span> <span class="st">"Bacteria"</span>, I <span class="op">=</span> <span class="st">"Immune Response"</span><span class="op">)</span>,
-                                               var_label_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-                        <span class="op">)</span>
-<span class="va">diag_list2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">diag_list</span>, <span class="va">diagram_settings</span><span class="op">)</span>
-
-<span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mydiag</span><span class="op">)</span></code></pre></div>
-<p><img src="F_additional_examples_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"I"</span><span class="op">)</span>,</span>
+<span>                        nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">mysettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></span>
+<span><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">ppmodel</span>, <span class="va">mysettings</span><span class="op">)</span></span>
+<span><span class="va">diagram_settings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>var_label_text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>B <span class="op">=</span> <span class="st">"Bacteria"</span>, I <span class="op">=</span> <span class="st">"Immune Response"</span><span class="op">)</span>,</span>
+<span>                                               var_label_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>all <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span>                        <span class="op">)</span></span>
+<span><span class="va">diag_list2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_diagram.html">update_diagram</a></span><span class="op">(</span><span class="va">diag_list</span>, <span class="va">diagram_settings</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mydiag</span><span class="op">)</span></span></code></pre></div>
+<p><img src="F_additional_examples_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="example-3">Example 3<a class="anchor" aria-label="anchor" href="#example-3"></a>
 </h2>
-<p>More examples to come. If you have a nice one that we could include, we’d love to hear about it!</p>
+<p>More examples to come. If you have a nice one that we could include,
+we’d love to hear about it!</p>
 </div>
   </div>
 
@@ -253,7 +311,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

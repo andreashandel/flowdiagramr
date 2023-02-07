@@ -28,6 +28,37 @@ library(pkg, character.only = TRUE)
 The previous tutorials/vignettes showed several example models as way to illustrate how to use **`r pkg`**.
 
 This vignette is a (growing) list of additional model examples, which might be helpful to illustrate further ways of using the package.
+It shows both additional examples, and also illustrates several tricks and approaches to get things looking decently, even if **flowdiagramr** is not fully cooperating.
+
+
+### DSAIRM Models
+
+The following set of models and diagrams comes from our [DSAIRM package](https://ahgroup.github.io/DSAIRM/), which is used to teach within-host modeling for immunology. We do not discuss the meaning of the models and equations here. If you want to see that, please check out the DSAIRM package. We only show some of the model diagrams here as further examples. 
+
+
+#### Virus model
+
+This is a model for a basic virus infection.
+
+```{r}
+variables = c("U","I","V")
+flows = list(U_flows = c("n","-dU*U","-b*U*V"),
+             I_flows = c("b*U*V","-dI*I"),
+             # V_flows = c("p*I", "-dV*V")
+            V_flows = c("p*I", "-dV*V","-g*b*U*V") #original
+)
+model <- list(variables = variables, flows = flows)
+layout = list(varlocations = matrix(c("U","I","V"),
+                                    nrow = 1, byrow = TRUE),
+              varspace_x_size = 1
+)
+dlist <- prepare_diagram(model,layout)
+diag <- make_diagram(dlist)
+plot(diag)
+```
+
+
+
 
 
 ## Example 1
@@ -151,9 +182,5 @@ plot(mydiag)
 
 
             
-## Example 3
-
-More examples to come. If you have a nice one that we could include, we'd love to hear about it!
-
 
 

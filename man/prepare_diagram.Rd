@@ -6,8 +6,8 @@
 \usage{
 prepare_diagram(
   model_list,
-  model_settings = list(varlocations = NULL, varbox_x_size = NULL, varbox_y_size =
-    NULL, varspace_x_size = NULL, varspace_y_size = NULL)
+  model_settings = list(varlocations = NULL, varbox_x_size = NULL, varbox_y_size = NULL,
+    varspace_x_size = NULL, varspace_y_size = NULL)
 )
 }
 \arguments{

@@ -30,19 +30,18 @@ In this vignette, we discuss a few additional topics that might be of interest t
 
 ## Using modelbuilder models with flowdiagramr
 
-The developers of **`r pkg`** have also been developing an R package called [**modelbuilder**](https://ahgroup.github.io/modelbuilder/) which allows users to graphically build and analyze compartmental simulation models. In fact, **`r pkg`** started as a function inside `modelbuilder` to draw diagrams of user-built models. At some point, we decided to make **`r pkg`** a stand-alone package. But it still works with and is used by **modelbuilder**. If you use **modelbuilder** and want to use **`r pkg`** to generate a diagram for that model outside the auto-generated one shown inside **modelbuilder**, here are the steps.
+The developers of **`r pkg`** have also been developing an R package called [**modelbuilder**](https://ahgroup.github.io/modelbuilder/) which allows users to graphically build and analyze compartmental simulation models. In fact, **`r pkg`** started as a function inside **modelbuilder** to draw diagrams of user-built models. At some point, we decided to make **`r pkg`** a stand-alone package. But it still works with and is used by **modelbuilder**. If you use **modelbuilder** and want to use **`r pkg`** to generate a diagram for that model outside the auto-generated one shown inside **modelbuilder**, here are the steps.
 
 
 ### Model conversion
 
-Once you built a model with **modelbuilder**, you can save it as an `Rds` file. This file contains a single object, the user-created model specified as a list object.
-Since **modelbuilder** models and **`r pkg`** models are slightly different, we provide a convenience function that converts one format into the other. 
+Once you built a model with **modelbuilder**, you can save it as an `Rds` file. This file contains a single object, the user-created model specified as a list object. Since **modelbuilder** models and **`r pkg`** models are slightly different, we provide a convenience function that converts one format into the other. 
 
-This is a very simple process, and is done with the function `convert_from_modelbuilder`. This function takes as input the modelbuilder object and produces a list that conforms to the **`r pkg`** model specification. The following examples illustrate this.
+This is a very simple process, and is done with the function `convert_from_modelbuilder`. This function takes as input the **modelbuilder** object and produces a list that conforms to the **`r pkg`** model specification. The following examples illustrate this.
 
 ### Example 1
 
-Assume you built a basic SIR model with **modelbuilder** and saved it as an `R` object inside a `.Rds` file. 
+Assume you built a basic SIR model with **modelbuilder** and saved it as an `R` object inside an `.Rds` file. 
 First, we load the file and assign it to some variable.
 
 ```{r}
@@ -112,7 +111,7 @@ plot(my_diagram)
 ```
 
 
-This is better, but of course still not quite good enough. Fortunately, you have learned how to use **`r pkg`** to fairly easily turn this into a publication-quality diagram :).
+This is better, but of course still not quite good enough. Fortunately, you have learned how to use **`r pkg`** to fairly easily turn this into a publication-quality diagram `r emoji::emoji("smile")`.
 
 
 ## Cropping white-space from diagram plots
@@ -177,7 +176,7 @@ The disadvantages of this approach is that you need to use another R package and
 
 ## Using **`r pkg``** helper functions
 
-By now, you are familiar with the main functions of **`r pkg``, namely `prepare_diagram()`, `update_diagram()`, `make_diagram()` and `write_diagram()`. The package contains additional helper functions. Those are generally not very useful by themselves and do work behind the scenes. However, a few might be occasionally useful, therefore we describe them briefly.
+By now, you are familiar with the main functions of **`r pkg`**, namely `prepare_diagram()`, `update_diagram()`, `make_diagram()` and `write_diagram()`, as well as the `add_flow()` function. The package contains additional helper functions. Those are generally not very useful by themselves and do work behind the scenes. However, a few might be occasionally useful, therefore we describe them briefly.
 
 * `check_model_list()` - This function does what its name implies. It takes a model list, consisting of the `variables` and `flows` entry and checks if everything seems to make sense. If everything is fine, nothing is returned. Otherwise, a hopefully somewhat informative error message is provided.
 
@@ -186,6 +185,6 @@ By now, you are familiar with the main functions of **`r pkg``, namely `prepare_
 * `check_dataframes()` - this function takes the diagram list one gets after running `prepare_diagram()` and checks to make sure the `variables` and `flows` data frames are correct.
 
 
-These checking functions are run behind the scenes as part of the the main functions
+These checking functions are run behind the scenes as part of the the main functions. You will rarely need to call them directly, but we want to mention them just in case you find them useful.
 
 

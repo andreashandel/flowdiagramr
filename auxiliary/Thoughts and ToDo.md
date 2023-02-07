@@ -19,6 +19,19 @@ implementation.
 
 * Additional nice-to-have style options: var_outline_width setting to adjust thickness of box borders. var_shape that might allow a few different shapes, e.g. rectangle, circle, diamond. Though that might potentially be difficult with the connection points of the arrows? var_label_text_font, etc. to allow changing the font for the various text elements. Different shapes would be quite nice since they are used in DAG to differentiate things. Should look into that soon(ish).
 
+
+
+****************************
+2022-08-24 Andreas notes
+****************************
+Copied this over from the other file.
+
+Have an add_flow function, maybe like this:
+diag_list <- add_flow(diaglist, from = "S", to = "I", type = "interaction", label = "bSI")
+It would basically add a row to the flows dataframe of diag_list. User can then further manipulate/style with update_diagram()
+Could be from = "I", to = "m_bUV", for example to connect to an arrow. Or one entry could be empty to indicate external flow.
+
+
 ****************************
 2022-07-27 Andreas notes
 ****************************

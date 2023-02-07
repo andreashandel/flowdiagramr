@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.7</span>
       </span>
     </div>
 
@@ -115,7 +115,8 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Modifiying diagrams through <code>prepare_diagram()</code> settings</h1>
+      <h1 data-toc-skip>Modifiying diagrams through
+<code>prepare_diagram()</code> settings</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/andreashandel/flowdiagramr/blob/HEAD/vignettes/B_prepare_diagram_settings.Rmd" class="external-link"><code>vignettes/B_prepare_diagram_settings.Rmd</code></a></small>
@@ -128,181 +129,243 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>We assume you went through the <a href="./A_quickstart.html">getting started vignette</a> and know the basics of using <strong>flowdiagramr</strong>. In this vignette, you will start to learn the various ways you can easily customize diagrams.</p>
+<p>We assume you went through the <a href="./A_quickstart.html">getting
+started vignette</a> and know the basics of using
+<strong>flowdiagramr</strong>. In this vignette, you will start to learn
+the various ways you can easily customize diagrams.</p>
 <p>To re-cap, the simple workflow goes like this</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#specify model</span>
-<span class="va">sirmodel1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>,
-                 flows     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, 
-                                  I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, 
-                                  R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#prepare diagram</span>
-<span class="va">diagram_list1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel1</span><span class="op">)</span>
-<span class="co">#make diagram</span>
-<span class="va">sir_diagram1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list1</span><span class="op">)</span>
-<span class="co">#plot diagram</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">#specify model</span></span>
+<span><span class="va">sirmodel1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>,</span>
+<span>                 flows     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, </span>
+<span>                                  I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, </span>
+<span>                                  R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#prepare diagram</span></span>
+<span><span class="va">diagram_list1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel1</span><span class="op">)</span></span>
+<span><span class="co">#make diagram</span></span>
+<span><span class="va">sir_diagram1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list1</span><span class="op">)</span></span>
+<span><span class="co">#plot diagram</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="B_prepare_diagram_settings_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
-<p>Quick changes to the layout can be made by supplying <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> with some additional settings, which we’ll discuss in this vignette.</p>
+<p>Quick changes to the layout can be made by supplying
+<code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> with some additional settings, which
+we’ll discuss in this vignette.</p>
 </div>
 <div class="section level2">
 <h2 id="setting-arguments-in-prepare_diagram">Setting arguments in <code>prepare_diagram()</code><a class="anchor" aria-label="anchor" href="#setting-arguments-in-prepare_diagram"></a>
 </h2>
-<p>You always need to provide a <code>model_list</code> input to <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code>. In addition, you can provide an optional <code>model_settings</code> argument, which allows you to influence the placement and sizing of the variables/boxes and arrows. Check the help file with <code><a href="../reference/prepare_diagram.html">help('prepare_diagram')</a></code> for all the details. Here we explore some of the options through a few examples.</p>
+<p>You always need to provide a <code>model_list</code> input to
+<code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code>. In addition, you can provide an optional
+<code>model_settings</code> argument, which allows you to influence the
+placement and sizing of the variables/boxes and arrows. Check the help
+file with <code><a href="../reference/prepare_diagram.html">help('prepare_diagram')</a></code> for all the details. Here
+we explore some of the options through a few examples.</p>
 </div>
 <div class="section level2">
 <h2 id="example-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1"></a>
 </h2>
-<p>We’ll take the model defined above, and now specify an additional <code>model_settings</code> argument called <code>varlocations</code>. This allows you to specify the placement of the variable boxes.</p>
-<p>The default setting of <strong>flowdiagramr</strong> is to place all compartments/boxes along a single row. That might be ok for simple models. But generally, you likely do not want all variables/boxes on the same row. Thus, specifying <code>varlocations</code> is often very useful and necessary to produce a decent looking diagram.</p>
-<p>The <code>varlocations</code> argument is a matrix and should contain the model variables aligned in a grid of rows and columns. This will correspond to their placement in the diagram. In this example, we decided that instead of having all three variables on a single row (the default), we want <strong>S</strong> and <strong>R</strong> on a bottom row in the left and right corners, and <strong>I</strong> on a top row in the middle.</p>
-<p>To accomplish that, we define a grid/matrix with 2 rows and 3 columns and in that matrix, we place the <strong>S</strong> and <strong>R</strong> compartments in the left and right corner of the bottom row and the <strong>I</strong> compartment in the middle of the top row. All other slots are empty, and need to be specified as empty strings. The following code accomplishes that.</p>
+<p>We’ll take the model defined above, and now specify an additional
+<code>model_settings</code> argument called <code>varlocations</code>.
+This allows you to specify the placement of the variable boxes.</p>
+<p>The default setting of <strong>flowdiagramr</strong> is to place all
+compartments/boxes along a single row. That might be ok for simple
+models. But generally, you likely do not want all variables/boxes on the
+same row. Thus, specifying <code>varlocations</code> is often very
+useful and necessary to produce a decent looking diagram.</p>
+<p>The <code>varlocations</code> argument is a matrix and should contain
+the model variables aligned in a grid of rows and columns. This will
+correspond to their placement in the diagram. In this example, we
+decided that instead of having all three variables on a single row (the
+default), we want <strong>S</strong> and <strong>R</strong> on a bottom
+row in the left and right corners, and <strong>I</strong> on a top row
+in the middle.</p>
+<p>To accomplish that, we define a grid/matrix with 2 rows and 3 columns
+and in that matrix, we place the <strong>S</strong> and
+<strong>R</strong> compartments in the left and right corner of the
+bottom row and the <strong>I</strong> compartment in the middle of the
+top row. All other slots are empty, and need to be specified as empty
+strings. The following code accomplishes that.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#optional list of settings</span>
-<span class="va">sirsettings1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,  <span class="st">"I"</span>, <span class="st">""</span>,
-                                                  <span class="st">"S"</span>, <span class="st">""</span>,  <span class="st">"R"</span> <span class="op">)</span>,
-                                         nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-                  <span class="op">)</span></code></pre></div>
-<p>With these additional settings, the model diagram looks as follows</p>
+<code class="sourceCode R"><span><span class="co">#optional list of settings</span></span>
+<span><span class="va">sirsettings1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,  <span class="st">"I"</span>, <span class="st">""</span>,</span>
+<span>                                                  <span class="st">"S"</span>, <span class="st">""</span>,  <span class="st">"R"</span> <span class="op">)</span>,</span>
+<span>                                         nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>                  <span class="op">)</span></span></code></pre></div>
+<p>With these additional settings, the model diagram looks as
+follows</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># prepare inputs </span>
-<span class="va">diagram_list2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel1</span>, model_settings <span class="op">=</span> <span class="va">sirsettings1</span><span class="op">)</span>
-<span class="co"># make  diagram</span>
-<span class="va">sir_diagram2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># prepare inputs </span></span>
+<span><span class="va">diagram_list2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel1</span>, model_settings <span class="op">=</span> <span class="va">sirsettings1</span><span class="op">)</span></span>
+<span><span class="co"># make  diagram</span></span>
+<span><span class="va">sir_diagram2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="B_prepare_diagram_settings_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
-<p>The placement of the flow labels could be improved, which is not hard to do with <strong>flowdiagramr</strong> and you’ll learn how to do that soon.</p>
+<p>The placement of the flow labels could be improved, which is not hard
+to do with <strong>flowdiagramr</strong> and you’ll learn how to do that
+soon.</p>
 </div>
 <div class="section level2">
 <h2 id="example-2">Example 2<a class="anchor" aria-label="anchor" href="#example-2"></a>
 </h2>
-<p>Let’s look at a slightly extended SIR model. For this extension, we also include natural births and deaths. We assume new births only enter the <strong>S</strong> compartment at some fixed flow, <strong>n</strong>, while deaths occur at rate <strong>m</strong> out of all compartments. The model is specified as follows</p>
+<p>Let’s look at a slightly extended SIR model. For this extension, we
+also include natural births and deaths. We assume new births only enter
+the <strong>S</strong> compartment at some fixed flow,
+<strong>n</strong>, while deaths occur at rate <strong>m</strong> out of
+all compartments. The model is specified as follows</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># specify the model</span>
-<span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="st">"-b*S*I"</span>, <span class="st">"-m*S"</span><span class="op">)</span>, 
-             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+b*S*I"</span>,<span class="st">"-g*I"</span>, <span class="st">"-m*I"</span><span class="op">)</span>, 
-             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span>, <span class="st">"-m*R"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">sirmodel2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></code></pre></div>
-<p>We’ll make two diagrams, one with the default placement of all compartments in a single row, and one where we supply <code>varlocations</code>. For this example, we’ll place <strong>S</strong> and <strong>R</strong> in a left column on the top and bottom, and move <strong>I</strong> to a right column in the middle.</p>
+<code class="sourceCode R"><span><span class="co"># specify the model</span></span>
+<span><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span></span>
+<span><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="st">"-b*S*I"</span>, <span class="st">"-m*S"</span><span class="op">)</span>, </span>
+<span>             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"+b*S*I"</span>,<span class="st">"-g*I"</span>, <span class="st">"-m*I"</span><span class="op">)</span>, </span>
+<span>             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span>, <span class="st">"-m*R"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sirmodel2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></span></code></pre></div>
+<p>We’ll make two diagrams, one with the default placement of all
+compartments in a single row, and one where we supply
+<code>varlocations</code>. For this example, we’ll place
+<strong>S</strong> and <strong>R</strong> in a left column on the top
+and bottom, and move <strong>I</strong> to a right column in the
+middle.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#optional list of settings</span>
-<span class="va">sirsettings2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>,
-                                                   <span class="st">""</span>, <span class="st">"I"</span>,
-                                                   <span class="st">"R"</span>, <span class="st">""</span> <span class="op">)</span>,
-                                         nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-                  <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">#optional list of settings</span></span>
+<span><span class="va">sirsettings2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>,</span>
+<span>                                                   <span class="st">""</span>, <span class="st">"I"</span>,</span>
+<span>                                                   <span class="st">"R"</span>, <span class="st">""</span> <span class="op">)</span>,</span>
+<span>                                         nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>                  <span class="op">)</span></span></code></pre></div>
 <p>This prepares and plots the default version of the diagram.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">diagram_list3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span><span class="op">)</span>
-<span class="va">sir_diagram3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list3</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram3</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">diagram_list3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span><span class="op">)</span></span>
+<span><span class="va">sir_diagram3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="B_prepare_diagram_settings_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 <p>Here is the version with the additional settings.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">diagram_list4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, model_settings <span class="op">=</span> <span class="va">sirsettings2</span><span class="op">)</span>
-<span class="va">sir_diagram4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list4</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram4</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">diagram_list4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, model_settings <span class="op">=</span> <span class="va">sirsettings2</span><span class="op">)</span></span>
+<span><span class="va">sir_diagram4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram4</span><span class="op">)</span></span></code></pre></div>
 <p><img src="B_prepare_diagram_settings_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="example-3">Example 3<a class="anchor" aria-label="anchor" href="#example-3"></a>
 </h2>
-<p>Let’s look at another example, one that might come up somewhat often, where you need a figure that is mostly vertical. We can do this for the SIR model by again specifying a <code>varlocations</code> matrix. In addition, we now also change the size and spacing of the boxes and space between the boxes.</p>
+<p>Let’s look at another example, one that might come up somewhat often,
+where you need a figure that is mostly vertical. We can do this for the
+SIR model by again specifying a <code>varlocations</code> matrix. In
+addition, we now also change the size and spacing of the boxes and space
+between the boxes.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sirsettings3</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"I"</span>, <span class="st">"R"</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span>,  byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
-                   varbox_y_size <span class="op">=</span> <span class="fl">0.5</span>,
-                   varspace_y_size <span class="op">=</span> <span class="fl">1</span>
-                   <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sirsettings3</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"I"</span>, <span class="st">"R"</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span>,  byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                   varbox_y_size <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>                   varspace_y_size <span class="op">=</span> <span class="fl">1</span></span>
+<span>                   <span class="op">)</span></span></code></pre></div>
 <p>With this setup, the diagram looks like this</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sir_vertical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, model_settings <span class="op">=</span> <span class="va">sirsettings3</span><span class="op">)</span>
-<span class="va">sir_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">sir_vertical</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sir_vertical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, model_settings <span class="op">=</span> <span class="va">sirsettings3</span><span class="op">)</span></span>
+<span><span class="va">sir_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">sir_vertical</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram</span><span class="op">)</span></span></code></pre></div>
 <p><img src="B_prepare_diagram_settings_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="st">"sirdiagram1.png"</span>,<span class="va">sir_diagram</span><span class="op">)</span>
-<span class="co">#&gt; Saving 7 x 5 in image</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="st">"sirdiagram1.png"</span>,<span class="va">sir_diagram</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Saving 7 x 5 in image</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example-4">Example 4<a class="anchor" aria-label="anchor" href="#example-4"></a>
 </h2>
-<p>You can set both the horizontal and vertical size of each box, and the spacing between each row/column of boxes. The following provides an example. We are now changing the box sizes and the spacing. For both size and spacing, you can supply a single number, which is then applied to all parts of the diagram.</p>
+<p>You can set both the horizontal and vertical size of each box, and
+the spacing between each row/column of boxes. The following provides an
+example. We are now changing the box sizes and the spacing. For both
+size and spacing, you can supply a single number, which is then applied
+to all parts of the diagram.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#optional list of settings</span>
-<span class="va">sirsettings4</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>,
-                                                   <span class="st">""</span>, <span class="st">"I"</span>,
-                                                   <span class="st">"R"</span>, <span class="st">""</span> <span class="op">)</span>,
-                                         nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
-                   varbox_x_size <span class="op">=</span> <span class="fl">1.5</span>,
-                   varbox_y_size <span class="op">=</span> <span class="fl">2</span>,
-                   varspace_x_size <span class="op">=</span> <span class="fl">1.5</span>,
-                   varspace_y_size <span class="op">=</span> <span class="fl">0.5</span>
-                  <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">#optional list of settings</span></span>
+<span><span class="va">sirsettings4</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>,</span>
+<span>                                                   <span class="st">""</span>, <span class="st">"I"</span>,</span>
+<span>                                                   <span class="st">"R"</span>, <span class="st">""</span> <span class="op">)</span>,</span>
+<span>                                         nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                   varbox_x_size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>                   varbox_y_size <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                   varspace_x_size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>                   varspace_y_size <span class="op">=</span> <span class="fl">0.5</span></span>
+<span>                  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sir_ex4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, model_settings <span class="op">=</span> <span class="va">sirsettings4</span><span class="op">)</span>
-<span class="va">sir_diagram4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">sir_ex4</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram4</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sir_ex4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, model_settings <span class="op">=</span> <span class="va">sirsettings4</span><span class="op">)</span></span>
+<span><span class="va">sir_diagram4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">sir_ex4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram4</span><span class="op">)</span></span></code></pre></div>
 <p><img src="B_prepare_diagram_settings_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="example-5">Example 5<a class="anchor" aria-label="anchor" href="#example-5"></a>
 </h2>
-<p>Instead of supplying a single number to size the boxes and spacing, the scaling arguments can be vectorized to allow different spacing and sizing of different boxes. In that case, for box sizes the vector needs to have a length corresponding to the number of boxes. The x/y-spacing needs to correspond to the number of rows/columns minus 1. Here is an example.</p>
+<p>Instead of supplying a single number to size the boxes and spacing,
+the scaling arguments can be vectorized to allow different spacing and
+sizing of different boxes. In that case, for box sizes the vector needs
+to have a length corresponding to the number of boxes. The x/y-spacing
+needs to correspond to the number of rows/columns minus 1. Here is an
+example.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sirsettings5</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>,
-                                                   <span class="st">""</span>, <span class="st">"I"</span>,
-                                                   <span class="st">"R"</span>, <span class="st">""</span> <span class="op">)</span>,
-                                         nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
-                   varbox_x_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1.5</span>, <span class="fl">1</span><span class="op">)</span>,
-                   varbox_y_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,
-                   varspace_x_size <span class="op">=</span> <span class="fl">1.5</span>,
-                   varspace_y_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">1</span><span class="op">)</span>
-                  <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sirsettings5</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>,</span>
+<span>                                                   <span class="st">""</span>, <span class="st">"I"</span>,</span>
+<span>                                                   <span class="st">"R"</span>, <span class="st">""</span> <span class="op">)</span>,</span>
+<span>                                         nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                   varbox_x_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1.5</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                   varbox_y_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                   varspace_x_size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>                   varspace_y_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">1</span><span class="op">)</span></span>
+<span>                  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sir_ex5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, model_settings <span class="op">=</span> <span class="va">sirsettings5</span><span class="op">)</span>
-<span class="va">sir_diagram5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">sir_ex5</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram5</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sir_ex5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">sirmodel2</span>, model_settings <span class="op">=</span> <span class="va">sirsettings5</span><span class="op">)</span></span>
+<span><span class="va">sir_diagram5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">sir_ex5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sir_diagram5</span><span class="op">)</span></span></code></pre></div>
 <p><img src="B_prepare_diagram_settings_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="example-6">Example 6<a class="anchor" aria-label="anchor" href="#example-6"></a>
 </h2>
-<p>Let’s look at one more example, the somewhat large model with 7 compartments shown in the <em>Getting Started</em> vignette.</p>
+<p>Let’s look at one more example, the somewhat large model with 7
+compartments shown in the <em>Getting Started</em> vignette.</p>
 <p>Here is the model again.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bcc*Sc*Ic"</span>,<span class="st">"-bca*Sc*Ia"</span>,<span class="st">"-bcp*Sc*P"</span><span class="op">)</span>, 
-             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bcc*Sc*Ic"</span>,<span class="st">"bca*Sc*Ia"</span>,<span class="st">"bcp*Sc*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, 
-             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,
-             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bac*Sa*Ic"</span>,<span class="st">"-baa*Sa*Ia"</span>,<span class="st">"-bap*Sa*P"</span><span class="op">)</span>, 
-             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bac*Sa*Ic"</span>,<span class="st">"baa*Sa*Ia"</span>,<span class="st">"bap*Sa*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>, 
-             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,
-             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rc*Ic"</span>,<span class="st">"ra*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span>
-             <span class="op">)</span>
-<span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">variables</span>, <span class="va">flows</span><span class="op">)</span></code></pre></div>
-<p>This time, we specify locations for the variables. We place the 2 <em>SIR</em> compartments on the top and the bottom, and the <strong>P</strong> compartment in the middle. We also resize the boxes so the text we print into the boxes below will fit.</p>
+<code class="sourceCode R"><span><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>,<span class="st">"Ic"</span>,<span class="st">"Rc"</span>,<span class="st">"Sa"</span>,<span class="st">"Ia"</span>,<span class="st">"Ra"</span>,<span class="st">"P"</span><span class="op">)</span></span>
+<span><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Sc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bcc*Sc*Ic"</span>,<span class="st">"-bca*Sc*Ia"</span>,<span class="st">"-bcp*Sc*P"</span><span class="op">)</span>, </span>
+<span>             Ic_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bcc*Sc*Ic"</span>,<span class="st">"bca*Sc*Ia"</span>,<span class="st">"bcp*Sc*P"</span>,<span class="st">"-gc*Ic"</span><span class="op">)</span>, </span>
+<span>             Rc_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gc*Ic"</span><span class="op">)</span>,</span>
+<span>             Sa_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-bac*Sa*Ic"</span>,<span class="st">"-baa*Sa*Ia"</span>,<span class="st">"-bap*Sa*P"</span><span class="op">)</span>, </span>
+<span>             Ia_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bac*Sa*Ic"</span>,<span class="st">"baa*Sa*Ia"</span>,<span class="st">"bap*Sa*P"</span>,<span class="st">"-ga*Ia"</span><span class="op">)</span>, </span>
+<span>             Ra_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ga*Ia"</span><span class="op">)</span>,</span>
+<span>             P_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rc*Ic"</span>,<span class="st">"ra*Ia"</span>,<span class="st">"-d*P"</span><span class="op">)</span></span>
+<span>             <span class="op">)</span></span>
+<span><span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">variables</span>, <span class="va">flows</span><span class="op">)</span></span></code></pre></div>
+<p>This time, we specify locations for the variables. We place the 2
+<em>SIR</em> compartments on the top and the bottom, and the
+<strong>P</strong> compartment in the middle. We also resize the boxes
+so the text we print into the boxes below will fit.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>, <span class="st">"Ic"</span>, <span class="st">"Rc"</span>,
-                                                  <span class="st">""</span>,   <span class="st">"P"</span>,   <span class="st">""</span>,
-                                                  <span class="st">"Sa"</span>, <span class="st">"Ia"</span>, <span class="st">"Ra"</span><span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
-                   varbox_x_size <span class="op">=</span> <span class="fl">3</span>,
-                   varbox_y_size <span class="op">=</span> <span class="fl">2</span>
-                   <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> varlocations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sc"</span>, <span class="st">"Ic"</span>, <span class="st">"Rc"</span>,</span>
+<span>                                                  <span class="st">""</span>,   <span class="st">"P"</span>,   <span class="st">""</span>,</span>
+<span>                                                  <span class="st">"Sa"</span>, <span class="st">"Ia"</span>, <span class="st">"Ra"</span><span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                   varbox_x_size <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>                   varbox_y_size <span class="op">=</span> <span class="fl">2</span></span>
+<span>                   <span class="op">)</span></span></code></pre></div>
 <p>This prepares the diagram with those additional settings.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, <span class="va">mysettings</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span>, <span class="va">mysettings</span><span class="op">)</span></span></code></pre></div>
 <p>Now we make the diagram and plot it.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">model_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_plot</span><span class="op">)</span></span></code></pre></div>
 <p><img src="B_prepare_diagram_settings_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
-<p>This is getting better, though not quite publication quality yet. We’ll get there, so read on.</p>
+<p>This is getting better, though not quite publication quality yet.
+We’ll get there, so read on.</p>
 </div>
 <div class="section level2">
 <h2 id="summary-and-next-steps">Summary and next steps<a class="anchor" aria-label="anchor" href="#summary-and-next-steps"></a>
 </h2>
-<p>By supplying <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> with optional settings, you can change the layout, size and spacing of the variable boxes. For all but the simplest diagrams, this will be a required first step to get the layout you want. As we briefly mentioned in the <em>Quick start</em> vignette, it is also possible to adjust the styling of all the diagram elements. To learn more about this, continue on to <a href="./C_updat_diagram_function.html">this next vignette</a>.</p>
+<p>By supplying <code><a href="../reference/prepare_diagram.html">prepare_diagram()</a></code> with optional settings,
+you can change the layout, size and spacing of the variable boxes. For
+all but the simplest diagrams, this will be a required first step to get
+the layout you want. As we briefly mentioned in the <em>Quick start</em>
+vignette, it is also possible to adjust the styling of all the diagram
+elements. To learn more about this, continue on to <a href="./C_updat_diagram_function.html">this next vignette</a>.</p>
 </div>
   </div>
 
@@ -323,7 +386,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

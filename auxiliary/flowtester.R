@@ -3,108 +3,16 @@
 # finding edge cases where errors might occur.
 
 
-# Load flowdiagramr! ------------------------------------------------------
-
+# Load flowdiagramr ------------------------------------------------------
 library(flowdiagramr)
 
-######################
-# More tests, all currently showing something wrong ---------------------------------------
-######################
 
-# I think this should produce just a stand-alone R box
-# instead it has an inflow
-variables = c("S","I","R")
-flows = list(
-  S_flows = c("-b*S*I"),
-  I_flows = c("b*S*I","-g*I"),
-  R_flows = c("")
-)
-mymodel = list(variables = variables, flows = flows)
-diagram_list <- prepare_diagram(mymodel)
-make_diagram(diagram_list)
 
-# The following 3 examples show problems with duplicate flows
-# Can probably be all fixed by throwing an error during checking?
-
-# The -bSI flow is a duplicate
-# seems like right now it gets processed twice.
-varlabels = c("S", "I", "R")
-flows = list(
-  S_flows = c("-b*S*I", "-b*S*I"),
-  I_flows = c("b*S*I","-g*I"),
-  R_flows = c("g*I")
-)
-mymodel = list(variables = varlabels, flows = flows)
-diagram_list <- prepare_diagram(mymodel)
-make_diagram(diagram_list)
-
-#Here, with the bSI flow duplicate
-# it shows two different flows (label is there twice)
 varlabels = c("S", "I", "R")
 flows = list(
   S_flows = c("-b*S*I"),
-  I_flows = c("b*S*I","b*S*I","-g*I"),
-  R_flows = c("g*I")
-)
-mymodel = list(variables = varlabels, flows = flows)
-diagram_list <- prepare_diagram(mymodel)
-make_diagram(diagram_list)
-
-# this variant of including a duplicate flow produces an error
-varlabels = c("S", "I", "R")
-flows = list(
-  S_flows = c("-b*S*I"),
-  I_flows = c("b*S*I","-g*I","b*S*I"),
-  R_flows = c("g*I")
-)
-mymodel = list(variables = varlabels, flows = flows)
-diagram_list <- prepare_diagram(mymodel)
-make_diagram(diagram_list)
-
-# this has flows in a weird/wrong form
-# basically a single outflow matched by 2 inflows
-# right now the bSI inflow term in S is ignored
-# I think logically this is a wrong model
-# we should throw an error for any flows where the number of inflows/outflows doesn't match
-# unless there is a single inflow/outflow and no matching out/in, since those are the external flows.
-varlabels = c("S", "I", "R")
-flows = list(
-  S_flows = c("-b*S*I", "b*S*I"),
   I_flows = c("b*S*I","-g*I"),
-  R_flows = c("g*I")
-)
-mymodel = list(variables = varlabels, flows = flows)
-diagram_list <- prepare_diagram(mymodel)
-make_diagram(diagram_list)
-
-
-# this should probably throw an error too
-# user might have wanted b1SI and b2SI with flows going back and forth
-# I guess if the same flow shows up in more than one place, we should throw an error
-# I can't think of a reason why one would need exactly the same flow in more than one place
-# usually if it's an outflow somewhere, it's inflow somewhere else
-# If a user wanted say an inflow at a constant rate into compartments S and I
-# they could label it 2 different ways, e.g. "r1" and "r2".
-varlabels = c("S", "I", "R")
-flows = list(
-  S_flows = c("-b*S*I", "b*S*I"),
-  I_flows = c("b*S*I","-g*I", "-b*S*I"),
-  R_flows = c("g*I")
-)
-mymodel = list(variables = varlabels, flows = flows)
-diagram_list <- prepare_diagram(mymodel)
-make_diagram(diagram_list)
-
-# this model with an outflow right back into itself
-# seems to be a poorly formulated model
-# right now an error is produced, but it's confusing
-# maybe we should do error checking to make sure no single compartment
-# has a setup like this, with flows in and out
-varlabels = c("S", "I", "R")
-flows = list(
-  S_flows = c("-b*S*I", "-b*S", "b*S"),
-  I_flows = c("b*S*I","-g*I"),
-  R_flows = c("g*I")
+  R_flows = c("g*I","-k*R*I")
 )
 mymodel = list(variables = varlabels, flows = flows)
 diagram_list <- prepare_diagram(mymodel)
@@ -132,7 +40,7 @@ varlabels = c("S", "I", "R")
 flows = list(
   S_flows = c("-b*S^2*I"),
   I_flows = c("b*S^2*I","-g*I"),
-  R_flows = c("g*I","-k*R*I^2")
+  R_flows = c("g*I","-k*R*I")
 )
 mymodel = list(variables = varlabels, flows = flows)
 diagram_list <- prepare_diagram(mymodel)
@@ -253,17 +161,6 @@ newsettings <- list(var_label_color = c(S = "green", I = "blue", R = "red"),
                                         e_n = "red"),
                     flow_xstart = c(z_n = 0.5))  # ERROR HERE IN NAME
 # diag_list_up <- update_diagram(dfs, diagram_settings = newsettings)
-
-
-
-# quick test of write_diagram
-write_diagram(diag_list_up)
-fs::file_delete("diagram_code.R")
-
-# quick test of modelbuilder converter
-source("./auxiliary/test-models/mbsir.R")  # makes an object named mbsir
-convert_from_modelbuilder(mbmodel = mbsir)
-
 
 
 
@@ -479,40 +376,141 @@ make_diagram(prepare_diagram(mymodel, model_settings = model_settings))
 
 
 
-# Check help pages --------------------------------------------------------
+#######################
+# acute virus and IR model - DSAIRM
+# original version fails
+# several alternatives I tried also fail
+# seems the division component is not processed right?
+# getting this to work is important since models like that
+# show up a lot in DSAIRM (and other places)
+#######################
 
-?flowdiagramr
-?prepare_diagram
-?update_diagram
-?make_diagram
-?write_diagram
-
-
-
-
-
-# Check a too-complex model -----------------------------------------------
-
-varlabels = c("Sc","Ic","Rc","Sa","Ia","Ra","P")
-varnames = c("Susceptible Children","Infected Children","Recovered Children",
-             "Susceptible adults","Infected adults","Recovered adults",
-             "Pathogen in Environment")
-flows = list(Sc_flows = c("-Sc*bcc*Ic","-Sc*bca*Ia","-Sc*bcp*P"),
-             Ic_flows = c("Sc*bcc*Ic","Sc*bca*Ia","Sc*bcp*P","-gc*Ic"),
-             Rc_flows = c("gc*Ic"),
-             Sa_flows = c("-Sa*bac*Ic","-Sa*baa*Ia","-Sa*bap*P"),
-             Ia_flows = c("Sa*bac*Ic","Sa*baa*Ia","Sa*bap*P","-ga*Ia"),
-             Ra_flows = c("ga*Ia"),
-             P_flows = c("sc*Ic","sa*Ia","-d*P")
+variables = c("U","I","V","F","T")
+flows = list(U_flows = c("-b*U*V"),
+             I_flows = c("b*U*V","-dI*I","-kT*T*I"),
+             # V_flows = c("p*I", "-dV*V","-g*b*U*V"), # works
+             # V_flows = c("I/F", "-dV*V","-g*b*U*V"), # also fails
+             # V_flows = c("p*I", "-dV*V","-g*b*U*V"), #also fails
+             # V_flows = c("p*I/(kF*F)", "-dV*V","-g*b*U*V"), #also fails
+             V_flows = c("p*I/(1+kF*I)","-dV*V","-g*b*U*V"), #original, fails
+             F_flows = c("rF*I","-dF*F"),
+             T_flows = c("rT*T*F","-dT*T")
 )
-varlocations = matrix(data = c("Sc", "Ic", "Rc",
-                               "",   "P",   "",
-                               "Sa", "Ia", "Ra"),nrow = 3, byrow = TRUE)
-model_list = list(variables = varlabels, flows = flows)
-model_settings = list(varlocations = NULL, varbox_x_scaling = 1,
-                      varbox_y_scaling = 1,
-                      varspace_x_scaling = 1,
-                      varspace_y_scaling = 1)
-diagram_list <- prepare_diagram(model_list)
-make_diagram(diagram_list)
+model <- list(variables = variables, flows = flows)
+layout = list(varlocations = matrix(c("U","","I","","V",
+                                      "","F","","T",""),
+                                    nrow = 2, byrow = TRUE),
+              varspace_x_size = 0.3
+)
+dlist <- prepare_diagram(model,layout)
+diag <- make_diagram(dlist)
+plot(diag)
+
+
+## ATT testing
+model_list <- model
+model_settings = list(varlocations = matrix(c("U", "I", "V",
+                                              "F", "T", ""),
+                                            nrow = 2, byrow = TRUE))
+dlist <- prepare_diagram(model_list, model_settings)
+diag <- make_diagram(dlist, with_grid = TRUE)
+plot(diag)
+
+# try to make it prettier...
+model_settings = list(varlocations = matrix(c("", "V", "",
+                                              "U", "", "I",
+                                              "F", "", "T"),
+                                            nrow = 3, byrow = TRUE))
+dlist <- prepare_diagram(model_list, model_settings)
+diag <- make_diagram(dlist, with_grid = TRUE)
+plot(diag)
+update_diagram(diagram_list = dlist)
+newd <- update_diagram(
+  diagram_list = dlist,
+  diagram_settings = list(
+    flow_xstart = c(i_pI1kFI = 0.5, i_bUV = 0.5),
+    flow_ystart = c(
+      i_pI1kFI = 0.5,
+      i_rTTF = -0.25,
+      i_rFI = -0.25,
+      i_bUV = -0.75
+    ),
+    flow_xend = c(
+      i_rFI = -0.5,
+      i_bUV = 0.5,
+      i_gbUV = -0.5
+    ),
+    flow_yend = c(i_rFI = 0.5),
+    flow_ylabel = c(
+      i_rFI = -0.2,
+      i_rTTF = -0.1,
+      i_bUV = -0.75
+    ),
+    flow_xlabel = c(
+      i_pI1kFI = 0.9,
+      i_kTTI = 1.1,
+      i_bUV = 1.6,
+      i_gbUV = -0.25,
+      e_dVV = 0.55
+    ),
+    flow_curvature = c(
+      i_kTTI = 1,
+      i_rFI = 0.1,
+      i_bUV = -0.8
+    )
+  )
+)
+make_diagram(newd)
+
+#######################
+# extended bacteria model - DSAIRM
+# version with log() kinda works (surprising to me, since I didn't think we supported that yet
+# but arrow placement is poor
+# taking out log doesn't improve arrow placement
+#######################
+
+variables = c("B","I","A")
+flows = list(B_flows = c("g*B*(1-B/bmax)","-dB*B","-kI*B*I", "-kA*B*A"),
+             I_flows = c("rI*B*(1-I/imax)", "-dI*I"),
+             # A_flows = c("rA*A*I/(h+I)","-dA*A") #gives pretty much same result
+             A_flows = c("rA*A*log(I)/(h+log(I))","-dA*A") #original
+)
+model_list <- list(variables = variables, flows = flows)
+
+model_settings = list(varlocations = matrix(c("","B","",
+                                              "I","","A"),
+                                            nrow = 2, byrow = TRUE)
+)
+dlist <- prepare_diagram(model_list, model_settings)
+diag <- make_diagram(dlist)
+plot(diag)
+
+# make it pretty
+model_settings = list(varlocations = matrix(c("B","","I",
+                                              "","A",""),
+                                            nrow = 2, byrow = TRUE))
+dlist <- prepare_diagram(model_list, model_settings)
+make_diagram(dlist)
+update_diagram(diagram_list = dlist)
+newd <- update_diagram(
+  diagram_list = dlist,
+  diagram_settings = list(
+    flow_xstart = c(e_dBB = -0.2, e_kIBI = 0.2, i_rAAlogIhlogI = 0.2),
+    flow_xend = c(e_dBB = -0.2, e_kIBI = 0.2, i_kIBI = 0.2, i_rAAlogIhlogI = 0.3),
+    flow_ystart = c(i_kIBI = 0.2, i_rAAlogIhlogI = -0.5),
+    flow_yend = c(i_rAAlogIhlogI = -0.2),
+    flow_xlabel = c(e_dBB = -0.6, i_kABA = -0.6),
+    flow_ylabel = c(i_kABA = -0.5, i_kIBI = 0.4, i_rAAlogIhlogI = -0.3),
+    flow_curvature = c(i_kABA = -0.5, i_kIBI = 0)))
+make_diagram(newd)
+
+
+
+
+
+
+
+
+
+
 

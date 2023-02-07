@@ -1,22 +1,18 @@
-
-
+# A lot of additional models
 
 library(flowdiagramr)
 
-# For hand-drawn diagrams see the 'model' section/tab for each app
-# https://shiny.ovpr.uga.edu/DSAIRM/
 
-####################################
-# basic virus model
-# runs, original not looking good
-# removing extra g*b*U*V flow looks mostly good
-# curved arrow for p*I from I to V, not sure why curved
-#####################################
+
+
+# These are DSAIRM models
+
+## ---- basicvirus ----
 variables = c("U","I","V")
+# original
 flows = list(U_flows = c("n","-dU*U","-b*U*V"),
              I_flows = c("b*U*V","-dI*I"),
-             # V_flows = c("p*I", "-dV*V")
-            V_flows = c("p*I", "-dV*V","-g*b*U*V") #original
+             V_flows = c("p*I", "-dV*V","-g*b*U*V")
 )
 model <- list(variables = variables, flows = flows)
 layout = list(varlocations = matrix(c("U","I","V"),
@@ -26,16 +22,26 @@ layout = list(varlocations = matrix(c("U","I","V"),
 dlist <- prepare_diagram(model,layout)
 diag <- make_diagram(dlist)
 plot(diag)
-#ggplot2::ggsave("basicvirus.png",diag)
 
-####################################
-# acute virus and IR model
-# original fails to run
-####################################
+# fix
+flows2 = list(U_flows = c("n","-dU*U","-b*U*V"),
+             I_flows = c("b*U*V","-dI*I"),
+             V_flows = c("p*I", "-dV*V")
+)
+model2 <- list(variables = variables, flows = flows2)
+dlist2 <- prepare_diagram(model2,layout)
+diag2 <- make_diagram(dlist2)
+plot(diag2)
+
+
+
+
+## ---- acutevirus ----
 variables = c("U","I","V","F","T")
 flows = list(U_flows = c("-b*U*V"),
              I_flows = c("b*U*V","-dI*I","-kT*T*I"),
-             V_flows = c("p*I/(1+kF*F)","-dV*V","-g*b*U*V"), #original, fails
+             V_flows = c("p*I/(1+kF*F)","-dV*V"),
+             #V_flows = c("p*I/(1+kF*F)","-dV*V","-g*b*U*V"), #original
              F_flows = c("rF*I","-dF*F"),
              T_flows = c("rT*T*F","-dT*T")
              )
@@ -51,68 +57,70 @@ plot(diag)
 
 # make it pretty
 update_diagram(dlist)
-newlist <- update_diagram(
-  diagram_list = dlist,
-  diagram_settings = list(
-    flow_curvature = c(i_pI1kFF = 0, i_rTTF = 0, g_rFI = -0.2),
-    flow_ystart = c(m_rTTF = -0.25, i_kTTI = 0.5, g_rFI = -0.25),
-    flow_yend = c(m_rTTF = -0.75, i_rTTF = -1, g_rFI = 0.5),
-    flow_xstart = c(m_rTTF = 0.75, i_kTTI = -0.5),
-    flow_xend = c(m_rTTF = 0.25, i_rTTF = 1, i_kTTI = -0.5, g_rFI = 0.15),
-    flow_xlabel = c(i_rTTF = 0.5, g_rFI = 0.35, e_dII = 0.15, i_pI1kFF = 0.25),
-    flow_ylabel = c(i_rTTF = -0.7, g_rFI = 0.5, i_pI1kFF = -0.4),
-    flow_show_arrow = c(i_gbUV = FALSE, e_gbUV = FALSE)
-  )
+diag_updates <- list(
+  flow_curvature = c(i_pI1kFF = 0, i_rTTF = 0, g_rFI = -0.2),
+  flow_ystart = c(m_rTTF = -0.25, i_kTTI = 0.5, g_rFI = -0.25),
+  flow_yend = c(m_rTTF = -0.75, i_rTTF = -1, g_rFI = 0.5),
+  flow_xstart = c(m_rTTF = 0.75, i_kTTI = -0.5),
+  flow_xend = c(m_rTTF = 0.25, i_rTTF = 1, i_kTTI = -0.5, g_rFI = 0.15),
+  flow_xlabel = c(i_rTTF = 0.5, g_rFI = 0.35, e_dII = 0.15, i_pI1kFF = -0.5),
+  flow_ylabel = c(i_rTTF = -0.7, g_rFI = 0.5, i_pI1kFF = 0.9)
 )
-# remove the gBUV row
-finallist <- newlist
-# trm <- which(finallist$flows$name %in% c("i_gbUV", "e_gbUV"))
-# finallist$flows <- finallist$flows[-trm, ]
-make_diagram(finallist)
-make_diagram(newlist)
-make_diagram(dlist)
+dlist2 <- update_diagram(diagram_list = dlist,
+                         diagram_settings = diag_updates
+                         )
+diag2 <- make_diagram(dlist2)
+plot(diag2)
 
 
 
-####################################
-# chronic virus and IR model
-# original fails to run
-# probably same problem as above
-####################################
+## ---- chronicvirus ----
 variables = c("U","I","V","F","T")
 flows = list(U_flows = c("n","-dU*U","-b*U*V"),
              I_flows = c("b*U*V","-dI*I","-kT*T*I"),
-             V_flows = c("p*I/(1+kF*F)","-dV*V","-g*b*U*V"), #original, fails
+             V_flows = c("p*I/(1+kF*F)","-dV*V"),
+             #V_flows = c("p*I/(1+kF*F)","-dV*V","-g*b*U*V"), #original
              F_flows = c("rF*I","-dF*F"),
              T_flows = c("rT*T*V","-dT*T")
 )
 model <- list(variables = variables, flows = flows)
 layout = list(varlocations = matrix(c("U","","I","","V",
-                                      "","F","","T",""),
+                                      "","T","","F",""),
                                     nrow = 2, byrow = TRUE),
               varspace_x_size = 0.3
 )
 dlist <- prepare_diagram(model,layout)
 diag <- make_diagram(dlist)
 plot(diag)
+update_diagram(dlist)
+diag_updates <- list(
+  flow_curvature = c(i_pI1kFF = 0, i_rTTV = 0, g_rFI = -0.2),
+  flow_ystart = c(m_rTTV = -0.25, i_kTTI = 0.5, g_rFI = -0.25),
+  flow_yend = c(m_rTTV = -0.75, i_rTTV = -1, g_rFI = 0.5),
+  flow_xstart = c(m_rTTV = 0.75, i_kTTI = -0.5),
+  flow_xend = c(m_rTTV = 0.25, i_rTTV = 1, i_kTTI = -0.5, g_rFI = 0.15),
+  flow_xlabel = c(i_rTTV = -0.4, g_rFI = 0.25, e_dII = 0.15, i_pI1kFF = -0.5),
+  flow_ylabel = c(i_rTTV = -0.7, g_rFI = 0.5, i_pI1kFF = 0.9)
+)
+dlist2 <-  update_diagram(diagram_list = dlist,
+                          diagram_settings = diag_updates
+)
+diag2 <- make_diagram(dlist2)
+plot(diag2)
 
 
-####################################
-# extended virus and IR model
-# original fails to run
-# simplified version also doesn't work
-# not sure way, all terms seems fairly standard
-####################################
+## ---- extendedvirus ----
+# ka*A*V flow is not showing at all
 variables = c("U","I","V","F","T","B","A")
 flows = list(U_flows = c("n","-dU*U","-b*U*V"),
              I_flows = c("b*U*V","-dI*I","-kT*T*I"),
-             #V_flows = c("p*I","-dV*V","-b*U*V","-kA*A*V"),
-             V_flows = c("p*I/(1+sF*F)","-dV*V","-b*U*V","-kA*A*V"), #original, not working
-             F_flows = c("pF","-dF*F","V*gF*(fmax-F)/(V+hV)"), #original, not working
+             V_flows = c("p*I/(1+sF*F)","-dV*V","-kA*A*V"), #for some strange reason not working
+             #V_flows = c("p*I/(1+sF*F)","-dV*V","-b*U*V","-kA*A*V"), #original
+             F_flows = c("pF","-dF*F","V*gF*(fmax-F)/(V+hV)"), #original
              #F_flows = c("pF","-dF*F","-V*gF*F"),
              T_flows = c("gT*F*V","rT*T"),
              B_flows = c("gB*B*F"),
-             #B_flows = c("gB*B*F*V/(F*V+hF)"), #original doesn't work
+             #B_flows = c("gB*B*F*V/(F*V+hF)"), #original
              A_flows = c("rA*B","-dA*A","-kA*A*V")
 )
 model <- list(variables = variables, flows = flows)
@@ -120,25 +128,38 @@ layout = list(varlocations = matrix(c("U","I","V",
                                       "F","T","A",
                                       "","B",""),
                                     nrow = 3, byrow = TRUE),
-              varspace_x_size = 0.5
+              varbox_x_size = 1.5,
+              varspace_y_size = 2,
+              varspace_x_size = 1.5
 )
 dlist <- prepare_diagram(model,layout)
 diag <- make_diagram(dlist)
 plot(diag)
+update_diagram(dlist)
+diag_updates <- list(
+  flow_curvature = c(i_pI1kFF = 0, i_rTTV = 0, g_rFI = -0.2),
+  flow_ystart = c(m_rTTV = -0.25, i_kTTI = 0.5, g_rFI = -0.25),
+  flow_yend = c(m_rTTV = -0.75, i_rTTV = -1, g_rFI = 0.5),
+  flow_xstart = c(m_rTTV = 0.75, i_kTTI = -0.5),
+  flow_xend = c(m_rTTV = 0.25, i_rTTV = 1, i_kTTI = -0.5, g_rFI = 0.15),
+  flow_xlabel = c(i_rTTV = -0.4, g_rFI = 0.25, e_dII = 0.15, i_pI1kFF = -0.5),
+  flow_ylabel = c(i_rTTV = -0.7, g_rFI = 0.5, i_pI1kFF = 0.9)
+)
+dlist2 <-  update_diagram(diagram_list = dlist,
+                          diagram_settings = diag_updates
+)
+diag2 <- make_diagram(dlist2)
+plot(diag2)
 
 
-####################################
-# basic bacteria model
-# OK
-####################################
+## ---- basicbacteria ----
 variables = c("B","I")
 flows = list(B_flows = c("g*B*(1-B/bmax)","-dB*B","-kI*B*I"),
              I_flows = c("rI*B*(1-I/imax)", "-dI*I")
           )
 model <- list(variables = variables, flows = flows)
-#layout = list(varlocations = matrix(c("B","I"), nrow = 1, byrow = TRUE))
-#dlist <- prepare_diagram(model,layout)
-dlist <- prepare_diagram(model)
+layout = list(varlocations = matrix(c("B","I"), nrow = 1, byrow = TRUE))
+dlist <- prepare_diagram(model,layout)
 diag <- make_diagram(dlist)
 plot(diag)
 

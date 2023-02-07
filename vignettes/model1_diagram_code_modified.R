@@ -6,11 +6,11 @@ library(flowdiagramr)
 variables <- data.frame(
   id = 1:3,
   name = c("S", "I", "R"),
-  xmin = c(0, 2, 4),
-  xmax = c(1, 3, 5),
+  xmin = c(0.5, 2.5, 4.5),
+  xmax = c(1.5, 3.5, 5.5),
   ymin = c(0, 0, 0),
   ymax = c(1, 1, 1),
-  xlabel = c(0.5, 2.5, 4.5),
+  xlabel = c(1, 3, 5),
   ylabel = c(0.5, 0.5, 0.5),
   outline_color = c("black", "black", "black"),
   fill_color = c("#6aa4c8", "#6aa4c8", "#6aa4c8"),
@@ -25,11 +25,11 @@ flows <- data.frame(
   type = c("main", "main", "external", "external", "external", "external", "interaction"),
   from = c("I", "S", NA, "S", "I", "R", "I"),
   to = c("R", "I", "S", NA, NA, NA, NA),
-  xstart = c(3, 1, 0, 0.5, 2.5, 4.5, 2.5),
-  xend = c(4, 2, 0.5, 1, 3, 5, 1.5),
+  xstart = c(3.5, 1.5, 0.5, 1, 3, 5, 3),
+  xend = c(4.5, 2.5, 1, 1.5, 3.5, 5.5, 2),
   ystart = c(0.5, 0.5, 1.5, 0, 0, 0, 1),
   yend = c(0.5, 0.5, 1, -0.5, -0.5, -0.5, 0.5),
-  xlabel = c(3.5, 1.5, 0.45, 0.95, 2.95, 4.95, 1.875),
+  xlabel = c(4, 2, 0.95, 1.45, 3.45, 5.45, 2.375),
   ylabel = c(0.6, 0.6, 1.25, -0.25, -0.25, -0.25, 1.2),
   curvature = c(0, 0, 0, 0, 0, 0, 0.5),
   line_color = c("grey25", "grey25", "grey25", "grey25", "grey25", "grey25", "grey25"),
@@ -45,6 +45,9 @@ flows <- data.frame(
 
 
  ## ggplot2 code ----
+###
+# make the diagram with ggplot2
+###
 # Start with an empty ggplot2 canvas. The coord_equal function ensures
 # that the x and y coordinates are displayed in equal proportions to
 # on another (that is, it makes sure that the squares look like squares).
@@ -64,18 +67,22 @@ diagram_plot <- ggplot() +
 # colors to different rectangles/nodes/state variables. If a vector, the
 # color and fill vectors must have a length that is equal to the number
 # of rows in the nodes data frame (one value for each row).
-for(i in 1:nrow(variables)) {
-  diagram_plot <- diagram_plot +
-    geom_rect(
-      data = variables[i, ],
-      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-      color = variables[i, "outline_color"],
-      fill = variables[i, "fill_color"]
-    )
-}
 
+# create the nodes/boxes/variables
+# these are just empty rectangles with no text
 for(i in 1:nrow(variables)) {
-  diagram_plot <- diagram_plot +
+   diagram_plot <- diagram_plot +
+      geom_rect(
+        data = variables[i, ],
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+        color = variables[i, "outline_color"],
+        fill = variables[i, "fill_color"]
+      )
+  }
+
+# add label text, which goes on top of boxes based on location information
+for(i in 1:nrow(variables)) {
+  diagram_plot <- diagram_plot +  # add text to boxes
     geom_text(
       data = variables[i, ],
       aes(x = xlabel, y = ylabel, label = label_text),
@@ -85,10 +92,11 @@ for(i in 1:nrow(variables)) {
 }
 
 ## add in all the flows
+# start with the lines/arrows
 for(i in 1:nrow(flows)) {
   if(flows[i, "show_arrow"] == TRUE) {
-    diagram_plot <- diagram_plot +
-      geom_curve(
+    diagram_plot <- diagram_plot +  # add the lines to the plot with boxes
+      geom_curve(  # always use geom_curve, which is straight when cuvature = 1
         data = flows[i, ],
         aes(x = xstart,
             y = ystart,
@@ -101,14 +109,14 @@ for(i in 1:nrow(flows)) {
         lineend = "round",
         size = flows[i, "line_size"],
         curvature = flows[i, "curvature"],
-        ncp = 1000
+        ncp = 1000  # controls smoothness of curve, larger number = more smooth
       )
   }
 }
 
 for(i in 1:nrow(flows)) {
   if(flows[i, "show_label"] == TRUE) {
-    diagram_plot <- diagram_plot +
+    diagram_plot <- diagram_plot +  # now add the flow labels to the canvas
       geom_text(
         data = flows[i, ],
         aes(x = xlabel, y = ylabel, label = label_text),
@@ -123,22 +131,22 @@ for(i in 1:nrow(flows)) {
 with_grid <- FALSE  # default is false
 if(with_grid == FALSE) {
   diagram_plot <- diagram_plot +
-    theme_void()
+    theme_void()  # makes an empty plot theme with no axes, grids, or ticks
 } else {
   # The else here may seem silly, but otherwise the returned plot is NULL
-  diagram_plot <- diagram_plot
+  diagram_plot <- diagram_plot  # just returns default ggplot2 theme
 }
+
 
 #######################
 ### YOUR NEW ADDITION
 #######################
 # make a new data frame of text
-text_df <- data.frame(  x = 3,  y = -1,
-                        lab = "Infected and Infectious"
+text_df <- data.frame(  x = 3,  y = 0,
+                        lab = "Infected\n and Infectious"
 )
 diagram_plot <- diagram_plot +
-  geom_text(data = text_df, aes(x = x, y = y, label = lab), size = 8)
-
+  geom_text(data = text_df, aes(x = x, y = y, label = lab), size = 6)
 
 
 # These lines plot or save the generated diagram.

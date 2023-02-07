@@ -19,7 +19,7 @@ make manual adjustments to the diagram."><meta property="og:image" content="http
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.7</span>
       </span>
     </div>
 
@@ -97,12 +97,12 @@ make manual adjustments to the diagram.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">write_diagram</span><span class="op">(</span>
-  diagram_list <span class="op">=</span> <span class="cn">NULL</span>,
-  directory <span class="op">=</span> <span class="st">"./"</span>,
-  filename <span class="op">=</span> <span class="st">"diagram_code.R"</span>,
-  always_overwrite <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">write_diagram</span><span class="op">(</span></span>
+<span>  diagram_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  directory <span class="op">=</span> <span class="st">"./"</span>,</span>
+<span>  filename <span class="op">=</span> <span class="st">"diagram_code.R"</span>,</span>
+<span>  always_overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -110,20 +110,29 @@ make manual adjustments to the diagram.</p>
     <dl><dt>diagram_list</dt>
 <dd><p>A <strong>flowdiagramr</strong> input structure, resulting from
 a call to <code><a href="prepare_diagram.html">prepare_diagram</a></code>. See <code>Details</code> below.</p></dd>
+
+
 <dt>directory</dt>
 <dd><p>File directory in which to save the produced R file.
 Default location is the current working directory.</p></dd>
+
+
 <dt>filename</dt>
 <dd><p>Name of the file, must end in '.R'. Default name is
 'diagram_code.R'.</p></dd>
+
+
 <dt>always_overwrite</dt>
 <dd><p>A logical indicating if you want to skip being asked
 if you want to overwrite an already existing file.
 Default is FALSE. Change to TRUE at own risk.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>R code written to a file as specified by settings.
+    
+
+<p>R code written to a file as specified by settings.
 Also, a message is returned telling the user where the file is.</p>
     </div>
     <div id="details">
@@ -136,27 +145,27 @@ you have the complete model specification in one script.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">varlabels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">varnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Susceptible"</span>,<span class="st">"Infected"</span>,<span class="st">"Recovered"</span><span class="op">)</span>  <span class="co"># optional</span></span>
-<span class="r-in"><span class="va">flows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>,</span>
-<span class="r-in">              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>,</span>
-<span class="r-in">              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>, <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span> <span class="op">)</span>,</span>
-<span class="r-in">                        nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">model_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>,</span>
-<span class="r-in">flows <span class="op">=</span> <span class="va">flows</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">model_list</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># generate R code from model_list</span></span>
-<span class="r-in"><span class="fu">write_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">model_list</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># generate R code from diagram_list</span></span>
-<span class="r-in"><span class="fu">write_diagram</span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">#' # generate R code from both</span></span>
-<span class="r-in"><span class="fu">write_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">model_list</span>, diagram_list <span class="op">=</span> <span class="va">diagram_list</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">varlabels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">varnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Susceptible"</span>,<span class="st">"Infected"</span>,<span class="st">"Recovered"</span><span class="op">)</span>  <span class="co"># optional</span></span></span>
+<span class="r-in"><span><span class="va">flows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>, <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>                        nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">model_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlabels <span class="op">=</span> <span class="va">varlabels</span>, varnames <span class="op">=</span> <span class="va">varnames</span>,</span></span>
+<span class="r-in"><span>flows <span class="op">=</span> <span class="va">flows</span>, varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">model_list</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># generate R code from model_list</span></span></span>
+<span class="r-in"><span><span class="fu">write_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">model_list</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># generate R code from diagram_list</span></span></span>
+<span class="r-in"><span><span class="fu">write_diagram</span><span class="op">(</span>diagram_list <span class="op">=</span> <span class="va">diagram_list</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#' # generate R code from both</span></span></span>
+<span class="r-in"><span><span class="fu">write_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">model_list</span>, diagram_list <span class="op">=</span> <span class="va">diagram_list</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -171,7 +180,7 @@ you have the complete model specification in one script.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

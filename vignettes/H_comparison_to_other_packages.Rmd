@@ -25,17 +25,14 @@ library(pkg, character.only = TRUE)
 
 ## Overview
 
-Here, we'll provide a brief discussion how **`r pkg`** differs from and can interact with other packages. 
+Here, we'll provide a brief discussion how **`r pkg`** differs from and can interact with other packages. If you know of other similar packages, please let us know!
 
 
 ## diagram
 
 The [**diagram** package](https://cran.r-project.org/web/packages/diagram/index.html) is - as far as we are aware - most similar to **`r pkg`**.
-The largest difference is that **`r pkg`** uses **ggplot2** as the graphing engine, rather than base R.
-This means that **`r pkg`** relies on the data frame structure of **ggplot2**, which is rapidly becoming common for most applications.
-Thus, **`r pkg`** is in some sense the "ggplot2 version" of **diagram**. 
-In addition, the way **`r pkg`** is structured means that you can start creating your diagrams with the package commands, then switch to manual edits by adding ggplot2 code if needed.
-This is not easily possible with **diagram**.
+The largest difference is that **`r pkg`** uses ggplot2 as the graphing engine, rather than base R.
+Thus, **`r pkg`** is in some sense the "ggplot2 version" of **diagram**. In addition, the way **`r pkg`** is structured means that you can start creating your diagrams with the package commands, then switch to manual edits by adding ggplot2 code if needed. This is not easily possible with **diagram**.
 
 
 ## DiagrammeR
@@ -46,9 +43,8 @@ It also requires knowledge of Graphviz and is not quite ggplot2 compatible. We c
 
 ## Others
 
-There are other packages available that can draw graphs, e.g. [dagitty](https://cran.r-project.org/web/packages/dagitty/index.html) for directed acyclic graphs or [igraph](https://cran.r-project.org/web/packages/igraph/index.html) for network graphs. We are not aware of any package that can easly create the kind of flow diagrams that **`r pkg`** is intended to produce (otherwise we wouldn't have written the package).
+There are other packages available that can draw graphs, e.g. [**dagitty**](https://cran.r-project.org/web/packages/dagitty/index.html) for directed acyclic graphs or [**igraph**](https://cran.r-project.org/web/packages/igraph/index.html) for network graphs. We are not aware of any package that can easly create the kind of flow diagrams that **`r pkg`** is intended to produce (otherwise we wouldn't have written the package).
 
-If you know of other packages that are worth pointing out, please let us know.
 
 
 

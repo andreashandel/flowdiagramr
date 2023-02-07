@@ -736,8 +736,8 @@ prepare_diagram <- function(model_list,
                          direct_interaction == FALSE)  # drop interactions
     if(nrow(flowdups) == 0) {
       stop(paste0("There are duplicate flows across variables that failed to\n",
-                  "parse easily. Are there '+' signs where you intended\n",
-                  "'-' signs, or vice versa."))
+                  "parse easily. Check to make sure all inflows have no sign or '+' signs\n",
+                  "and all outflows have '-' signs."))
     }
     diffs <- with(flowdups, to - from)  # calc difference between nodes
     mainid <- which(diffs == min(diffs))  # keep the minimum node diff as main flow

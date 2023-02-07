@@ -24,7 +24,7 @@ will likely need user modification. This is documented in the vignettes."><meta 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.7</span>
       </span>
     </div>
 
@@ -107,11 +107,11 @@ will likely need user modification. This is documented in the vignettes.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">prepare_diagram</span><span class="op">(</span>
-  <span class="va">model_list</span>,
-  model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="cn">NULL</span>, varbox_x_size <span class="op">=</span> <span class="cn">NULL</span>, varbox_y_size <span class="op">=</span>
-    <span class="cn">NULL</span>, varspace_x_size <span class="op">=</span> <span class="cn">NULL</span>, varspace_y_size <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepare_diagram</span><span class="op">(</span></span>
+<span>  <span class="va">model_list</span>,</span>
+<span>  model_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="cn">NULL</span>, varbox_x_size <span class="op">=</span> <span class="cn">NULL</span>, varbox_y_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    varspace_x_size <span class="op">=</span> <span class="cn">NULL</span>, varspace_y_size <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -132,6 +132,8 @@ be separated by math notation (e.g., +, -, *, /). Most math functions
 (e.g., <code>sin</code>, <code>cos</code>) are currently not supported.</p></li>
 <li><p>See examples and details below and vignettes.</p></li>
 </ul></dd>
+
+
 <dt>model_settings</dt>
 <dd><p>A list of optional settings to adjust layout. The
 following elements are supported. If not provided, they default to a
@@ -163,10 +165,13 @@ second lowest row, etc. Spacing is measured between the bottom edge
 of one box to the top edge og the next box.</p></li>
 <li><p>See examples and details below and vignettes.</p></li>
 </ul></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list of two data frames containing all necessary information
+    
+
+<p>A list of two data frames containing all necessary information
 for the model variables/boxes and flows/arrows to be plotted
 by the <code><a href="make_diagram.html">make_diagram</a></code> function.
 The data frames are:</p><ul><li><p><code>variables</code>: A data frame containing information for all variables.
@@ -251,65 +256,65 @@ in the diagram itself. See the description of the output data frames below.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># basic model specification</span></span>
-<span class="r-in"><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">flows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>,</span>
-<span class="r-in">              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>,</span>
-<span class="r-in">              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">mymodel</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># adding optional specifications</span></span>
-<span class="r-in"><span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>,</span>
-<span class="r-in">                                 <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span> <span class="op">)</span>,</span>
-<span class="r-in">                        nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mysettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">mymodel</span>, model_settings <span class="op">=</span> <span class="va">mysettings</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># use of model_settings to change sizes and spacing, including vectorization</span></span>
-<span class="r-in"><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">flows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>,</span>
-<span class="r-in">              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>,</span>
-<span class="r-in">              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">var_locs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>, <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span><span class="op">)</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">  varlocations <span class="op">=</span> <span class="va">var_locs</span>,</span>
-<span class="r-in">  varbox_x_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>,</span>
-<span class="r-in">  varbox_y_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">0.5</span>,<span class="fl">2</span><span class="op">)</span>,</span>
-<span class="r-in">  varspace_x_size <span class="op">=</span> <span class="fl">2</span>,</span>
-<span class="r-in">  varspace_y_size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">mymodel</span>,</span>
-<span class="r-in">                             model_settings <span class="op">=</span> <span class="va">mysettings</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># basic model specification</span></span></span>
+<span class="r-in"><span><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">flows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">mymodel</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># adding optional specifications</span></span></span>
+<span class="r-in"><span><span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>,</span></span>
+<span class="r-in"><span>                                 <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>                        nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mysettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">mymodel</span>, model_settings <span class="op">=</span> <span class="va">mysettings</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># use of model_settings to change sizes and spacing, including vectorization</span></span></span>
+<span class="r-in"><span><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">flows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mymodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>variables <span class="op">=</span> <span class="va">variables</span>, flows <span class="op">=</span> <span class="va">flows</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">var_locs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">""</span>, <span class="st">"R"</span>, <span class="st">""</span>, <span class="st">"I"</span>, <span class="st">""</span><span class="op">)</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mysettings</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  varlocations <span class="op">=</span> <span class="va">var_locs</span>,</span></span>
+<span class="r-in"><span>  varbox_x_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  varbox_y_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">0.5</span>,<span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  varspace_x_size <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>  varspace_y_size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span>model_list <span class="op">=</span> <span class="va">mymodel</span>,</span></span>
+<span class="r-in"><span>                             model_settings <span class="op">=</span> <span class="va">mysettings</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="prepare_diagram-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># another simple model for pathogen (prey) and immune response (predator)</span></span>
-<span class="r-in"><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pat"</span>,<span class="st">"Imm"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">flows</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Pat_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*Pat*(1-Pat/pmax)"</span>, <span class="st">"-dP*Pat"</span>, <span class="st">"-k*Pat*Imm"</span><span class="op">)</span>,</span>
-<span class="r-in">                 Imm_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r*Pat*Imm"</span>, <span class="st">"-dI*Imm"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">variables</span>, <span class="va">flows</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># manually switch to vertical layout</span></span>
-<span class="r-in"><span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pat"</span>, <span class="st">"Imm"</span><span class="op">)</span>,</span>
-<span class="r-in">                        nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mysettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span><span class="va">mymodel</span>,<span class="va">mysettings</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># another simple model for pathogen (prey) and immune response (predator)</span></span></span>
+<span class="r-in"><span><span class="va">variables</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pat"</span>,<span class="st">"Imm"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">flows</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Pat_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*Pat*(1-Pat/pmax)"</span>, <span class="st">"-dP*Pat"</span>, <span class="st">"-k*Pat*Imm"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 Imm_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r*Pat*Imm"</span>, <span class="st">"-dI*Imm"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">variables</span>, <span class="va">flows</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># manually switch to vertical layout</span></span></span>
+<span class="r-in"><span><span class="va">varlocations</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pat"</span>, <span class="st">"Imm"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                        nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mysettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>varlocations <span class="op">=</span> <span class="va">varlocations</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">diag_list</span> <span class="op">&lt;-</span> <span class="fu">prepare_diagram</span><span class="op">(</span><span class="va">mymodel</span>,<span class="va">mysettings</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mydiag</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diag_list</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -324,7 +329,7 @@ in the diagram itself. See the description of the output data frames below.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

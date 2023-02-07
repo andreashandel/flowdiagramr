@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.7</span>
       </span>
     </div>
 
@@ -128,23 +128,47 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>Here, we’ll provide a brief discussion how <strong>flowdiagramr</strong> differs from and can interact with other packages.</p>
+<p>Here, we’ll provide a brief discussion how
+<strong>flowdiagramr</strong> differs from and can interact with other
+packages. If you know of other similar packages, please let us know!</p>
 </div>
 <div class="section level2">
 <h2 id="diagram">diagram<a class="anchor" aria-label="anchor" href="#diagram"></a>
 </h2>
-<p>The <a href="https://cran.r-project.org/web/packages/diagram/index.html" class="external-link"><strong>diagram</strong> package</a> is - as far as we are aware - most similar to <strong>flowdiagramr</strong>. The largest difference is that <strong>flowdiagramr</strong> uses <strong>ggplot2</strong> as the graphing engine, rather than base R. This means that <strong>flowdiagramr</strong> relies on the data frame structure of <strong>ggplot2</strong>, which is rapidly becoming common for most applications. Thus, <strong>flowdiagramr</strong> is in some sense the “ggplot2 version” of <strong>diagram</strong>. In addition, the way <strong>flowdiagramr</strong> is structured means that you can start creating your diagrams with the package commands, then switch to manual edits by adding ggplot2 code if needed. This is not easily possible with <strong>diagram</strong>.</p>
+<p>The <a href="https://cran.r-project.org/web/packages/diagram/index.html" class="external-link"><strong>diagram</strong>
+package</a> is - as far as we are aware - most similar to
+<strong>flowdiagramr</strong>. The largest difference is that
+<strong>flowdiagramr</strong> uses ggplot2 as the graphing engine,
+rather than base R. Thus, <strong>flowdiagramr</strong> is in some sense
+the “ggplot2 version” of <strong>diagram</strong>. In addition, the way
+<strong>flowdiagramr</strong> is structured means that you can start
+creating your diagrams with the package commands, then switch to manual
+edits by adding ggplot2 code if needed. This is not easily possible with
+<strong>diagram</strong>.</p>
 </div>
 <div class="section level2">
 <h2 id="diagrammer">DiagrammeR<a class="anchor" aria-label="anchor" href="#diagrammer"></a>
 </h2>
-<p>The <a href="https://cran.r-project.org/web/packages/DiagrammeR/index.html" class="external-link"><strong>DiagrammeR</strong> package</a> is the most flexible diagramming package available for R. However, it is primarily for acyclic diagrams (no feedback or interaction terms) and it requires specifying models in non-R syntax (DOT language). It also requires knowledge of Graphviz and is not quite ggplot2 compatible. We considered using <strong>DiagrammeR</strong> to get the diagrams we wanted, but the fact that a lot of models have feedback loops, which are not easily supported by <strong>DiagrammeR</strong> made us decide that we couldn’t use it and had to create a new package.</p>
+<p>The <a href="https://cran.r-project.org/web/packages/DiagrammeR/index.html" class="external-link"><strong>DiagrammeR</strong>
+package</a> is the most flexible diagramming package available for R.
+However, it is primarily for acyclic diagrams (no feedback or
+interaction terms) and it requires specifying models in non-R syntax
+(DOT language). It also requires knowledge of Graphviz and is not quite
+ggplot2 compatible. We considered using <strong>DiagrammeR</strong> to
+get the diagrams we wanted, but the fact that a lot of models have
+feedback loops, which are not easily supported by
+<strong>DiagrammeR</strong> made us decide that we couldn’t use it and
+had to create a new package.</p>
 </div>
 <div class="section level2">
 <h2 id="others">Others<a class="anchor" aria-label="anchor" href="#others"></a>
 </h2>
-<p>There are other packages available that can draw graphs, e.g. <a href="https://cran.r-project.org/web/packages/dagitty/index.html" class="external-link">dagitty</a> for directed acyclic graphs or <a href="https://cran.r-project.org/web/packages/igraph/index.html" class="external-link">igraph</a> for network graphs. We are not aware of any package that can easly create the kind of flow diagrams that <strong>flowdiagramr</strong> is intended to produce (otherwise we wouldn’t have written the package).</p>
-<p>If you know of other packages that are worth pointing out, please let us know.</p>
+<p>There are other packages available that can draw graphs, e.g. <a href="https://cran.r-project.org/web/packages/dagitty/index.html" class="external-link"><strong>dagitty</strong></a>
+for directed acyclic graphs or <a href="https://cran.r-project.org/web/packages/igraph/index.html" class="external-link"><strong>igraph</strong></a>
+for network graphs. We are not aware of any package that can easly
+create the kind of flow diagrams that <strong>flowdiagramr</strong> is
+intended to produce (otherwise we wouldn’t have written the
+package).</p>
 </div>
   </div>
 
@@ -165,7 +189,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
