@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.8</span>
       </span>
     </div>
 
@@ -149,6 +149,18 @@ to as <em>compartments</em> or <em>variables</em> is also known as
 we try to use <strong>variables</strong> and <strong>flows</strong> as
 consistently as possible, we might occasionally accidentally use one of
 the other terms. We hope by showing examples it will be clear.</p>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p><strong>flowdiagramr</strong> is not yet on CRAN. You need to install
+it from GitHub as follows:</p>
+<ul>
+<li>Install the <code>remotes</code> package</li>
+<li>Install <strong>flowdiagramr</strong> with
+<code>remotes::install_github('andreashandel/flowdiagramr')</code>
+</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="starting-example">Starting Example<a class="anchor" aria-label="anchor" href="#starting-example"></a>
@@ -440,8 +452,8 @@ have gone wrong.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">model_list_wrong2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error in prepare_diagram(model_list_wrong2): There are duplicate flows across variables that failed to</span></span>
-<span><span class="co">#&gt; parse easily. Are there '+' signs where you intended</span></span>
-<span><span class="co">#&gt; '-' signs, or vice versa.</span></span></code></pre></div>
+<span><span class="co">#&gt; parse easily. Check to make sure all inflows have no sign or '+' signs</span></span>
+<span><span class="co">#&gt; and all outflows have '-' signs.</span></span></code></pre></div>
 <p>Not all model bugs return informative error messages. There are
 likely instances where you have typos or other mistakes in your model,
 or you try to include components in our model that
@@ -505,7 +517,7 @@ start learning these different ways, you should continue with <a href="./B_prepa
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

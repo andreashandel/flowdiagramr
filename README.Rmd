@@ -37,6 +37,8 @@ This package allows automated creation of flow diagrams for compartmental simula
 For the very impatient, here are few lines of code that make a simple diagram using `r pkg`
 
 ```{r}
+#install if needed - package is not yet on CRAN
+# remotes::install_github('andreashandel/flowdiagramr')
 library(flowdiagramr)
 #specify model
 mymodel = list( varlabels = c("S","I","R"),

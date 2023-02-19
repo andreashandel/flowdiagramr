@@ -113,7 +113,7 @@ make_diagram <- function (diagram_list, with_grid = FALSE) {
           color = flows[i, "line_color"],
           arrow.fill = flows[i, "line_color"],
           lineend = "round",
-          size = flows[i, "line_size"],
+          linewidth = flows[i, "line_size"],
           curvature = flows[i, "curvature"],
           ncp = 1000  # controls smoothness of curve, larger number = more smooth
         )
