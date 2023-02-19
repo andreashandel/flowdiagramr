@@ -252,7 +252,7 @@ This is getting better, though not quite publication quality yet. We'll get ther
 
 ## Summary and next steps
 
-By supplying `prepare_diagram()` with optional settings, you can change the layout, size and spacing of the variable boxes. For all but the simplest diagrams, this will be a required first step to get the layout you want. As we briefly mentioned in the _Quick start_ vignette, it is also possible to adjust the styling of all the diagram elements. To learn more about this, continue on to [this next vignette](./C_updat_diagram_function.html).    
+By supplying `prepare_diagram()` with optional settings, you can change the layout, size and spacing of the variable boxes. For all but the simplest diagrams, this will be a required first step to get the layout you want. As we briefly mentioned in the _Quick start_ vignette, it is also possible to adjust the styling of all the diagram elements. To learn more about this, continue on to [this next vignette](./C_update_diagram_function.html).    
 
 
 
