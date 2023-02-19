@@ -65,22 +65,22 @@ tutorials/vignettes. Here they are listed for convenience.
 
 1.  [Quick start
     guide](https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html)
-2.  [Basic modification of
-    diagrams](https://andreashandel.github.io/flowdiagramr/articles/B_modify_diagrams_simple.html)
-3.  [Modifying the input
-    structure](https://andreashandel.github.io/flowdiagramr/articles/C_modify_input_structure.html)
-4.  [Modifying the ggplot2
+2.  [Modifying diagrams
+    I](https://andreashandel.github.io/flowdiagramr/articles/B_prepare_diagram_settings.html)
+3.  [Modifying diagrams
+    II](https://andreashandel.github.io/flowdiagramr/articles/C_update_diagram_function.html)
+4.  [Modifying the ggplot2 object or
     code](https://andreashandel.github.io/flowdiagramr/articles/D_modify_ggplot_code.html)
 
 **Additional tutorials/vignettes**
 
 *Read them based on interest, in any order*
 
-- [More model
-  examples](https://andreashandel.github.io/flowdiagramr/articles/E_non_model_diagrams.html)
 - [Making non-model based
-  diagrams](https://andreashandel.github.io/flowdiagramr/articles/F_more_model_examples.html)
-- [Some additional
+  diagrams](https://andreashandel.github.io/flowdiagramr/articles/E_non_model_diagrams.html)
+- [Additional diagram
+  examples](https://andreashandel.github.io/flowdiagramr/articles/F_additional_examples.html)
+- [Additional
   topics](https://andreashandel.github.io/flowdiagramr/articles/G_additional_topics.html)
 - [Comparison to other R
   packages](https://andreashandel.github.io/flowdiagramr/articles/H_comparison_to_other_packages.html)
