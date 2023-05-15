@@ -42,6 +42,14 @@ Other terminology exists.
 While we try to use **variables** and **flows** as consistently as possible, we might occasionally accidentally use one of the other terms.
 We hope by showing examples it will be clear.
 
+## Installation
+
+**`r pkg`** is not yet on CRAN. You need to install it from GitHub as follows:
+
+* Install the `remotes` package
+* Install **`r pkg`** with `remotes::install_github('andreashandel/flowdiagramr')`
+
+
 ## Starting Example
 
 Here is a simple example to illustrate what **`r pkg`** does.

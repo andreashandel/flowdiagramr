@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">flowdiagramr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.8</span>
       </span>
     </div>
 
@@ -119,21 +119,43 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><strong>This package is under active development. If you find bugs, or have any other feedback, please let us know (preferably through a GitHub Issue)!</strong></p>
+<p><strong>This package is still under active development. If you see this message, assume that several parts of the package don’t quite work yet.</strong></p>
 <div class="section level2">
 <h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
 </h2>
-<p>This package allows automated creation of flow diagrams for compartmental simulation models using ggplot. Other types of flow charts are also supported.</p>
+<p><strong>flowdiagramr</strong> allows automated creation of flow diagrams for compartmental simulation models using ggplot. Other types of flow charts are also supported.</p>
+</div>
+<div class="section level2">
+<h2 id="quick-example">Quick example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
+</h2>
+<p>These few lines of code create a simple diagram of and SIR model using <strong>flowdiagramr</strong></p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#install if needed - package is not yet on CRAN</span></span>
+<span><span class="co"># remotes::install_github('andreashandel/flowdiagramr')</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://andreashandel.github.io/flowdiagramr/" class="external-link">flowdiagramr</a></span><span class="op">)</span></span>
+<span><span class="co">#specify model</span></span>
+<span><span class="va">mymodel</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> varlabels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>,<span class="st">"I"</span>,<span class="st">"R"</span><span class="op">)</span>,</span>
+<span>                flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-b*S*I"</span><span class="op">)</span>, </span>
+<span>                             I_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b*S*I"</span>,<span class="st">"-g*I"</span><span class="op">)</span>, </span>
+<span>                             R_flows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"g*I"</span><span class="op">)</span><span class="op">)</span></span>
+<span>              <span class="op">)</span></span>
+<span><span class="co">#prepare diagram</span></span>
+<span><span class="va">diagram_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_diagram.html">prepare_diagram</a></span><span class="op">(</span><span class="va">mymodel</span><span class="op">)</span></span>
+<span><span class="co">#make diagram</span></span>
+<span><span class="va">my_diagram</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/make_diagram.html">make_diagram</a></span><span class="op">(</span><span class="va">diagram_list</span><span class="op">)</span></span>
+<span><span class="co">#plot diagram</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_diagram</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/unnamed-chunk-2-1.png"><!-- --></p>
 </div>
 <div class="section level2">
 <h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
-<p>For an introduction to the package, step-by-step instructions on getting started, and more information on the different ways you can use the package <a href="https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html" class="external-link">see the <em>Quick Start</em> tutorial (vignette)</a>.</p>
+<p>If you think something like this is of interest to you, hop on over to the <a href="https://andreashandel.github.io/flowdiagramr/articles/A_quickstart.html" class="external-link"><em>Quick Start</em> tutorial (vignette)</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="further-information">Further information<a class="anchor" aria-label="anchor" href="#further-information"></a>
 </h2>
-<p>We wrote several tutorials/vignettes that explain all features of <code>flowdiagramr</code>. Here they are listed for convenience.</p>
+<p><strong>flowdiagramr</strong> gives you many options to easily customize diagrams. You can also make diagrams that are not based on compartmental models. To explain (most) everything <strong>flowdiagramr</strong> can do, we wrote several tutorials/vignettes. Here they are listed for convenience.</p>
 <p><strong>Main tutorials/vignettes</strong></p>
 <p><em>You should go through them in this order</em></p>
 <ol style="list-style-type: decimal">
@@ -155,7 +177,7 @@
 <div class="section level2">
 <h2 id="citation-and-contributors">Citation and Contributors<a class="anchor" aria-label="anchor" href="#citation-and-contributors"></a>
 </h2>
-<p>This R package was developed by <a href="https://atredennick.github.io/" class="external-link">Andrew Tredennick</a> and <a href="https://www.andreashandel.com/" class="external-link">Andreas Handel</a>. It is maintained Andreas Handel. A full list of contributors and a Bibtex entry for the citation <a href="https://andreashandel.github.io/flowdiagramr/authors.html" class="external-link">can be found here</a>.</p>
+<p>This R package was developed by <a href="https://atredennick.github.io/" class="external-link">Andrew Tredennick</a> and <a href="https://www.andreashandel.com/" class="external-link">Andreas Handel</a>. A full list of contributors and a Bibtex entry for the citation <a href="https://andreashandel.github.io/flowdiagramr/authors.html" class="external-link">can be found here</a>.</p>
 <p>This project was/is partially supported by NIH grants R01 GM124280 and GM 12480-03S1.</p>
 </div>
 </div>
@@ -214,7 +236,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
