@@ -1,4 +1,15 @@
 ****************************
+ToDo soon
+****************************
+
+* Add ggflowchart to 'other packages' vignette:
+https://nrennie.github.io/ggflowchart/index.html
+
+* Get the models in the 'models-to-test' folder to work. If suitable, add to vignette.
+
+
+
+****************************
 General notes for things to do at some later point
 ****************************
 
