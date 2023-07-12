@@ -53,10 +53,12 @@ layout = list(varlocations = matrix(c("U","I","V"),
               varspace_x_size = 1
 )
 dlist <- prepare_diagram(model,layout)
-#dlist <- update_diagram(dlist,list(flow_show_label=c(TRUE)))
-diag <- make_diagram(dlist)
 plot(diag)
 #ggplot2::ggsave("virusdiagram.png",diag)
+dlist2 <- update_diagram(dlist,list(flow_show_arrow = c(all = FALSE)))
+diag2 <- make_diagram(dlist2)
+plot(diag2)
+#ggplot2::ggsave("emptyvirusdiagram.png",diag2)
 ```
 
 
