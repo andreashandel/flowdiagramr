@@ -1023,7 +1023,7 @@ prepare_diagram <- function(model_list,
     in_flows$xlabel <- NULL  # remove the column
 
     # ymin is the y starting point of the arrow, defined as the end point (ymax) + 0.5
-    in_flows$ymin <- in_flows$ymax + 0.5
+    in_flows$ymin <- in_flows$ymax + 0.25
 
     # xmin is the x starting point of the arrow, defined as left-edge of the node
     left_edges <- variables[,c("id", "xmin")]
@@ -1048,7 +1048,7 @@ prepare_diagram <- function(model_list,
     out_flows$xlabel <- NULL  # remove the column
 
     # ymax is the y end point of the arrow, defined as the start point (ymin) - 0.5
-    out_flows$ymax <- out_flows$ymin - 0.5
+    out_flows$ymax <- out_flows$ymin - 0.25
 
     # xmax is the x end point of the arrow, defined as right-edge of the node
     right_edges <- variables[,c("id", "xmax")]
@@ -1276,7 +1276,18 @@ prepare_diagram <- function(model_list,
       }
     } else if((is.na(tmp$from) | is.na(tmp$to)) &
               tmp$interaction == FALSE) { # processing for in/out flows
-      flows[i, "xlabel"] <- flows[i, "xlabel"] + 0.2  # move to right
+
+      #place label at beginning of arrow
+      if(is.na(tmp$from)) {
+        flows[i, "xlabel"] <- flows[i, "xmin"] - 0.1
+        flows[i, "ylabel"] <- flows[i, "ymin"] + 0.1
+
+      }
+      #move label at end of arrow
+      if(is.na(tmp$to)) {
+        flows[i, "xlabel"] <- flows[i, "xmax"] + 0.1
+        flows[i, "ylabel"] <- flows[i, "ymax"] - 0.1
+      }
     }
 
     # processing for interactions
