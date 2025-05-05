@@ -274,7 +274,7 @@ plot(sir_diagram4)
 
 ## Example 5
 
-Finally, we'll revisit the 7-compartment model we explored previously, and see if we can get closer to something that could be shown to the public `r emoji::emoji('smile')`.
+Finally, we'll revisit the 7-compartment model we explored previously, and see if we can get closer to something that could be shown to the public.
 
 This is the model
 
@@ -394,7 +394,7 @@ model_plot9 <- make_diagram(diagram_list9, with_grid = FALSE)
 plot(model_plot9)
 ```
 
-This is now looking like a pretty decent diagram that could be used for public consumption `r emoji::emoji('smile')`. Granted, adjusting the arrows and labels can be a bit fiddly, but we think it's still easier and better than firing up your favorite drawing software. Also, it's likely easier to update here if you make changes to the model.
+This is now looking like a pretty decent diagram that could be used for public distribution. Granted, adjusting the arrows and labels can be a bit fiddly, but we think it's still easier and better than firing up your favorite drawing software. Also, it's likely easier to update here if you make changes to the model.
 
 ## Next steps
 

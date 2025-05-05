@@ -98,6 +98,44 @@ plot(diag2)
 
 
 
+#### Alternate Acute Virus and IR Model
+
+
+
+
+```{r}
+variables = c("U","I","V","F","A","S")
+flows = list(U_flows = c("-b*U*V"),
+             I_flows = c("b*U*V","-cI*I","-kA*A*I"),
+             V_flows = c("p*I/(1+kF*F)", "-dV*V","-b*U*V"),
+             F_flows = c("rF*I","-dF*F"),
+             T_flows = c("rT*T*F","-dT*T")
+)
+model <- list(variables = variables, flows = flows)
+layout = list(varlocations = matrix(c("U","","I","","V"
+                                      ,"","T","","F",""),
+                                    nrow = 2, byrow = TRUE),
+              varspace_x_size = 1
+)
+dlist <- prepare_diagram(model,layout)
+dlist2 <- update_diagram(dlist,diagram_settings = 
+                                  list(flow_label_text = c(i_bUV = "g*b*U*V" ),
+                                       flow_ystart = c(e_dII = 1),
+                                       flow_yend = c(e_dII = 1.5),
+                                       flow_xlabel = c( i_rTTF = 0.1,
+                                                        i_kTTI = 0.85,
+                                                        g_rFI = 0.4),
+                                       flow_ylabel = c( m_bUV_m_bUV = - 0.25,
+                                                        i_pI1kFF = 1,
+                                                        g_rFI = -0.25,
+                                                        e_dII = 1.8)
+                                       ))
+diag2 <- make_diagram(dlist2)
+plot(diag2)
+#ggplot2::ggsave("emptyvirusdiagram.png",diag2)
+```
+
+
 
 
 

@@ -111,7 +111,7 @@ plot(my_diagram)
 ```
 
 
-This is better, but of course still not quite good enough. Fortunately, you have learned how to use **`r pkg`** to fairly easily turn this into a publication-quality diagram `r emoji::emoji("smile")`.
+This is better, but of course still not quite good enough. Fortunately, you have learned how to use **`r pkg`** to fairly easily turn this into a publication-quality diagram 😄.
 
 
 ## Cropping white-space from diagram plots
@@ -180,7 +180,7 @@ By now, you are familiar with the main functions of **`r pkg`**, namely `prepare
 
 * `check_model_list()` - This function does what its name implies. It takes a model list, consisting of the `variables` and `flows` entry and checks if everything seems to make sense. If everything is fine, nothing is returned. Otherwise, a hopefully somewhat informative error message is provided.
 
-* `check_model_settings()` - This function also does what its name implies `r emoji::emoji('grin')`. It checks that the optional `model_settings` list one can supply to `prepare_diagram()` is correct.
+* `check_model_settings()` - This function also does what its name implies. It checks that the optional `model_settings` list one can supply to `prepare_diagram()` is correct.
 
 * `check_dataframes()` - this function takes the diagram list one gets after running `prepare_diagram()` and checks to make sure the `variables` and `flows` data frames are correct.
 
