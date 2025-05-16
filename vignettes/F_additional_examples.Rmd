@@ -139,6 +139,8 @@ update_settings = list(#flow_label_text = c(i_bUV = "b*U*V" ),
 dlist2 <- update_diagram(dlist,diagram_settings = update_settings)
 diag3 <- make_diagram(dlist2)
 plot(diag3)
+# write the current diagram code to a file, overwrite if it exists
+#write_diagram(diagram_list = dlist2, filename = 'model_diagram_code.R', always_overwrite = TRUE)
 #ggplot2::ggsave("emptyvirusdiagram.png",diag2)
 ```
 
