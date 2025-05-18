@@ -102,20 +102,19 @@ plot(diag2)
 
 
 ```{r, alternateIR}
-variables = c("U","I","V","F","A","S")
+variables = c("U","I","V","A","F","S")
 flows = list(U_flows = c("-b*U*V"),
              I_flows = c("b*U*V","-cI*I","-kA*A*I"),
              V_flows = c("(1-fV)*p*I/(1+kF*F)", "-cV*V"),
-             #F_flows = c("gF*V","-cF*F"),
-             F_flows = c("(1-fF)*gF*V/(V+hV)*(fmax-F)","-cF*F"),
              A_flows = c("F*V/(F*V+hF)","gA*A"),
+             F_flows = c("(1-fF)*gF*V/(V+hV)*(fmax-F)","-cF*F"),
              S_flows = c("gs*F","-cS*S")
 )
 model <- list(variables = variables, flows = flows)
 layout = list(varlocations = matrix(c("U","I","V",
                                       "A","F","S"),
                                     nrow = 2, byrow = TRUE),
-              varspace_x_size = 1
+              varspace_x_size = 1.5
 )
 dlist <- prepare_diagram(model,layout)
 update_settings = list(#flow_label_text = c(i_bUV = "b*U*V" ),
